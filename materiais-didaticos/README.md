@@ -2,4 +2,4 @@ Aqui você encontra o material didático do nosso curso: *slides* e códigos meu
 - [ITSL] Gareth James, Daniela Witten, Trevor Hastie, Rob Tibshirani & Jonathan Taylor - *An Introduction to Statistical Learning, with Applications in Python*
   * Disponível [on-line](https://www.statlearning.com/)
 - [AME] Rafael Izbicki & Tiago Mendonça dos Santos - *Aprendizado de Máquina: Uma Abordagem Estatística*
-  * Disponível [on-line](http://www.rizbicki.ufscar.br/ame/)
+  * Disponível [on-line](https://rafaelizbicki.com/ame/)
