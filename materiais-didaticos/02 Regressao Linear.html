@@ -1206,7 +1206,7 @@ margin-right: 0; }
 <h2>O método dos mínimos quadrados</h2>
 <ul>
 <li class="fragment">Uma forma de estimar os coeficientes <span class="math inline">\(\boldsymbol{\beta}\)</span> da regressão linear é utilizando o método dos mínimos quadrados, isto é, <span class="math display">\[\hat{\boldsymbol{\beta}} = \mathrm{arg}\min_{\boldsymbol{\beta}} \sum_{i = 1}^{n} (y_i - \mathbf{x}_i^{\intercal}\boldsymbol{\beta})^2 = \|\mathbf{y} - \mathbb{X}\boldsymbol{\beta}\|^2\]</span></li>
-<li class="fragment">A solução para esse problema é dada por <span class="math display">\[\hat{\boldsymbol{\beta}} = (\mathbb{X}^{\intercal}\mathbb{X})^{-1}\mathbb{X}\mathbf{y}\]</span></li>
+<li class="fragment">A solução para esse problema é dada por <span class="math display">\[\hat{\boldsymbol{\beta}} = (\mathbb{X}^{\intercal}\mathbb{X})^{-1}\mathbb{X}^\intercal\mathbf{y}\]</span></li>
 <li class="fragment">A função de regressão é estimada por <span class="math inline">\(g(\mathbf{x}) = \hat{\boldsymbol{\beta}}^{\intercal}\mathbf{x}\)</span></li>
 </ul>
 </section>
@@ -1254,7 +1254,7 @@ R\!\left( g_{\hat{\boldsymbol{\beta}}} \right) \xrightarrow[n \to \infty]{p} R\!
 <ul>
 <li class="fragment">Note que <span class="math inline">\(\beta_0\)</span> <strong>nunca</strong> é penalizado – intercepto</li>
 <li class="fragment"><span class="math inline">\(\mathcal{P}_0\)</span> leva a um problema de otimização intratável: considerar todas as <span class="math inline">\(2^p\)</span> possibilidades de <span class="math inline">\(\beta_j\)</span>’s não nulos <span class="math inline">\(\Rightarrow\)</span> resolver <span class="math inline">\(2^p\)</span> problemas de mínimos quadrados</li>
-<li class="fragment"><span class="math inline">\(\mathcal{P}_2\)</span> tem solução analítica: <span class="math inline">\(\hat{\boldsymbol{\beta}}_{R, \lambda} = (\mathbb{X}^{\intercal}\mathbb{X} + \lambda\mathbb{I})^{-1}\mathbb{X}\mathbf{y}\)</span>, onde <span class="math inline">\(\mathbb{I}\)</span> é a matriz identidade de tamanho compatível
+<li class="fragment"><span class="math inline">\(\mathcal{P}_2\)</span> tem solução analítica: <span class="math inline">\(\hat{\boldsymbol{\beta}}_{R, \lambda} = (\mathbb{X}^{\intercal}\mathbb{X} + \lambda\mathbb{I})^{-1}\mathbb{X}^\intercal\mathbf{y}\)</span>, onde <span class="math inline">\(\mathbb{I}\)</span> é a matriz identidade de tamanho compatível
 <ul>
 <li class="fragment"><span class="math inline">\(\hat{\boldsymbol{\beta}}_{R, \lambda}\)</span> possui, em geral, entradas menores (em módulo) que <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>, a depender da escolha de <span class="math inline">\(\lambda\)</span></li>
 </ul></li>
