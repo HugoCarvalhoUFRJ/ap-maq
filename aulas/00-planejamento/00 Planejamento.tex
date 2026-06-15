@@ -1,0 +1,217 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  PLANEJAMENTO DO CURSO DE APRENDIZADO DE MÁQUINA
+%  Notas de aula -- UFRJ
+%  Documento mestre: mapeia todas as aulas (oficiais e extras), seus tópicos
+%  e as leituras correspondentes nos dois livros-texto adotados.
+%==============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+
+% Rótulos em português (babel-portugues indisponível nesta instalação)
+\renewcommand{\abstractname}{Resumo}
+\renewcommand{\contentsname}{Sumário}
+\renewcommand{\refname}{Referências}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
+
+\title{\textbf{Aprendizado de Máquina}\\[0.3em]
+       \large Planejamento das Notas de Aula}
+\author{Curso de Aprendizado de Máquina --- UFRJ\\
+        \small Estatística, Ciências Atuariais, Matemática Aplicada e Engenharia Matemática}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent Este documento organiza todo o planejamento das notas de aula do curso.
+Ele mapeia as \textbf{aulas oficiais} (acompanhando a sequência consolidada dos
+slides do curso, numerados de 01 a 11) e as \textbf{aulas extras} (tópicos
+complementares de aprendizado não supervisionado e aplicações), associando cada
+aula aos respectivos capítulos dos dois livros-texto adotados. Para cada aula há
+um arquivo \texttt{.tex} próprio nesta pasta, contendo o roteiro detalhado do que
+deve ser dito em sala.
+\end{abstract}
+
+%==============================================================================
+\section{Livros-texto adotados}
+%==============================================================================
+\begin{description}[leftmargin=2.2cm,style=nextline]
+  \item[\textbf{[AME]}] Rafael Izbicki \& Tiago Mendonça dos Santos.
+        \emph{Aprendizado de Máquina: Uma Abordagem Estatística}.
+        Disponível on-line: \url{https://rafaelizbicki.com/ame/}.
+  \item[\textbf{[ISLP]}] Gareth James, Daniela Witten, Trevor Hastie,
+        Robert Tibshirani \& Jonathan Taylor.
+        \emph{An Introduction to Statistical Learning, with Applications in Python}.
+        Disponível on-line: \url{https://www.statlearning.com/}.
+\end{description}
+
+\noindent\textbf{Filosofia de uso dos dois livros.}
+O [AME] é a espinha dorsal teórica: apresenta o aprendizado de máquina sob a ótica
+estatística (função de risco, viés--variância, garantias teóricas), com notação
+enxuta e tratamento unificado de regressão e classificação. O [ISLP] é a fonte de
+intuição, exemplos e implementação em Python (\texttt{scikit-learn}), além de
+fornecer figuras e conjuntos de dados clássicos. Nas notas, o esqueleto conceitual
+segue o [AME] e os exemplos/laboratórios seguem o [ISLP].
+
+%==============================================================================
+\section{Estrutura geral do curso}
+%==============================================================================
+O curso está organizado em três blocos:
+\begin{enumerate}[label=\textbf{\Roman*.}]
+  \item \textbf{Fundamentos e Regressão} (Aulas 01--07): formalização do problema
+        de aprendizado, regressão linear e regularização, seleção de modelos por
+        validação cruzada, métodos não paramétricos (KNN, árvores, \emph{ensembles})
+        e boas práticas de implementação (\emph{pipelines}).
+  \item \textbf{Classificação} (Aulas 08--11): formulação do problema de
+        classificação, classificadores gaussianos e logístico, métricas, SVM, KNN
+        e árvores de classificação.
+  \item \textbf{Aprendizado não supervisionado e aplicações} (Aulas Extras):
+        agrupamento ($k$-médias), redução de dimensionalidade (PCA, t-SNE) e uma
+        aplicação de processamento de linguagem natural (NLP) à classificação.
+\end{enumerate}
+
+\noindent Ao todo: \textbf{11 aulas oficiais} $+$ \textbf{3 aulas extras}
+$=$ \textbf{14 conjuntos de notas de aula}, mais este documento de planejamento.
+
+%==============================================================================
+\section{Mapa das aulas}
+%==============================================================================
+
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{@{}p{0.6cm} p{4.6cm} p{5.0cm} p{4.2cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Aula} & \textbf{Tópicos principais} & \textbf{Leitura} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{\#} & \textbf{Aula} & \textbf{Tópicos principais} & \textbf{Leitura} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+\multicolumn{4}{@{}l}{\textbf{Bloco I --- Fundamentos e Regressão}}\\[0.3em]
+
+01 & Introdução ao Aprendizado de Máquina &
+Notação e suposições; predição vs.\ inferência; as duas culturas; função de risco;
+super e subajuste; balanço viés--variância; \emph{tuning parameters} &
+AME cap.~1; ISLP cap.~1--2 \\
+
+02 & Regressão Linear e Regularização &
+Mínimos quadrados; além da linearidade; alta dimensão; seleção de subconjuntos e
+\emph{stepwise}; Lasso e Ridge; esparsidade; interpretação bayesiana &
+AME cap.~2--3; ISLP cap.~3, 6 \\
+
+03 & Seleção de Modelos e Validação Cruzada &
+Estimação do risco; \emph{data splitting}; validação cruzada com $k$ dobras;
+escolha de $k$; \emph{bootstrap} &
+AME §1.5; ISLP cap.~5 \\
+
+04 & Métodos Não Paramétricos (KNN) &
+Séries ortogonais e \emph{splines} (panorama); $k$ vizinhos mais próximos;
+Nadaraya--Watson; regressão polinomial local &
+AME §4.1--4.5; ISLP §3.5, 7.1--7.6 \\
+
+05 & Métodos Não Paramétricos: Aspectos Teóricos &
+Maldição da dimensionalidade; taxas de convergência; esparsidade e redundância;
+um pouco de teoria do KNN e séries ortogonais &
+AME §4.13, cap.~5 \\
+
+06 & Árvores de Regressão e \emph{Ensembles} &
+Árvores de regressão (construção e poda); \emph{bagging}; florestas aleatórias;
+importância de atributos; \emph{boosting} &
+AME §4.8--4.10; ISLP cap.~8 \\
+
+07 & Pré-processamento e \emph{Pipelines} &
+Padronização (\texttt{StandardScaler}); vazamento de dados (\emph{data leakage});
+construção de \emph{pipelines}; integração com validação cruzada &
+ISLP labs cap.~5--6; AME §2.1.2 \\[0.6em]
+
+\multicolumn{4}{@{}l}{\textbf{Bloco II --- Classificação}}\\[0.3em]
+
+08 & Classificação e Classificadores Gaussianos &
+Formulação e função de risco 0--1; classificadores \emph{plug-in}; regressão
+logística; Bayes ingênuo; LDA e QDA &
+AME cap.~7, §8.1; ISLP cap.~4 \\
+
+09 & Métricas para Classificação &
+Matriz de confusão; acurácia, precisão, \emph{recall}, $F_1$; curva ROC e AUC;
+perdas assimétricas; dados desbalanceados; calibração &
+AME §7.4, cap.~9; ISLP §4.4--4.5 \\
+
+10 & Máquinas de Vetores de Suporte (SVM) &
+Classificador de margem máxima; \emph{soft margin}; o truque do \emph{kernel};
+SVM com kernels; relação com regressão logística; multiclasse &
+AME §8.2, §4.6; ISLP cap.~9 \\
+
+11 & KNN e Árvores de Classificação &
+KNN para classificação; árvores de classificação (índice de Gini, entropia);
+\emph{ensembles} para classificação; comparação entre classificadores &
+AME §8.3, §8.6; ISLP §4.7.6, cap.~8 \\[0.6em]
+
+\multicolumn{4}{@{}l}{\textbf{Bloco III --- Aulas Extras (Não supervisionado e Aplicações)}}\\[0.3em]
+
+E1 & Análise de Agrupamento: $k$-Médias &
+Aprendizado não supervisionado; $k$-médias (algoritmo de Lloyd); inicialização e
+escolha de $k$; agrupamento hierárquico (panorama) &
+AME cap.~11; ISLP §12.4 \\
+
+E2 & Redução de Dimensionalidade (PCA e t-SNE) &
+Componentes principais (PCA); interpretação geométrica; proporção de variância
+explicada; aplicações (compressão); t-SNE para visualização &
+AME cap.~10; ISLP §12.2 \\
+
+E3 & NLP $+$ Classificação (Aplicação) &
+Limpeza e exploração de texto; \emph{bag-of-words} / TF-IDF; classificação de
+\emph{spam}; avaliação das métricas no contexto de texto &
+Aplicação (notebook); AME §8.1.3 \\
+
+\end{longtable}
+
+%==============================================================================
+\section{Aulas práticas e avaliações (contexto)}
+%==============================================================================
+As notas de aula são teóricas; o curso conta ainda com material de apoio já
+existente na pasta \texttt{materiais-didaticos}, ao qual as notas fazem referência:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{Aulas práticas} (notebooks): 01--02, 03--05, 06--07, 08, alinhadas
+        às aulas teóricas correspondentes.
+  \item \textbf{Exemplos} em Python: SVM, KNN e árvores, comparação de
+        classificadores paramétricos, PCA, $k$-médias, NLP.
+  \item \textbf{Listas de exercícios} 01--08 e duas \textbf{avaliações presenciais}
+        (AP1 e AP2) com gabarito.
+\end{itemize}
+
+%==============================================================================
+\section{Convenções das notas de aula}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Cada aula tem um arquivo \texttt{NN Título.tex} compilável de forma
+        independente (preâmbulo completo).
+  \item Estrutura padrão de cada nota: \emph{objetivos da aula} $\to$
+        \emph{motivação} $\to$ \emph{desenvolvimento teórico} (definições,
+        resultados, demonstrações quando cabível) $\to$ \emph{intuições e exemplos}
+        $\to$ \emph{prática em Python} (referência ao notebook) $\to$
+        \emph{resumo} e \emph{leitura recomendada}.
+  \item Notação unificada seguindo o [AME]: $(X,Y)$ par aleatório,
+        $r(x)=\mathbb{E}[Y\mid X=x]$ função de regressão, $g(x)$ classificador,
+        $\mathcal{D}=\{(X_i,Y_i)\}_{i=1}^n$ amostra de treino, $R(\cdot)$ função de
+        risco.
+  \item Caixas de \emph{``o que dizer em sala''} destacam o fio condutor do discurso
+        e as perguntas a fazer aos alunos.
+\end{itemize}
+
+\end{document}

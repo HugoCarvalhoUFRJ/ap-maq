@@ -1,0 +1,21 @@
+# Histórico do R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Arquivos auxiliares do LaTeX (mantemos apenas .tex e .pdf)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+
+# Sistema
+.DS_Store
+Thumbs.db

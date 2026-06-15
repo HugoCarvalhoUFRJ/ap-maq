@@ -1,0 +1,262 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{09}{Métricas para Classificação}{AME §7.4 e cap.~9; ISLP §4.4--4.5}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item explicar por que a \emph{acurácia} é insuficiente, sobretudo em dados
+        desbalanceados;
+  \item ler uma \textbf{matriz de confusão} e calcular sensibilidade,
+        especificidade, precisão, VPN e $F_1$;
+  \item formular \textbf{perdas assimétricas} e derivar o \emph{corte ótimo} de um
+        classificador \emph{plug-in};
+  \item construir e interpretar a \textbf{curva ROC} e a \textbf{AUC};
+  \item escolher estratégias para \textbf{dados desbalanceados} (corte, pesos,
+        re-amostragem) e entender que o problema real são os \emph{custos};
+  \item distinguir \emph{classificar bem} de \emph{estimar bem
+        probabilidades} (regras de pontuação próprias).
+\end{itemize}
+
+\begin{emsala}
+Continuação direta da Aula~08: lá vimos que o classificador de Bayes minimiza a
+probabilidade de erro --- mas a probabilidade de erro nem sempre é o que importa.
+Pergunta de abertura: \emph{``um teste de câncer que diz `saudável' para todo mundo
+acerta 99\% das vezes. Ele é bom?''}
+\end{emsala}
+
+%==============================================================================
+\section{Por que a acurácia não basta}
+%==============================================================================
+O risco 0--1 (Aula~08) trata \emph{todo} erro como igual. Mas:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \textbf{Custos assimétricos:} num \emph{screening}, deixar de detectar um
+        doente (falso negativo) é muito pior que um alarme falso (falso positivo).
+  \item \textbf{Dados desbalanceados:} com 10 doentes em 1000, o classificador
+        trivial $g\equiv 0$ tem acurácia 99\% --- e sensibilidade zero. Como
+        métodos buscam aproximar o classificador de Bayes, eles \emph{tendem} a
+        esse classificador inútil quando a classe é rara.
+\end{itemize}
+
+\begin{atencao}
+A raiz do problema \textbf{não é} o desbalanceamento em si, mas o fato de que os
+\emph{custos} dos erros são diferentes --- de modo que o classificador de Bayes
+(que minimiza só a probabilidade de erro) deixa de ser o classificador desejado.
+Tenha isso em mente: as ``correções'' abaixo são formas de codificar custos.
+\end{atencao}
+
+%==============================================================================
+\section{Matriz de confusão e métricas}
+%==============================================================================
+Para classificação binária ($Y\in\{0,1\}$, ``1'' $=$ positivo), cruzamos predito
+$\times$ verdadeiro:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll cc@{}}
+\toprule
+ & & \multicolumn{2}{c}{\textbf{Verdadeiro}} \\
+ & & $Y=0$ & $Y=1$ \\
+\midrule
+\multirow{2}{*}{\textbf{Predito}} & $\ghat=0$ & VN (verd.\ neg.) & FN (falso neg.) \\
+                                  & $\ghat=1$ & FP (falso pos.) & VP (verd.\ pos.) \\
+\bottomrule
+\end{tabular}
+\end{center}
+A partir dela definem-se (cada uma estima uma probabilidade condicional
+populacional):
+\begin{align*}
+  \text{Sensibilidade (\emph{recall}):}\ & S=\frac{\text{VP}}{\text{VP}+\text{FN}}
+    && \approx \Prob(\ghat=1\mid Y=1),\\
+  \text{Especificidade:}\ & E=\frac{\text{VN}}{\text{VN}+\text{FP}}
+    && \approx \Prob(\ghat=0\mid Y=0),\\
+  \text{Precisão (VPP):}\ & P=\frac{\text{VP}}{\text{VP}+\text{FP}}
+    && \approx \Prob(Y=1\mid \ghat=1),\\
+  \text{Valor preditivo negativo:}\ & \text{VPN}=\frac{\text{VN}}{\text{VN}+\text{FN}}
+    && \approx \Prob(Y=0\mid \ghat=0).
+\end{align*}
+A \textbf{estatística $F_1$} combina sensibilidade e precisão pela média harmônica:
+\begin{equation}\label{eq:f1}
+  F_1 = \frac{2}{1/S + 1/P} = \frac{2\,P\,S}{P+S}.
+\end{equation}
+
+\begin{ideia}
+\emph{Sensibilidade} olha ``dos positivos reais, quantos peguei?''; \emph{precisão}
+olha ``dos que chamei de positivo, quantos acertei?''. O classificador trivial
+$g\equiv 0$ tem $S=0$ e $E=1$: a especificidade alta esconde que ele falha em
+\emph{todos} os doentes. Por isso olhe \emph{várias} métricas, não uma só.
+\end{ideia}
+
+\begin{atencao}
+Todas essas quantidades devem ser calculadas no conjunto de \emph{validação/teste},
+nunca no treino (senão superestimam o desempenho --- Aula~03).
+\end{atencao}
+
+%==============================================================================
+\section{Perdas assimétricas e o corte ótimo}
+%==============================================================================
+Para codificar custos diferentes, redefina o risco com pesos $l_0,l_1>0$:
+\begin{equation}\label{eq:riscoassim}
+  \risco(g) = l_1\,\Prob\big(Y\ne g(\X),\,Y=0\big)
+            + l_0\,\Prob\big(Y\ne g(\X),\,Y=1\big),
+\end{equation}
+onde $l_0$ penaliza errar um positivo (FN) e $l_1$ penaliza errar um negativo (FP).
+
+\begin{proposicao}[Corte ótimo sob perda assimétrica]\label{prop:corte}
+O classificador que minimiza \eqref{eq:riscoassim} é
+\[
+  g(\x) = \1{\ \Prob(Y=1\mid\x) > \tfrac{l_1}{l_0+l_1}\ }.
+\]
+\end{proposicao}
+\begin{proof}
+Condicionando em $\x$, o custo esperado de prever $1$ é $l_1\Prob(Y=0\mid\x)$ e o de
+prever $0$ é $l_0\Prob(Y=1\mid\x)$. Prevemos $1$ quando
+$l_1\Prob(Y=0\mid\x) < l_0\Prob(Y=1\mid\x)$, isto é,
+$l_1(1-\eta) < l_0\,\eta$ com $\eta=\Prob(Y=1\mid\x)$, o que dá
+$\eta > l_1/(l_0+l_1)$. Como cada $\x$ é otimizado pontualmente, segue o resultado.
+\end{proof}
+
+\begin{ideia}
+Eis a mensagem operacional: \textbf{mudar custos $=$ mudar o corte}. Com $l_0=l_1$
+recuperamos o corte $1/2$ (Bayes). Se errar um positivo é mais caro ($l_0>l_1$), o
+corte cai abaixo de $1/2$ --- classificamos como positivo com menos evidência. Um
+caso notável: tomar $l_c=\pi_c$ leva ao corte $\widehat\Prob(Y=1)$ (a prevalência),
+em vez de $1/2$.
+\end{ideia}
+
+%==============================================================================
+\section{Escolhendo o corte: curva ROC e AUC}
+%==============================================================================
+Um classificador \emph{plug-in} probabilístico gera uma \emph{família} de
+classificadores variando o corte $K$: $g_K(\x)=\1{\widehat\Prob(Y=1\mid\x)\ge K}$.
+Cada $K$ dá um par (sensibilidade, especificidade).
+
+A \textbf{curva ROC} (\emph{Receiver Operating Characteristic}) traça a
+sensibilidade ($\Prob(\ghat=1\mid Y=1)$) contra $1-$especificidade (a taxa de falso
+positivo) à medida que $K$ varia de $1$ a $0$. Propriedades:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item o canto superior esquerdo $(0,1)$ é o classificador perfeito;
+  \item a diagonal é o ``palpite aleatório'';
+  \item a \textbf{AUC} (área sob a curva) resume o desempenho em um número:
+        $\text{AUC}=1$ é perfeito, $0{,}5$ é aleatório. Interpretação:
+        probabilidade de o modelo dar \emph{score} maior a um positivo sorteado do
+        que a um negativo sorteado.
+\end{itemize}
+
+\begin{ideia}
+A ROC/AUC avalia o \emph{ordenamento} dado pelo modelo \textbf{independentemente do
+corte} --- útil para comparar classificadores antes de fixar custos. Já escolhido o
+contexto, fixa-se $K$: critério comum é maximizar
+$\text{Sensibilidade}+\text{Especificidade}$ (ponto mais próximo do canto
+$(0,1)$), ou usar o corte da Prop.~\ref{prop:corte} se os custos são conhecidos.
+\end{ideia}
+
+\begin{atencao}
+A curva ROC também deve ser construída na \emph{validação/teste}. E cuidado: em
+dados muito desbalanceados, a ROC pode parecer otimista --- a \emph{curva
+precisão--recall} costuma ser mais informativa nesses casos.
+\end{atencao}
+
+%==============================================================================
+\section{Lidando com dados desbalanceados}
+%==============================================================================
+Três famílias de estratégias (todas, no fundo, codificam custos):
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[Ajustar o corte] para métodos probabilísticos, basta mover $K$
+        (Prop.~\ref{prop:corte}). Em geral é a solução mais limpa.
+  \item[Reponderar observações] dar peso maior à classe rara no treino, de modo que
+        sua contribuição na função objetivo aumente (\texttt{class\_weight} no
+        \texttt{scikit-learn}). Útil quando o método não estima $\Prob(Y=1\mid\x)$.
+  \item[Re-amostrar] alterar artificialmente a prevalência: \emph{oversampling} da
+        minoria (ex.: SMOTE) ou \emph{undersampling} da maioria.
+\end{description}
+
+\begin{atencao}
+Repetindo a mensagem central: o ``problema'' não é o desbalanceamento, são os
+\emph{custos desiguais}. Se os custos forem realmente iguais, um modelo bem
+calibrado com corte $1/2$ pode ser o correto, mesmo desbalanceado. Não aplique
+re-amostragem reflexivamente.
+\end{atencao}
+
+%==============================================================================
+\section{Classificar bem $\neq$ estimar bem probabilidades}
+%==============================================================================
+Um classificador \emph{plug-in} pode estar muito perto do classificador de Bayes
+\textbf{sem} que $\widehat\Prob\approx\Prob$: para a decisão, basta que
+$\widehat\Prob(Y=1\mid\x)-K$ tenha o \emph{mesmo sinal} que
+$\Prob(Y=1\mid\x)-K$. Ou seja, boa classificação não garante boa estimativa de
+probabilidade.
+
+Quando precisamos das \emph{probabilidades} em si (para ordenar riscos, decidir com
+custos variáveis, ou inferência conformal), avaliamos com \textbf{regras de
+pontuação próprias}, que são minimizadas pela probabilidade verdadeira:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \textbf{Entropia cruzada / \emph{log-loss}}:
+        $-\frac1n\sum_i\big[Y_i\log\widehat p_i + (1-Y_i)\log(1-\widehat p_i)\big]$
+        (é a log-verossimilhança negativa da logística);
+  \item \textbf{Score de Brier}:
+        $\frac1n\sum_i (\widehat p_i - Y_i)^2$ (erro quadrático das
+        probabilidades).
+\end{itemize}
+Esses critérios são os indicados para escolher \emph{tuning parameters} de
+classificadores probabilísticos (ex.: $\lambda$ da logística penalizada) quando o
+objetivo é estimar bem $\Prob$.
+
+\begin{ideia}
+\textbf{Calibração}: um modelo é bem calibrado se, dentre os casos a que ele atribui
+$\widehat p=0{,}7$, cerca de 70\% são de fato positivos. \emph{Log-loss} e Brier
+penalizam a má calibração; acurácia e AUC, não. Escolha a métrica pelo objetivo
+real do problema.
+\end{ideia}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+\begin{lstlisting}
+from sklearn.metrics import (confusion_matrix, classification_report,
+                             roc_auc_score, RocCurveDisplay,
+                             log_loss, brier_score_loss)
+
+p = modelo.predict_proba(X_te)[:, 1]     # probabilidades estimadas
+y_hat = (p >= 0.5).astype(int)           # corte; ajuste conforme os custos
+
+print(confusion_matrix(y_te, y_hat))
+print(classification_report(y_te, y_hat))   # precisao, recall, F1 por classe
+print("AUC:", roc_auc_score(y_te, p))
+print("log-loss:", log_loss(y_te, p),
+      " Brier:", brier_score_loss(y_te, p))
+RocCurveDisplay.from_predictions(y_te, p)
+
+# desbalanceamento: reponderar a classe rara
+# LogisticRegression(class_weight="balanced")
+\end{lstlisting}
+O notebook \texttt{Aula prática 08} e o material \texttt{MatConf.pdf} exploram a
+matriz de confusão e a ROC no \texttt{bank\_train\_redux.csv}.
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Acurácia engana sob custos assimétricos/desbalanceamento; olhe a
+        \textbf{matriz de confusão}.
+  \item Sensibilidade, especificidade, precisão, VPN e $F_1$ \eqref{eq:f1} contam
+        histórias diferentes.
+  \item \textbf{Perda assimétrica} \eqref{eq:riscoassim} $\Rightarrow$ corte ótimo
+        $l_1/(l_0+l_1)$ (Prop.~\ref{prop:corte}): mudar custos é mudar o corte.
+  \item \textbf{ROC/AUC} avaliam o ordenamento independentemente do corte; fixe $K$
+        por custos ou por sensibilidade$+$especificidade.
+  \item Desbalanceamento: corte, pesos ou re-amostragem --- mas a raiz são os
+        custos.
+  \item Classificar bem $\neq$ estimar $\Prob$ bem: use \emph{log-loss}/Brier e
+        pense em \textbf{calibração}.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] §7.4 (matriz de confusão e métricas), §9.1
+(perdas assimétricas, cortes, dados desbalanceados), §9.2 (classificação vs.\
+estimação de probabilidades); [ISLP] §4.4--4.5 (matriz de confusão, ROC).
+
+\end{document}

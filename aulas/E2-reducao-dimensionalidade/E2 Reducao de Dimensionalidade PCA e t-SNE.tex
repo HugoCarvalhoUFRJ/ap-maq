@@ -1,0 +1,216 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{Extra E2}{Redução de Dimensionalidade: PCA e t-SNE}{AME cap.~10; ISLP §12.2}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item motivar a \textbf{redução de dimensionalidade} (visualização, compressão,
+        ruído, maldição da dimensionalidade);
+  \item definir os \textbf{componentes principais} (PCA) como combinações lineares
+        de variância máxima;
+  \item resolver o PCA via \textbf{autovetores} da matriz de covariância e
+        interpretar cargas e \emph{scores};
+  \item escolher o número de componentes pela \textbf{proporção de variância
+        explicada};
+  \item reconhecer o PCA como \emph{escalonamento multidimensional} e usá-lo para
+        compressão;
+  \item descrever \textbf{Kernel PCA} e \textbf{t-SNE}, e os cuidados ao usar t-SNE.
+\end{itemize}
+
+\begin{emsala}
+Segunda face do não supervisionado (após o agrupamento, Aula~E1). Conexão direta com
+a Aula~05: a \emph{redundância} das covariáveis (dimensão intrínseca baixa) é
+exatamente o que a redução de dimensionalidade explora. Pergunta de abertura:
+\emph{``como resumir centenas de variáveis correlacionadas em duas ou três, sem
+perder o essencial?''}
+\end{emsala}
+
+%==============================================================================
+\section{Por que reduzir a dimensionalidade?}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \textbf{Visualização}: projetar dados em 2D/3D para enxergar estrutura.
+  \item \textbf{Compressão}: armazenar/transmitir com menos espaço (imagens).
+  \item \textbf{Pré-processamento}: combater a \emph{maldição da dimensionalidade}
+        (Aula~05) e o ruído antes de um método supervisionado.
+  \item \textbf{Redundância}: muitas covariáveis correlacionadas vivem perto de uma
+        subvariedade de dimensão menor --- queremos recuperá-la.
+\end{itemize}
+
+%==============================================================================
+\section{Componentes principais (PCA)}
+%==============================================================================
+Suponha as covariáveis \emph{centradas} (média zero). O \textbf{primeiro componente
+principal} é a combinação linear
+\[
+  Z_1 = \phi_{11}X_1+\dots+\phi_{d1}X_d = \bm{\phi}_1^\top\X
+\]
+de \textbf{variância máxima}, sob a restrição $\norm{\bm{\phi}_1}^2=\sum_k\phi_{k1}^2=1$
+(sem ela, bastaria inflar os coeficientes). O $i$-ésimo componente $Z_i$ tem variância
+máxima entre as combinações lineares unitárias \emph{não correlacionadas} com
+$Z_1,\dots,Z_{i-1}$.
+
+\begin{ideia}
+Procuramos novos eixos (ortogonais) ao longo dos quais os dados \emph{mais variam}.
+O 1º eixo capta o máximo de variabilidade; o 2º, o máximo do que resta sendo
+ortogonal ao 1º; e assim por diante. Concentrar a variância em poucos eixos é o que
+permite descartar os demais com pouca perda.
+\end{ideia}
+
+\subsection{Solução: autovetores da covariância}
+Seja $\bm{C}=\bm{X}^\top\bm{X}$ (proporcional à matriz de covariância, pois os dados
+têm média zero). O problema é
+\[
+  \max_{\bm{\phi}}\ \Var(\bm{\phi}^\top\X) = \max_{\bm{\phi}}\ \bm{\phi}^\top\bm{C}\bm{\phi}
+  \quad\text{s.a.}\quad \norm{\bm{\phi}}^2=1.
+\]
+
+\begin{proposicao}[O 1º componente é o autovetor principal]\label{prop:pca}
+O maximizador de $\bm{\phi}^\top\bm{C}\bm{\phi}$ sob $\norm{\bm{\phi}}=1$ é o
+autovetor de $\bm{C}$ associado ao \emph{maior} autovalor, e o valor máximo da
+variância é esse autovalor.
+\end{proposicao}
+\begin{proof}
+Lagrangiano: $\mathcal{L}(\bm{\phi},\nu)=\bm{\phi}^\top\bm{C}\bm{\phi}
+-\nu(\bm{\phi}^\top\bm{\phi}-1)$. Anulando o gradiente em $\bm{\phi}$:
+$2\bm{C}\bm{\phi}-2\nu\bm{\phi}=0$, isto é, $\bm{C}\bm{\phi}=\nu\bm{\phi}$ ---
+$\bm{\phi}$ é \emph{autovetor} de $\bm{C}$ com autovalor $\nu$. Para um autovetor
+unitário, a variância é $\bm{\phi}^\top\bm{C}\bm{\phi}=\nu$. Logo o máximo é atingido
+no autovetor de \emph{maior} autovalor. Os componentes seguintes saem do mesmo
+argumento restrito ao complemento ortogonal, gerando os demais autovetores em ordem
+decrescente de autovalor.
+\end{proof}
+
+Empilhando os autovetores (ordenados por autovalor decrescente) nas colunas de
+$\bm{U}$ (a \textbf{matriz de cargas}), os \emph{scores} são
+\[
+  \bm{Z} = \bm{X}\bm{U}\quad (n\times d),
+\]
+e a $i$-ésima nova coordenada da observação $\x$ é $z_{i}=\bm{u}_i^\top\x$. Como os
+autovetores são ortogonais, os componentes são \emph{não correlacionados} --- sem
+informação redundante.
+
+\subsection{Quantos componentes? Variância explicada}
+Cada autovalor $\lambda_i$ é a variância capturada pelo $i$-ésimo componente. A
+\textbf{proporção de variância explicada} pelos $p$ primeiros é
+\begin{equation}\label{eq:pve}
+  \text{PVE}(p) = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^d \lambda_i}.
+\end{equation}
+Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
+``cotovelo'') ou exigindo PVE acima de um limiar (ex.: 90\%).
+
+%==============================================================================
+\section{Interpretação geométrica e compressão}
+%==============================================================================
+\subsection{PCA como escalonamento multidimensional}
+O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $m<d$ dimensões que
+melhor \emph{preserva as distâncias} entre pares,
+\[
+  \min_{\bm{Z}}\ \sum_{i,j}\big(\norm{\x_i-\x_j}^2 - \norm{\bm{z}_i-\bm{z}_j}^2\big).
+\]
+A solução são os $m$ primeiros componentes principais. Ou seja, PCA é a melhor
+aproximação linear de baixa dimensão no sentido de distâncias --- daí ser tão útil
+para visualização.
+
+\subsection{Compressão (SVD truncada)}
+Da decomposição $\bm{X}^\top\bm{X}=\bm{U}\bm{\Sigma}\bm{U}^\top$, reconstrói-se
+$\bm{X}\approx \bm{Z}_p\bm{U}_p^\top$, usando só as $p$ primeiras colunas. Se os
+autovalores decaem rápido, a reconstrução é quase perfeita guardando apenas
+$(z_{i,1},\dots,z_{i,p})$ e as $p$ cargas $\bm{u}_1,\dots,\bm{u}_p$ --- uma
+\textbf{compressão}. Aplicação clássica: comprimir imagens tratando cada canal de
+cor (R, G, B) como uma matriz.
+
+\begin{atencao}
+PCA usa variância e produtos internos $\Rightarrow$ é \textbf{sensível à escala}.
+\emph{Padronize} as covariáveis antes (Aula~07), senão variáveis de maior magnitude
+dominam os componentes artificialmente. E PCA é \emph{não supervisionado}: a direção
+de maior variância \emph{não} é necessariamente a mais útil para prever um $Y$.
+\end{atencao}
+
+%==============================================================================
+\section{Além do linear: Kernel PCA e t-SNE}
+%==============================================================================
+\subsection{Kernel PCA}
+PCA só captura estrutura \emph{linear}. Como o PCA pode ser escrito em termos de
+produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aulas~04 e~10):
+substituem-se os produtos internos por um kernel $K$, fazendo PCA num espaço de
+\emph{features} de alta dimensão. Resultado: componentes \textbf{não lineares}, que
+capturam subvariedades curvas.
+
+\subsection{t-SNE}
+O \textbf{t-SNE} (\emph{t-distributed Stochastic Neighbor Embedding}) é uma técnica
+\emph{não linear} feita para \textbf{visualização} (2D/3D). A ideia:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item converte distâncias em \textbf{probabilidades de vizinhança} no espaço
+        original (kernel gaussiano) e no espaço reduzido (distribuição $t$ de
+        Student, de caudas pesadas);
+  \item ajusta as posições no espaço reduzido minimizando a divergência de
+        \textbf{Kullback--Leibler} entre as duas distribuições;
+  \item assim, \emph{preserva a estrutura local} (vizinhos próximos continuam
+        próximos), revelando agrupamentos.
+\end{itemize}
+O principal hiperparâmetro é a \textbf{perplexidade} (ordem de grandeza do número de
+vizinhos considerados).
+
+\begin{atencao}[Cuidados com o t-SNE]
+\begin{itemize}[leftmargin=1.2cm,nosep]
+  \item é \textbf{só para visualização} --- não use os eixos como \emph{features}
+        para um modelo supervisionado;
+  \item \textbf{distâncias e tamanhos} entre grupos no gráfico \emph{não} têm
+        significado --- só a vizinhança local é confiável;
+  \item é \textbf{estocástico} e sensível à perplexidade: rode mais de uma vez e
+        compare. Para grandes bases, UMAP é uma alternativa mais rápida.
+\end{itemize}
+Em resumo: PCA para \emph{compressão/pré-processamento} (linear, interpretável,
+determinístico); t-SNE para \emph{enxergar} agrupamentos.
+\end{atencao}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+\begin{lstlisting}
+from sklearn.decomposition import PCA, KernelPCA
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import StandardScaler
+
+Xs = StandardScaler().fit_transform(X)        # padronizar e essencial
+
+pca = PCA().fit(Xs)
+print("variancia explicada acumulada:", pca.explained_variance_ratio_.cumsum())
+Z = PCA(n_components=2).fit_transform(Xs)     # scores nos 2 primeiros PCs
+
+# Kernel PCA (nao linear) e t-SNE (visualizacao)
+Zk  = KernelPCA(n_components=2, kernel="rbf", gamma=0.1).fit_transform(Xs)
+Zt  = TSNE(n_components=2, perplexity=30, random_state=0).fit_transform(Xs)
+\end{lstlisting}
+O notebook \texttt{Exemplo - PCA} ilustra os componentes principais e compara com o
+t-SNE na mesma base.
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Reduzir dimensão: visualizar, comprimir, remover ruído, explorar
+        \emph{redundância} (Aula~05).
+  \item \textbf{PCA}: componentes $=$ combinações lineares de variância máxima
+        $=$ autovetores da covariância (Prop.~\ref{prop:pca}); \emph{scores}
+        $\bm{Z}=\bm{X}\bm{U}$, não correlacionados.
+  \item Número de componentes pela \textbf{PVE} \eqref{eq:pve} / \emph{scree plot}.
+  \item PCA $=$ melhor projeção linear que preserva distâncias (MDS); base da
+        \textbf{compressão} por SVD truncada. \emph{Padronize}.
+  \item \textbf{Kernel PCA}: PCA não linear via \emph{kernel}. \textbf{t-SNE}:
+        visualização que preserva vizinhança local --- com cuidados (estocástico,
+        só visual, distâncias entre grupos sem sentido).
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] Capítulo~10 (§10.1 PCA e MDS, §10.1.2
+compressão de imagens, §10.2 Kernel PCA); [ISLP] §12.2 (\emph{Principal Components
+Analysis}).
+
+\end{document}

@@ -1,0 +1,202 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{11}{KNN e Árvores de Classificação}{AME §8.3--8.6; ISLP §4.7.6 e cap.~8}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item adaptar o \textbf{KNN} para classificação (voto da maioria) e estimar
+        $\Prob(Y=c\mid\x)$ pelas proporções entre vizinhos;
+  \item construir uma \textbf{árvore de classificação} e explicar a predição pela
+        \emph{moda};
+  \item definir os critérios de impureza \textbf{Gini} e \textbf{entropia} e
+        justificar por que se preferem à taxa de erro;
+  \item usar \textbf{florestas} e \textbf{boosting} para classificação (voto, $m$,
+        AdaBoost);
+  \item \textbf{comparar} os classificadores vistos no curso quanto a fronteira,
+        interpretabilidade e desempenho.
+\end{itemize}
+
+\begin{emsala}
+Aula que fecha o Bloco~II reaproveitando dois métodos não paramétricos da Parte~I
+(KNN, Aula~04; árvores, Aula~06), agora para classificação. Boa notícia: a estrutura
+é a mesma; muda só o ``resumo local'' (média $\to$ moda) e o critério de divisão
+(EQM $\to$ impureza). Pergunta de abertura: \emph{``como uma árvore decide a melhor
+pergunta a fazer em cada nó quando o alvo é uma classe?''}
+\end{emsala}
+
+%==============================================================================
+\section{KNN para classificação}
+%==============================================================================
+Adaptação direta da regressão KNN (Aula~04): para classificar $\x$, olhe seus $k$
+vizinhos mais próximos e tome a \textbf{classe mais frequente} (voto da maioria):
+\begin{equation}\label{eq:knncls}
+  \ghat(\x) = \operatorname{moda}\{Y_i : i\in\mathcal{N}_{\x}\}.
+\end{equation}
+Equivalentemente, é um classificador \emph{plug-in} (Aula~08): estima-se
+\[
+  \widehat\Prob(Y=c\mid\x) = \frac{1}{k}\sum_{i\in\mathcal{N}_{\x}}\1{Y_i=c}
+\]
+(a proporção de vizinhos da classe $c$) e toma-se o $\argmax_c$. Essa estimativa
+está, por construção, em $[0,1]$.
+
+\begin{ideia}
+$k$ controla o balanço viés--variância, como na regressão: $k=1$ dá fronteira muito
+``recortada'' (baixo viés, alta variância); $k$ grande dá fronteira suave (alto
+viés, baixa variância). Escolha por validação cruzada (Aula~03).
+\end{ideia}
+
+\begin{atencao}
+Valem os mesmos cuidados da Aula~04: \emph{padronize} as covariáveis (KNN usa
+distância) e lembre da \emph{maldição da dimensionalidade} (Aula~05) --- KNN não
+seleciona variáveis e degrada com muitas covariáveis irrelevantes. Em binário, use
+$k$ \emph{ímpar} para evitar empates.
+\end{atencao}
+
+%==============================================================================
+\section{Árvores de classificação}
+%==============================================================================
+São o análogo das árvores de regressão (Aula~06): partição recursiva do espaço de
+covariáveis em regiões $R_1,\dots,R_J$. Duas adaptações:
+
+\subsection{Predição: a moda}
+Numa folha $R_k$, prediz-se a \textbf{classe majoritária} (em vez da média):
+\begin{equation}\label{eq:arvcls}
+  \ghat(\x) = \operatorname{moda}\{Y_i : \X_i\in R_k\},\qquad \x\in R_k,
+\end{equation}
+e $\widehat\Prob(Y=c\mid\x)=\widehat p_{R_k,c}$, a proporção da classe $c$ na folha.
+
+\subsection{Critério de divisão: impureza}
+O EQM não faz sentido com $Y$ qualitativo. Em cada região $R$, seja
+$\widehat p_{R,c}$ a proporção da classe $c$. Buscam-se divisões que tornem as
+folhas \textbf{puras} (idealmente, uma só classe por folha). Mede-se a impureza por:
+\begin{align}
+  \text{Índice de Gini:}\quad & G(R) = \sum_{c\in\mathcal{C}} \widehat p_{R,c}\,(1-\widehat p_{R,c}),
+  \label{eq:gini}\\
+  \text{Entropia:}\quad & D(R) = -\sum_{c\in\mathcal{C}} \widehat p_{R,c}\,\log \widehat p_{R,c}.
+  \label{eq:entropia}
+\end{align}
+Ambas são \emph{mínimas} (zero) quando a folha é pura (algum $\widehat p_{R,c}=1$) e
+\emph{máximas} quando as classes estão equilibradas. A cada passo escolhe-se a
+divisão que mais reduz a impureza (ponderada pelo tamanho das folhas).
+
+\begin{observacao}[Por que não usar a taxa de erro?]
+A taxa de erro de classificação $1-\max_c \widehat p_{R,c}$ também mede impureza,
+mas é \textbf{insensível} a mudanças nas proporções que não alterem a classe
+majoritária. Gini e entropia são \emph{diferenciáveis} e respondem a qualquer
+melhora na pureza --- por isso fazem divisões melhores. (A taxa de erro é boa para a
+\emph{poda} final.)
+\end{observacao}
+
+\begin{exemplo}[Escolha de divisão por Gini]
+Para decidir entre dividir por ``Cardiologia'' ou por ``$>100$ leitos'' (predição:
+hospital tem tomógrafo), calcula-se o Gini ponderado de cada partição e escolhe-se a
+de \emph{menor} valor (maior pureza). No exemplo do [AME], Gini(Leitos)$\approx
+0{,}326 <$ Gini(Cardiologia)$\approx 0{,}472$: divide-se por leitos.
+\end{exemplo}
+
+\noindent A construção segue as duas etapas da Aula~06: \emph{cresce-se} uma árvore
+grande e depois \emph{poda-se} por custo--complexidade ($\alpha$ por CV). As mesmas
+vantagens valem: interpretabilidade, categóricas nativas, seleção automática de
+variáveis e captura de interações.
+
+%==============================================================================
+\section{\emph{Ensembles} para classificação}
+%==============================================================================
+Toda a Aula~06 se transfere; as árvores individuais agora classificam:
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[Bagging / Florestas] treina $B$ árvores em amostras bootstrap e agrega por
+        \textbf{voto da maioria} (ou média das probabilidades). Florestas
+        descorrelacionam sorteando $m$ variáveis por nó; regra empírica em
+        classificação: $m\approx\sqrt{d}$. Robustas a $B$; OOB e importância de
+        variáveis ``de graça''.
+  \item[Boosting] ajuste sequencial. A variante clássica para classificação é o
+        \textbf{AdaBoost}: a cada rodada, reponderam-se as observações dando mais
+        peso às mal classificadas, e o classificador final é um voto ponderado dos
+        aprendizes fracos. Como em regressão, $B$ grande pode superajustar (use
+        \emph{early stopping}); XGBoost é a implementação de referência.
+\end{description}
+
+%==============================================================================
+\section{Comparando os classificadores do curso}
+%==============================================================================
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lp{3.5cm}p{3.2cm}p{3.6cm}@{}}
+\toprule
+\textbf{Método} & \textbf{Fronteira} & \textbf{Interpretab.} & \textbf{Observações} \\
+\midrule
+Logística & linear (no \emph{log-odds}) & alta (coefs.) & dá probabilidades; robusta \\
+LDA / QDA & linear / quadrática & média & ótimos sob gaussianidade \\
+Bayes ingênuo & depende & média & forte com texto; indep.\ condicional \\
+KNN & muito flexível, local & baixa & sensível a escala e dimensão \\
+Árvore & ``escada'' (eixos) & \textbf{altíssima} & instável sozinha \\
+Florestas / Boosting & muito flexível & baixa & topo de desempenho em dados tabulares \\
+SVM (kernel) & linear ou não linear & baixa & ótima com classes separadas \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{ideia}
+Não há método universalmente melhor (Aula~05: ``não existe almoço grátis''). A
+escolha depende da \emph{estrutura} dos dados e do \emph{objetivo}: precisa de
+probabilidades calibradas? interpretabilidade? muitas covariáveis irrelevantes?
+fronteira não linear? Compare alguns candidatos por validação cruzada e use as
+métricas adequadas (Aula~09).
+\end{ideia}
+
+\begin{emsala}
+Use o notebook \texttt{Comparação entre classificadores paramétricos} e o
+\texttt{Exemplo - KNN e árvores em dados artificiais} para \emph{visualizar} as
+fronteiras de decisão lado a lado. É o melhor jeito de fixar a intuição de
+``flexível vs.\ rígido'' que percorreu o curso inteiro.
+\end{emsala}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+\begin{lstlisting}
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+knn  = make_pipeline(StandardScaler(),
+                     KNeighborsClassifier(n_neighbors=11))   # k por CV
+arv  = DecisionTreeClassifier(criterion="gini", ccp_alpha=0.0)  # ou "entropy"
+rf   = RandomForestClassifier(n_estimators=500, max_features="sqrt",
+                              oob_score=True, random_state=0)
+ada  = AdaBoostClassifier(n_estimators=200, learning_rate=0.5)
+
+for nome, modelo in [("KNN", knn), ("arvore", arv), ("RF", rf), ("Ada", ada)]:
+    modelo.fit(X_tr, y_tr)
+    print(nome, modelo.score(X_te, y_te))   # use tambem as metricas da Aula 09
+\end{lstlisting}
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{KNN classificação} \eqref{eq:knncls}: voto da maioria; estima
+        $\Prob(Y=c\mid\x)$ por proporções; $k$ por CV; padronize.
+  \item \textbf{Árvore de classificação}: prediz a moda \eqref{eq:arvcls}; divide
+        por \textbf{Gini} \eqref{eq:gini} ou \textbf{entropia} \eqref{eq:entropia}
+        (melhores que a taxa de erro); cresce e poda como na Aula~06.
+  \item \textbf{Florestas} ($m\approx\sqrt d$) e \textbf{boosting/AdaBoost} agregam
+        árvores por voto --- topo de desempenho em dados tabulares.
+  \item Não há classificador universalmente melhor: escolha pela estrutura/objetivo
+        e compare por CV com as métricas da Aula~09.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] §8.3 (árvores de classificação, índice de
+Gini), §8.4--8.5 (\emph{bagging}, florestas, \emph{boosting}), §8.6 (KNN); [ISLP]
+§4.7.6 (KNN) e Capítulo~8 (árvores e \emph{ensembles}, incluindo critérios de
+impureza e \emph{boosting}).
+
+\end{document}

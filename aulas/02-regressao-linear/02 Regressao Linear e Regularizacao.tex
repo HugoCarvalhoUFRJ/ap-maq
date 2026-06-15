@@ -1,0 +1,283 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{02}{Regressão Linear e Regularização}{AME cap.~2--3; ISLP cap.~3 e~6}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item escrever o modelo de regressão linear em forma matricial e deduzir o
+        estimador de mínimos quadrados (MQO);
+  \item explicar por que MQO falha (ou nem existe) em \emph{altas dimensões}
+        ($d$ grande, ou $d>n$);
+  \item descrever seleção de subconjuntos e regressão \emph{stepwise};
+  \item definir as penalizações \textbf{Ridge} ($\ell_2$) e \textbf{Lasso}
+        ($\ell_1$) e interpretá-las como controle do balanço viés--variância;
+  \item explicar \emph{por que o Lasso zera coeficientes} (esparsidade) e o Ridge
+        não, com a intuição geométrica;
+  \item reconhecer a interpretação bayesiana das duas penalizações.
+\end{itemize}
+
+\begin{emsala}
+Conexão com a Aula~01: regressão linear é o método \emph{paramétrico} mais simples
+--- baixa variância, possivelmente alto viés. Regularização é a ferramenta para
+\emph{mover o ponto} no balanço viés--variância sem trocar de família de modelos.
+Pergunta de abertura: \emph{``se eu tenho 50 covariáveis e 30 observações, o que
+acontece com os mínimos quadrados?''}
+\end{emsala}
+
+%==============================================================================
+\section{O modelo de regressão linear}
+%==============================================================================
+Métodos \textbf{paramétricos} supõem que a função de predição é descrita por um
+número finito de parâmetros. A regressão linear usa
+\begin{equation}\label{eq:linear}
+  g(\x) = \bbeta^\top \x = \beta_0 x_0 + \beta_1 x_1 + \dots + \beta_d x_d,
+  \qquad x_0 \equiv 1,
+\end{equation}
+com $\bbeta=(\beta_0,\dots,\beta_d)$. É essencial notar que $x_j$ \emph{não} precisa
+ser uma covariável original: podemos criar atributos derivados ($x_j^2$, $x_jx_k$,
+$\log x_j$, etc.). Assim, ``linear'' refere-se à linearidade \textbf{nos
+parâmetros} $\bbeta$, não nas variáveis --- o modelo é muito mais flexível do que
+parece à primeira vista.
+
+\subsection{Mínimos quadrados ordinários (MQO)}
+Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
+\begin{equation}\label{eq:mqo}
+  \widehat{\bbeta}
+   = \argmin_{\bbeta} \sum_{i=1}^n
+     \big(Y_i - \bbeta^\top \X_i\big)^2
+   = \argmin_{\bbeta} \norm{\bm{Y} - \bm{X}\bbeta}^2 ,
+\end{equation}
+onde $\bm{X}\in\R^{n\times(d+1)}$ é a matriz de delineamento (linha $i$ igual a
+$\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
+
+\begin{proposicao}[Equações normais]\label{prop:normal}
+Se $\bm{X}^\top\bm{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
+\begin{equation}\label{eq:betahat}
+  \widehat{\bbeta} = (\bm{X}^\top\bm{X})^{-1}\bm{X}^\top \bm{Y}.
+\end{equation}
+\end{proposicao}
+\begin{proof}
+Seja $S(\bbeta)=\norm{\bm{Y}-\bm{X}\bbeta}^2
+=\bm{Y}^\top\bm{Y}-2\bbeta^\top\bm{X}^\top\bm{Y}+\bbeta^\top\bm{X}^\top\bm{X}\bbeta$.
+O gradiente é $\nabla S(\bbeta)=-2\bm{X}^\top\bm{Y}+2\bm{X}^\top\bm{X}\bbeta$.
+Igualando a zero obtêm-se as \emph{equações normais}
+$\bm{X}^\top\bm{X}\,\bbeta=\bm{X}^\top\bm{Y}$; como a Hessiana
+$2\bm{X}^\top\bm{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
+$\bm{X}^\top\bm{X}$ é invertível, vale \eqref{eq:betahat}.
+\end{proof}
+
+\begin{observacao}
+$\widehat{\bbeta}$ é o estimador de máxima verossimilhança sob o modelo
+$Y_i = \bbeta^\top\X_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
+i.i.d. A predição é $\rhat(\x)=\widehat{\bbeta}^\top\x$. Sob o modelo linear
+correto, MQO é o melhor estimador linear não-viesado (Gauss--Markov).
+\end{observacao}
+
+\begin{observacao}[Quando a linearidade falha]
+Mesmo quando $r(\x)$ não é linear, MQO estima a \emph{melhor aproximação linear} de
+$r$ (a projeção de $Y$ no espaço gerado pelas covariáveis). Por isso, ampliar o
+conjunto de atributos (§4.1, bases) é uma forma de reduzir esse viés de
+especificação.
+\end{observacao}
+
+%==============================================================================
+\section{O problema das altas dimensões}
+%==============================================================================
+Quando $d$ é grande relativamente a $n$, o MQO sofre de três males:
+\begin{enumerate}[leftmargin=1.6cm]
+  \item \textbf{Variância alta.} Quanto mais parâmetros, maior $\Var(\widehat{\bbeta})$
+        --- o modelo superajusta (Aula~01). A matriz $\Var(\widehat{\bbeta})
+        =\sigma^2(\bm{X}^\top\bm{X})^{-1}$ ``explode'' quando as colunas de
+        $\bm{X}$ são quase colineares.
+  \item \textbf{Não unicidade.} Se $d>n$, então $\bm{X}^\top\bm{X}$ é singular e
+        \eqref{eq:betahat} \emph{não tem solução única}: há infinitos $\bbeta$ com
+        RSS nulo (superajuste perfeito).
+  \item \textbf{Interpretabilidade.} Muitas covariáveis irrelevantes dificultam a
+        leitura do modelo.
+\end{enumerate}
+A resposta é \textbf{reduzir a complexidade efetiva}: ou selecionando um
+subconjunto de covariáveis, ou \emph{encolhendo} os coeficientes (regularização).
+
+\subsection{Seleção de subconjuntos e \emph{stepwise}}
+\begin{description}[leftmargin=2.4cm,style=nextline]
+  \item[Melhor subconjunto] ajusta-se o modelo para \emph{todos} os $2^d$
+        subconjuntos de covariáveis e escolhe-se o melhor segundo um critério que
+        penaliza complexidade (AIC, BIC) ou via validação cruzada. Inviável para
+        $d$ moderado ($2^d$ explode).
+  \item[\emph{Forward stepwise}] começa com o modelo vazio e adiciona, a cada
+        passo, a covariável que mais reduz o RSS, até um critério de parada.
+  \item[\emph{Backward stepwise}] começa com o modelo completo e remove, a cada
+        passo, a covariável menos útil (exige $n>d$).
+\end{description}
+
+\begin{atencao}
+Critérios como AIC/BIC ($\riscohat \approx \mathrm{EQM} + P(g)$, com
+$P(g)\propto p/\widehat\sigma^2$) estimam o risco \emph{corrigindo} o otimismo do
+erro de treino. Mas seleção \emph{stepwise} é gananciosa (não examina todos os
+modelos) e a inferência clássica ``pós-seleção'' fica inválida: os $p$-valores
+reportados ignoram que o modelo foi escolhido olhando os dados.
+\end{atencao}
+
+%==============================================================================
+\section{Regularização: encolhendo coeficientes}
+%==============================================================================
+A ideia da regularização (ou \emph{penalização}, ou \emph{shrinkage}) é adicionar
+ao RSS um termo que penaliza coeficientes grandes, desencorajando o superajuste:
+\[
+  \widehat{\bbeta}_{\text{pen}}
+  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+       + \lambda\, \mathrm{Pen}(\bbeta) \Big\}.
+\]
+O hiperparâmetro $\lambda\ge 0$ controla a intensidade: $\lambda=0$ recupera MQO;
+$\lambda\to\infty$ força $\bbeta\to 0$. \textbf{$\lambda$ é escolhido por validação
+cruzada} (Aula~03).
+
+\begin{ideia}
+Regularizar = introduzir \emph{viés} de propósito para reduzir \emph{variância}.
+Sob $d$ grande, o ganho na variância supera a perda no viés e o risco total cai.
+É a Aula~01 em ação.
+\end{ideia}
+
+\subsection{Regressão Ridge ($\ell_2$)}
+\begin{equation}\label{eq:ridge}
+  \widehat{\bbeta}^{\,\text{ridge}}
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+       + \lambda \sum_{j=1}^{d}\beta_j^2 \Big\}.
+\end{equation}
+(O intercepto $\beta_0$ em geral não é penalizado.) A grande vantagem é a solução
+fechada:
+\begin{equation}\label{eq:ridgesol}
+  \widehat{\bbeta}^{\,\text{ridge}}
+   = (\bm{X}^\top\bm{X} + \lambda \bm{I})^{-1}\bm{X}^\top\bm{Y}.
+\end{equation}
+
+\begin{proposicao}[Ridge sempre tem solução única]
+Para todo $\lambda>0$, a matriz $\bm{X}^\top\bm{X}+\lambda\bm{I}$ é definida
+positiva (logo invertível), mesmo quando $d>n$.
+\end{proposicao}
+\begin{proof}
+Para qualquer $\bm{v}\neq 0$,
+$\bm{v}^\top(\bm{X}^\top\bm{X}+\lambda\bm{I})\bm{v}
+=\norm{\bm{X}\bm{v}}^2+\lambda\norm{\bm{v}}^2\ge \lambda\norm{\bm{v}}^2>0$.
+\end{proof}
+Eis a primeira virtude do Ridge: \emph{estabiliza} o problema mal-condicionado das
+altas dimensões. Os coeficientes são encolhidos suavemente em direção a zero, mas
+em geral \textbf{nenhum é exatamente zero}.
+
+\subsection{O Lasso ($\ell_1$)}
+\begin{equation}\label{eq:lasso}
+  \widehat{\bbeta}^{\,\text{lasso}}
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+       + \lambda \sum_{j=1}^{d}\abs{\beta_j} \Big\}.
+\end{equation}
+Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
+$\abs{\beta_j}$ não é diferenciável em $0$), mas o problema é convexo e resolvido
+eficientemente (\emph{coordinate descent}, LARS). A propriedade marcante:
+
+\begin{ideia}
+O Lasso faz \textbf{seleção de variáveis}: para $\lambda$ grande o suficiente,
+vários $\widehat\beta_j$ são \emph{exatamente} zero. Obtemos um modelo
+\emph{esparso} e interpretável de graça --- ao contrário do Ridge.
+\end{ideia}
+
+\subsubsection*{Por que o Lasso zera coeficientes e o Ridge não?}
+Ambos têm a formulação equivalente \emph{com restrição}:
+\[
+  \min_{\bbeta}\ \norm{\bm{Y}-\bm{X}\bbeta}^2
+  \quad\text{sujeito a}\quad
+  \underbrace{\textstyle\sum_j\abs{\beta_j}\le t}_{\text{Lasso}}
+  \quad\text{ou}\quad
+  \underbrace{\textstyle\sum_j\beta_j^2\le t}_{\text{Ridge}}.
+\]
+Geometricamente, minimizamos uma forma quadrática (elipses de RSS centradas em
+$\widehat{\bbeta}^{\text{MQO}}$) restrita a uma região. A região do Ridge é uma
+\emph{bola} (suave: a solução quase nunca toca um eixo); a do Lasso é um
+\emph{losango} com \emph{quinas sobre os eixos} --- e as elipses tendem a tocar a
+restrição exatamente numa quina, onde algum $\beta_j=0$. Daí a esparsidade.
+
+\begin{exemplo}[Caso ortonormal: fórmulas explícitas]
+Quando $\bm{X}^\top\bm{X}=\bm{I}$, os estimadores têm forma fechada em função do
+MQO $\widehat\beta_j$:
+\[
+  \widehat\beta_j^{\,\text{ridge}} = \frac{\widehat\beta_j}{1+\lambda},
+  \qquad
+  \widehat\beta_j^{\,\text{lasso}}
+     = \operatorname{sinal}(\widehat\beta_j)\,\big(\abs{\widehat\beta_j}-\tfrac{\lambda}{2}\big)_+ .
+\]
+O Ridge \emph{multiplica} por um fator $<1$ (encolhe proporcionalmente, nunca
+zera); o Lasso \emph{subtrai} uma constante e trunca em zero (\emph{soft
+thresholding}) --- por isso anula os pequenos.
+\end{exemplo}
+
+\subsection{Interpretação bayesiana}
+Ambas as penalizações são o \emph{logaritmo de uma priori} sobre $\bbeta$:
+\begin{itemize}[leftmargin=1.4cm]
+  \item Ridge $\equiv$ MAP com priori \textbf{gaussiana}
+        $\beta_j\sim N(0,\tau^2)$: $-\log p(\bbeta)\propto \sum_j\beta_j^2$.
+  \item Lasso $\equiv$ MAP com priori \textbf{de Laplace} (dupla exponencial)
+        $p(\beta_j)\propto e^{-\abs{\beta_j}/b}$: $-\log p(\bbeta)\propto
+        \sum_j\abs{\beta_j}$.
+\end{itemize}
+A priori de Laplace é mais ``pontuda'' em zero e tem caudas mais pesadas: ela
+favorece soluções com muitos coeficientes \emph{nulos} e alguns grandes --- exatamente
+a esparsidade observada.
+
+\begin{atencao}
+Como as penalizações somam $\beta_j^2$ ou $\abs{\beta_j}$, elas \textbf{dependem da
+escala} das covariáveis. \emph{Sempre padronize} (média 0, variância 1) antes de
+aplicar Ridge/Lasso, caso contrário variáveis em unidades grandes são penalizadas
+de menos. Isso conecta diretamente com a Aula~07 (\emph{pipelines} e
+\texttt{StandardScaler}).
+\end{atencao}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+Em \texttt{scikit-learn}, as três variantes seguem a mesma interface; o
+\texttt{alpha} é o nosso $\lambda$. Note a padronização \emph{dentro} do
+\emph{pipeline} (Aula~07) para evitar vazamento.
+\begin{lstlisting}
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, LassoCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+# Lasso com lambda escolhido por validacao cruzada
+modelo = make_pipeline(StandardScaler(),
+                       LassoCV(cv=5, random_state=0))
+modelo.fit(X_tr, y_tr)
+
+lasso = modelo.named_steps["lassocv"]
+print("lambda escolhido:", lasso.alpha_)
+print("coeficientes nao-nulos:", (lasso.coef_ != 0).sum(), "de", X.shape[1])
+\end{lstlisting}
+O exemplo clássico (dados de câncer de próstata, ou as resenhas da Amazon no [AME])
+mostra o padrão típico: o Lasso seleciona poucas covariáveis com desempenho
+comparável ou superior ao MQO, especialmente quando $d$ é grande.
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Regressão linear: $g(\x)=\bbeta^\top\x$, linear \emph{nos parâmetros};
+        MQO $\widehat{\bbeta}=(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top\bm{Y}$.
+  \item Em altas dimensões MQO tem variância alta e nem existe se $d>n$.
+  \item \textbf{Ridge} ($\ell_2$): solução fechada, sempre única, encolhe sem
+        zerar.
+  \item \textbf{Lasso} ($\ell_1$): faz seleção de variáveis (esparsidade) pela
+        geometria das quinas / \emph{soft thresholding}.
+  \item Ridge $\equiv$ priori gaussiana; Lasso $\equiv$ priori de Laplace.
+  \item $\lambda$ é \emph{tuning parameter} (validação cruzada, Aula~03); sempre
+        \emph{padronize} as covariáveis.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] Capítulos~2 e~3 (§3.3 Lasso, §3.4 Ridge,
+§3.6 interpretação bayesiana); [ISLP] Capítulo~3 (regressão linear) e Capítulo~6
+(§6.1 seleção de subconjuntos, §6.2 \emph{shrinkage}).
+
+\end{document}

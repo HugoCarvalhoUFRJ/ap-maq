@@ -1,0 +1,317 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\title{}
+\date{}
+
+\begin{document}
+\cabecalhoaula{01}{Introdução ao Aprendizado de Máquina}{AME cap.~1; ISLP cap.~1--2}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item enunciar o problema de aprendizado supervisionado e distinguir
+        \emph{regressão} de \emph{classificação};
+  \item escrever a função de regressão $r(\x)=\E[Y\mid\X=\x]$ e justificá-la como
+        solução do problema de predição sob perda quadrática;
+  \item diferenciar os objetivos de \emph{predição} e de \emph{inferência} e
+        relacionar isso às ``duas culturas'' da modelagem estatística;
+  \item definir \emph{risco} e \emph{risco empírico} e explicar por que minimizar o
+        risco empírico no treino não basta;
+  \item explicar \emph{super} e \emph{subajuste} e a decomposição
+        \emph{viés--variância};
+  \item identificar o papel dos \emph{tuning parameters} no controle da
+        complexidade.
+\end{itemize}
+
+\begin{emsala}
+Esta é a aula que fixa a \textbf{linguagem} de todo o curso. Vale ir devagar na
+notação: tudo o que vier depois (regressão linear, KNN, árvores, SVM,
+classificação) é um caso particular do arcabouço montado aqui. Pergunta de
+abertura para a turma: \emph{``o que significa, exatamente, dizer que um modelo
+`aprendeu'?''}
+\end{emsala}
+
+%==============================================================================
+\section{O que é aprendizado de máquina?}
+%==============================================================================
+Aprendizado de máquina (AM) nasceu nos anos 1960 como ramo da inteligência
+artificial voltado a \emph{aprender padrões a partir de dados}. A partir do final
+dos anos 1990 a área se consolidou e passou a ter forte interseção com a
+estatística. Neste curso adotamos a \textbf{ótica estatística} do [AME]: tratamos
+os dados como realizações de variáveis aleatórias e usamos probabilidade e
+inferência para entender \emph{quando} e \emph{por que} um método funciona.
+
+Trabalhamos em três grandes cenários:
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[Supervisionado] observamos pares $(\x,y)$ (covariáveis e rótulo) e
+        queremos prever $y$ a partir de $\x$. Subdivide-se em \emph{regressão}
+        ($Y$ quantitativo) e \emph{classificação} ($Y$ qualitativo).
+  \item[Não supervisionado] observamos apenas $\x$ (sem rótulos) e buscamos
+        estrutura: agrupamento, redução de dimensionalidade, associação.
+  \item[Por reforço] um agente aprende por tentativa e erro interagindo com um
+        ambiente (fora do escopo deste curso).
+\end{description}
+A maior parte do curso é sobre aprendizado supervisionado; o aprendizado não
+supervisionado aparece nas aulas extras ($k$-médias, PCA).
+
+%==============================================================================
+\section{Notação e suposições}
+%==============================================================================
+Seja $Y\in\R$ a \textbf{variável resposta} (também: variável dependente, rótulo,
+\emph{label}) e $\x=(x_1,\dots,x_d)\in\R^d$ o vetor de \textbf{covariáveis}
+(também: atributos, preditores, \emph{features}, variáveis explicativas). O
+objetivo central da Parte~I do [AME] é estimar a \textbf{função de regressão}
+\begin{equation}\label{eq:r}
+  r(\x) \;:=\; \E[Y\mid \X=\x].
+\end{equation}
+Quando $Y$ é quantitativo, temos um problema de \textbf{regressão}; quando $Y$ é
+qualitativo, um problema de \textbf{classificação}.
+
+\begin{definicao}[Amostra de treino]
+Salvo menção em contrário, supomos uma amostra i.i.d.
+$\Dados=\{(\X_1,Y_1),\dots,(\X_n,Y_n)\}$, com $(\X_i,Y_i)\sim (\X,Y)$, de uma
+distribuição conjunta $P$ desconhecida. Denotamos por $x_{i,j}$ o valor da
+$j$-ésima covariável na $i$-ésima observação, $\X_i=(x_{i,1},\dots,x_{i,d})$.
+\end{definicao}
+
+\begin{atencao}
+A suposição i.i.d.\ é forte e nem sempre razoável (séries temporais, dados
+espaciais, viés de seleção, \emph{dataset shift}). Voltaremos a isso na Aula~09;
+por ora ela é o nosso ``mundo ideal''. A distribuição $P$ é \emph{fixa} mas
+\emph{desconhecida}: é a fonte de toda a incerteza.
+\end{atencao}
+
+%==============================================================================
+\section{Por que estimar a função de regressão? Predição versus inferência}
+%==============================================================================
+Há duas razões distintas para estimar $r$:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{Predição.} Queremos um bom palpite $\rhat(\x)$ para o $Y$ de uma
+        nova observação com covariáveis $\x$. Aqui $\rhat$ pode ser uma
+        ``caixa-preta'': interessa o \emph{acerto}, não a forma.
+  \item \textbf{Inferência.} Queremos \emph{entender} a relação entre $\X$ e $Y$:
+        quais covariáveis importam, qual o sinal e a magnitude do efeito, há
+        interações? Aqui interessa a \emph{interpretabilidade} do modelo.
+\end{itemize}
+
+\begin{ideia}
+Por que $r(\x)=\E[Y\mid\X=\x]$ é o alvo ``certo'' para predição? Porque, sob a
+perda quadrática, a função que minimiza o erro esperado de predição é exatamente a
+esperança condicional.
+\end{ideia}
+
+\begin{proposicao}[$r$ minimiza o erro quadrático esperado]\label{prop:r}
+Entre todas as funções $g:\R^d\to\R$, a função de regressão
+$r(\x)=\E[Y\mid\X=\x]$ minimiza o erro quadrático esperado
+$\E\big[(Y-g(\X))^2\big]$.
+\end{proposicao}
+\begin{proof}
+Fixe $\x$ e escreva $\E[(Y-g(\X))^2\mid\X=\x]$. Somando e subtraindo $r(\x)$,
+\[
+  \E\big[(Y-g(\x))^2\mid\X=\x\big]
+  = \E\big[(Y-r(\x))^2\mid\X=\x\big] + \big(r(\x)-g(\x)\big)^2,
+\]
+pois o termo cruzado se anula:
+$\E[(Y-r(\x))(r(\x)-g(\x))\mid\X=\x]=(r(\x)-g(\x))\,\E[Y-r(\x)\mid\X=\x]=0$.
+O primeiro termo não depende de $g$ e o segundo é minimizado (zerado) por
+$g(\x)=r(\x)$. Tomando esperança sobre $\X$, segue o resultado.
+\end{proof}
+
+\begin{observacao}
+A decomposição acima já contém a semente do \emph{erro irredutível}: mesmo
+conhecendo $r$ perfeitamente, resta $\E[(Y-r(\X))^2]=\E[\Var(Y\mid\X)]>0$ em
+geral, pois $Y$ não é função determinística de $\X$.
+\end{observacao}
+
+\subsection{As duas culturas}
+Leo Breiman (2001) descreveu duas posturas de modelagem:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{Cultura dos modelos de dados:} supõe-se um modelo estocástico
+        (por exemplo, linear gaussiano) e o foco é estimar e interpretar seus
+        parâmetros. Tradição estatística clássica.
+  \item \textbf{Cultura dos modelos algorítmicos:} trata-se o mecanismo gerador
+        como desconhecido e busca-se uma função preditora com bom desempenho
+        (florestas, \emph{boosting}, redes). Tradição de AM.
+\end{itemize}
+Este curso transita entre as duas: usamos a teoria estatística para \emph{avaliar}
+métodos algorítmicos.
+
+\begin{emsala}
+Bom exemplo para contrastar predição $\times$ inferência: previsão de demanda de
+energia (predição pura) \emph{versus} avaliar o efeito de um medicamento
+(inferência). Pergunte: \emph{``em qual desses um modelo `caixa-preta'
+altamente preciso pode ser inaceitável?''}
+\end{emsala}
+
+%==============================================================================
+\section{A função de risco}
+%==============================================================================
+Para comparar candidatos a preditor precisamos de um critério de qualidade. Dado
+uma \textbf{função de perda} $L(y,\hat y)\ge 0$, definimos o risco.
+
+\begin{definicao}[Risco]
+O \textbf{risco} (ou erro de generalização) de uma função $g$ é
+\begin{equation}\label{eq:risco}
+  \risco(g) \;=\; \E\big[L(Y,g(\X))\big],
+\end{equation}
+a perda esperada sobre uma observação \emph{nova} $(\X,Y)\sim P$.
+\end{definicao}
+
+Em regressão usamos tipicamente a perda quadrática $L(y,\hat y)=(y-\hat y)^2$, e
+então $\risco(g)=\E[(Y-g(\X))^2]$. Pela Proposição~\ref{prop:r}, $r$ é o
+\emph{minimizador} do risco. A decomposição fundamental do risco de $r$ é
+\begin{equation}\label{eq:decomprisco}
+  \risco(g) \;=\; \underbrace{\E\big[(g(\X)-r(\X))^2\big]}_{\text{excesso de risco}}
+              \;+\; \underbrace{\E\big[\Var(Y\mid\X)\big]}_{\text{erro irredutível}}.
+\end{equation}
+
+\begin{atencao}
+O risco \eqref{eq:risco} é uma esperança sob $P$, que \emph{não conhecemos}.
+Logo o risco é uma quantidade \emph{teórica}: o desafio prático é
+\emph{estimá-lo}. É o que faremos na Aula~03 (validação cruzada). O erro de
+treino é um estimador \textbf{otimista} do risco --- nunca o use como medida
+final de desempenho.
+\end{atencao}
+
+\subsection{Risco empírico}
+O estimador natural do risco, dado um conjunto de dados $\{(\X_i,Y_i)\}$, é a média
+das perdas:
+\begin{equation}\label{eq:remp}
+  \riscohat(g) \;=\; \frac1n \sum_{i=1}^n L\big(Y_i,g(\X_i)\big).
+\end{equation}
+Se calculado \emph{nos mesmos dados usados para treinar} $g$, ele subestima
+sistematicamente o risco --- daí a necessidade de dados de teste/validação.
+
+%==============================================================================
+\section{Seleção de modelos: super e subajuste}
+%==============================================================================
+Um método de AM em geral define uma \textbf{classe de funções} $\Hcal$ (a
+``flexibilidade'' do modelo) e escolhe dentro dela aquela que melhor ajusta os
+dados. Há uma tensão:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{Subajuste (\emph{underfitting}):} $\Hcal$ é simples demais para
+        capturar $r$. Erro de treino \emph{e} de teste altos. Modelo
+        ``enviesado''.
+  \item \textbf{Superajuste (\emph{overfitting}):} $\Hcal$ é flexível demais e
+        ajusta o ruído da amostra. Erro de treino baixo, erro de teste alto.
+        Modelo ``variável''.
+\end{itemize}
+O comportamento típico: à medida que aumentamos a flexibilidade, o erro de treino
+cai monotonicamente, mas o erro de teste tem forma de ``U'' --- existe um ponto de
+complexidade ótima.
+
+\begin{emsala}
+Use o exemplo do [AME]/aula prática: gerar dados de um modelo polinomial com ruído
+e ajustar polinômios de graus crescentes ($1,2,\dots,15$). Mostre graficamente o
+``U'' do erro de teste. Pergunte: \emph{``qual grau vocês escolheriam só olhando o
+erro de treino? E se olhassem o de teste?''}
+\end{emsala}
+
+\subsection{O balanço entre viés e variância}
+Considere um estimador $\rhat$ construído a partir da amostra aleatória $\Dados$.
+Em um ponto fixo $\x_0$, sob perda quadrática, vale a decomposição clássica:
+\begin{equation}\label{eq:bv}
+  \E_{\Dados}\!\big[(Y_0-\rhat(\x_0))^2\big]
+  = \underbrace{\big(\E_{\Dados}[\rhat(\x_0)]-r(\x_0)\big)^2}_{\text{viés}^2}
+  + \underbrace{\Var_{\Dados}\!\big(\rhat(\x_0)\big)}_{\text{variância}}
+  + \underbrace{\sigma^2(\x_0)}_{\text{irredutível}},
+\end{equation}
+onde $Y_0$ é uma resposta nova em $\x_0$ e $\sigma^2(\x_0)=\Var(Y\mid\X=\x_0)$.
+
+\begin{teorema}[Decomposição viés--variância]\label{teo:bv}
+Vale a identidade \eqref{eq:bv}.
+\end{teorema}
+\begin{proof}
+Escreva $Y_0-\rhat(\x_0) = \big(Y_0-r(\x_0)\big) + \big(r(\x_0)-\rhat(\x_0)\big)$.
+O primeiro parêntese tem média zero e variância $\sigma^2(\x_0)$ e é independente
+de $\Dados$. Para o segundo, some e subtraia $\E_{\Dados}[\rhat(\x_0)]$ e
+expanda o quadrado; o termo cruzado se anula porque
+$\E_{\Dados}[\rhat(\x_0)-\E_{\Dados}\rhat(\x_0)]=0$. Reagrupando os três quadrados
+obtém-se \eqref{eq:bv}.
+\end{proof}
+
+\begin{ideia}
+Modelos \emph{flexíveis} têm baixo viés e alta variância; modelos \emph{rígidos}
+têm alto viés e baixa variância. Selecionar um modelo é, em essência,
+\textbf{escolher o ponto do balanço viés--variância} que minimiza o risco. Não dá
+para zerar os dois ao mesmo tempo com $n$ finito.
+\end{ideia}
+
+%==============================================================================
+\section{Tuning parameters}
+%==============================================================================
+A flexibilidade de um método costuma ser controlada por um ou mais
+\textbf{hiperparâmetros} (\emph{tuning parameters}), que \emph{não} são estimados
+junto com o ajuste, mas escolhidos ``por fora''. Exemplos que veremos:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Método} & \textbf{Hiperparâmetro} & \textbf{Efeito de aumentá-lo} \\
+\midrule
+Regressão polinomial & grau do polinômio & mais flexível ($\uparrow$ variância) \\
+Lasso / Ridge        & $\lambda$ (penalização) & mais rígido ($\uparrow$ viés) \\
+$k$ vizinhos (KNN)   & $k$ & mais rígido ($\uparrow$ viés) \\
+Árvore               & profundidade / $\alpha$ de poda & (depende do parâmetro) \\
+\bottomrule
+\end{tabular}
+\end{center}
+A escolha desses parâmetros é um problema de \emph{seleção de modelos}, resolvido
+estimando o risco para vários valores e tomando o melhor --- tema central da
+Aula~03.
+
+\begin{atencao}
+Hiperparâmetros devem ser escolhidos \emph{sem olhar o conjunto de teste}. Usar o
+teste para escolher $\lambda$ ou $k$ e depois reportar o erro nesse mesmo teste é
+uma forma de vazamento de dados (\emph{data leakage}) que infla o desempenho.
+\end{atencao}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+Esta aula é majoritariamente conceitual; a primeira prática (notebook
+\texttt{Aula prática 01 e 02}) cobre o ambiente de trabalho (\texttt{numpy},
+\texttt{pandas}, \texttt{matplotlib}) e um primeiro ajuste com
+\texttt{scikit-learn}. O esqueleto de uma análise supervisionada que repetiremos o
+curso inteiro:
+\begin{lstlisting}
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+
+# 1. separar treino e teste (NUNCA tocar no teste durante o ajuste)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=0)
+
+# 2. ajustar o modelo no treino
+modelo.fit(X_tr, y_tr)
+
+# 3. avaliar o RISCO estimado no teste
+y_hat = modelo.predict(X_te)
+print(mean_squared_error(y_te, y_hat))   # estimativa de R(g)
+\end{lstlisting}
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item O alvo da regressão é $r(\x)=\E[Y\mid\X=\x]$, minimizador do risco
+        quadrático (Prop.~\ref{prop:r}).
+  \item \emph{Predição} (acerto) e \emph{inferência} (entendimento) são objetivos
+        distintos --- as ``duas culturas''.
+  \item \emph{Risco} é perda esperada sob $P$ (desconhecida); o \emph{risco
+        empírico} no treino é otimista.
+  \item Flexibilidade demais $\Rightarrow$ superajuste; de menos $\Rightarrow$
+        subajuste. O erro de teste tem forma de ``U''.
+  \item \emph{Viés--variância} (Teo.~\ref{teo:bv}) formaliza esse balanço.
+  \item \emph{Tuning parameters} controlam a complexidade e são escolhidos por
+        seleção de modelos (Aula~03).
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] Capítulo~1 (especialmente §1.1--1.6);
+[ISLP] Capítulos~1 e~2 (em particular §2.1--2.2, sobre \emph{What is statistical
+learning} e \emph{bias--variance trade-off}).
+
+\end{document}

@@ -1,0 +1,206 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{Extra E3}{NLP $+$ Classificação (Aplicação)}{Aplicação (notebook); AME §8.1.3 e Apêndice A.2}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item descrever as etapas de \textbf{limpeza} e exploração de uma base textual;
+  \item transformar texto em atributos numéricos com \textbf{\emph{bag-of-words}} e
+        \textbf{TF--IDF};
+  \item escolher classificadores adequados a dados de texto (Bayes ingênuo,
+        logística penalizada) e justificar a escolha;
+  \item avaliar o classificador com as métricas certas em um problema
+        \textbf{desbalanceado} (\emph{spam});
+  \item montar o \textbf{\emph{pipeline}} completo, integrando o que foi visto no
+        curso inteiro.
+\end{itemize}
+
+\begin{emsala}
+Aula de \textbf{síntese}: um problema real (filtrar \emph{spam} de SMS) que costura
+quase todas as aulas --- vetorização de texto, alta dimensão e esparsidade
+(Aula~05), Bayes ingênuo (Aula~08), métricas em dados desbalanceados (Aula~09) e
+\emph{pipelines} (Aula~07). Pergunta de abertura: \emph{``um modelo só entende
+números. Como transformar uma mensagem de texto em algo que ele consiga
+classificar?''}
+\end{emsala}
+
+%==============================================================================
+\section{O problema: filtrar spam}
+%==============================================================================
+Usaremos a base \texttt{spam.csv} (SMS Spam Collection): $\sim$5\,574 mensagens de
+SMS rotuladas como \emph{ham} (legítima, $Y=0$) ou \emph{spam} ($Y=1$). É um problema
+de \textbf{classificação binária} (Aula~08) cujas covariáveis são \emph{texto bruto}
+--- e o desafio central é a \emph{representação}: máquinas só processam números.
+
+\begin{atencao}
+A base é \textbf{desbalanceada} (muito mais \emph{ham} que \emph{spam}). Como vimos
+na Aula~09, a acurácia engana aqui --- precisaremos de precisão, \emph{recall} e
+$F_1$. E os custos são assimétricos: bloquear uma mensagem legítima (falso positivo)
+costuma ser pior que deixar passar um \emph{spam}.
+\end{atencao}
+
+%==============================================================================
+\section{Do texto aos atributos}
+%==============================================================================
+\subsection{Limpeza e normalização}
+Texto bruto é ruidoso. As etapas usuais de pré-processamento:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \emph{minusculizar} (\texttt{lower}): ``Free'' e ``free'' viram o mesmo
+        \emph{token};
+  \item remover \textbf{pontuação} e \textbf{números} (conforme o problema);
+  \item \emph{tokenizar}: quebrar a mensagem em palavras (\emph{tokens});
+  \item remover \textbf{\emph{stopwords}}: palavras muito frequentes e pouco
+        informativas (``the'', ``is'', ``and'');
+  \item \emph{stemming}/\emph{lematização} (opcional): reduzir flexões a um radical
+        (``running'' $\to$ ``run'').
+\end{itemize}
+
+\subsection{\emph{Bag-of-words} e a matriz documento--termo}
+A representação mais simples é o \textbf{\emph{bag-of-words}} (saco de palavras):
+ignora-se a ordem e conta-se a ocorrência de cada palavra. Constrói-se a
+\textbf{matriz documento--termo} $\bm{X}$, em que a linha $i$ é a mensagem $i$, a
+coluna $j$ é um termo do vocabulário, e $x_{ij}$ é a contagem (ou presença binária)
+do termo $j$ na mensagem $i$.
+
+\begin{ideia}
+Cada mensagem vira um vetor num espaço de dimensão $=$ tamanho do vocabulário ---
+facilmente \emph{milhares} de covariáveis. Mas cada mensagem usa poucas palavras,
+então $\bm{X}$ é \textbf{esparsa} (quase toda zero). Guarde-a em formato esparso
+(Apêndice A.3 do [AME]) para economizar memória.
+\end{ideia}
+
+\begin{atencao}[Eis a Aula~05 em ação]
+Texto é o exemplo canônico de \textbf{alta dimensão $+$ esparsidade}: milhares de
+palavras, mas a maioria irrelevante para a classe. Por isso métodos que
+\emph{selecionam variáveis} (Lasso, Bayes ingênuo) vão bem, e o KNN vai mal (não
+seleciona; a distância é dominada por palavras irrelevantes) --- exatamente o que a
+teoria da Aula~05 previu.
+\end{atencao}
+
+\subsection{TF--IDF}
+Contagens cruas dão peso demais a palavras comuns. O \textbf{TF--IDF}
+(\emph{term frequency--inverse document frequency}) reescala cada termo:
+\[
+  \text{tf-idf}(t,d) = \underbrace{\text{tf}(t,d)}_{\substack{\text{frequência do termo}\\\text{no documento }d}}
+  \times
+  \underbrace{\log\frac{N}{\text{df}(t)}}_{\substack{\text{raridade do termo}\\\text{na coleção}}},
+\]
+onde $\text{df}(t)$ é o número de documentos que contêm $t$ e $N$ o total. Palavras
+que aparecem em \emph{todo} documento têm IDF baixo (pouco discriminantes); palavras
+\emph{raras e específicas} ganham peso. Costuma melhorar a classificação de texto.
+
+%==============================================================================
+\section{Análise exploratória}
+%==============================================================================
+Antes de modelar, vale \emph{olhar} os dados: quais as palavras mais frequentes em
+\emph{ham} vs.\ \emph{spam}? Em \emph{spam} surgem termos como ``free'', ``win'',
+``call'', ``txt'', ``prize''; em \emph{ham}, vocabulário do dia a dia. Esse contraste
+já sugere que o \emph{bag-of-words} carrega sinal suficiente para separar as classes.
+
+%==============================================================================
+\section{Classificando}
+%==============================================================================
+Quais métodos usar? Os que prosperam em alta dimensão esparsa:
+\begin{description}[leftmargin=2.8cm,style=nextline]
+  \item[Bayes ingênuo (multinomial)] o ``cavalo de batalha'' do texto. A suposição
+        de independência condicional (Aula~08) é grosseira para palavras, mas
+        funciona surpreendentemente bem e é rápida. A versão \emph{multinomial}
+        modela contagens de palavras. (Lembre da Aula~08: trabalhe em escala
+        logarítmica para evitar \emph{underflow}.)
+  \item[Logística penalizada (Lasso/Ridge)] discriminativa, robusta, e o Lasso faz
+        \emph{seleção de palavras} --- gerando um modelo interpretável (quais
+        palavras pesam para \emph{spam}). É o que o [AME] usa no exemplo das resenhas
+        da Amazon.
+  \item[Florestas / \emph{boosting}] também aplicáveis; XGBoost costuma ir bem.
+\end{description}
+
+\begin{ideia}
+Por que Bayes ingênuo combina tão bem com texto? Porque o modelo multinomial sobre
+contagens de palavras é natural, há pouquíssimos parâmetros por palavra (baixa
+variância) e a independência condicional, embora falsa, raramente troca a
+\emph{classe} de maior probabilidade --- e, para classificar (Aula~09), basta acertar
+o lado do corte, não a probabilidade exata.
+\end{ideia}
+
+%==============================================================================
+\section{Avaliação}
+%==============================================================================
+Como o problema é desbalanceado (Aula~09):
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item reporte a \textbf{matriz de confusão}, \textbf{precisão}, \textbf{\emph{recall}}
+        e \textbf{$F_1$} --- não só a acurácia;
+  \item para \emph{spam}, a \emph{precisão} sobre a classe ``spam'' é crítica
+        (não classificar \emph{ham} como \emph{spam});
+  \item ajuste o \textbf{corte} de decisão conforme os custos (Aula~09): se um falso
+        positivo é muito caro, exija probabilidade alta para marcar como \emph{spam}.
+\end{itemize}
+
+%==============================================================================
+\section{O \emph{pipeline} completo (síntese do curso)}
+%==============================================================================
+Tudo se encaixa num único \emph{pipeline} (Aula~07): vetorização $\to$ classificador,
+com hiperparâmetros escolhidos por validação cruzada (Aula~03) \emph{sem vazamento}
+--- e o vetorizador deve aprender o vocabulário \textbf{só no treino}.
+
+\begin{lstlisting}
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import classification_report, confusion_matrix
+
+sms = pd.read_csv("spam.csv", encoding="ISO-8859-1")
+X, y = sms["text"], (sms["class"] == "spam").astype(int)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3,
+                                          stratify=y, random_state=0)
+
+# vetorizacao + classificador num unico objeto (sem vazamento!)
+pipe = Pipeline([
+    ("vec", TfidfVectorizer(lowercase=True, stop_words="english")),
+    ("clf", MultinomialNB()),
+])
+grade = {"vec__ngram_range": [(1,1), (1,2)],
+         "clf__alpha":       [0.1, 0.5, 1.0]}     # suavizacao de Laplace
+busca = GridSearchCV(pipe, grade, cv=5, scoring="f1").fit(X_tr, y_tr)
+
+y_hat = busca.predict(X_te)
+print(confusion_matrix(y_te, y_hat))
+print(classification_report(y_te, y_hat))        # precisao, recall, F1
+\end{lstlisting}
+O notebook \texttt{Exemplo - NLP + Classificacao} percorre a limpeza, a exploração
+(palavras mais comuns por classe) e a classificação na base \texttt{spam.csv}.
+
+%==============================================================================
+\section*{Resumo (e encerramento do curso)}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Texto vira número por \textbf{\emph{bag-of-words}} / \textbf{TF--IDF} após
+        limpeza (minúsculas, pontuação, \emph{stopwords}).
+  \item A matriz documento--termo é \textbf{esparsa e de alta dimensão} ---
+        terreno do \textbf{Bayes ingênuo} e da \textbf{logística penalizada}
+        (Aulas~05 e~08).
+  \item Avalie com \textbf{precisão/\emph{recall}/$F_1$} e ajuste o \textbf{corte}
+        (dados desbalanceados, Aula~09).
+  \item Tudo num \textbf{\emph{pipeline}} com CV sem vazamento (Aulas~03 e~07).
+\end{itemize}
+
+\begin{ideia}[O fio condutor do curso]
+Este exemplo mostra que os ``temas'' não são ilhas: representar dados, controlar o
+balanço viés--variância, estimar o risco honestamente, escolher o método pela
+estrutura do problema e medir o desempenho com a métrica certa. Foi essa a história
+do curso inteiro --- da regressão linear ao \emph{spam}.
+\end{ideia}
+
+\paragraph{Leitura recomendada.} [AME] §8.1.3 (Bayes ingênuo), §3.8 e §8.8 (exemplos
+com texto: resenhas da Amazon), Apêndice A.2 (manipulação de textos) e A.3 (matrizes
+esparsas); documentação do \texttt{scikit-learn}: \emph{Working With Text Data}.
+
+\end{document}

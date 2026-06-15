@@ -1,0 +1,127 @@
+%==============================================================================
+%  estilo-notas.sty
+%  Estilo compartilhado das Notas de Aula do curso de Aprendizado de Máquina.
+%  Carregue com \usepackage{estilo-notas} (o arquivo deve estar nesta pasta).
+%==============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo-notas}[2026/06/15 Estilo das notas de aula de AM]
+
+% ----- Codificação e fontes (babel-portugues indisponível: rótulos manuais) ---
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\RequirePackage{microtype}
+
+% ----- Matemática -------------------------------------------------------------
+\RequirePackage{amsmath,amssymb,amsthm,mathtools}
+\RequirePackage{bm}
+
+% ----- Layout e utilidades ----------------------------------------------------
+\RequirePackage[margin=2.5cm]{geometry}
+\RequirePackage{enumitem}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{multirow}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{fancyhdr}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{listings}
+\RequirePackage[colorlinks=true,linkcolor=azulufrj,citecolor=azulufrj,%
+                urlcolor=azulufrj]{hyperref}
+
+% ----- Rótulos em português ---------------------------------------------------
+\renewcommand{\abstractname}{Resumo}
+\renewcommand{\contentsname}{Sumário}
+\renewcommand{\refname}{Referências}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
+\renewcommand{\proofname}{Demonstração}
+
+% ----- Cores ------------------------------------------------------------------
+\definecolor{azulufrj}{RGB}{0,45,98}
+\definecolor{cinzaclaro}{RGB}{245,245,247}
+\definecolor{verdeesc}{RGB}{0,102,68}
+\definecolor{vinho}{RGB}{128,0,32}
+
+% ----- Cabeçalho e rodapé -----------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\itshape Aprendizado de Máquina}
+\fancyhead[R]{\small\itshape Notas de Aula}
+\fancyfoot[C]{\thepage}
+
+% ----- Ambientes de teorema ---------------------------------------------------
+\theoremstyle{definition}
+\newtheorem{definicao}{Definição}[section]
+\newtheorem{exemplo}[definicao]{Exemplo}
+\newtheorem{observacao}[definicao]{Observação}
+
+\theoremstyle{plain}
+\newtheorem{teorema}[definicao]{Teorema}
+\newtheorem{proposicao}[definicao]{Proposição}
+\newtheorem{lema}[definicao]{Lema}
+\newtheorem{corolario}[definicao]{Corolário}
+
+% ----- Caixas pedagógicas -----------------------------------------------------
+% As caixas aceitam um título opcional: \begin{atencao}[subtítulo] ... \end{atencao}
+% "Em sala": fio condutor do discurso / perguntas a fazer aos alunos.
+\DeclareTColorBox{emsala}{o}{%
+  enhanced, breakable, colback=cinzaclaro, colframe=azulufrj,
+  coltitle=white, fonttitle=\bfseries, title={Em sala\IfValueT{#1}{: #1}}}
+
+% "Ideia central": destaque conceitual.
+\DeclareTColorBox{ideia}{o}{%
+  enhanced, breakable, colback=verdeesc!6, colframe=verdeesc,
+  coltitle=white, fonttitle=\bfseries, title={Ideia central\IfValueT{#1}{: #1}}}
+
+% "Atenção": armadilhas e cuidados.
+\DeclareTColorBox{atencao}{o}{%
+  enhanced, breakable, colback=vinho!6, colframe=vinho,
+  coltitle=white, fonttitle=\bfseries, title={Atenção\IfValueT{#1}{: #1}}}
+
+% ----- Listagens de código Python --------------------------------------------
+\lstdefinestyle{python}{%
+  language=Python, basicstyle=\ttfamily\small,
+  keywordstyle=\color{azulufrj}\bfseries, commentstyle=\color{verdeesc}\itshape,
+  stringstyle=\color{vinho}, showstringspaces=false, breaklines=true,
+  frame=single, rulecolor=\color{gray!40}, backgroundcolor=\color{cinzaclaro},
+  numbers=left, numberstyle=\tiny\color{gray}, columns=fullflexible}
+\lstset{style=python}
+
+% ----- Macros de notação do curso ---------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Vies}{\operatorname{Vi\acute{e}s}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\X}{\bm{X}}
+\newcommand{\x}{\bm{x}}
+\newcommand{\bbeta}{\bm{\beta}}
+\newcommand{\Dados}{\mathcal{D}}     % conjunto de treino
+\newcommand{\Hcal}{\mathcal{H}}      % classe de hipóteses
+\newcommand{\rhat}{\widehat{r}}      % estimador da função de regressão
+\newcommand{\ghat}{\widehat{g}}      % classificador estimado
+\newcommand{\risco}{R}               % risco
+\newcommand{\riscohat}{\widehat{R}}  % risco estimado
+\newcommand{\argmin}{\operatornamewithlimits{arg\,min}}
+\newcommand{\argmax}{\operatornamewithlimits{arg\,max}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\1}[1]{\mathbb{1}\!\left\{#1\right\}}   % função indicadora
+
+% ----- Cabeçalho de aula ------------------------------------------------------
+% \cabecalhoaula{número}{título}{leitura}
+\newcommand{\cabecalhoaula}[3]{%
+  \begin{center}
+    {\Large\bfseries Aula #1 --- #2}\\[0.4em]
+    {\small\itshape Curso de Aprendizado de Máquina --- UFRJ}\\[0.2em]
+    {\small Leitura recomendada: #3}
+  \end{center}
+  \vspace{0.5em}\hrule\vspace{1.2em}}
+
+\endinput

@@ -1,0 +1,224 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{07}{Pré-processamento e \emph{Pipelines}}{ISLP labs cap.~5--6; AME §2.1.2}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item explicar por que o pré-processamento faz parte do \emph{modelo}, e não dos
+        dados;
+  \item definir a \textbf{padronização} (\texttt{StandardScaler}) e listar suas
+        vantagens e desvantagens;
+  \item identificar e evitar o \textbf{vazamento de dados} (\emph{data leakage});
+  \item construir um \textbf{\emph{pipeline}} que encadeia pré-processamento e
+        estimador como um único objeto;
+  \item combinar \emph{pipeline} com validação cruzada e busca de hiperparâmetros
+        sem vazamento;
+  \item conhecer outros pré-processamentos comuns (imputação, codificação de
+        categóricas) e o \texttt{ColumnTransformer}.
+\end{itemize}
+
+\begin{emsala}
+Esta é a aula que costura as anteriores em \emph{boas práticas de implementação}.
+Vários métodos já exigiram padronização: Lasso/Ridge (Aula~02) e KNN (Aula~04); e a
+Aula~03 já avisou sobre vazamento. Aqui formalizamos \emph{como} fazer isso certo.
+Pergunta de abertura: \emph{``onde, exatamente, eu devo calcular a média e o
+desvio para padronizar: antes ou depois de separar treino e teste?''}
+\end{emsala}
+
+%==============================================================================
+\section{Motivação: o pré-processamento é parte do modelo}
+%==============================================================================
+Na prática, raramente alimentamos o estimador com os dados brutos. Um fluxo típico
+encadeia várias transformações: padronizar, imputar faltantes, codificar variáveis
+categóricas, reduzir dimensão (PCA), e só então ajustar o modelo. A tentação é
+aplicar essas transformações ``de uma vez'' no conjunto inteiro --- e é exatamente aí
+que mora o erro.
+
+\begin{ideia}
+O insight central da aula: \textbf{toda transformação que ``aprende'' algo dos
+dados} (uma média, um desvio, as categorias presentes, os componentes principais)
+é \emph{parte do procedimento de estimação}. Logo, deve ser \emph{ajustada apenas
+no treino} e \emph{aplicada} ao teste/validação --- nunca o contrário.
+\end{ideia}
+
+A ferramenta do \texttt{scikit-learn} para isso é o \textbf{\emph{Pipeline}}: ele
+agrega vários processamentos e o estimador final em um único bloco que se comporta
+como um estimador (\texttt{fit}/\texttt{predict}), garantindo que cada etapa veja
+apenas os dados corretos.
+
+%==============================================================================
+\section{O \texttt{StandardScaler} (padronização)}
+%==============================================================================
+Cada coluna $\bm{X}_i$ de uma base é uma amostra de uma variável aleatória $X_i$ com
+$\mu_i=\E[X_i]$ e $\sigma_i^2=\Var(X_i)$ (supostos finitos). A \textbf{padronização}
+transforma
+\begin{equation}\label{eq:std}
+  \widetilde{X}_i = \frac{X_i - \mu_i}{\sigma_i},
+\end{equation}
+de modo que cada covariável passa a ter média $0$ e variância $1$. Na prática,
+$\mu_i$ e $\sigma_i$ são desconhecidos e \emph{estimados} pela média e desvio
+amostrais --- e é justamente esse ``estimados'' que cria o risco de vazamento.
+
+\subsection{Vantagens}
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item Covariáveis tornam-se \textbf{adimensionais}: somem as unidades (kg, R\$,
+        anos).
+  \item Resolve \textbf{discrepâncias numéricas} entre escalas --- crucial para
+        métodos baseados em distância (KNN, Aula~04) e em penalização
+        (Lasso/Ridge, Aula~02), que de outro modo seriam dominados pelas variáveis
+        de maior magnitude.
+  \item Torna o \textbf{intercepto desnecessário} em regressão linear (dados
+        centrados em zero).
+\end{itemize}
+
+\subsection{Desvantagens}
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item Leve perda de \textbf{interpretabilidade}: os coeficientes passam a estar
+        em ``desvios-padrão'', não nas unidades originais.
+  \item $\mu_i$ e $\sigma_i$ são \textbf{aprendidos dos dados} --- exigindo
+        cuidado para não vazar informação do teste (próxima seção).
+\end{itemize}
+
+%==============================================================================
+\section{Vazamento de dados (\emph{data leakage})}
+%==============================================================================
+\begin{atencao}[A armadilha]
+Se você aplicar o \texttt{StandardScaler} (ou qualquer transformação que aprende
+parâmetros) no \emph{conjunto inteiro antes} de separar treino e teste, a
+média/desvio usados no treino \textbf{já contêm informação do teste}. As métricas
+deixam de medir o desempenho em dados \emph{verdadeiramente novos} e ficam
+otimistas. Isso é \textbf{vazamento de dados}.
+\end{atencao}
+
+A regra correta:
+\begin{enumerate}[leftmargin=1.6cm,nosep]
+  \item separe treino e teste \emph{primeiro};
+  \item \texttt{fit} do scaler \textbf{só no treino} (aprende $\widehat\mu$,
+        $\widehat\sigma$ do treino);
+  \item \texttt{transform} aplicado ao treino \emph{e} ao teste com \emph{esses
+        mesmos} parâmetros.
+\end{enumerate}
+
+\begin{atencao}[Vazamento dentro da validação cruzada]
+O mesmo vale para \emph{cada dobra} da CV (Aula~03): o scaler deve ser reajustado
+usando apenas o treino \emph{daquela dobra}. Padronizar antes da CV vaza o
+``treino futuro'' de cada dobra. Fazer isso manualmente é trabalhoso e propenso a
+erro --- por isso usamos \emph{pipelines}, que cuidam disso automaticamente.
+\end{atencao}
+
+%==============================================================================
+\section{\emph{Pipelines}}
+%==============================================================================
+Um \texttt{Pipeline} encadeia etapas $(\text{nome}, \text{transformador})$
+terminadas por um estimador. Ao chamar:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \texttt{pipe.fit(X\_tr, y\_tr)}: cada transformador faz \texttt{fit\_transform}
+        \emph{no treino}, em sequência, e o estimador final é ajustado;
+  \item \texttt{pipe.predict(X\_te)}: cada transformador apenas \texttt{transform}
+        (com os parâmetros aprendidos no treino) e o estimador prediz.
+\end{itemize}
+Assim, é \emph{impossível} vazar o teste por construção: o teste nunca participa de
+nenhum \texttt{fit}.
+
+\begin{lstlisting}
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Lasso
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split, GridSearchCV
+
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=0)
+
+pipe = Pipeline(steps=[("scaler", StandardScaler()),
+                       ("lasso",  Lasso())])
+pipe.fit(X_tr, y_tr)        # scaler aprende mu/sigma SO do treino
+pipe.predict(X_te)          # teste e apenas transformado
+\end{lstlisting}
+
+\subsection{\emph{Pipeline} $+$ validação cruzada $+$ busca de hiperparâmetros}
+O grande payoff: passar o \emph{pipeline} inteiro ao \texttt{GridSearchCV}. Em cada
+dobra, todo o pré-processamento é reajustado corretamente, e a busca pelos
+hiperparâmetros (inclusive do scaler, se houver) fica livre de vazamento. Note a
+sintaxe \texttt{nomeEtapa\_\_parametro} para acessar parâmetros de cada etapa.
+
+\begin{lstlisting}
+from sklearn.linear_model import ElasticNet
+
+pipe_en = Pipeline([("scaler", StandardScaler()),
+                    ("enet",   ElasticNet())])
+
+param_grid = {"enet__alpha":    [0.001, 0.01, 0.1, 1, 5, 10, 50, 100],
+              "enet__l1_ratio": [0.1, 0.5, 0.7, 0.9, 0.95, 0.99, 1]}
+
+busca = GridSearchCV(pipe_en, param_grid, cv=5,
+                     scoring="neg_mean_squared_error")
+busca.fit(X_tr, y_tr)               # CV SEM vazamento, etapa por etapa
+print("melhores parametros:", busca.best_params_)
+print("risco no teste:", -busca.score(X_te, y_te))
+\end{lstlisting}
+
+\begin{ideia}
+Encare o \emph{pipeline} como ``o modelo''. Tudo o que você faria errado à mão ---
+padronizar cedo demais, esquecer de aplicar a mesma transformação no teste, vazar
+na CV --- o \emph{pipeline} previne por construção. É a tradução em código das regras
+das Aulas~02--04.
+\end{ideia}
+
+%==============================================================================
+\section{Outros pré-processamentos comuns}
+%==============================================================================
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[Imputação] preencher valores faltantes (\texttt{SimpleImputer} com média,
+        mediana ou moda). A estatística de imputação também se aprende \emph{só no
+        treino}.
+  \item[Codificação de categóricas] \texttt{OneHotEncoder} (cria \emph{dummies}) ou
+        \texttt{OrdinalEncoder}. Lembre (Aula~06) que árvores lidam com categóricas
+        sem isso.
+  \item[Escalas alternativas] \texttt{MinMaxScaler} (intervalo $[0,1]$),
+        \texttt{RobustScaler} (baseado em quantis, resistente a \emph{outliers}).
+  \item[Redução de dimensão] PCA como etapa do \emph{pipeline} (Aula extra),
+        também ajustada apenas no treino.
+\end{description}
+
+Quando diferentes colunas precisam de tratamentos diferentes (numéricas
+padronizadas, categóricas codificadas), usa-se o \texttt{ColumnTransformer}:
+\begin{lstlisting}
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.impute import SimpleImputer
+
+prep = ColumnTransformer([
+    ("num", Pipeline([("imp", SimpleImputer(strategy="median")),
+                      ("sc",  StandardScaler())]), colunas_numericas),
+    ("cat", OneHotEncoder(handle_unknown="ignore"), colunas_categoricas),
+])
+modelo = Pipeline([("prep", prep), ("clf", Lasso())])
+\end{lstlisting}
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Pré-processamento que aprende parâmetros é \textbf{parte do modelo}: ajuste
+        só no treino, aplique ao teste.
+  \item \textbf{Padronização} \eqref{eq:std}: adimensionaliza, equaliza escalas
+        (essencial para KNN e penalização), dispensa intercepto; custo: leve perda
+        de interpretabilidade.
+  \item \textbf{Vazamento}: padronizar/imputar antes de separar treino/teste (ou
+        antes de cada dobra) infla as métricas. Evite!
+  \item \textbf{\emph{Pipeline}}: encadeia tudo num único objeto e previne
+        vazamento por construção; combine com \texttt{GridSearchCV}.
+  \item \texttt{ColumnTransformer} aplica tratamentos distintos a colunas distintas.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [ISLP] laboratórios dos Capítulos~5 e~6 (uso de
+\emph{pipelines} e validação cruzada em Python); [AME] §2.1.2 (regressão linear na
+prática). Documentação do \texttt{scikit-learn}: \emph{Pipelines and composite
+estimators}.
+
+\end{document}

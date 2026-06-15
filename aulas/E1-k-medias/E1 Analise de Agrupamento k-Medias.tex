@@ -1,0 +1,233 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{Extra E1}{Análise de Agrupamento: $k$-Médias}{AME cap.~11; ISLP §12.4}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item situar o \textbf{aprendizado não supervisionado} e o problema de
+        \emph{agrupamento};
+  \item escolher uma medida de \textbf{dissimilaridade} adequada ao contexto;
+  \item formular o objetivo do \textbf{$k$-médias} (soma de quadrados intra-grupo)
+        e executar o \textbf{algoritmo de Lloyd};
+  \item explicar por que o $k$-médias cai em mínimos locais e como o
+        \textbf{$k$-médias++} ajuda;
+  \item escolher o número de grupos $K$ (cotovelo, silhueta);
+  \item descrever o \textbf{agrupamento hierárquico} e o dendrograma.
+\end{itemize}
+
+\begin{emsala}
+Viramos a chave para o Bloco~III: aqui \emph{não há rótulos} $Y$. O objetivo deixa
+de ser ``prever'' e passa a ser ``descobrir estrutura''. Pergunta de abertura:
+\emph{``sem uma resposta certa, como sabemos se um agrupamento é bom?''} ---
+pergunta genuinamente mais difícil que em aprendizado supervisionado.
+\end{emsala}
+
+%==============================================================================
+\section{Aprendizado não supervisionado}
+%==============================================================================
+Até aqui observávamos pares $(\X_i,Y_i)$. No \textbf{aprendizado não
+supervisionado} observamos apenas as covariáveis $\X_1,\dots,\X_n$, \emph{sem}
+rótulos, e buscamos estrutura nos dados. Duas grandes tarefas:
+\emph{agrupamento} (esta aula) e \emph{redução de dimensionalidade} (Aula~E2).
+
+\begin{atencao}
+Sem rótulos, não há ``risco'' nem ``erro de teste'' no sentido das aulas anteriores.
+A avaliação é mais sutil e frequentemente subjetiva: o agrupamento é ``bom'' se for
+\emph{útil} e \emph{interpretável} no problema. Isso torna a validação um ponto
+delicado --- volte a esta caixa ao discutir a escolha de $K$.
+\end{atencao}
+
+%==============================================================================
+\section{O problema de agrupamento}
+%==============================================================================
+\emph{Agrupar} (\emph{clustering}) é particionar os índices $\{1,\dots,n\}$ em
+grupos $C_1,\dots,C_K$ disjuntos cuja união é o todo, de modo que elementos do
+\emph{mesmo} grupo sejam \emph{parecidos} e elementos de grupos \emph{diferentes}
+sejam \emph{distintos}. ``Parecido'' exige uma medida de \textbf{dissimilaridade}
+$d(\x_i,\x_j)$. Exemplos:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Medida} & \textbf{$d(\x_i,\x_j)$} \\
+\midrule
+Euclidiana   & $\sum_{k=1}^d (x_{i,k}-x_{j,k})^2$ \\
+Manhattan    & $\sum_{k=1}^d \abs{x_{i,k}-x_{j,k}}$ \\
+Cosseno      & $1-\dfrac{\x_i\cdot\x_j}{\norm{\x_i}\,\norm{\x_j}}$ \\
+Jaccard      & adequada a dados binários (presença/ausência) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{ideia}
+A escolha da medida \emph{define} o que significa ``grupo''. A distância cosseno é
+padrão em texto (Aula~E3); a euclidiana é a hipótese embutida no $k$-médias; Jaccard
+serve a dados de presença/ausência. \textbf{Escolher a dissimilaridade é a primeira
+decisão de modelagem.}
+\end{ideia}
+
+%==============================================================================
+\section{$k$-Médias}
+%==============================================================================
+O $k$-médias usa a distância \textbf{euclidiana} e exige fixar $K$ de antemão. Busca
+a partição que minimiza a \textbf{soma de quadrados dentro dos grupos} (WCSS):
+\begin{equation}\label{eq:wcss}
+  \min_{C_1,\dots,C_K}\ \sum_{k=1}^{K} \frac{1}{\abs{C_k}}
+     \sum_{i,j\in C_k} d^2(\x_i,\x_j)
+  \;=\; \min_{C_1,\dots,C_K}\ \sum_{k=1}^{K}\sum_{i\in C_k}\norm{\x_i-\bm{c}_k}^2,
+\end{equation}
+onde $\bm{c}_k=\frac{1}{\abs{C_k}}\sum_{i\in C_k}\x_i$ é o \textbf{centroide} do
+grupo $k$ (a igualdade acima é um fato útil: minimizar a dispersão par-a-par
+equivale a minimizar a soma das distâncias aos centroides).
+
+\begin{atencao}
+Há $K^n$ partições possíveis: otimizar \eqref{eq:wcss} exatamente é inviável. Usamos
+uma heurística iterativa --- o algoritmo de Lloyd --- que encontra um \emph{mínimo
+local}.
+\end{atencao}
+
+\subsection{Algoritmo de Lloyd}
+\begin{tcolorbox}[colback=cinzaclaro,colframe=azulufrj,title={Algoritmo de Lloyd ($k$-médias)}]
+\begin{enumerate}[leftmargin=1.4cm,nosep]
+  \item \textbf{Inicialização:} escolha $K$ centroides $\bm{c}_1,\dots,\bm{c}_K$
+        (ex.\ aleatoriamente entre os dados). Itere até convergir:
+  \item \textbf{Atribuição:} associe cada ponto ao centroide mais próximo,
+        $C_k=\{\x_i:\argmin_r \norm{\x_i-\bm{c}_r}=k\}$.
+  \item \textbf{Atualização:} recalcule cada centroide como a média do seu grupo,
+        $\bm{c}_k\leftarrow \frac{1}{\abs{C_k}}\sum_{i\in C_k}\x_i$.
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{proposicao}[Lloyd não aumenta a WCSS]
+Cada iteração do algoritmo de Lloyd não aumenta o objetivo \eqref{eq:wcss}; como há
+finitas partições, o algoritmo converge em número finito de passos.
+\end{proposicao}
+\noindent\emph{Esboço.} O passo de \emph{atribuição} reduz (ou mantém) a soma das distâncias
+ao centroide, pois cada ponto vai ao centroide mais próximo. O passo de
+\emph{atualização} também reduz (ou mantém), pois a média é o ponto que minimiza
+$\sum_{i\in C_k}\norm{\x_i-\bm{c}}^2$ (Proposição~análoga à da Aula~01). Como o
+objetivo decresce monotonicamente e só há finitas partições, há convergência.
+
+\begin{atencao}[Mínimos locais e inicialização]
+Lloyd converge para um mínimo \emph{local} que \textbf{depende da inicialização}:
+sementes ruins levam a agrupamentos ruins. Soluções:
+\begin{itemize}[leftmargin=1.2cm,nosep]
+  \item rodar várias vezes com inícios diferentes e ficar com a menor WCSS
+        (\texttt{n\_init} no \texttt{scikit-learn});
+  \item usar \textbf{$k$-médias++}: escolhe os centroides iniciais
+        \emph{espalhados} --- o primeiro ao acaso e cada seguinte com probabilidade
+        proporcional ao quadrado da distância ao centroide mais próximo já
+        escolhido, $p_i\propto D^2(\x_i)$. Aumenta muito a chance de bom resultado.
+\end{itemize}
+\end{atencao}
+
+\subsection{Escolhendo o número de grupos $K$}
+$K$ é o ``\emph{tuning parameter}'', mas \emph{sem} um erro de teste para
+minimizar. Heurísticas:
+\begin{description}[leftmargin=2.4cm,style=nextline]
+  \item[Cotovelo] plote a WCSS contra $K$. Ela sempre cai com $K$ (com $K=n$,
+        WCSS $=0$); procure o ``cotovelo'', onde o ganho marginal despenca.
+  \item[Silhueta] mede, para cada ponto, quão melhor ele se encaixa no seu grupo do
+        que no vizinho mais próximo. Escolha $K$ que maximiza a silhueta média.
+\end{description}
+
+\begin{exemplo}[Compressão de imagens]
+Trate cada \emph{pixel} como um ponto em $\R^3$ (cores R, G, B) e rode $k$-médias
+com $K$ pequeno. Substituindo cada pixel pela cor do seu centroide, a imagem passa a
+usar só $K$ cores --- uma \textbf{compressão} (quantização de cor). $K$ controla a
+qualidade. (É o exemplo do [AME].)
+\end{exemplo}
+
+%==============================================================================
+\section{Agrupamento hierárquico}
+%==============================================================================
+Ao contrário do $k$-médias, o agrupamento hierárquico (\emph{aglomerativo})
+\textbf{não exige fixar $K$} e produz uma hierarquia de grupos:
+\begin{enumerate}[leftmargin=1.6cm,nosep]
+  \item comece com cada ponto em seu próprio grupo;
+  \item repetidamente \emph{funda} os dois grupos mais próximos;
+  \item pare quando restar um único grupo.
+\end{enumerate}
+O resultado é um \textbf{dendrograma} (árvore), que se ``corta'' a uma altura para
+obter o número desejado de grupos. A noção de ``distância entre grupos'' é o
+\emph{linkage}:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Linkage} & \textbf{Distância entre grupos $A$ e $B$} \\
+\midrule
+Completo (\emph{complete}) & $\max_{i\in A,j\in B} d(\x_i,\x_j)$ --- grupos compactos \\
+Simples (\emph{single})    & $\min_{i\in A,j\in B} d(\x_i,\x_j)$ --- tende a ``encadear'' \\
+Médio (\emph{average})     & média das distâncias entre pares \\
+Ward                       & minimiza o aumento da WCSS na fusão \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{ideia}
+$k$-médias vs.\ hierárquico: o primeiro exige $K$ e supõe grupos ``esféricos''
+(euclidianos), mas é rápido e escala bem; o segundo dispensa $K$, dá uma visão
+multiescala (dendrograma) e aceita qualquer dissimilaridade, mas é mais caro
+($O(n^2)$ ou pior).
+\end{ideia}
+
+\begin{atencao}
+Ambos são sensíveis à \textbf{escala} das covariáveis (usam distâncias) ---
+\emph{padronize} antes (Aula~07). E lembre: o $k$-médias \emph{sempre} devolve $K$
+grupos, mesmo que não haja estrutura de grupos nenhuma nos dados. Interprete com
+ceticismo.
+\end{atencao}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+\begin{lstlisting}
+from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+import numpy as np
+
+Xs = StandardScaler().fit_transform(X)   # padronizar e essencial
+
+# k-medias com k-medias++ e varios inicios; metodo do cotovelo
+wcss = []
+for k in range(2, 11):
+    km = KMeans(n_clusters=k, init="k-means++", n_init=10, random_state=0).fit(Xs)
+    wcss.append(km.inertia_)             # inertia_ = WCSS
+    print(k, "silhueta:", silhouette_score(Xs, km.labels_))
+
+# hierarquico (Ward), cortando em 3 grupos
+rotulos = AgglomerativeClustering(n_clusters=3, linkage="ward").fit_predict(Xs)
+\end{lstlisting}
+Os materiais \texttt{EXTRA K-medias} (slides e notebook) exploram o $k$-médias,
+incluindo o exemplo de compressão de imagem.
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Aprendizado \textbf{não supervisionado}: sem rótulos; busca-se estrutura.
+        Avaliação é subjetiva.
+  \item \emph{Agrupamento}: partição com grupos internos homogêneos; a
+        \textbf{dissimilaridade} é a primeira decisão.
+  \item \textbf{$k$-médias}: minimiza a WCSS \eqref{eq:wcss} via \textbf{Lloyd};
+        converge a um mínimo \emph{local} $\Rightarrow$ use \textbf{$k$-médias++} e
+        vários inícios.
+  \item Escolha de $K$: \emph{cotovelo} (WCSS) e \emph{silhueta}.
+  \item \textbf{Hierárquico}: dendrograma, \emph{linkages}; dispensa $K$.
+  \item Sempre \emph{padronize}; $k$-médias supõe grupos esféricos e sempre devolve
+        $K$ grupos.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] Capítulo~11 (§11.1 $k$-médias, §11.2
+espectral, §11.3 hierárquico); [ISLP] §12.4 (\emph{Clustering Methods}: $k$-médias
+e hierárquico).
+
+\end{document}
