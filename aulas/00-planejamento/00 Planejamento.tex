@@ -184,23 +184,33 @@ Aplicação (notebook); AME §8.1.3 \\
 %==============================================================================
 \section{Aulas práticas e avaliações (contexto)}
 %==============================================================================
-As notas de aula são teóricas; o curso conta ainda com material de apoio já
-existente na pasta \texttt{materiais-didaticos}, ao qual as notas fazem referência:
+As notas de aula são teóricas; o curso conta ainda com material de apoio ao qual
+as notas fazem referência. Os \textbf{notebooks} ficam na pasta da própria aula,
+em \texttt{aulas/}, e os materiais transversais em \texttt{recursos/}:
 \begin{itemize}[leftmargin=1.4cm]
-  \item \textbf{Aulas práticas} (notebooks): 01--02, 03--05, 06--07, 08, alinhadas
-        às aulas teóricas correspondentes.
-  \item \textbf{Exemplos} em Python: SVM, KNN e árvores, comparação de
-        classificadores paramétricos, PCA, $k$-médias, NLP.
-  \item \textbf{Listas de exercícios} 01--08 e duas \textbf{avaliações presenciais}
-        (AP1 e AP2) com gabarito.
+  \item \textbf{Aulas práticas} (notebooks): 01--02, 03--05, 06--07 e 08,
+        alinhadas às aulas teóricas correspondentes e guardadas na pasta da
+        primeira aula de cada bloco (\texttt{01-introducao},
+        \texttt{03-validacao-cruzada}, \texttt{06-arvores-ensembles} e
+        \texttt{08-classificadores-gaussianos}).
+  \item \textbf{Exemplos} em Python, na pasta da aula correspondente: comparação
+        de classificadores paramétricos (aula 08), SVM (10), KNN e árvores (11),
+        $k$-médias (E1), PCA (E2) e NLP (E3).
+  \item \textbf{Listas de exercícios} 01--08, em \texttt{recursos/listas}, e duas
+        \textbf{avaliações presenciais} (AP1 e AP2) com gabarito, em
+        \texttt{recursos/avaliacoes}.
 \end{itemize}
 
 %==============================================================================
 \section{Convenções das notas de aula}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
-  \item Cada aula tem um arquivo \texttt{NN Título.tex} compilável de forma
-        independente (preâmbulo completo).
+  \item Cada aula tem um arquivo \texttt{NN Título.tex} próprio, compilável a
+        partir da pasta da própria aula. O preâmbulo é compartilhado: cada
+        \texttt{.tex} carrega o estilo comum com
+        \verb|\usepackage{../../recursos/latex/estilo-notas}|, de modo que
+        notação, ambientes de teorema e caixas pedagógicas ficam definidos em um
+        único lugar.
   \item Estrutura padrão de cada nota: \emph{objetivos da aula} $\to$
         \emph{motivação} $\to$ \emph{desenvolvimento teórico} (definições,
         resultados, demonstrações quando cabível) $\to$ \emph{intuições e exemplos}
