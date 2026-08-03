@@ -8,10 +8,20 @@ para os materiais transversais.
 
 ## Branches
 
-O trabalho está em **`refactoring-baby`**. A `main` ainda tem a estrutura antiga,
-com tudo numa única pasta `materiais-didaticos/`. A reorganização em `aulas/` +
-`recursos/` só existe na branch de trabalho — vale conferir em qual branch se está
-antes de assumir caminhos.
+As duas branches são materiais **paralelos e permanentes**, de docentes
+diferentes — não etapas de um refactor:
+
+- **`main`** — as aulas do **Prof. Hugo Tremonte de Carvalho**, na estrutura
+  antiga, com tudo numa única pasta `materiais-didaticos/`;
+- **`refactoring-baby`** — as aulas do **Gabriel Sanfins**, com a reorganização em
+  `aulas/` + `recursos/` e as modificações dele. É onde o trabalho acontece.
+
+**Não há plano de merge para a `main`**, e a divergência é deliberada. Não proponha
+fundir, rebasear ou "sincronizar com a `main`", nem trate as diferenças entre as
+duas como pendência. O nome `refactoring-baby` é enganoso: não é uma branch
+temporária.
+
+Vale conferir em qual branch se está antes de assumir caminhos.
 
 ## Notas de aula (LaTeX)
 
@@ -85,15 +95,15 @@ caminho local + fallback para a web:
 
 ```python
 _local = os.path.join("..", "..", "recursos", "dados", _nome)
-_url = "https://raw.githubusercontent.com/HugoCarvalhoUFRJ/ap-maq/refs/heads/main/recursos/dados/" + _nome
+_url = "https://raw.githubusercontent.com/HugoCarvalhoUFRJ/ap-maq/refs/heads/refactoring-baby/recursos/dados/" + _nome
 _fonte = _local if os.path.exists(_local) else _url
 ```
 
-**Atenção:** esse fallback está quebrado. A URL aponta para `main`, mas na `main`
-os `.csv` ainda estão em `materiais-didaticos/`, não em `recursos/dados/` — ou
-seja, retorna 404. O caminho local funciona; o fallback (usado no Google Colab) só
-voltará a funcionar quando o refactor chegar à `main`. Ao fundir a branch, revise
-essas URLs.
+**A branch na URL importa.** O fallback (usado no Google Colab) tem de apontar para
+`refactoring-baby`: na `main` os `.csv` seguem em `materiais-didaticos/`, não em
+`recursos/dados/`, e como não há merge planejado isso não vai mudar — apontar para
+`main` dá 404 permanente. Consequência: **renomear a branch quebra o fallback de
+todos os notebooks**; se isso acontecer, revise as URLs.
 
 `bank_train_redux.csv` tem ~100 MB e é um excerto reduzido da base do Kaggle, por
 limite de espaço do GitHub.
