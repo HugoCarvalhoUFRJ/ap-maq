@@ -32,24 +32,52 @@ recursos/
 ├── dados/         conjuntos de dados (.csv) usados nas aulas práticas
 ├── listas/        listas de exercícios 01–08
 ├── avaliacoes/    avaliações presenciais (AP1, AP2) com gabarito
+├── figuras/       figuras das notas + gerar-figuras.py que as produz
 └── latex/         estilo-notas.sty (estilo compartilhado das notas de aula)
 ```
 
 Cada pasta de aula contém, conforme disponível:
 - o **slide** (`.html` ou `.pdf`);
-- as **notas de aula** (`.tex` + `.pdf` compilado);
+- as **notas de aula** em duas versões (`.tex` + `.pdf` compilado);
 - os **notebooks** (`.ipynb`) de prática e exemplos do tópico.
 
 ## Notas de aula (LaTeX)
 
-As notas de aula são escritas em LaTeX e compartilham um único arquivo de estilo,
-`recursos/latex/estilo-notas.sty`. Cada `.tex` o referencia por caminho relativo, de
-modo que basta compilar com `pdflatex` de dentro da própria pasta da aula:
+Cada aula tem **duas versões** das notas, lado a lado na mesma pasta:
+
+| Arquivo | Para quem | O que é |
+| --- | --- | --- |
+| `NN Título.tex` | docente | roteiro de sala: enxuto, com caixas *Em sala* que trazem as perguntas a fazer à turma e o fio condutor do discurso |
+| `NN Título (alunos).tex` | estudantes | texto autossuficiente para leitura fora da sala: sem instruções de palco, em tratamento direto ao leitor, com exemplos resolvidos e figuras |
+
+As duas compartilham um único arquivo de estilo,
+`recursos/latex/estilo-notas.sty`; a versão do aluno o carrega com a opção
+`[aluno]`, que habilita `tikz`/`pgfplots` e ajusta o cabeçalho. Cada `.tex` o
+referencia por caminho relativo, de modo que basta compilar com `pdflatex` de
+dentro da própria pasta da aula (duas passadas, por causa das referências
+cruzadas e das figuras):
 
 ```bash
 cd aulas/01-introducao
-pdflatex "01 Introducao.tex"
+pdflatex "01 Introducao.tex"            # versão do docente
+pdflatex "01 Introducao (alunos).tex"   # versão dos alunos
 ```
+
+## Figuras
+
+As figuras das notas dos alunos ficam em `recursos/figuras/` e são geradas por
+script — nenhuma foi copiada de livro. Para refazer todas (ou só as de algumas
+aulas):
+
+```bash
+python3 recursos/figuras/gerar-figuras.py         # todas
+python3 recursos/figuras/gerar-figuras.py 01 02   # só as aulas 01 e 02
+```
+
+O script imprime, ao gerar, conferências dos números que aparecem nas legendas
+(por exemplo, que a decomposição viés–variância fecha na precisão de máquina).
+As simulações usam as mesmas constantes dos notebooks das aulas práticas, de
+modo que o aluno reencontra na prática os números das figuras.
 
 ## Livros adotados
 

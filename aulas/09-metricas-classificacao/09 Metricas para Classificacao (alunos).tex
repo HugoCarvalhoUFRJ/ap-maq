@@ -308,8 +308,8 @@ calibração denuncia. Escolha a métrica pela pergunta que você vai responder.
 
 \begin{observacao}
 O motivo do descalibramento aqui é o da Aula~08: com covariáveis correlacionadas,
-o produto \eqref{eq:nb} conta a mesma evidência muitas vezes, e o resultado é um
-modelo excessivamente confiante. Existem correções \emph{a posteriori} --- a
+o produto $f(\x\mid Y=c)=\prod_j f(x_j\mid Y=c)$ do Bayes ingênuo conta a mesma
+evidência muitas vezes, e o resultado é um modelo excessivamente confiante. Existem correções \emph{a posteriori} --- a
 escala de Platt (ajustar uma logística sobre os \emph{scores}) e a regressão
 isotônica --- disponíveis no \texttt{scikit-learn} como
 \texttt{CalibratedClassifierCV}. Elas exigem dados próprios, separados do treino,

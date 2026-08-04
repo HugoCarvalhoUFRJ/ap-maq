@@ -25,16 +25,36 @@ Vale conferir em qual branch se está antes de assumir caminhos.
 
 ## Notas de aula (LaTeX)
 
-14 dos 15 `.tex` carregam o estilo compartilhado:
+**Cada aula tem duas versões, e elas não são rascunho e versão final** — são dois
+públicos:
+
+- `NN Título.tex` — **roteiro do docente**: enxuto, com caixas `emsala` que trazem
+  as perguntas a fazer à turma e o que dizer. Foi o que existia primeiro.
+- `NN Título (alunos).tex` — **versão dos estudantes**: leitura autônoma. Sem
+  `emsala`, em tratamento direto ao leitor, com exemplos resolvidos, figuras e as
+  passagens que o docente preencheria no quadro. Roda de 1,3 a 1,7 vez o tamanho da
+  outra.
+
+Ao editar conteúdo pedagógico, pergunte-se qual das duas o pedido atinge — na
+dúvida, as duas. As `(alunos)` carregam o estilo com a opção `aluno`:
 
 ```latex
-\usepackage{../../recursos/latex/estilo-notas}
+\usepackage[aluno]{../../recursos/latex/estilo-notas}   % versão do aluno
+\usepackage{../../recursos/latex/estilo-notas}          % roteiro do docente
 ```
 
+A opção é retrocompatível: sem ela o `.sty` se comporta exatamente como antes
+(conferido compilando as notas do docente com o `.sty` antigo e com o novo — PDFs
+idênticos). Ela carrega `tikz`/`pgfplots` e troca o cabeçalho para "Notas de Aula
+--- versão do aluno".
+
 A exceção é `aulas/00-planejamento/00 Planejamento.tex`, que tem preâmbulo próprio
-e completo. O `estilo-notas.sty` define a notação do curso (`\x`, `\X`, `\E`,
-`\rhat`, `\risco`, `\Dados`, ...), os ambientes de teorema em português e as três
-caixas pedagógicas: `emsala`, `ideia` e `atencao`.
+e completo e não tem versão para alunos. O `estilo-notas.sty` define a notação do
+curso (`\x`, `\X`, `\E`, `\rhat`, `\risco`, `\Dados`, ...), os ambientes de teorema
+em português e as três caixas pedagógicas: `emsala`, `ideia` e `atencao`.
+
+**`pgfplots` está em `compat=1.16`** porque é a versão do TeX Live desta máquina;
+valores mais novos fazem o pacote abortar com "compat=1.18 is unknown".
 
 Como o caminho do estilo é relativo, **compile de dentro da pasta da aula**:
 
@@ -61,6 +81,39 @@ hifenização portuguesa.
 
 **Ao editar um `.tex`, recompile o `.pdf` correspondente** e commite os dois: o
 `.gitignore` mantém apenas `.tex` e `.pdf`, descartando `.aux`, `.log`, `.out` etc.
+
+**Armadilha:** os `.pdf` commitados foram gerados com uma
+versão de TeX Live diferente da local. Recompilar qualquer nota — mesmo sem tocar
+no `.tex` — produz um PDF com quebras de linha ligeiramente diferentes e, portanto,
+um diff. Consequência prática: **não recompile em massa para "conferir"**. Se
+precisar (por exemplo, para testar uma mudança no `.sty`), restaure depois com
+`git checkout --` os PDFs que você não pretendia alterar. Para comparar duas
+compilações, compare o texto extraído (`pdftotext`) de duas compilações **locais**,
+nunca uma local contra o PDF commitado.
+
+## Figuras (`recursos/figuras/`)
+
+As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
+copiada dos livros. Uma função por figura, registrada com `@figura("nome", "aula")`:
+
+```bash
+python3 recursos/figuras/gerar-figuras.py         # todas (~5 min)
+python3 recursos/figuras/gerar-figuras.py 03 07   # só as aulas 03 e 07
+```
+
+Três coisas a respeitar:
+
+1. **O script confere os números que as legendas afirmam.** Ele imprime linhas
+   `[conferência]` com o que foi medido (viés na fronteira, ganho do QDA sobre o
+   LDA, superajuste do boosting...). Se você mudar uma simulação, releia a legenda
+   correspondente: vários números estão escritos no `.tex`.
+2. **Não use as macros do curso nos rótulos do matplotlib.** `$\x$` é `\x` do
+   `estilo-notas.sty`, e o mathtext do matplotlib não a conhece — quebra com
+   `ParseFatalException`. Pelo mesmo motivo, nada de `\%`, `\,` ou `\emph{}` em
+   strings do matplotlib: eles saem impressos literalmente.
+3. **Os parâmetros da população sintética são os mesmos dos notebooks das aulas
+   práticas** (`r(x)=sin(1.5x)+0.3x`, `σ=0,7`, `n=50`, `B=500`). Mudá-los
+   dessincroniza figura e prática.
 
 ## Slides (HTML) — leia antes de editar
 
@@ -115,6 +168,18 @@ limite de espaço do GitHub.
 - Ao mexer em conteúdo pedagógico, confira a coerência com as notas em LaTeX e com
   os dois livros-texto adotados: **[AME]** (Izbicki & Mendonça) é o esqueleto
   teórico, **[ISLP]** (James et al.) fornece intuição e implementação em Python.
+- **Os dois livros estão em `recursos/livros/`** e devem ser lidos de fato antes de
+  escrever conteúdo, não citados de memória. Extraia com
+  `pdftotext -f A -l B recursos/livros/AME.pdf -`. O offset do AME é **+18**
+  (página do livro $+$ 18 $=$ página do PDF, conferido em dois pontos); o do ISLP é
+  instável, então localize a seção pelo título:
+  `pdftotext recursos/livros/ISLP.pdf - | grep -n "Bias-Variance"`.
+- **Meça antes de afirmar.** Várias afirmações herdadas não sobreviveram à
+  verificação — a variância da validação cruzada não cresce com $k$ neste curso, o
+  vazamento por padronização é numericamente irrelevante perto do vazamento por
+  seleção de variáveis, e o viés de fronteira do Nadaraya--Watson só aparece se você
+  medir sobre repetições em vez de uma amostra. Quando a medição contrariar o texto,
+  **registre o que foi medido** em vez de repetir a previsão.
 
 ## Histórico de correções relevantes
 

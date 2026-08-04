@@ -811,7 +811,7 @@ def _lda_qda():
                     arrowprops=dict(arrowstyle="->", lw=0.8, color=CINZA))
     ax.set_xscale("log")
     ax.set_xlabel(f"$n$ (tamanho da amostra de treino), escala logarítmica")
-    ax.set_ylabel("acurácia em 20\\,000 observações novas")
+    ax.set_ylabel("acurácia em 20 mil observações novas")
     ax.set_title(f"$d={d}$ covariáveis, covariâncias diferentes por classe")
     ax.set_xticks(ns); ax.set_xticklabels(ns)
     ax.legend(loc="lower right", fontsize=8)
@@ -873,7 +873,7 @@ def _roc_metricas():
                      xy=(fpr[j], tpr[j]), xytext=(9, -9),
                      textcoords="offset points", fontsize=7, color=AZUL)
     ax1.set_xlabel("taxa de falsos positivos  $1-$especificidade")
-    ax1.set_ylabel("sensibilidade (\\emph{recall})".replace("\\emph{", "").replace("}", ""))
+    ax1.set_ylabel("sensibilidade (recall)")
     ax1.set_title("curva ROC")
     ax1.legend(loc="lower right", fontsize=7.5)
 
@@ -1018,13 +1018,13 @@ def _perdas():
     ax.plot(u, np.where(u < 0, 1.0, 0.0), color=CINZA, lw=1.6,
             label=r"0--1: $\mathbb{1}\{y\,g<0\}$")
     ax.plot(u, np.maximum(0, 1 - u), color=VINHO,
-            label=r"\emph{hinge}: $(1-y\,g)_+$".replace("\\emph{", "").replace("}", ""))
+            label=r"hinge: $(1-y\,g)_+$")
     ax.plot(u, np.log2(1 + np.exp(-u)), color=AZUL,
             label=r"logística: $\log_2(1+e^{-y\,g})$")
     ax.axvline(1, color=VERDE, ls=":", lw=1.1)
     ax.axvspan(1, 3.0, color=VERDE, alpha=0.07)
-    ax.text(1.55, 1.75, "aqui a \\emph{hinge} é zero:\nnão são vetores de suporte"
-            .replace("\\emph{", "").replace("}", ""), fontsize=7.5, color=VERDE)
+    ax.text(1.55, 1.75, "aqui a hinge é zero:\nnão são vetores de suporte",
+            fontsize=7.5, color=VERDE)
     ax.axvline(0, color="black", lw=0.7)
     ax.set_xlabel(r"margem $y\,g(x)$  (positiva $=$ classificou certo)")
     ax.set_ylabel("perda")
@@ -1091,6 +1091,261 @@ def _impureza():
     ax.set_ylim(0, 1.08)
     ax.legend(loc="lower center", fontsize=7.5)
     salvar(fig, "11-impureza")
+
+
+# =========================================================================== #
+# Aula E1 --- Análise de Agrupamento: k-Médias
+# =========================================================================== #
+
+def _nuvens(n, rng):
+    centros = np.array([[0, 0], [4.2, 1.0], [1.6, 4.4]])
+    y = rng.integers(0, 3, size=n)
+    return centros[y] + rng.normal(0, 0.95, size=(n, 2)), y
+
+
+@figura("E1-lloyd", "E1")
+def _lloyd():
+    """As iterações do algoritmo de Lloyd, uma a uma."""
+    from sklearn.cluster import KMeans
+
+    rng = np.random.default_rng(71)
+    X, _ = _nuvens(300, rng)
+    # inicialização de propósito ruim, para que haja o que ver nas iterações
+    c0 = np.array([[-1.5, -1.2], [-0.9, 0.4], [0.2, -1.8]])
+
+    fig, axes = subplots(1, 4, figsize=(7.4, 2.1), sharex=True, sharey=True)
+    cores = [AZUL, VINHO, VERDE]
+    centros = c0.copy()
+    for passo, ax in enumerate(axes):
+        rot = np.argmin(((X[:, None, :] - centros[None, :, :]) ** 2).sum(axis=2),
+                        axis=1)
+        wcss = sum(((X[rot == k] - centros[k]) ** 2).sum() for k in range(3))
+        for k in range(3):
+            ax.scatter(X[rot == k, 0], X[rot == k, 1], s=5, color=cores[k], alpha=0.5)
+            ax.plot(*centros[k], "X", color=cores[k], ms=9, mec="black", mew=0.8)
+        ax.set_title(f"iteração {passo}\nWCSS $= {wcss:.0f}$", fontsize=7.5)
+        ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+        print(f"     [conferência] Lloyd, iteração {passo}: WCSS = {wcss:.1f}")
+        centros = np.array([X[rot == k].mean(axis=0) if np.any(rot == k)
+                            else centros[k] for k in range(3)])
+    salvar(fig, "E1-lloyd")
+
+
+@figura("E1-escolha-K", "E1")
+def _escolha_k():
+    """Cotovelo e silhueta: duas heurísticas para K."""
+    from sklearn.cluster import KMeans
+    from sklearn.metrics import silhouette_score
+
+    rng = np.random.default_rng(72)
+    X, _ = _nuvens(400, rng)
+    Ks = np.arange(1, 11)
+    wcss, sil = [], []
+    for K in Ks:
+        km = KMeans(n_clusters=int(K), n_init=10, random_state=0).fit(X)
+        wcss.append(km.inertia_)
+        sil.append(silhouette_score(X, km.labels_) if K > 1 else np.nan)
+    melhor = Ks[1:][int(np.nanargmax(sil[1:]))]
+    print(f"     [conferência] WCSS: {np.round(wcss, 1)}")
+    print(f"     [conferência] silhueta máxima em K = {melhor} "
+          f"({np.nanmax(sil):.3f}); os dados têm 3 grupos")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
+    ax1.plot(Ks, wcss, "o-", color=AZUL, ms=4)
+    ax1.plot(3, wcss[2], "o", color=VINHO, ms=9, mfc="none", mew=1.6)
+    ax1.annotate("cotovelo", xy=(3, wcss[2]), xytext=(4.4, wcss[2] + 0.30 * wcss[0]),
+                 fontsize=8, color=VINHO,
+                 arrowprops=dict(arrowstyle="->", lw=0.9, color=VINHO))
+    ax1.set_xlabel("$K$"); ax1.set_ylabel("WCSS")
+    ax1.set_title("a WCSS nunca sobe --- por isso não\nse pode simplesmente minimizá-la",
+                  fontsize=8)
+    ax1.set_xticks(Ks)
+
+    ax2.plot(Ks[1:], sil[1:], "s-", color=VINHO, ms=4)
+    ax2.axvline(melhor, color=CINZA, ls=":", lw=1.0)
+    ax2.set_xlabel("$K$"); ax2.set_ylabel("silhueta média")
+    ax2.set_title(f"a silhueta tem máximo (em $K={melhor}$)", fontsize=8)
+    ax2.set_xticks(Ks[1:])
+    salvar(fig, "E1-escolha-K")
+
+
+@figura("E1-dendrograma", "E1")
+def _dendrograma():
+    """Dendrograma e o efeito do linkage."""
+    from scipy.cluster.hierarchy import dendrogram, linkage
+
+    rng = np.random.default_rng(73)
+    X, _ = _nuvens(40, rng)
+    fig, axes = subplots(1, 3, figsize=(7.4, 2.5))
+    for ax, met in zip(axes, ["ward", "complete", "single"]):
+        Z = linkage(X, method=met)
+        dendrogram(Z, ax=ax, color_threshold=0, above_threshold_color=AZUL,
+                   no_labels=True)
+        ax.set_title(f"linkage {met}", fontsize=8)
+        ax.set_ylabel("distância na fusão" if met == "ward" else "")
+        ax.grid(False)
+    salvar(fig, "E1-dendrograma")
+
+
+# =========================================================================== #
+# Aula E2 --- Redução de Dimensionalidade (PCA e t-SNE)
+# =========================================================================== #
+
+@figura("E2-eixos", "E2")
+def _eixos():
+    """PCA como rotação: os eixos que capturam a variância."""
+    rng = np.random.default_rng(81)
+    n = 300
+    base = rng.normal(size=(n, 2)) * np.array([2.4, 0.55])
+    ang = np.deg2rad(32)
+    R = np.array([[np.cos(ang), -np.sin(ang)], [np.sin(ang), np.cos(ang)]])
+    X = base @ R.T + np.array([1.0, 0.5])
+    Xc = X - X.mean(axis=0)
+    U, S, Vt = np.linalg.svd(Xc, full_matrices=False)
+    # Uma direção principal só é definida a menos de sinal; fixamos a convenção
+    # de apontar para o lado positivo, senão a seta sai virada para trás.
+    Vt *= np.sign(Vt[:, 0])[:, None]
+    var = S ** 2 / (n - 1)
+    print(f"     [conferência] variância por componente: {var.round(3)}; "
+          f"o 1º explica {100*var[0]/var.sum():.1f}%")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 3.0))
+    ax1.scatter(X[:, 0], X[:, 1], s=7, color=CINZA, alpha=0.6)
+    m = X.mean(axis=0)
+    for j, (cor, rot) in enumerate([(VINHO, "1ª componente"), (AZUL, "2ª componente")]):
+        v = Vt[j] * np.sqrt(var[j]) * 2.2
+        ax1.annotate("", xy=m + v, xytext=m,
+                     arrowprops=dict(arrowstyle="-|>", lw=2.0, color=cor))
+        ax1.annotate(rot, xy=m + v * 1.06, fontsize=7.5, color=cor)
+    ax1.set_aspect("equal")
+    ax1.set_xlabel("$x_1$"); ax1.set_ylabel("$x_2$")
+    ax1.set_title("as direções de maior variância", fontsize=8.5)
+
+    Z = Xc @ Vt.T
+    ax2.scatter(Z[:, 0], Z[:, 1], s=7, color=CINZA, alpha=0.6)
+    ax2.axhline(0, color=AZUL, lw=1.0); ax2.axvline(0, color=VINHO, lw=1.0)
+    ax2.set_aspect("equal")
+    ax2.set_xlabel("1ª componente"); ax2.set_ylabel("2ª componente")
+    ax2.set_title("os mesmos dados, nas novas coordenadas", fontsize=8.5)
+    salvar(fig, "E2-eixos")
+
+
+@figura("E2-compressao", "E2")
+def _compressao():
+    """Compressão por SVD truncada: quantos componentes bastam."""
+    import matplotlib.cbook as cbook
+    from matplotlib.image import imread
+
+    with cbook.get_sample_data("grace_hopper.jpg") as f:
+        img = imread(f).astype(float).mean(axis=2) / 255.0
+    U, S, Vt = np.linalg.svd(img, full_matrices=False)
+    total = (S ** 2).sum()
+    alvos = [5, 20, 60]
+
+    fig, axes = subplots(1, 4, figsize=(7.4, 2.9))
+    axes[0].imshow(img, cmap="gray")
+    axes[0].set_title(f"original\n{img.size/1000:.0f} mil números", fontsize=7.5)
+    for ax, k in zip(axes[1:], alvos):
+        aprox = (U[:, :k] * S[:k]) @ Vt[:k]
+        guardado = k * (img.shape[0] + img.shape[1] + 1)
+        expl = 100 * (S[:k] ** 2).sum() / total
+        ax.imshow(np.clip(aprox, 0, 1), cmap="gray")
+        ax.set_title(f"$k={k}$: {100*guardado/img.size:.0f}% dos números\n"
+                     f"{expl:.0f}% da variância", fontsize=7.5)
+        print(f"     [conferência] k={k}: {100*guardado/img.size:.1f}% do "
+              f"armazenamento, {expl:.1f}% da variância")
+    for ax in axes:
+        ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+    salvar(fig, "E2-compressao")
+
+
+@figura("E2-variancia", "E2")
+def _variancia():
+    """Scree plot e variância acumulada, no superconductivity."""
+    import pandas as pd
+    caminho = os.path.join(RAIZ, "recursos", "dados", "superconductivity.csv")
+    X = pd.read_csv(caminho).iloc[:, :-1].to_numpy()
+    X = StandardScaler().fit_transform(X)
+    var = np.linalg.svd(X, compute_uv=False) ** 2 / (len(X) - 1)
+    prop = var / var.sum()
+    acum = np.cumsum(prop)
+    k90 = int(np.searchsorted(acum, 0.90)) + 1
+    print(f"     [conferência] {X.shape[1]} covariáveis; o 1º componente explica "
+          f"{100*prop[0]:.1f}%; {k90} componentes chegam a 90%")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
+    eixo = np.arange(1, len(prop) + 1)
+    ax1.plot(eixo, prop, "o-", color=VINHO, ms=3)
+    ax1.set_xlabel("componente"); ax1.set_ylabel("proporção da variância")
+    ax1.set_title("scree plot", fontsize=8.5)
+    ax1.set_yscale("log")
+
+    ax2.plot(eixo, acum, "o-", color=AZUL, ms=3)
+    ax2.axhline(0.90, color=VERDE, ls="--", lw=1.1)
+    ax2.axvline(k90, color=CINZA, ls=":", lw=1.0)
+    ax2.annotate(f"{k90} componentes\ndos {X.shape[1]} originais", xy=(k90, 0.90),
+                 xytext=(k90 + 12, 0.55), fontsize=8,
+                 arrowprops=dict(arrowstyle="->", lw=0.9, color=CINZA))
+    ax2.set_xlabel("número de componentes")
+    ax2.set_ylabel("variância acumulada")
+    ax2.set_title("90% da variância", fontsize=8.5)
+    ax2.set_ylim(0, 1.03)
+    salvar(fig, "E2-variancia")
+
+
+# =========================================================================== #
+# Aula E3 --- NLP + Classificação
+# =========================================================================== #
+
+@figura("E3-texto", "E3")
+def _texto():
+    """A matriz documento-termo é enorme e quase vazia; e o que separa spam."""
+    import pandas as pd
+    from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+    from sklearn.naive_bayes import MultinomialNB
+
+    caminho = os.path.join(RAIZ, "recursos", "dados", "spam.csv")
+    df = pd.read_csv(caminho, encoding="latin-1").iloc[:, :2]
+    df.columns = ["rotulo", "texto"]
+    y = (df["rotulo"] == "spam").astype(int).to_numpy()
+
+    vec = CountVectorizer()
+    M = vec.fit_transform(df["texto"])
+    densidade = M.nnz / (M.shape[0] * M.shape[1])
+    print(f"     [conferência] {M.shape[0]} mensagens x {M.shape[1]} palavras; "
+          f"{100*y.mean():.1f}% spam; densidade = {100*densidade:.3f}% "
+          f"(média de {M.nnz/M.shape[0]:.1f} palavras distintas por mensagem)")
+
+    tf = TfidfVectorizer(min_df=3)
+    Xt = tf.fit_transform(df["texto"])
+    nb = MultinomialNB().fit(Xt, y)
+    peso = nb.feature_log_prob_[1] - nb.feature_log_prob_[0]
+    nomes = np.array(tf.get_feature_names_out())
+    ordem = np.argsort(peso)
+    top_spam, top_ham = ordem[-12:][::-1], ordem[:12]
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.4, 3.2),
+                               gridspec_kw={"width_ratios": [1, 1.25]})
+    sub = M[:180, :420].toarray() > 0
+    ax1.imshow(sub, cmap="Greys", aspect="auto", interpolation="nearest")
+    ax1.set_xlabel(f"palavras (primeiras 420 de {M.shape[1]})")
+    ax1.set_ylabel("mensagens (primeiras 180)")
+    ax1.set_title("cada ponto é uma palavra presente\ndensidade global: "
+                  f"{100*densidade:.2f}%", fontsize=8)
+    ax1.grid(False)
+
+    pos = np.arange(12)
+    ax2.barh(pos + 0.5, peso[top_spam], height=0.72, color=VINHO, label="indica spam")
+    ax2.barh(pos - 12.5, peso[top_ham], height=0.72, color=AZUL, label="indica ham")
+    rot = list(nomes[top_spam]) + list(nomes[top_ham])
+    ax2.set_yticks(list(pos + 0.5) + list(np.arange(12) - 12.5))
+    ax2.set_yticklabels(rot, fontsize=7)
+    ax2.axvline(0, color="black", lw=0.8)
+    ax2.set_xlabel(r"$\log\widehat{P}(\mathrm{palavra}\mid\mathrm{spam})"
+                   r"-\log\widehat{P}(\mathrm{palavra}\mid\mathrm{ham})$")
+    ax2.set_title("as palavras mais discriminativas", fontsize=8)
+    ax2.legend(loc="lower right", fontsize=7.5)
+    salvar(fig, "E3-texto")
 
 
 # =========================================================================== #
