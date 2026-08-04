@@ -339,6 +339,366 @@ def _escolha_k():
 
 
 # =========================================================================== #
+# Aula 04 --- Métodos Não Paramétricos (KNN)
+# =========================================================================== #
+
+def _nucleo_gauss(u):
+    return np.exp(-0.5 * u ** 2)
+
+
+def _nadaraya_watson(x_tr, y_tr, grade, h):
+    """Média ponderada por kernel gaussiano (grau 0)."""
+    W = _nucleo_gauss((grade[:, None] - x_tr[None, :]) / h)
+    return (W @ y_tr) / W.sum(axis=1)
+
+
+def _linear_local(x_tr, y_tr, grade, h):
+    """Reta ajustada localmente em cada ponto da grade (grau 1)."""
+    saida = np.empty(len(grade))
+    for j, x0 in enumerate(grade):
+        w = _nucleo_gauss((x_tr - x0) / h)
+        B = np.c_[np.ones_like(x_tr), x_tr - x0]      # centrada em x0
+        M = B.T @ (w[:, None] * B)
+        saida[j] = np.linalg.solve(M, B.T @ (w * y_tr))[0]
+    return saida
+
+
+@figura("04-knn-k", "04")
+def _knn_k():
+    """O k do KNN é o mesmo botão de flexibilidade da Aula 01."""
+    from sklearn.neighbors import KNeighborsRegressor
+    rng = np.random.default_rng(0)
+    x, y = amostra(N_TR, rng)
+    grade = np.linspace(A, B, 500)
+
+    fig, axes = subplots(1, 3, figsize=(7.2, 2.5), sharey=True)
+    for ax, k, rotulo in zip(axes, [1, 9, 40],
+                             ["superajuste", "equilíbrio", "subajuste"]):
+        m = KNeighborsRegressor(n_neighbors=k).fit(x.reshape(-1, 1), y)
+        ax.scatter(x, y, s=12, color=CINZA, alpha=0.7, zorder=2)
+        ax.plot(grade, r(grade), color=VERDE, lw=1.6, zorder=3, label="$r(x)$")
+        ax.plot(grade, m.predict(grade.reshape(-1, 1)), color=VINHO, lw=1.5,
+                zorder=4, label=r"KNN")
+        ax.set_title(f"$k={k}$ — {rotulo}")
+        ax.set_xlabel("$x$")
+        ax.set_ylim(-3.2, 3.2)
+    axes[0].set_ylabel("$y$")
+    axes[0].legend(loc="upper left", fontsize=7.5)
+    salvar(fig, "04-knn-k")
+
+
+@figura("04-nucleos", "04")
+def _nucleos():
+    """Os quatro kernels da tabela, todos com h = 1."""
+    u = np.linspace(-2.2, 2.2, 800)
+    d = np.abs(u)
+    kernels = [
+        ("uniforme", np.where(d <= 1, 1.0, 0.0), AZUL),
+        ("gaussiano", np.exp(-0.5 * u ** 2), VINHO),
+        ("triangular", np.where(d <= 1, 1 - d, 0.0), VERDE),
+        ("Epanechnikov", np.where(d <= 1, 1 - u ** 2, 0.0), "#B8860B"),
+    ]
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.7))
+    for nome, k, cor in kernels:
+        ax1.plot(u, k / k.max(), color=cor, label=nome)
+    # NB: aqui é $x$ mesmo, não a macro \x do estilo-notas -- o mathtext do
+    # matplotlib não conhece as macros do curso e quebra em silêncio (ou não).
+    ax1.set_xlabel(r"distância até $x$, em unidades de $h$")
+    ax1.set_ylabel("peso (reescalado)")
+    ax1.set_title("os núcleos da tabela ($h=1$)")
+    ax1.legend(fontsize=7.5)
+
+    # o que realmente muda o ajuste é h, não o núcleo
+    rng = np.random.default_rng(0)
+    x, y = amostra(N_TR, rng)
+    grade = np.linspace(A, B, 400)
+    ax2.scatter(x, y, s=10, color=CINZA, alpha=0.6)
+    ax2.plot(grade, r(grade), color=VERDE, lw=1.6, label="$r(x)$")
+    for h, estilo in [(0.08, ":"), (0.35, "-"), (1.5, "--")]:
+        ax2.plot(grade, _nadaraya_watson(x, y, grade, h), color=VINHO, ls=estilo,
+                 lw=1.4, label=f"$h={h}$")
+    ax2.set_xlabel("$x$"); ax2.set_ylabel("$y$")
+    ax2.set_title("é a janela $h$ que decide")
+    ax2.set_ylim(-3.0, 3.0)
+    ax2.legend(fontsize=7, loc="upper left", ncol=2)
+    salvar(fig, "04-nucleos")
+
+
+@figura("04-fronteira", "04")
+def _fronteira():
+    """O viés de fronteira de Nadaraya-Watson e o conserto do grau 1."""
+    # Suporte [-2,2] em vez do [-3,3] das outras figuras, de propósito: o viés de
+    # fronteira do NW é proporcional a r'(x) na borda, e r'(±3) ≈ -0,02 (quase
+    # plana) esconderia justamente o efeito que queremos mostrar. Já r'(±2) ≈ -1,2.
+    #
+    # E medimos VIÉS, não o erro de uma realização: a teoria diz que o grau 1
+    # corrige o viés de fronteira, e o erro de uma amostra só mistura viés com
+    # ruído -- na borda o grau 1 tem variância alta e a conta de uma realização
+    # chega a inverter o resultado. Por isso as B repetições abaixo.
+    a, b = -2.0, 2.0
+    n, h, B_rep = 200, 0.35, 300
+    grade = np.linspace(a, b, 300)
+    r0 = r(grade)
+
+    rng = np.random.default_rng(3)
+    est_nw = np.empty((B_rep, len(grade)))
+    est_ll = np.empty((B_rep, len(grade)))
+    for j in range(B_rep):
+        x = rng.uniform(a, b, size=n)
+        y = r(x) + rng.normal(0, SIGMA, size=n)
+        est_nw[j] = _nadaraya_watson(x, y, grade, h)
+        est_ll[j] = _linear_local(x, y, grade, h)
+
+    m_nw, m_ll = est_nw.mean(axis=0), est_ll.mean(axis=0)
+    dp_nw, dp_ll = est_nw.std(axis=0), est_ll.std(axis=0)
+    vies_nw, vies_ll = np.abs(m_nw - r0), np.abs(m_ll - r0)
+    borda = (grade < a + 0.15 * (b - a)) | (grade > b - 0.15 * (b - a))
+
+    print(f"     [conferência] |viés| na fronteira: NW = {vies_nw[borda].mean():.4f}, "
+          f"linear local = {vies_ll[borda].mean():.4f}")
+    print(f"     [conferência] |viés| no miolo:     NW = {vies_nw[~borda].mean():.4f}, "
+          f"linear local = {vies_ll[~borda].mean():.4f}")
+    print(f"     [conferência] desvio na fronteira: NW = {dp_nw[borda].mean():.4f}, "
+          f"linear local = {dp_ll[borda].mean():.4f}  <- o preço do grau 1")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 2.9))
+    for ax in (ax1, ax2):
+        ax.axvspan(a, a + 0.15 * (b - a), color=CINZA, alpha=0.12)
+        ax.axvspan(b - 0.15 * (b - a), b, color=CINZA, alpha=0.12)
+
+    ax1.plot(grade, r0, color=VERDE, lw=1.8, zorder=3, label="$r(x)$ verdadeira")
+    ax1.fill_between(grade, m_nw - dp_nw, m_nw + dp_nw, color=VINHO, alpha=0.15)
+    ax1.plot(grade, m_nw, color=VINHO, lw=1.5, zorder=4,
+             label="Nadaraya--Watson (grau 0)")
+    ax1.fill_between(grade, m_ll - dp_ll, m_ll + dp_ll, color=AZUL, alpha=0.15)
+    ax1.plot(grade, m_ll, color=AZUL, lw=1.5, ls="--", zorder=5,
+             label="linear local (grau 1)")
+    ax1.set_xlabel("$x$"); ax1.set_ylabel("estimativa média")
+    ax1.set_title(f"média de {B_rep} ajustes ($\\pm 1$ desvio)")
+    ax1.legend(loc="lower center", fontsize=7, framealpha=0.95)
+
+    ax2.plot(grade, vies_nw, color=VINHO, lw=1.5, label="NW (grau 0)")
+    ax2.plot(grade, vies_ll, color=AZUL, lw=1.5, ls="--", label="linear local (grau 1)")
+    ax2.set_xlabel("$x$"); ax2.set_ylabel(r"$|$viés$|$")
+    ax2.set_title("o viés dispara só nas pontas")
+    ax2.legend(loc="upper center", fontsize=7.5)
+    salvar(fig, "04-fronteira")
+
+
+# =========================================================================== #
+# Aula 05 --- Métodos Não Paramétricos: Aspectos Teóricos
+# =========================================================================== #
+
+@figura("05-taxas", "05")
+def _taxas():
+    """A taxa n^{-2/(2+d)} degrada brutalmente com d."""
+    n = np.logspace(1, 6, 200)
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
+
+    for d, cor in zip([1, 2, 5, 10, 20], [VERDE, AZUL, "#B8860B", VINHO, "black"]):
+        ax1.plot(n, n ** (-2 / (2 + d)), color=cor, label=f"$d={d}$")
+    ax1.set_xscale("log"); ax1.set_yscale("log")
+    ax1.set_xlabel("$n$"); ax1.set_ylabel(r"risco $\propto n^{-2/(2+d)}$")
+    ax1.set_title("a taxa achata conforme $d$ cresce")
+    ax1.legend(fontsize=7.5)
+
+    # n necessário para um risco alvo fixo
+    alvo = 0.05
+    dd = np.arange(1, 21)
+    preciso = alvo ** (-(2 + dd) / 2)
+    print(f"     [conferência] n para risco {alvo}: d=1 -> {preciso[0]:.0f}, "
+          f"d=5 -> {preciso[4]:.3g}, d=10 -> {preciso[9]:.3g}, d=20 -> {preciso[19]:.3g}")
+    ax2.plot(dd, preciso, "o-", color=VINHO, ms=3)
+    ax2.axhline(1e10, color=CINZA, ls=":", lw=1.0)
+    ax2.text(1.2, 1.6e10, "$10^{10}$ observações", fontsize=7, color=CINZA)
+    ax2.set_yscale("log")
+    ax2.set_xlabel("$d$ (dimensão)")
+    ax2.set_ylabel(f"$n$ para atingir risco {alvo}".replace("0.05", "0,05"))
+    ax2.set_title("e o $n$ exigido explode")
+    ax2.set_xticks([1, 5, 10, 15, 20])
+    salvar(fig, "05-taxas")
+
+
+@figura("05-vizinho-longe", "05")
+def _vizinho_longe():
+    """Em dimensão alta o "vizinho mais próximo" não é próximo de nada."""
+    rng = np.random.default_rng(4)
+    n = 1000
+    dims = [1, 2, 3, 5, 10, 20, 50, 100]
+    medias, p05 = [], []
+    for d in dims:
+        X = rng.uniform(0, 1, size=(n, d))
+        alvo = rng.uniform(0, 1, size=(200, d))
+        dist = np.sqrt(((alvo[:, None, :] - X[None, :, :]) ** 2).sum(axis=2))
+        maisproximo = dist.min(axis=1)
+        # normaliza pelo diâmetro do cubo, sqrt(d): fração do espaço percorrida
+        medias.append((maisproximo / np.sqrt(d)).mean())
+        p05.append(np.quantile(maisproximo / np.sqrt(d), 0.05))
+    print(f"     [conferência] distância ao vizinho mais próximo / diâmetro: "
+          f"d=1 -> {medias[0]:.4f}, d=10 -> {medias[4]:.4f}, d=100 -> {medias[-1]:.4f}")
+
+    fig, ax = subplots(figsize=(5.0, 3.0))
+    ax.plot(dims, medias, "o-", color=VINHO, ms=4, label="média")
+    ax.fill_between(dims, p05, medias, color=VINHO, alpha=0.15,
+                    label="entre o percentil 5 e a média")
+    ax.set_xscale("log")
+    ax.set_xlabel("$d$ (dimensão), escala logarítmica")
+    ax.set_ylabel("distância ao vizinho mais próximo\n(fração do diâmetro do cubo)")
+    ax.set_xticks(dims); ax.set_xticklabels(dims)
+    ax.set_title(f"$n={n}$ pontos uniformes em $[0,1]^d$")
+    ax.legend(fontsize=7.5, loc="lower right")
+    salvar(fig, "05-vizinho-longe")
+
+
+# =========================================================================== #
+# Aula 06 --- Árvores de Regressão e Ensembles
+# =========================================================================== #
+
+@figura("06-numero-arvores", "06")
+def _numero_arvores():
+    """B grande é inofensivo na floresta e perigoso no boosting."""
+    from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+
+    rng = np.random.default_rng(12)
+    n, d, ruido = 150, 8, 1.5
+    X = rng.uniform(-2, 2, size=(n, d))
+    # resposta não linear com interação, dependendo só das 3 primeiras covariáveis
+    def alvo(M):
+        return (np.sin(1.5 * M[:, 0]) + 0.8 * M[:, 1] * M[:, 2]
+                + 0.5 * M[:, 0] ** 2)
+    y = alvo(X) + rng.normal(0, ruido, size=n)
+    X_te = rng.uniform(-2, 2, size=(4000, d))
+    y_te = alvo(X_te) + rng.normal(0, ruido, size=4000)
+
+    Bs = np.array([1, 2, 3, 5, 8, 12, 20, 35, 60, 100, 175, 300, 500])
+    rf_te, rf_tr = [], []
+    for B in Bs:
+        m = RandomForestRegressor(n_estimators=int(B), max_features=1/3,
+                                  random_state=0).fit(X, y)
+        rf_te.append(np.mean((y_te - m.predict(X_te)) ** 2))
+        rf_tr.append(np.mean((y - m.predict(X)) ** 2))
+
+    # lambda=0,05 e árvores de profundidade 3: valores realistas. O superajuste
+    # aparece porque n=150 é pequeno e o ruído é alto -- não porque forçamos.
+    gb = GradientBoostingRegressor(learning_rate=0.05, n_estimators=1500,
+                                   max_depth=3, random_state=0).fit(X, y)
+    gb_te = np.array([np.mean((y_te - p) ** 2)
+                      for p in gb.staged_predict(X_te)])
+    gb_tr = np.array([np.mean((y - p) ** 2) for p in gb.staged_predict(X)])
+    passos = np.arange(1, len(gb_te) + 1)
+    melhor = passos[int(np.argmin(gb_te))]
+    print(f"     [conferência] floresta: risco em B=100 -> {rf_te[9]:.4f}, "
+          f"B=500 -> {rf_te[-1]:.4f} (variação de "
+          f"{100*(rf_te[-1]/rf_te[9]-1):+.1f}%)")
+    print(f"     [conferência] boosting: mínimo em B={melhor} ({gb_te.min():.4f}), "
+          f"em B=1500 -> {gb_te[-1]:.4f} (+{100*(gb_te[-1]/gb_te.min()-1):.0f}%)")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 2.9), sharey=True)
+    ax1.plot(Bs, rf_te, "o-", color=VINHO, ms=3, label="risco (teste)")
+    ax1.plot(Bs, rf_tr, "s--", color=CINZA, ms=3, label="erro de treino")
+    ax1.set_xscale("log")
+    ax1.set_xlabel("$B$ (número de árvores)")
+    ax1.set_ylabel("erro quadrático médio")
+    ax1.set_title("Floresta aleatória: estabiliza")
+    ax1.legend(fontsize=7.5)
+
+    ax2.plot(passos, gb_te, color=VINHO, label="risco (teste)")
+    ax2.plot(passos, gb_tr, color=CINZA, ls="--", label="erro de treino")
+    ax2.axvline(melhor, color=AZUL, ls=":", lw=1.2)
+    ax2.annotate(f"mínimo em $B={melhor}$", xy=(melhor, gb_te.min()),
+                 xytext=(melhor * 3.2, gb_te.min() + 1.1), fontsize=7.5,
+                 arrowprops=dict(arrowstyle="->", lw=0.8, color=AZUL))
+    ax2.set_xscale("log")
+    ax2.set_xlabel("$B$ (número de árvores)")
+    ax2.set_title(r"Boosting ($\lambda=0{,}05$): volta a subir")
+    ax2.legend(fontsize=7.5)
+    ax1.set_ylim(0, 6.0)
+    salvar(fig, "06-numero-arvores")
+
+
+# =========================================================================== #
+# Aula 07 --- Pré-processamento e Pipelines
+# =========================================================================== #
+
+@figura("07-vazamento", "07")
+def _vazamento():
+    """Quanto custa vazar: dois tipos de vazamento, medidos.
+
+    Cenário deliberadamente cruel: y é ruído puro, independente de X. Qualquer
+    R^2 acima de zero é ilusão. O clássico do ESL §7.10.2, em versão de regressão.
+    """
+    from sklearn.feature_selection import SelectKBest, f_regression
+    from sklearn.pipeline import Pipeline as Pipe
+
+    rng = np.random.default_rng(21)
+    n, d, k = 60, 3000, 20
+    n_rep = 40
+    dobras = skm.KFold(5, shuffle=True, random_state=0)
+
+    r2_errado, r2_certo, r2_escala_errada, r2_escala_certa = [], [], [], []
+    for _ in range(n_rep):
+        X = rng.normal(size=(n, d))
+        y = rng.normal(size=n)                 # NENHUMA relação com X
+
+        # (1) ERRADO: seleciona as k melhores olhando TODOS os dados, e só
+        #     depois faz validação cruzada.
+        sel = SelectKBest(f_regression, k=k).fit(X, y)
+        X_sel = sel.transform(X)
+        r2_errado.append(skm.cross_val_score(skl.LinearRegression(), X_sel, y,
+                                             cv=dobras, scoring="r2").mean())
+
+        # (2) CERTO: a seleção entra no pipeline e é refeita dentro de cada dobra.
+        pipe = Pipe([("sel", SelectKBest(f_regression, k=k)),
+                     ("mqo", skl.LinearRegression())])
+        r2_certo.append(skm.cross_val_score(pipe, X, y, cv=dobras,
+                                            scoring="r2").mean())
+
+        # (3) e (4): o mesmo par, mas com padronização no lugar da seleção,
+        #     num problema pequeno e com sinal de verdade.
+        Xp = rng.normal(size=(n, 8)) * np.array([1, 50, 0.01, 5, 1, 200, 0.1, 2])
+        yp = Xp @ np.r_[1.5, 0.02, 80, 0.3, -1.0, 0.005, 10, 0.4] + rng.normal(0, 1, n)
+        esc = StandardScaler().fit(Xp)          # ERRADO: aprende com tudo
+        r2_escala_errada.append(skm.cross_val_score(
+            skl.Ridge(alpha=1.0), esc.transform(Xp), yp, cv=dobras, scoring="r2").mean())
+        r2_escala_certa.append(skm.cross_val_score(
+            Pipeline([("sc", StandardScaler()), ("ridge", skl.Ridge(alpha=1.0))]),
+            Xp, yp, cv=dobras, scoring="r2").mean())
+
+    m = [np.mean(v) for v in (r2_errado, r2_certo, r2_escala_errada, r2_escala_certa)]
+    print(f"     [conferência] seleção fora da dobra (ERRADO): R2 = {m[0]:+.3f}")
+    print(f"     [conferência] seleção dentro do pipeline:     R2 = {m[1]:+.3f}")
+    print(f"     [conferência] escala fora da dobra (ERRADO):  R2 = {m[2]:+.4f}")
+    print(f"     [conferência] escala dentro do pipeline:      R2 = {m[3]:+.4f}")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 2.9))
+
+    ax1.axhline(0, color="black", lw=0.8)
+    ax1.bar([0, 1], [m[0], m[1]], width=0.55, color=[VINHO, VERDE])
+    ax1.set_xticks([0, 1])
+    ax1.set_xticklabels(["seleção\nfora da dobra", "seleção\ndentro do pipeline"],
+                        fontsize=8)
+    ax1.set_ylabel("$R^2$ estimado por validação cruzada")
+    ax1.set_title(f"$y$ é ruído puro ($n={n}$, $d={d}$)")
+    for xx, vv in zip([0, 1], m[:2]):
+        ax1.annotate(f"{vv:+.2f}", xy=(xx, vv), xytext=(0, 6 if vv > 0 else -14),
+                     textcoords="offset points", ha="center", fontsize=8.5)
+    ax1.set_ylim(min(m[1] * 1.35, -0.1), max(m[0] * 1.35, 0.1))
+
+    ax2.bar([0, 1], [m[2], m[3]], width=0.55, color=[VINHO, VERDE])
+    ax2.set_xticks([0, 1])
+    ax2.set_xticklabels(["escala\nfora da dobra", "escala\ndentro do pipeline"],
+                        fontsize=8)
+    ax2.set_ylabel("$R^2$ estimado por validação cruzada")
+    ax2.set_title("padronização, com sinal de verdade")
+    for xx, vv in zip([0, 1], m[2:]):
+        ax2.annotate(f"{vv:.4f}", xy=(xx, vv), xytext=(0, 6), textcoords="offset points",
+                     ha="center", fontsize=8.5)
+    baixo = min(m[2], m[3])
+    ax2.set_ylim(baixo - 0.02, max(m[2], m[3]) + 0.02)
+    salvar(fig, "07-vazamento")
+
+
+# =========================================================================== #
 # Aula 02 --- Regressão Linear e Regularização
 # =========================================================================== #
 
