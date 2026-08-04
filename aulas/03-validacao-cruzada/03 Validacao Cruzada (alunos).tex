@@ -1,0 +1,431 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Aula 03 --- Seleção de Modelos e Validação Cruzada
+%  VERSÃO DO ALUNO: texto para leitura autônoma, fora da sala.
+%  (O roteiro de sala correspondente é "03 Validacao Cruzada.tex".)
+%==============================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[aluno]{../../recursos/latex/estilo-notas}
+
+\title{}
+\date{}
+
+\begin{document}
+\cabecalhoaula{03}{Seleção de Modelos e Validação Cruzada}{AME §1.4--1.5; ISLP cap.~5}
+
+%==============================================================================
+\section*{O que você vai aprender}
+%==============================================================================
+Ao final desta aula você deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item explicar por que o erro de treino é um estimador \emph{otimista} do risco;
+  \item descrever \emph{data splitting} (treino/validação) e estimar o risco com a
+        parte de validação;
+  \item definir \emph{validação cruzada} LOOCV e $k$-dobras e relacioná-las;
+  \item discutir o balanço viés--variância \emph{na própria estimativa do risco} e
+        a escolha de $k$;
+  \item usar a validação cruzada para \textbf{selecionar hiperparâmetros} sem
+        vazamento;
+  \item descrever o \emph{bootstrap} para quantificar incerteza de uma estimativa.
+\end{itemize}
+
+\noindent
+Esta é a aula \emph{operacional} mais importante do curso. Nas Aulas~01 e~02
+apareceram hiperparâmetros --- o grau do polinômio, o $\lambda$ do Lasso --- e nos
+dois casos a resposta para ``como escolher?'' foi ``na Aula~03''. Chegamos nela. A
+mesma ferramenta vai escolher o $k$ do KNN, a profundidade da árvore, o $C$ da SVM.
+Comece pela pergunta:
+
+\begin{center}\itshape
+  se eu ajustar um polinômio de grau 50 a 50 pontos, qual o erro no treino?\\
+  e isso quer dizer que é um bom modelo?
+\end{center}
+
+\noindent
+O erro é \emph{exatamente zero} --- 51 parâmetros passam por 50 pontos sem esforço
+--- e o modelo é péssimo. Um critério de qualidade que dá nota máxima ao pior modelo
+possível não serve como critério. Precisamos de outro.
+
+%==============================================================================
+\section{O problema: estimar o risco}
+%==============================================================================
+Da Aula~01, o risco de uma função de predição $g$ é
+$\risco(g)=\E[L(Y,g(\X))]$, esperança sobre uma observação \emph{nova}. Para
+\emph{selecionar} um modelo (escolher entre candidatos $g\in\mathcal{G}$, ou
+escolher um hiperparâmetro) precisamos comparar riscos --- mas $\risco(g)$ é
+desconhecido porque depende de $P$. Logo, \textbf{tudo se resume a estimar bem o
+risco}.
+
+\subsection{Por que não usar o erro de treino?}
+O candidato ingênuo é o \emph{erro quadrático médio no treino} (risco empírico):
+\begin{equation}\label{eq:eqm}
+  \mathrm{EQM}(g) = \frac1n \sum_{i=1}^n \big(Y_i - g(\X_i)\big)^2 .
+\end{equation}
+O problema: $g$ foi \emph{escolhida para ajustar exatamente esses pontos}. O
+EQM\eqref{eq:eqm} é um estimador \textbf{otimista} (enviesado para baixo) de
+$\risco(g)$, e o viés cresce com a complexidade do modelo.
+
+\begin{atencao}
+Levado ao extremo, minimizar o erro de treino leva ao superajuste perfeito: um
+modelo flexível o bastante \emph{interpola} os dados (erro de treino zero) e
+generaliza pessimamente. \textbf{Nunca} selecione modelos nem reporte desempenho
+com o erro de treino.
+\end{atencao}
+
+\begin{observacao}
+Penalização (AIC, BIC) é uma alternativa: estima-se
+$\risco(g)\approx \mathrm{EQM}(g)+P(g)$, com $P(g)$ crescente na complexidade
+(p.ex.\ $P(g)\propto p/\widehat\sigma^2$ no AIC). Funciona, mas exige um modelo
+probabilístico e contagem de ``parâmetros'' --- nem sempre disponível (KNN,
+florestas). A validação cruzada é \emph{agnóstica ao modelo} e por isso a
+preferimos.
+\end{observacao}
+
+%==============================================================================
+\section{Data splitting (conjunto de validação)}
+%==============================================================================
+A ideia mais simples: separe os dados \emph{aleatoriamente} em treino (p.ex.\ 70\%)
+e validação (p.ex.\ 30\%):
+\[
+  \underbrace{(\X_1,Y_1),\dots,(\X_s,Y_s)}_{\text{treino}}\;,\;
+  \underbrace{(\X_{s+1},Y_{s+1}),\dots,(\X_n,Y_n)}_{\text{validação}}.
+\]
+Ajuste $g$ \emph{só} no treino e estime o risco \emph{só} na validação:
+\begin{equation}\label{eq:datasplit}
+  \riscohat(g) = \frac{1}{n-s}\sum_{i=s+1}^{n} \big(Y_i - g(\X_i)\big)^2 .
+\end{equation}
+Como a validação não foi usada para estimar $g$, \eqref{eq:datasplit} é um
+estimador \emph{consistente} de $\risco(g)$ pela lei dos grandes números.
+
+\begin{atencao}[o \emph{aleatoriamente} não é decoração]
+Se o banco vier ordenado por alguma variável --- por data, por classe, por quem
+coletou ---, cortar pelos índices originais produz dois conjuntos que não são
+amostras da mesma distribuição, e a estimativa fica sem sentido. Quem montou o banco
+pode ter ordenado por um motivo que você desconhece. Em \texttt{scikit-learn} isso é
+o \texttt{train\_test\_split(\dots, shuffle=True)}, que já é o padrão --- mas vale
+saber por que existe.
+\end{atencao}
+
+\begin{atencao}[Limitações do data splitting]
+\begin{enumerate}[leftmargin=1.5cm,nosep]
+  \item \textbf{Desperdício de dados:} $g$ é treinada com apenas $s<n$ observações;
+        com poucos dados isso prejudica o ajuste.
+  \item \textbf{Variabilidade:} a estimativa depende da divisão sorteada --- outra
+        semente dá outro número. Pode ser instável.
+\end{enumerate}
+A validação cruzada resolve os dois usando \emph{toda} a amostra.
+\end{atencao}
+
+%==============================================================================
+\section{Validação cruzada}
+%==============================================================================
+\subsection{Leave-one-out (LOOCV)}
+Deixe \emph{uma} observação de fora por vez. Seja $g_{-i}$ o modelo ajustado sem a
+$i$-ésima observação. O estimador é
+\begin{equation}\label{eq:loocv}
+  \riscohat_{\text{LOO}}(g) = \frac1n \sum_{i=1}^n \big(Y_i - g_{-i}(\X_i)\big)^2 .
+\end{equation}
+Cada $Y_i$ é predito por um modelo que \emph{não} o viu. LOOCV é
+\emph{aproximadamente não-viesado} para o risco esperado e não tem aleatoriedade de
+divisão.
+
+\begin{observacao}[por que ``aproximadamente não-viesado'']
+A conta é curta e vale ver. Se $\risco(g)$ é o risco esperado do procedimento
+treinado com $n$ observações, então, num conjunto com $n+1$ observações,
+\[
+  \E\!\left[\frac{1}{n+1}\sum_{i=1}^{n+1}\big(Y_i-g_{-i}(\X_i)\big)^2\right]
+  = \frac{1}{n+1}\sum_{i=1}^{n+1}\E\big[(Y_i-g_{-i}(\X_i))^2\big]
+  = \frac{1}{n+1}\sum_{i=1}^{n+1}\risco(g) = \risco(g),
+\]
+porque cada $g_{-i}$ é treinado com exatamente $n$ observações e tem, portanto, a
+mesma distribuição. O ``aproximadamente'' está no descompasso de uma unidade: o
+LOOCV calculado com $n$ dados é não viesado para o risco do procedimento com $n-1$
+dados, não com $n$.
+\end{observacao}
+
+\noindent O custo aparente é alto ($n$ ajustes), mas nem sempre:
+
+\begin{proposicao}[Atalho do LOOCV para modelos lineares]\label{prop:loo}
+Para um ajuste linear (MQO, Ridge, \emph{splines}) com matriz de projeção
+$\bm{H}=\bm{X}(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top$, vale
+\[
+  \riscohat_{\text{LOO}}
+   = \frac1n \sum_{i=1}^n \left( \frac{Y_i-\widehat{g}(\X_i)}{1-h_{ii}} \right)^2,
+\]
+onde $h_{ii}$ é o $i$-ésimo elemento diagonal de $\bm{H}$ (\emph{leverage}) e
+$\widehat g$ é ajustado com \emph{todos} os dados.
+\end{proposicao}
+Ou seja, um \emph{único} ajuste basta. Esta é uma das fórmulas mais elegantes da
+área: o LOOCV ``de graça''. Vale notar o que ela diz: o resíduo de validação é o
+resíduo de treino \emph{inflado} pelo fator $1/(1-h_{ii})$, e $h_{ii}$ mede o quanto
+a observação $i$ influencia sua própria predição. Pontos de alta alavancagem são
+justamente aqueles cujo resíduo de treino mais engana.
+
+\subsection{Validação cruzada com $k$ dobras}
+Divida os dados aleatoriamente em $k$ lotes (dobras) disjuntos de tamanho
+$\approx n/k$, com índices $L_1,\dots,L_k$. Para cada $j$, treine $g_{-j}$ \emph{sem}
+o lote $L_j$ e avalie nesse lote:
+\begin{equation}\label{eq:kfold}
+  \riscohat_{k\text{-CV}}(g)
+   = \frac1n \sum_{j=1}^{k} \sum_{i\in L_j} \big(Y_i - g_{-j}(\X_i)\big)^2 .
+\end{equation}
+Cada observação é usada para validação \emph{exatamente uma vez} e para treino
+$k-1$ vezes. Quando $k=n$ recuperamos o LOOCV \eqref{eq:loocv}. Valores típicos:
+$k=5$ ou $k=10$.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[x=1cm, y=1cm, font=\small]
+    \foreach \j in {1,...,5} {
+      \pgfmathsetmacro{\yy}{-1.0*\j}
+      \node[left, font=\scriptsize] at (-0.15,\yy+0.25) {rodada \j};
+      \foreach \b in {1,...,5} {
+        \pgfmathsetmacro{\xx}{2.4*(\b-1)}
+        \ifnum\j=\b
+          \fill[vinho!25] (\xx,\yy) rectangle (\xx+2.25,\yy+0.5);
+          \draw[vinho,thick] (\xx,\yy) rectangle (\xx+2.25,\yy+0.5);
+          \node[font=\scriptsize,vinho] at (\xx+1.125,\yy+0.25) {validação};
+        \else
+          \fill[azulufrj!12] (\xx,\yy) rectangle (\xx+2.25,\yy+0.5);
+          \draw[azulufrj!70] (\xx,\yy) rectangle (\xx+2.25,\yy+0.5);
+          \node[font=\scriptsize,azulufrj] at (\xx+1.125,\yy+0.25) {treino};
+        \fi
+      }
+      \node[right, font=\scriptsize] at (12.1,\yy+0.25) {$\to\ \riscohat_\j$};
+    }
+    \draw[decorate,decoration={brace,amplitude=4pt}] (0,0.15) -- (11.85,0.15)
+      node[midway,above=3pt,font=\scriptsize] {os $n$ dados, embaralhados e partidos em $k=5$ lotes};
+    \node[font=\scriptsize] at (5.9,-6.1)
+      {$\riscohat_{k\text{-CV}}$ é a média de $\riscohat_1,\dots,\riscohat_5$
+       --- e cada dado foi validado exatamente uma vez};
+  \end{tikzpicture}
+  \caption{Validação cruzada com $k=5$ dobras. Em cada rodada um lote diferente fica
+  de fora do ajuste e serve para avaliar. Ao final, \emph{toda} observação foi usada
+  para validar (uma vez) e para treinar ($k-1$ vezes) --- é assim que a validação
+  cruzada resolve o desperdício de dados do \emph{data splitting}.}
+  \label{fig:kfold}
+\end{figure}
+
+\begin{ideia}
+A validação cruzada estima o risco \emph{de um procedimento} (``ajustar este tipo
+de modelo a dados como estes''), não de um $g$ específico. Por isso, depois de
+escolher o hiperparâmetro por CV, \textbf{reajustamos o modelo final usando todos
+os dados}.
+\end{ideia}
+
+\subsection{A validação cruzada funciona? Uma verificação}
+Dá para conferir, porque na população sintética da Aula~01 nós conhecemos o risco
+verdadeiro. A Figura~\ref{fig:cvrisco} põe lado a lado o que o analista realmente
+tem (uma amostra de $n=50$ pontos e a CV calculada nela) e o que ele nunca terá (o
+risco verdadeiro, obtido simulando 300 amostras).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.78\textwidth]{../../recursos/figuras/03-cv-vs-risco.pdf}
+  \caption{Validação cruzada de 5 dobras calculada sobre \emph{uma única} amostra de
+  $n=50$, contra o risco verdadeiro e o erro de treino. As barras são de um
+  erro-padrão. A CV reproduz a forma em ``U'' e localiza o mínimo no grau~4, contra
+  o grau~5 do risco verdadeiro --- e, o mais importante, não se deixa enganar pelo
+  erro de treino, que continua descendo. Note também as barras se abrindo à direita:
+  a CV \emph{avisa} quando está insegura.}
+  \label{fig:cvrisco}
+\end{figure}
+
+\begin{ideia}[o que a CV precisa acertar]
+Repare que a curva azul não coincide com a vinho: a CV \emph{subestima} um pouco o
+risco. Isso não é problema. Para \textbf{selecionar} um modelo, o que importa é
+\emph{onde} está o mínimo, não o valor no mínimo. O [ISLP] faz essa observação
+explicitamente: em três exemplos diferentes as curvas de CV ora subestimam, ora
+superestimam o risco, mas todas identificam corretamente o nível de flexibilidade
+certo. Se você quer \emph{reportar} o desempenho, aí sim precisa do valor --- e para
+isso usa-se um conjunto de teste separado, ou CV aninhada.
+\end{ideia}
+
+\subsection{Viés, variância e a escolha de $k$}
+O argumento clássico para a escolha de $k$ é ele mesmo um balanço
+viés--variância \emph{da estimativa do risco}:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{$k$ grande (LOOCV):} cada $g_{-j}$ treina com $\approx n$ dados
+        $\Rightarrow$ \emph{pouco viés}. Em contrapartida os $n$ modelos são quase
+        idênticos entre si e suas predições, muito correlacionadas --- e a média de
+        quantidades correlacionadas não se beneficia da lei dos grandes números como
+        a de quantidades independentes. O argumento conclui: \emph{variância alta}.
+  \item \textbf{$k$ pequeno (p.ex.\ $5$):} cada $g_{-j}$ treina com bem menos dados
+        $\Rightarrow$ \emph{mais viés}, no sentido pessimista: o procedimento avaliado
+        não é bem o que você vai usar no final. Em troca, as dobras são mais
+        independentes.
+\end{itemize}
+
+A Figura~\ref{fig:escolhak} mede as duas coisas na nossa população.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../../recursos/figuras/03-escolha-k.pdf}
+  \caption{Estimativa do risco de um polinômio de grau~5 sobre $n=50$ pontos,
+  repetida em 300 amostras independentes. À esquerda, viés e desvio-padrão da
+  estimativa (escala logarítmica): com $k=2$ os dois são desastrosos --- treinar com
+  25 pontos é coisa muito diferente de treinar com 50 ---, e a partir de $k=5$
+  tudo estabiliza. À direita, o custo, que cresce linearmente: a LOOCV pede
+  \emph{dez vezes} mais ajustes que $k=5$.}
+  \label{fig:escolhak}
+\end{figure}
+
+\begin{atencao}[o que este experimento mostra --- e o que não mostra]
+O viés se comporta como previsto: cai de $0{,}43$ em $k=2$ para $0{,}006$ em $k=10$.
+Já o desvio-padrão \textbf{não} cresce com $k$ aqui: vai de $2{,}20$ ($k=2$) a
+$0{,}13$ (LOOCV), decrescendo o tempo todo. O efeito de treinar com poucos dados
+domina de longe o efeito da correlação entre dobras. Não tome ``LOOCV tem variância
+alta'' como lei --- é um argumento sobre um dos termos, e o outro pode ser maior.
+A conclusão prática sobrevive intacta, só que por outro motivo: de $k=5$ para
+frente não há praticamente nada a ganhar em precisão, e o custo continua subindo.
+Daí $k=5$ ou $k=10$.
+\end{atencao}
+
+\begin{atencao}[A regra de ouro contra vazamento]
+\textbf{Toda} etapa que ``aprende'' algo dos dados --- padronização, seleção de
+variáveis, escolha de $\lambda$ --- deve ocorrer \emph{dentro} de cada dobra,
+usando apenas o treino daquela dobra. Padronizar com a média/desvio de todo o
+conjunto antes da CV é \emph{data leakage} e produz estimativas otimistas. (É por
+isso que usamos \emph{pipelines}, Aula~07.)
+\end{atencao}
+
+\subsection{Selecionando hiperparâmetros}
+O uso central: para cada valor de um hiperparâmetro $\theta$ (p.ex.\ $\lambda$ do
+Lasso), calcule $\riscohat_{k\text{-CV}}(\theta)$ e escolha
+$\widehat\theta=\argmin_\theta \riscohat_{k\text{-CV}}(\theta)$.
+
+\begin{atencao}[Regra ``1-EP'']
+Como $\riscohat_{k\text{-CV}}$ tem erro padrão, muitas vezes prefere-se a
+\emph{regra de um erro-padrão}: escolher o modelo \emph{mais simples} cujo risco
+estimado esteja a no máximo um erro-padrão do mínimo. Favorece parcimônia
+(é o \texttt{lambda.1se} do \texttt{glmnet}). Na Figura~\ref{fig:cvrisco} ela
+escolheria o grau~3 em vez do~4: como as barras de erro dos graus 3 a 6 se
+sobrepõem, os dados não distinguem esses modelos, e nesse empate a regra manda ficar
+com o mais simples.
+\end{atencao}
+
+\begin{atencao}[Validação \emph{aninhada}]
+Se você usa CV para \emph{escolher} $\theta$ \emph{e} para \emph{reportar} o
+desempenho, precisa de \textbf{CV aninhada}: um laço externo estima o desempenho,
+um laço interno escolhe $\theta$. Usar a mesma CV para as duas coisas subestima o
+risco --- é o mesmo pecado do erro de treino, um andar acima. O [AME] descreve a
+versão com três conjuntos: \emph{treino} ajusta, \emph{validação} escolhe o
+hiperparâmetro, e o \emph{teste}, tocado uma única vez no fim, estima o risco do
+vencedor. Quanto mais modelos você comparar na validação, mais otimista ela fica ---
+por isso o teste existe.
+\end{atencao}
+
+%==============================================================================
+\section{O bootstrap}
+%==============================================================================
+A validação cruzada estima o \emph{risco}; o \textbf{bootstrap} estima a
+\emph{incerteza} (variância, viés, intervalos) de praticamente qualquer
+estatística $\widehat\theta$ calculada a partir dos dados.
+
+\begin{ideia}
+Não conhecemos $P$, mas temos a amostra. O bootstrap usa a \emph{distribuição
+empírica} (reamostrar dos dados \emph{com reposição}) como substituta de $P$,
+imitando o ato de coletar novas amostras.
+\end{ideia}
+
+\noindent\textbf{Algoritmo.} Para $b=1,\dots,B$:
+\begin{enumerate}[leftmargin=1.6cm,nosep]
+  \item sorteie $n$ observações \emph{com reposição} da amostra original (amostra
+        bootstrap $\Dados^{*b}$);
+  \item calcule a estatística $\widehat\theta^{*b}$ em $\Dados^{*b}$.
+\end{enumerate}
+A dispersão de $\{\widehat\theta^{*1},\dots,\widehat\theta^{*B}\}$ estima a
+distribuição amostral de $\widehat\theta$; por exemplo,
+$\widehat{\mathrm{EP}}(\widehat\theta)$ é o desvio-padrão dessas réplicas, e um
+intervalo de confiança de 95\% pode ser dado pelos percentis $2{,}5\%$ e $97{,}5\%$.
+
+\begin{exemplo}[O exemplo do [ISLP]: como dividir um investimento]
+Você quer investir em dois ativos com retornos aleatórios $X$ e $Y$, pondo uma
+fração $\alpha$ em $X$ e $1-\alpha$ em $Y$. Para minimizar o risco da carteira,
+$\Var(\alpha X+(1-\alpha)Y)$, a fração ótima é
+\[
+  \alpha = \frac{\sigma_Y^2-\sigma_{XY}}{\sigma_X^2+\sigma_Y^2-2\sigma_{XY}} .
+\]
+Na prática você não conhece $\sigma_X^2$, $\sigma_Y^2$ e $\sigma_{XY}$: estima-os
+dos dados e obtém $\widehat\alpha$. Qual o erro-padrão de $\widehat\alpha$? Boa
+sorte tentando derivá-lo analiticamente --- é uma razão de estimativas
+correlacionadas. Com bootstrap são cinco linhas de código: reamostre, recalcule
+$\widehat\alpha^{*b}$, tome o desvio-padrão. É aí que está a força do método:
+funciona para estatísticas cuja distribuição amostral ninguém sabe escrever.
+\end{exemplo}
+
+\begin{observacao}
+Cada amostra bootstrap deixa de fora, em média, $\approx 1/e \approx 37\%$ das
+observações originais (as \emph{out-of-bag}). A conta: uma observação específica
+escapa de um sorteio com probabilidade $1-1/n$, e de $n$ sorteios com probabilidade
+$(1-1/n)^n \to e^{-1} \approx 0{,}368$. Essa ideia reaparece no \emph{bagging} e nas
+florestas aleatórias (Aula~06), onde as observações OOB dão uma estimativa de risco
+``de graça'' --- sem separar dados nem rodar CV.
+\end{observacao}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+\begin{lstlisting}
+from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Ridge
+
+# 1. CV simples para estimar o risco de UM procedimento (MSE -> negativo no sklearn)
+modelo = make_pipeline(StandardScaler(), Ridge(alpha=1.0))
+scores = cross_val_score(modelo, X, y, cv=KFold(5, shuffle=True, random_state=0),
+                         scoring="neg_mean_squared_error")
+print("risco estimado:", -scores.mean(), "+/-", scores.std())
+
+# 2. Selecionar o hiperparametro lambda (=alpha) por CV, SEM vazamento
+#    (o StandardScaler e reajustado dentro de cada dobra)
+grade = {"ridge__alpha": [0.01, 0.1, 1, 10, 100]}
+busca = GridSearchCV(modelo, grade, cv=5, scoring="neg_mean_squared_error")
+busca.fit(X, y)
+print("melhor alpha:", busca.best_params_)
+\end{lstlisting}
+
+\begin{atencao}
+Duas armadilhas de \texttt{scikit-learn} nesse trecho. Primeira: as funções de
+\emph{score} seguem a convenção ``maior é melhor'', então o EQM aparece negado
+(\texttt{neg\_mean\_squared\_error}) --- daí o sinal de menos ao imprimir. Segunda:
+passar \texttt{cv=5} sem \texttt{shuffle=True} usa as dobras \emph{na ordem do
+arquivo}, com o problema descrito no início da aula. Prefira construir o
+\texttt{KFold} explicitamente.
+\end{atencao}
+
+O notebook \texttt{Aula prática 03, 04 e 05} usa a CV para escolher, na prática, os
+hiperparâmetros dos métodos das Aulas~04 e~05.
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item O erro de treino é otimista; estimar o risco exige dados \emph{não}
+        usados no ajuste.
+  \item \emph{Data splitting}: simples, mas desperdiça dados e é instável.
+  \item \emph{LOOCV} \eqref{eq:loocv}: quase não-viesado; atalho fechado para
+        modelos lineares (Prop.~\ref{prop:loo}).
+  \item \emph{$k$-dobras} \eqref{eq:kfold}: usa toda a amostra
+        (Fig.~\ref{fig:kfold}); $k=5$ ou $10$ bastam --- além disso só cresce o
+        custo (Fig.~\ref{fig:escolhak}).
+  \item A CV pode errar o \emph{nível} do risco e ainda assim acertar \emph{onde}
+        está o mínimo (Fig.~\ref{fig:cvrisco}) --- e é isso que a seleção de
+        modelos precisa.
+  \item Use CV para escolher \emph{tuning parameters}; cuidado com \emph{vazamento}
+        (faça tudo dentro da dobra) e com CV aninhada para reportar desempenho.
+  \item \emph{Bootstrap}: reamostragem com reposição para medir incerteza de
+        estimativas; conecta com OOB e \emph{bagging}.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] §1.4 (função de risco e Teorema~1), §1.5.1
+(\emph{data splitting}, validação cruzada, a Observação~1.5 sobre o LOOCV
+não-viesado e o intervalo de confiança para o risco). [ISLP] Capítulo~5: §5.1
+(validação cruzada --- vale muito olhar as Figuras~5.6 e~5.8, que são a versão deles
+da nossa Figura~\ref{fig:cvrisco}), §5.1.4 (o argumento viés--variância para a
+escolha de $k$) e §5.2 (\emph{bootstrap}, com o exemplo do investimento).
+
+\paragraph{Para praticar.} \texttt{recursos/listas/Lista de exercícios 03.pdf}.
+
+\end{document}

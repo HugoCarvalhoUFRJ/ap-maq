@@ -27,6 +27,7 @@ from matplotlib.pyplot import subplots, close
 import matplotlib as mpl
 
 import sklearn.linear_model as skl
+import sklearn.model_selection as skm
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
@@ -230,6 +231,111 @@ def _vies_variancia():
     ax.set_ylim(0, 1.75)
     ax.legend(loc="upper left", fontsize=7.5, framealpha=0.95)
     salvar(fig, "01-vies-variancia")
+
+
+# =========================================================================== #
+# Aula 03 --- Seleção de Modelos e Validação Cruzada
+# =========================================================================== #
+
+@figura("03-cv-vs-risco", "03")
+def _cv_vs_risco():
+    """A CV enxerga o "U" a partir de UMA amostra, sem conhecer a população."""
+    graus = np.arange(1, 11)
+    # (a) risco verdadeiro: só existe porque inventamos a população
+    verdade = _simular(graus, n_rep=300, semente=5)["risco"]
+
+    # (b) o que o analista realmente tem: uma amostra de treino, e só
+    rng = np.random.default_rng(6)
+    x, y = amostra(N_TR, rng)
+    X = x.reshape(-1, 1)
+    dobras = skm.KFold(5, shuffle=True, random_state=0)
+    cv_media, cv_ep, treino = [], [], []
+    for g in graus:
+        pontuacao = -skm.cross_val_score(modelo_poly(g), X, y, cv=dobras,
+                                         scoring="neg_mean_squared_error")
+        cv_media.append(pontuacao.mean())
+        cv_ep.append(pontuacao.std(ddof=1) / np.sqrt(len(pontuacao)))
+        m = modelo_poly(g).fit(X, y)
+        treino.append(np.mean((y - m.predict(X)) ** 2))
+    cv_media, cv_ep = np.array(cv_media), np.array(cv_ep)
+
+    g_cv = graus[int(np.argmin(cv_media))]
+    g_verdade = graus[int(np.argmin(verdade))]
+    # regra de 1 erro-padrão: modelo mais simples dentro de 1 EP do mínimo
+    limite = cv_media.min() + cv_ep[int(np.argmin(cv_media))]
+    g_1ep = graus[int(np.argmax(cv_media <= limite))]
+    print(f"     [conferência] mínimo: risco no grau {g_verdade}, "
+          f"CV no grau {g_cv}, regra 1-EP no grau {g_1ep}")
+
+    fig, ax = subplots(figsize=(5.0, 3.3))
+    ax.plot(graus, verdade, "o-", color=VINHO, ms=3.5,
+            label=r"risco verdadeiro (inacessível)")
+    ax.errorbar(graus, cv_media, yerr=cv_ep, fmt="s-", color=AZUL, ms=3.5,
+                capsize=2.5, lw=1.4, label="validação cruzada, 5 dobras")
+    ax.plot(graus, treino, "^--", color=CINZA, ms=3.5, label="erro de treino")
+    ax.axhline(SIGMA ** 2, color=VERDE, ls="--", lw=1.1, label=r"$\sigma^2$")
+    ax.axvline(g_cv, color=AZUL, ls=":", lw=1.0)
+    ax.set_xlabel(r"grau do polinômio (flexibilidade $\rightarrow$)")
+    ax.set_ylabel("erro quadrático médio")
+    ax.set_xticks(graus)
+    ax.set_ylim(0.15, 1.65)
+    ax.legend(loc="upper left", fontsize=7.5, framealpha=0.95)
+    salvar(fig, "03-cv-vs-risco")
+
+
+@figura("03-escolha-k", "03")
+def _escolha_k():
+    """Por que k=5 ou 10: o viés cai com k, mas a variância sobe."""
+    grau = 5
+    n_rep = 300
+    ks = [2, 5, 10, 25, N_TR]           # N_TR dobras = LOOCV
+    rng = np.random.default_rng(8)
+
+    # alvo: o risco verdadeiro do procedimento nesse grau
+    alvo = _simular(np.array([grau]), n_rep=300, semente=9)["risco"][0]
+
+    estimativas = {k: [] for k in ks}
+    for b in range(n_rep):
+        x, y = amostra(N_TR, rng)
+        X = x.reshape(-1, 1)
+        for k in ks:
+            cv = (skm.KFold(k, shuffle=True, random_state=b) if k < N_TR
+                  else skm.KFold(N_TR))
+            s = -skm.cross_val_score(modelo_poly(grau), X, y, cv=cv,
+                                     scoring="neg_mean_squared_error")
+            estimativas[k].append(s.mean())
+
+    medias = np.array([np.mean(estimativas[k]) for k in ks])
+    vieses = medias - alvo
+    desvios = np.array([np.std(estimativas[k], ddof=1) for k in ks])
+    print(f"     [conferência] risco verdadeiro = {alvo:.4f}")
+    print(f"     [conferência] viés  por k: {vieses.round(4)}")
+    print(f"     [conferência] desvio por k: {desvios.round(4)}"
+          f"  <- NÃO cresce com k neste experimento")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
+    rotulos = [str(k) if k < N_TR else f"{N_TR}\n(LOOCV)" for k in ks]
+    pos = np.arange(len(ks))
+
+    ax1.plot(pos, np.abs(vieses), "o-", color=AZUL, ms=4, label="|viés|")
+    ax1.plot(pos, desvios, "s-", color=VINHO, ms=4, label="desvio-padrão")
+    ax1.set_xticks(pos); ax1.set_xticklabels(rotulos)
+    ax1.set_xlabel("número de dobras $k$")
+    ax1.set_ylabel("erro da estimativa do risco")
+    ax1.set_yscale("log")
+    ax1.set_title("precisão: tudo estabiliza a partir de $k=5$")
+    ax1.legend(loc="upper right", fontsize=8)
+
+    ax2.plot(pos, ks, "^-", color=VERDE, ms=4)
+    for p, k in zip(pos, ks):
+        ax2.annotate(f"{k}", xy=(p, k), xytext=(0, 5), textcoords="offset points",
+                     ha="center", fontsize=7.5, color=VERDE)
+    ax2.set_xticks(pos); ax2.set_xticklabels(rotulos)
+    ax2.set_xlabel("número de dobras $k$")
+    ax2.set_ylabel("ajustes do modelo por estimativa")
+    ax2.set_ylim(0, N_TR * 1.22)
+    ax2.set_title("custo: cresce linearmente com $k$")
+    salvar(fig, "03-escolha-k")
 
 
 # =========================================================================== #

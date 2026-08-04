@@ -42,7 +42,9 @@
 \ifaluno
   \RequirePackage{tikz}
   \RequirePackage{pgfplots}
-  \pgfplotsset{compat=1.18}
+  % 1.16 é a versão do TeX Live desta máquina; valores mais novos (1.18) fazem o
+  % pgfplots reclamar. Se for compilar num TeX Live mais recente, pode subir.
+  \pgfplotsset{compat=1.16}
   \usetikzlibrary{arrows.meta,positioning,patterns,calc,decorations.pathreplacing}
   \RequirePackage{caption}
   \captionsetup{font=small,labelfont=bf}
