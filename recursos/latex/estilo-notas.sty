@@ -6,6 +6,14 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{estilo-notas}[2026/06/15 Estilo das notas de aula de AM]
 
+% ----- Opções do pacote -------------------------------------------------------
+% [aluno]: versão distribuída aos estudantes. Carrega tikz/pgfplots (usados nas
+% figuras) e troca o cabeçalho. SEM a opção, tudo se comporta como antes --- as
+% notas do professor não são afetadas.
+\newif\ifaluno\alunofalse
+\DeclareOption{aluno}{\alunotrue}
+\ProcessOptions\relax
+
 % ----- Codificação e fontes (babel-portugues indisponível: rótulos manuais) ---
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
@@ -30,6 +38,16 @@
 \RequirePackage[colorlinks=true,linkcolor=azulufrj,citecolor=azulufrj,%
                 urlcolor=azulufrj]{hyperref}
 
+% ----- Desenho de figuras (apenas na versão do aluno) -------------------------
+\ifaluno
+  \RequirePackage{tikz}
+  \RequirePackage{pgfplots}
+  \pgfplotsset{compat=1.18}
+  \usetikzlibrary{arrows.meta,positioning,patterns,calc,decorations.pathreplacing}
+  \RequirePackage{caption}
+  \captionsetup{font=small,labelfont=bf}
+\fi
+
 % ----- Rótulos em português ---------------------------------------------------
 \renewcommand{\abstractname}{Resumo}
 \renewcommand{\contentsname}{Sumário}
@@ -49,7 +67,11 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.4pt}
 \fancyhead[L]{\small\itshape Aprendizado de Máquina}
-\fancyhead[R]{\small\itshape Notas de Aula}
+\ifaluno
+  \fancyhead[R]{\small\itshape Notas de Aula --- versão do aluno}
+\else
+  \fancyhead[R]{\small\itshape Notas de Aula}
+\fi
 \fancyfoot[C]{\thepage}
 
 % ----- Ambientes de teorema ---------------------------------------------------
