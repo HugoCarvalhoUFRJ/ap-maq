@@ -699,6 +699,401 @@ def _vazamento():
 
 
 # =========================================================================== #
+# Aula 08 --- Classificação e Classificadores Gaussianos
+# =========================================================================== #
+
+def _duas_gaussianas(n, rng, sep=2.2):
+    """Duas classes gaussianas em R^2 com covariâncias DIFERENTES (favorece QDA)."""
+    n0 = n // 2
+    S0 = np.array([[1.0, 0.75], [0.75, 1.0]])
+    S1 = np.array([[1.6, -0.85], [-0.85, 0.7]])
+    X0 = rng.multivariate_normal([0, 0], S0, size=n0)
+    X1 = rng.multivariate_normal([sep, sep * 0.35], S1, size=n - n0)
+    X = np.vstack([X0, X1])
+    y = np.r_[np.zeros(n0), np.ones(n - n0)].astype(int)
+    return X, y
+
+
+def _gaussianas_dim(n, d, rng):
+    """O mesmo em R^d. Aqui o QDA estima d(d+1) parâmetros de covariância contra
+    d(d+1)/2 do LDA -- é essa conta que faz o LDA ganhar quando n é pequeno."""
+    n0 = n // 2
+    Q0 = rng_fixa_Q(d, 0)
+    Q1 = rng_fixa_Q(d, 1)
+    mu = np.zeros(d); mu[:3] = [1.6, 1.0, 0.7]
+    X0 = rng.multivariate_normal(np.zeros(d), Q0, size=n0)
+    X1 = rng.multivariate_normal(mu, Q1, size=n - n0)
+    X = np.vstack([X0, X1])
+    y = np.r_[np.zeros(n0), np.ones(n - n0)].astype(int)
+    return X, y
+
+
+_CACHE_Q = {}
+
+
+def rng_fixa_Q(d, qual):
+    """Covariância fixa (mesma em toda chamada) para cada classe."""
+    if (d, qual) not in _CACHE_Q:
+        g = np.random.default_rng(1000 + qual)
+        A = g.normal(size=(d, d))
+        _CACHE_Q[(d, qual)] = (A @ A.T) / d + np.eye(d) * 0.5
+    return _CACHE_Q[(d, qual)]
+
+
+@figura("08-fronteiras", "08")
+def _fronteiras():
+    """Onde cada classificador traça a linha."""
+    from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
+                                               QuadraticDiscriminantAnalysis)
+    from sklearn.naive_bayes import GaussianNB
+
+    rng = np.random.default_rng(31)
+    X, y = _duas_gaussianas(400, rng)
+    modelos = [("Logística", skl.LogisticRegression()),
+               ("LDA (covariância comum)", LinearDiscriminantAnalysis()),
+               ("QDA (covariância por classe)", QuadraticDiscriminantAnalysis()),
+               ("Bayes ingênuo", GaussianNB())]
+
+    xx, yy = np.meshgrid(np.linspace(X[:, 0].min() - .8, X[:, 0].max() + .8, 320),
+                         np.linspace(X[:, 1].min() - .8, X[:, 1].max() + .8, 320))
+    grade = np.c_[xx.ravel(), yy.ravel()]
+
+    fig, axes = subplots(1, 4, figsize=(7.4, 2.1), sharex=True, sharey=True)
+    for ax, (nome, m) in zip(axes, modelos):
+        m.fit(X, y)
+        Z = m.predict_proba(grade)[:, 1].reshape(xx.shape)
+        ax.contourf(xx, yy, Z, levels=[0, 0.5, 1], colors=[AZUL, VINHO], alpha=0.10)
+        ax.contour(xx, yy, Z, levels=[0.5], colors="black", linewidths=1.2)
+        ax.scatter(X[y == 0, 0], X[y == 0, 1], s=5, color=AZUL, alpha=0.55)
+        ax.scatter(X[y == 1, 0], X[y == 1, 1], s=5, color=VINHO, alpha=0.55)
+        ax.set_title(nome, fontsize=7.5)
+        ax.set_xticks([]); ax.set_yticks([])
+        ax.grid(False)
+    salvar(fig, "08-fronteiras")
+
+
+@figura("08-lda-qda", "08")
+def _lda_qda():
+    """A troca viés-variância entre LDA e QDA, em função de n."""
+    from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
+                                               QuadraticDiscriminantAnalysis)
+    d = 10
+    ns = np.array([30, 50, 80, 150, 300, 700, 1500, 4000])
+    n_rep = 120
+    rng = np.random.default_rng(32)
+    X_te, y_te = _gaussianas_dim(20000, d, np.random.default_rng(99))
+
+    acc = {"LDA": np.zeros((n_rep, len(ns))), "QDA": np.zeros((n_rep, len(ns)))}
+    for b in range(n_rep):
+        for j, n in enumerate(ns):
+            X, y = _gaussianas_dim(int(n), d, rng)
+            for nome, M in [("LDA", LinearDiscriminantAnalysis),
+                            ("QDA", QuadraticDiscriminantAnalysis)]:
+                try:
+                    acc[nome][b, j] = M().fit(X, y).score(X_te, y_te)
+                except Exception:
+                    acc[nome][b, j] = np.nan
+
+    m_lda = np.nanmean(acc["LDA"], axis=0)
+    m_qda = np.nanmean(acc["QDA"], axis=0)
+    virada = ns[np.argmax(m_qda > m_lda)] if np.any(m_qda > m_lda) else None
+    print(f"     [conferência] acurácia LDA: {m_lda.round(4)}")
+    print(f"     [conferência] acurácia QDA: {m_qda.round(4)}")
+    print(f"     [conferência] QDA passa a ganhar a partir de n = {virada}")
+
+    fig, ax = subplots(figsize=(5.0, 3.1))
+    ax.plot(ns, m_lda, "o-", color=AZUL, ms=4, label="LDA (fronteira linear)")
+    ax.plot(ns, m_qda, "s-", color=VINHO, ms=4, label="QDA (fronteira quadrática)")
+    if virada is not None:
+        ax.axvline(virada, color=CINZA, ls=":", lw=1.0)
+        ax.annotate(f"QDA passa a ganhar\nem $n={virada}$", xy=(virada, m_lda.min()),
+                    xytext=(virada * 1.5, m_lda.min() + 0.008), fontsize=7.5,
+                    arrowprops=dict(arrowstyle="->", lw=0.8, color=CINZA))
+    ax.set_xscale("log")
+    ax.set_xlabel(f"$n$ (tamanho da amostra de treino), escala logarítmica")
+    ax.set_ylabel("acurácia em 20\\,000 observações novas")
+    ax.set_title(f"$d={d}$ covariáveis, covariâncias diferentes por classe")
+    ax.set_xticks(ns); ax.set_xticklabels(ns)
+    ax.legend(loc="lower right", fontsize=8)
+    salvar(fig, "08-lda-qda")
+
+
+# =========================================================================== #
+# Aula 09 --- Métricas para Classificação
+# =========================================================================== #
+
+def _cenario_desbalanceado(n, rng, prev=0.08, correlacionado=False):
+    """Uma classe rara (8%) com sobreposição realista.
+
+    Com ``correlacionado=True`` as covariáveis são fortemente dependentes entre
+    si dentro de cada classe -- o que torna a suposição do Bayes ingênuo
+    FALSA, e é o que revela a diferença de calibração.
+    """
+    y = (rng.uniform(size=n) < prev).astype(int)
+    if correlacionado:
+        d = 6
+        S = np.full((d, d), 0.85) + np.eye(d) * 0.15
+        L = np.linalg.cholesky(S)
+        X = rng.normal(size=(n, d)) @ L.T
+        X[y == 1] += 1.05
+    else:
+        X = rng.normal(size=(n, 4))
+        X[y == 1] += np.array([1.5, 0.9, 0.0, 0.0])
+    return X, y
+
+
+@figura("09-roc-metricas", "09")
+def _roc_metricas():
+    """ROC, AUC e o efeito do corte sobre as métricas."""
+    from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve
+
+    rng = np.random.default_rng(41)
+    X, y = _cenario_desbalanceado(4000, rng)
+    X_te, y_te = _cenario_desbalanceado(20000, np.random.default_rng(42))
+    m = Pipeline([("sc", StandardScaler()),
+                  ("lg", skl.LogisticRegression())]).fit(X, y)
+    p = m.predict_proba(X_te)[:, 1]
+
+    fpr, tpr, cortes = roc_curve(y_te, p)
+    auc = roc_auc_score(y_te, p)
+    acuracia_trivial = 1 - y_te.mean()
+    print(f"     [conferência] prevalência = {y_te.mean():.3f}; "
+          f"acurácia do classificador trivial = {acuracia_trivial:.3f}")
+    print(f"     [conferência] AUC = {auc:.3f}; "
+          f"acurácia com corte 0,5 = {((p >= 0.5) == y_te).mean():.3f}")
+
+    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 3.0))
+    ax1.plot(fpr, tpr, color=VINHO, lw=1.6, label=f"logística (AUC $= {auc:.3f}$)")
+    ax1.plot([0, 1], [0, 1], color=CINZA, ls="--", lw=1.0,
+             label="palpite aleatório (AUC $=0{,}5$)")
+    for alvo, marca in [(0.5, "o"), (0.2, "s"), (0.08, "^")]:
+        j = int(np.argmin(np.abs(cortes - alvo)))
+        ax1.plot(fpr[j], tpr[j], marca, color=AZUL, ms=5.5)
+        ax1.annotate(f"corte {alvo:.2f}".replace(".", ","),
+                     xy=(fpr[j], tpr[j]), xytext=(9, -9),
+                     textcoords="offset points", fontsize=7, color=AZUL)
+    ax1.set_xlabel("taxa de falsos positivos  $1-$especificidade")
+    ax1.set_ylabel("sensibilidade (\\emph{recall})".replace("\\emph{", "").replace("}", ""))
+    ax1.set_title("curva ROC")
+    ax1.legend(loc="lower right", fontsize=7.5)
+
+    grade = np.linspace(0.01, 0.95, 200)
+    prec, rec, f1 = [], [], []
+    for t in grade:
+        pred = (p >= t)
+        tp = np.sum(pred & (y_te == 1)); fp = np.sum(pred & (y_te == 0))
+        fn = np.sum(~pred & (y_te == 1))
+        pr = tp / (tp + fp) if tp + fp else np.nan
+        rc = tp / (tp + fn) if tp + fn else np.nan
+        prec.append(pr); rec.append(rc)
+        f1.append(2 * pr * rc / (pr + rc) if pr and rc else np.nan)
+    melhor_t = grade[int(np.nanargmax(f1))]
+    print(f"     [conferência] F1 máximo no corte {melhor_t:.2f} "
+          f"(F1 = {np.nanmax(f1):.3f}), não em 0,50")
+
+    ax2.plot(grade, prec, color=AZUL, label="precisão")
+    ax2.plot(grade, rec, color=VINHO, label="sensibilidade")
+    ax2.plot(grade, f1, color=VERDE, lw=1.8, label="$F_1$")
+    ax2.axvline(0.5, color=CINZA, ls="--", lw=1.0)
+    ax2.text(0.52, 0.03, "corte 0,50\n(o padrão)", fontsize=7, color=CINZA)
+    ax2.axvline(melhor_t, color=VERDE, ls=":", lw=1.2)
+    ax2.text(melhor_t - 0.02, 0.88, f"$F_1$ máx.\nem {melhor_t:.2f}".replace(".", ","),
+             fontsize=7, color=VERDE, ha="right")
+    ax2.set_xlabel("corte aplicado a $\\widehat{P}(Y=1\\mid x)$")
+    ax2.set_ylabel("valor da métrica")
+    ax2.set_title("o corte muda tudo")
+    ax2.set_ylim(0, 1.02)
+    ax2.legend(loc="center right", fontsize=7.5)
+    salvar(fig, "09-roc-metricas")
+
+
+@figura("09-calibracao", "09")
+def _calibracao():
+    """Classificar bem não é o mesmo que estimar bem probabilidades."""
+    from sklearn.calibration import calibration_curve
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.metrics import roc_auc_score, brier_score_loss
+
+    rng = np.random.default_rng(43)
+    X, y = _cenario_desbalanceado(4000, rng, correlacionado=True)
+    X_te, y_te = _cenario_desbalanceado(20000, np.random.default_rng(44),
+                                        correlacionado=True)
+
+    modelos = [("regressão logística", Pipeline([("sc", StandardScaler()),
+                                                 ("lg", skl.LogisticRegression())]), AZUL),
+               ("Bayes ingênuo", GaussianNB(), VINHO)]
+    fig, ax = subplots(figsize=(4.6, 3.4))
+    ax.plot([0, 1], [0, 1], color=CINZA, ls="--", lw=1.0, label="calibração perfeita")
+    for nome, m, cor in modelos:
+        m.fit(X, y)
+        p = m.predict_proba(X_te)[:, 1]
+        obs, prev = calibration_curve(y_te, p, n_bins=10, strategy="quantile")
+        auc = roc_auc_score(y_te, p)
+        brier = brier_score_loss(y_te, p)
+        print(f"     [conferência] {nome}: AUC = {auc:.3f}, Brier = {brier:.4f}")
+        ax.plot(prev, obs, "o-", color=cor, ms=4,
+                label=f"{nome}\nAUC $={auc:.3f}$, Brier $={brier:.4f}$")
+    ax.set_xlabel("probabilidade predita")
+    ax.set_ylabel("frequência observada")
+    ax.set_title("curva de calibração")
+    ax.legend(loc="upper left", fontsize=7)
+    salvar(fig, "09-calibracao")
+
+
+# =========================================================================== #
+# Aula 10 --- Máquinas de Vetores de Suporte
+# =========================================================================== #
+
+@figura("10-margem", "10")
+def _margem():
+    """Margem máxima, vetores de suporte e o efeito de C."""
+    from sklearn.svm import SVC
+
+    rng = np.random.default_rng(51)
+    n = 40
+    X = np.vstack([rng.normal([-1.1, -0.6], 0.62, size=(n // 2, 2)),
+                   rng.normal([1.3, 1.0], 0.62, size=(n // 2, 2))])
+    y = np.r_[-np.ones(n // 2), np.ones(n // 2)]
+
+    xx, yy = np.meshgrid(np.linspace(X[:, 0].min() - .7, X[:, 0].max() + .7, 300),
+                         np.linspace(X[:, 1].min() - .7, X[:, 1].max() + .7, 300))
+    grade = np.c_[xx.ravel(), yy.ravel()]
+
+    fig, axes = subplots(1, 3, figsize=(7.4, 2.6), sharex=True, sharey=True)
+    for ax, C in zip(axes, [100.0, 1.0, 0.05]):
+        m = SVC(kernel="linear", C=C).fit(X, y)
+        Z = m.decision_function(grade).reshape(xx.shape)
+        ax.contour(xx, yy, Z, levels=[-1, 0, 1], colors=["gray", "black", "gray"],
+                   linestyles=["--", "-", "--"], linewidths=[0.9, 1.4, 0.9])
+        ax.scatter(X[y == -1, 0], X[y == -1, 1], s=16, color=AZUL, zorder=3)
+        ax.scatter(X[y == 1, 0], X[y == 1, 1], s=16, color=VINHO, zorder=3)
+        sv = m.support_vectors_
+        ax.scatter(sv[:, 0], sv[:, 1], s=90, facecolors="none",
+                   edgecolors=VERDE, linewidths=1.3, zorder=4)
+        larg = 2 / np.linalg.norm(m.coef_)
+        ax.set_title(f"$C={C:g}$ — {len(sv)} vetores de suporte\n"
+                     f"margem $= {larg:.2f}$", fontsize=7.5)
+        ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+        print(f"     [conferência] C={C:g}: {len(sv)} vetores de suporte, "
+              f"margem {larg:.3f}")
+    salvar(fig, "10-margem")
+
+
+@figura("10-kernel", "10")
+def _kernel():
+    """O que o kernel compra: fronteiras que a reta não alcança."""
+    from sklearn.svm import SVC
+    from sklearn.datasets import make_circles
+
+    X, y = make_circles(n_samples=350, factor=0.42, noise=0.13, random_state=3)
+    xx, yy = np.meshgrid(np.linspace(-1.6, 1.6, 320), np.linspace(-1.6, 1.6, 320))
+    grade = np.c_[xx.ravel(), yy.ravel()]
+
+    config = [("linear", dict(kernel="linear", C=1.0)),
+              ("polinomial, $p=2$", dict(kernel="poly", degree=2, C=1.0, gamma="scale")),
+              (r"RBF, $\gamma=0{,}5$", dict(kernel="rbf", gamma=0.5, C=1.0)),
+              (r"RBF, $\gamma=50$", dict(kernel="rbf", gamma=50.0, C=1.0))]
+
+    fig, axes = subplots(1, 4, figsize=(7.4, 2.1), sharex=True, sharey=True)
+    for ax, (nome, kw) in zip(axes, config):
+        m = SVC(**kw).fit(X, y)
+        Z = m.decision_function(grade).reshape(xx.shape)
+        ax.contourf(xx, yy, Z, levels=[Z.min(), 0, Z.max()],
+                    colors=[AZUL, VINHO], alpha=0.10)
+        ax.contour(xx, yy, Z, levels=[0], colors="black", linewidths=1.2)
+        ax.scatter(X[y == 0, 0], X[y == 0, 1], s=5, color=AZUL, alpha=0.6)
+        ax.scatter(X[y == 1, 0], X[y == 1, 1], s=5, color=VINHO, alpha=0.6)
+        ax.set_title(f"{nome}\nacurácia (treino) $= {m.score(X, y):.3f}$", fontsize=7.5)
+        ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+        print(f"     [conferência] kernel {nome}: acurácia de treino "
+              f"{m.score(X, y):.3f}")
+    salvar(fig, "10-kernel")
+
+
+@figura("10-perdas", "10")
+def _perdas():
+    """hinge, logística e 0-1 como funções da margem y*g(x)."""
+    u = np.linspace(-2.5, 3.0, 800)
+    fig, ax = subplots(figsize=(4.8, 3.1))
+    ax.plot(u, np.where(u < 0, 1.0, 0.0), color=CINZA, lw=1.6,
+            label=r"0--1: $\mathbb{1}\{y\,g<0\}$")
+    ax.plot(u, np.maximum(0, 1 - u), color=VINHO,
+            label=r"\emph{hinge}: $(1-y\,g)_+$".replace("\\emph{", "").replace("}", ""))
+    ax.plot(u, np.log2(1 + np.exp(-u)), color=AZUL,
+            label=r"logística: $\log_2(1+e^{-y\,g})$")
+    ax.axvline(1, color=VERDE, ls=":", lw=1.1)
+    ax.axvspan(1, 3.0, color=VERDE, alpha=0.07)
+    ax.text(1.55, 1.75, "aqui a \\emph{hinge} é zero:\nnão são vetores de suporte"
+            .replace("\\emph{", "").replace("}", ""), fontsize=7.5, color=VERDE)
+    ax.axvline(0, color="black", lw=0.7)
+    ax.set_xlabel(r"margem $y\,g(x)$  (positiva $=$ classificou certo)")
+    ax.set_ylabel("perda")
+    ax.set_ylim(0, 3.0)
+    ax.legend(loc="upper right", fontsize=7.5)
+    salvar(fig, "10-perdas")
+
+
+# =========================================================================== #
+# Aula 11 --- KNN e Árvores de Classificação
+# =========================================================================== #
+
+@figura("11-fronteiras-knn", "11")
+def _fronteiras_knn():
+    """O k do KNN em classificação: de rendilhado a quase linear."""
+    from sklearn.neighbors import KNeighborsClassifier
+
+    rng = np.random.default_rng(61)
+    n = 300
+    X = np.vstack([rng.normal([-0.9, -0.4], 0.95, size=(n // 2, 2)),
+                   rng.normal([1.1, 0.8], 0.95, size=(n // 2, 2))])
+    y = np.r_[np.zeros(n // 2), np.ones(n // 2)].astype(int)
+    X_te = np.vstack([rng.normal([-0.9, -0.4], 0.95, size=(5000, 2)),
+                      rng.normal([1.1, 0.8], 0.95, size=(5000, 2))])
+    y_te = np.r_[np.zeros(5000), np.ones(5000)].astype(int)
+
+    xx, yy = np.meshgrid(np.linspace(-4, 4.2, 320), np.linspace(-3.6, 4, 320))
+    grade = np.c_[xx.ravel(), yy.ravel()]
+
+    fig, axes = subplots(1, 3, figsize=(7.4, 2.5), sharex=True, sharey=True)
+    for ax, k in zip(axes, [1, 15, 120]):
+        m = KNeighborsClassifier(n_neighbors=k).fit(X, y)
+        Z = m.predict(grade).reshape(xx.shape)
+        ax.contourf(xx, yy, Z, levels=[-0.5, 0.5, 1.5], colors=[AZUL, VINHO], alpha=0.11)
+        ax.contour(xx, yy, Z, levels=[0.5], colors="black", linewidths=1.0)
+        ax.scatter(X[y == 0, 0], X[y == 0, 1], s=6, color=AZUL, alpha=0.65)
+        ax.scatter(X[y == 1, 0], X[y == 1, 1], s=6, color=VINHO, alpha=0.65)
+        tr = m.score(X, y); te = m.score(X_te, y_te)
+        ax.set_title(f"$k={k}$\ntreino ${tr:.3f}$ | teste ${te:.3f}$", fontsize=7.5)
+        ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+        print(f"     [conferência] k={k}: acurácia treino {tr:.3f}, teste {te:.3f}")
+    salvar(fig, "11-fronteiras-knn")
+
+
+@figura("11-impureza", "11")
+def _impureza():
+    """Gini, entropia e erro de classificação como medidas de impureza."""
+    p = np.linspace(1e-9, 1 - 1e-9, 800)
+    gini = 2 * p * (1 - p)
+    entropia = -(p * np.log2(p) + (1 - p) * np.log2(1 - p))
+    erro = np.minimum(p, 1 - p)
+
+    fig, ax = subplots(figsize=(4.8, 3.1))
+    ax.plot(p, entropia, color=AZUL, label=r"entropia $-\sum_c p_c\log_2 p_c$")
+    ax.plot(p, gini, color=VINHO, label=r"Gini $\;2p(1-p)$")
+    ax.plot(p, erro, color=VERDE, label=r"erro de classificação $\min(p,1-p)$")
+    ax.axvline(0.5, color=CINZA, ls=":", lw=1.0)
+    ax.annotate("nó puro", xy=(0.02, 0.03), xytext=(0.10, 0.30), fontsize=7.5,
+                color=CINZA, arrowprops=dict(arrowstyle="->", lw=0.8, color=CINZA))
+    ax.annotate("máxima impureza", xy=(0.5, 1.0), xytext=(0.55, 0.72), fontsize=7.5,
+                color=CINZA, arrowprops=dict(arrowstyle="->", lw=0.8, color=CINZA))
+    ax.set_xlabel(r"$p$ = proporção da classe 1 no nó")
+    ax.set_ylabel("impureza")
+    ax.set_ylim(0, 1.08)
+    ax.legend(loc="lower center", fontsize=7.5)
+    salvar(fig, "11-impureza")
+
+
+# =========================================================================== #
 # Aula 02 --- Regressão Linear e Regularização
 # =========================================================================== #
 
