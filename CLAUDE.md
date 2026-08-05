@@ -245,8 +245,21 @@ uma linha. O que mudou é onde gastar vigilância.
 
 ## Histórico de correções relevantes
 
-Os slides das aulas 01 e 03 traziam invertidas as definições de regressão e
-classificação (diziam "Y qualitativa: problema de regressão"). Foi corrigido nos
-HTMLs, mas **o erro persiste nos `.qmd` de origem** e provavelmente está uma única
-vez lá, copiado entre as duas apresentações. O correto: $Y$ quantitativa →
-regressão; $Y$ qualitativa → classificação.
+Duas edições foram feitas **diretamente nos HTMLs** e portanto se perdem se alguém
+recompilar as apresentações a partir dos `.qmd` (que não estão no repositório).
+Quem mantiver os `.qmd` precisa replicar as duas:
+
+1. Os slides das aulas 01 e 03 traziam invertidas as definições de regressão e
+   classificação (diziam "Y qualitativa: problema de regressão"). O correto: $Y$
+   quantitativa → regressão; $Y$ qualitativa → classificação. Provavelmente está
+   uma única vez no fonte, copiado entre as duas apresentações.
+2. Em 05/08/2026, o bloco de autoria dos 10 slides passou de
+   `Hugo Tremonte de Carvalho` / `hugo@dme.ufrj.br` para `Gabriel Sanfins` /
+   `gabrielsanfins@id.uff.br`, com os `id` das duas headings atualizados junto
+   (`gabriel-sanfins` e `gabrielsanfinsid.uff.br` — o Quarto derruba o `@`).
+   Nenhum link apontava para os `id` antigos.
+
+**`aulas/10-svm/10 SVM - slide.pdf` continua creditando "Hugo Carvalho"** em todas
+as páginas, e nomeia a UFRJ na capa. É um PDF compilado (aparentemente Beamer) sem
+fonte no repositório — não dá para corrigir sem o `.tex` de origem. É o único
+material do curso que ainda traz a autoria antiga.
