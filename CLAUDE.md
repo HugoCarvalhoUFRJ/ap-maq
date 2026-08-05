@@ -143,7 +143,46 @@ Três armadilhas ao editar esses HTMLs:
    mudar o texto de um título, atualize o `id` junto — mas verifique antes se algum
    link ou índice aponta para o `id` antigo.
 
-## Notebooks e dados
+## Notebooks
+
+**Há um laboratório guiado por aula**, `aulas/NN-*/Aula prática NN.ipynb`, das 14
+aulas. Eles seguem a conduta pedagógica dos labs do **[ISLP]** mas *não* usam o
+pacote `ISLP` (que não está instalado e não é dependência do curso). Convenções, a
+respeitar em qualquer notebook novo:
+
+- `from matplotlib.pyplot import subplots` e API orientada a objeto — **nunca**
+  `plt.figure()`;
+- `import sklearn.linear_model as skl`, `import sklearn.model_selection as skm`
+  (o módulo, não função a função);
+- `rng = np.random.default_rng(semente)` em toda simulação;
+- nomes iguais aos das notas: `X_tr`, `X_te`, `y_tr`, `y_te`, `modelo`;
+- markdown antes de cada célula dizendo **por que** aquilo vem agora;
+- blocos `> **Sua vez.**` seguidos de célula de código **vazia**;
+- commitados **sem outputs** e sem `execution_count`;
+- **o notebook explica estatística, não explica as próprias escolhas de estilo** —
+  meta-comentário do tipo "seguimos a conduta do [ISLP]" foi explicitamente
+  removido pelo Gabriel da versão que ele leu.
+
+Cada notebook reproduz as simulações da figura correspondente em
+`recursos/figuras/gerar-figuras.py`, **com os mesmos parâmetros e a mesma semente**,
+para que o número que o aluno lê na nota seja o número que ele obtém na célula. Ao
+mexer num dos dois, confira o outro.
+
+Antes de commitar um notebook, rode-o inteiro e confira as afirmações do texto
+contra o que as células imprimem:
+
+```bash
+cd aulas/03-validacao-cruzada
+jupyter nbconvert --to notebook --execute "Aula prática 03.ipynb" --output-dir /tmp
+```
+
+Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
+`EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
+são curtos, estão em estilo antigo e as notas os citam — mas **não** seguem as
+convenções acima. Os quatro `Aula prática` herdados foram aposentados; continuam na
+`main` e no histórico.
+
+## Dados
 
 Os `.csv` ficam em `recursos/dados/`. Os notebooks os carregam com um padrão de
 caminho local + fallback para a web:
@@ -182,6 +221,19 @@ limite de espaço do GitHub.
   seleção de variáveis, e o viés de fronteira do Nadaraya--Watson só aparece se você
   medir sobre repetições em vez de uma amostra. Quando a medição contrariar o texto,
   **registre o que foi medido** em vez de repetir a previsão.
+
+## Uma divergência aberta entre nota e notebook
+
+A nota da aula **E2** classifica calcular o PCA fora da dobra como vazamento da
+*categoria grave* da Aula 07. A `Aula prática E2` (§7) mediu isso em quatro
+configurações de $(n,d,k)$ com $y$ de ruído puro e **em nenhuma delas o $R^2$ foi
+inflado** — ele piorou. O motivo é estrutural: o PCA não olha o $y$, então não
+consegue escolher direções que finjam explicar ruído. Pela medição ele pertence à
+categoria *leve*, junto com a padronização.
+
+O notebook registra o medido; a nota ainda não foi ajustada. Se for mexer nisso,
+mexa nos dois — e note que a conduta prática não muda (pôr no `Pipeline` custa uma
+linha), só a classificação de gravidade.
 
 ## Histórico de correções relevantes
 

@@ -189,7 +189,8 @@ Z = PCA(n_components=2).fit_transform(Xs)     # scores nos 2 primeiros PCs
 Zk  = KernelPCA(n_components=2, kernel="rbf", gamma=0.1).fit_transform(Xs)
 Zt  = TSNE(n_components=2, perplexity=30, random_state=0).fit_transform(Xs)
 \end{lstlisting}
-O notebook \texttt{Exemplo - PCA} ilustra os componentes principais e compara com o
+Os notebooks \texttt{Aula prática E2} e \texttt{Exemplo - PCA} ilustram os
+componentes principais e comparam com o
 t-SNE na mesma base.
 
 %==============================================================================

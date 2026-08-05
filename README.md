@@ -40,7 +40,28 @@ recursos/
 Cada pasta de aula contém, conforme disponível:
 - o **slide** (`.html` ou `.pdf`);
 - as **notas de aula** em duas versões (`.tex` + `.pdf` compilado);
-- os **notebooks** (`.ipynb`) de prática e exemplos do tópico.
+- a **aula prática** (`Aula prática NN.ipynb`), um laboratório guiado por aula;
+- eventuais **notebooks de exemplo** (`Exemplo - ...`), demonstrações curtas.
+
+## Aulas práticas
+
+Há um notebook `Aula prática NN.ipynb` para cada uma das 14 aulas. Eles seguem a
+conduta dos laboratórios do [ISLP] — narrativa antes de cada bloco de código, API
+orientada a objeto do `matplotlib`, pausas `Sua vez` com célula vazia — mas sem
+depender do pacote `ISLP`: bastam `numpy`, `pandas`, `matplotlib`, `scikit-learn`,
+`scipy` e `statsmodels`.
+
+Cada notebook **reproduz as simulações das figuras das notas**, com os mesmos
+parâmetros, de modo que o número que aparece na figura é o número que a célula
+imprime. São commitados sem saída; para rodar:
+
+```bash
+cd aulas/03-validacao-cruzada
+jupyter lab "Aula prática 03.ipynb"
+```
+
+Os dados vêm de `recursos/dados/` quando o repositório está clonado e da web quando
+não está — os notebooks rodam no Google Colab sem ajuste.
 
 ## Notas de aula (LaTeX)
 
