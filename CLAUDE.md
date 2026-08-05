@@ -1,7 +1,9 @@
 # Notas para o Claude Code
 
-Material didático do curso de Aprendizado de Máquina da UFRJ (Estatística,
-Ciências Atuariais, Matemática Aplicada e Engenharia Matemática). **Não é um
+Material didático do curso de Aprendizado de Máquina (Estatística, Ciências
+Atuariais, Matemática Aplicada e Engenharia Matemática). Na branch
+`refactoring-baby` o curso é o do **Prof. Gabriel Sanfins, na UFF**; a `main`
+guarda a versão do Prof. Hugo Tremonte de Carvalho, na UFRJ. **Não é um
 projeto de software**: é um repositório de conteúdo — notas em LaTeX, slides em
 HTML, notebooks e dados. Ver `README.md` para a organização geral e `recursos/README.md`
 para os materiais transversais.
