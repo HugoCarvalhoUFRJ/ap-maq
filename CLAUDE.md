@@ -222,18 +222,26 @@ limite de espaço do GitHub.
   medir sobre repetições em vez de uma amostra. Quando a medição contrariar o texto,
   **registre o que foi medido** em vez de repetir a previsão.
 
-## Uma divergência aberta entre nota e notebook
+## A hierarquia de vazamento, e por que o PCA saiu da categoria grave
 
-A nota da aula **E2** classifica calcular o PCA fora da dobra como vazamento da
-*categoria grave* da Aula 07. A `Aula prática E2` (§7) mediu isso em quatro
-configurações de $(n,d,k)$ com $y$ de ruído puro e **em nenhuma delas o $R^2$ foi
-inflado** — ele piorou. O motivo é estrutural: o PCA não olha o $y$, então não
-consegue escolher direções que finjam explicar ruído. Pela medição ele pertence à
-categoria *leve*, junto com a padronização.
+A regra que separa vazamento **grave** de **leve** não é "quanto a etapa aprende
+dos dados", é **se ela olha o $Y$**:
 
-O notebook registra o medido; a nota ainda não foi ajustada. Se for mexer nisso,
-mexa nos dois — e note que a conduta prática não muda (pôr no `Pipeline` custa uma
-linha), só a classificação de gravidade.
+- **grave** — selecionar variáveis, hiperparâmetros ou o modelo olhando a resposta.
+  Mede-se: com $y$ de ruído puro, isso fabrica $R^2 = +0{,}40$ (aula 07 §3);
+- **grave** — a mesma unidade nos dois lados da divisão, ou informação do futuro.
+  Nenhum `Pipeline` protege disso; a ferramenta é `GroupKFold` (aula 07 §5);
+- **leve** — padronização, imputação pela média e **PCA**. Nenhuma das três vê o
+  $Y$, e portanto nenhuma consegue fabricar sinal a partir de ruído.
+
+O PCA estava classificado como grave nas notas E2 e 07. A `Aula prática E2` (§7)
+mediu em quatro configurações de $(n,d,k)$ com $y$ de ruído puro: **em nenhuma o
+$R^2$ foi inflado** — ele piorou, porque componentes calculados sobre o conjunto
+todo não são os componentes ótimos de nenhuma dobra de treino. As duas notas foram
+corrigidas em 05/08/2026.
+
+A conduta prática não mudou: tudo isso vai para o `Pipeline`, porque corrigir custa
+uma linha. O que mudou é onde gastar vigilância.
 
 ## Histórico de correções relevantes
 

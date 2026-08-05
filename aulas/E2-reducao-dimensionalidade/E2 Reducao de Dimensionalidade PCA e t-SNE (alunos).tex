@@ -271,11 +271,24 @@ O truque do \texttt{n\_components=0.90} é útil: em vez de um número de compon
 passa-se a \emph{proporção de variância} desejada, e o \texttt{scikit-learn} escolhe
 $p$ sozinho.
 
-\begin{atencao}
-O PCA dentro de um \emph{pipeline} não é preciosismo: os componentes são direções
-aprendidas de \emph{todas} as colunas ao mesmo tempo, e calculá-los fora da dobra é
-vazamento da categoria grave da Aula~07 --- da mesma família da seleção de
-variáveis que fabricou $R^2=0{,}40$ a partir de ruído.
+\begin{atencao}[qual é, afinal, a gravidade desse vazamento]
+O PCA aprende direções a partir dos dados, então pela regra da Aula~07 ele é etapa
+do modelo e tem de entrar no \emph{pipeline}. Mas vale ser preciso sobre a
+\emph{gravidade}, porque a intuição engana aqui.
+
+O que torna grave o vazamento por seleção de variáveis (Aula~07) é que a seleção
+\textbf{olha o $Y$}: ela escolhe as colunas que, por acaso, se parecem com a
+resposta naquela amostra, e é assim que fabrica $R^2=0{,}40$ a partir de ruído puro.
+O PCA \textbf{não olha o $Y$}. Sem a resposta, não há como escolher direções que
+finjam explicar ruído.
+
+E a medição confirma: o notebook desta aula repete o experimento cruel da Aula~07 --
+$y$ de ruído puro -- em quatro configurações de $(n,d,k)$, e em \emph{nenhuma} delas
+calcular o PCA fora da dobra inflou o $R^2$. Ele o \emph{piorou}, porque componentes
+calculados sobre o conjunto todo não são os componentes ótimos de nenhuma dobra de
+treino. Na hierarquia da Aula~07, portanto, o PCA fica na categoria \textbf{leve},
+ao lado da padronização --- e a conduta continua a mesma, porque corrigir custa uma
+linha.
 \end{atencao}
 
 Os notebooks \texttt{Aula prática E2} e \texttt{Exemplo - PCA} ilustram os

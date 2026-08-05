@@ -299,10 +299,10 @@ das Aulas~02--04.
   \item[Escalas alternativas] \texttt{MinMaxScaler} (intervalo $[0,1]$),
         \texttt{RobustScaler} (baseado em quantis, resistente a \emph{outliers}).
   \item[Redução de dimensão] PCA como etapa do \emph{pipeline} (Aula extra E2),
-        também ajustada apenas no treino --- e esta \emph{não} é inofensiva: os
-        componentes principais são direções aprendidas de todas as colunas ao mesmo
-        tempo, e computá-los fora da dobra é um vazamento da primeira categoria da
-        hierarquia acima.
+        também ajustado apenas no treino. Ele aprende direções de todas as colunas
+        ao mesmo tempo, o que parece grave --- mas \textbf{não olha o $Y$}, e por
+        isso não consegue fabricar sinal a partir de ruído: a medição da Aula~E2 o
+        coloca na categoria \emph{leve} desta hierarquia, junto com a padronização.
 \end{description}
 
 Quando diferentes colunas precisam de tratamentos diferentes (numéricas
