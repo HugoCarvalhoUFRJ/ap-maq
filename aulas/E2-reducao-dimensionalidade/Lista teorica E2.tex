@@ -1,0 +1,343 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica E2 --- Redução de Dimensionalidade (PCA e t-SNE)
+%  O gabarito sai de "Lista teorica E2 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{E2}{Redução de Dimensionalidade (PCA e t-SNE)}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[PCA na mão]
+Quatro pontos em $\R^2$:
+\[
+  (3,1), \quad (1,3), \quad (-3,-1), \quad (-1,-3).
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Verifique que a média é a origem e calcule a matriz de covariância
+        amostral $\bm S = \tfrac1n\bm X^\top\bm X$.
+  \item Encontre os autovalores e autovetores de $\bm S$. Escreva as duas
+        componentes principais como vetores unitários.
+  \item Qual a proporção da variância explicada pela primeira componente?
+  \item Calcule as coordenadas dos quatro pontos no novo sistema (isto é,
+        projete cada um sobre as duas componentes). Que estrutura geométrica isso
+        revela?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} A soma das coordenadas é
+$(3+1-3-1,\ 1+3-1-3) = (0,0)$, logo a média é a origem e os dados já estão
+centrados. Então
+\[
+  \bm X^\top\bm X =
+  \begin{pmatrix} 9+1+9+1 & 3+3+3+3 \\ 3+3+3+3 & 1+9+1+9 \end{pmatrix}
+  = \begin{pmatrix} 20 & 12 \\ 12 & 20 \end{pmatrix},
+  \qquad
+  \bm S = \frac14 \bm X^\top\bm X = \begin{pmatrix} 5 & 3 \\ 3 & 5 \end{pmatrix}.
+\]
+
+\smallskip
+\textbf{(b)} Para uma matriz da forma $\begin{psmallmatrix}a&b\\b&a\end{psmallmatrix}$
+os autovetores são sempre $(1,1)$ e $(1,-1)$, com autovalores $a+b$ e $a-b$.
+Conferindo:
+\[
+  \bm S\begin{pmatrix}1\\1\end{pmatrix} = \begin{pmatrix}8\\8\end{pmatrix} = 8\begin{pmatrix}1\\1\end{pmatrix},
+  \qquad
+  \bm S\begin{pmatrix}1\\-1\end{pmatrix} = \begin{pmatrix}2\\-2\end{pmatrix} = 2\begin{pmatrix}1\\-1\end{pmatrix}.
+\]
+Logo $\lambda_1 = 8$ e $\lambda_2 = 2$, com componentes principais
+\[
+  \bm v_1 = \frac{1}{\sqrt2}(1,1) \approx (0{,}7071;\ 0{,}7071),
+  \qquad
+  \bm v_2 = \frac{1}{\sqrt2}(1,-1) \approx (0{,}7071;\ -0{,}7071).
+\]
+(Sinal e ordem: os autovetores são definidos a menos de sinal, e a convenção é
+ordená-los por autovalor decrescente.)
+
+\smallskip
+\textbf{(c)} $\dfrac{\lambda_1}{\lambda_1+\lambda_2} = \dfrac{8}{10} = \mathbf{80\%}$.
+
+\smallskip
+\textbf{(d)} Projetando, $z_j = \x^\top\bm v_j$:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ponto & $z_1$ (sobre $\bm v_1$) & $z_2$ (sobre $\bm v_2$) \\
+\midrule
+$(3,1)$   & $4/\sqrt2 = 2\sqrt2 \approx 2{,}8284$ & $2/\sqrt2 = \sqrt2 \approx 1{,}4142$ \\
+$(1,3)$   & $2\sqrt2$   & $-\sqrt2$ \\
+$(-3,-1)$ & $-2\sqrt2$  & $-\sqrt2$ \\
+$(-1,-3)$ & $-2\sqrt2$  & $\sqrt2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+A estrutura fica evidente: os quatro pontos formam um \textbf{retângulo}
+centrado na origem, com o lado maior ($2\times 2\sqrt2 = 5{,}66$) na direção
+$(1,1)$ e o menor ($2\times\sqrt2 = 2{,}83$) na direção $(1,-1)$. No sistema
+original isso estava escondido, porque o retângulo está a $45^\circ$; a PCA
+apenas girou os eixos para alinhá-los aos lados.
+
+É a leitura geométrica da PCA em uma frase: \emph{ela procura o sistema de
+coordenadas em que a nuvem tem eixos alinhados}, e a variância ao longo de cada
+novo eixo é o autovalor correspondente. Aqui a razão entre os lados é
+$2\sqrt2/\sqrt2 = 2$, e a razão entre os desvios-padrão é
+$\sqrt{8}/\sqrt{2}=2$ --- consistente.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[quantas componentes guardar]
+Uma matriz de dados com $d=8$ covariáveis tem autovalores da matriz de
+covariância
+\[
+  \lambda = (12{,}5;\ 6{,}2;\ 3{,}1;\ 1{,}4;\ 0{,}9;\ 0{,}5;\ 0{,}3;\ 0{,}1).
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule a proporção de variância explicada por cada componente e a
+        proporção acumulada.
+  \item Quantas componentes são necessárias para reter ao menos $90\%$ da
+        variância? E $99\%$?
+  \item O que significa \texttt{PCA(n\_components=0.90)} no
+        \texttt{scikit-learn}, e por que é uma forma mais conveniente de
+        especificar a redução do que dar o número de componentes?
+  \item A soma dos autovalores vale $25$. A que quantidade dos dados originais
+        esse número corresponde? O que isso diz sobre a necessidade de
+        \textbf{padronizar} antes da PCA?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} A soma é $\sum_j\lambda_j = 25$.
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+componente & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+\midrule
+$\lambda_j$        & $12{,}5$ & $6{,}2$ & $3{,}1$ & $1{,}4$ & $0{,}9$ & $0{,}5$ & $0{,}3$ & $0{,}1$ \\
+proporção          & $0{,}500$ & $0{,}248$ & $0{,}124$ & $0{,}056$ & $0{,}036$ & $0{,}020$ & $0{,}012$ & $0{,}004$ \\
+acumulada          & $0{,}500$ & $0{,}748$ & $0{,}872$ & $\mathbf{0{,}928}$ & $0{,}964$ & $0{,}984$ & $\mathbf{0{,}996}$ & $1{,}000$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\smallskip
+\textbf{(b)} Para $90\%$: três componentes dão $87{,}2\%$, ainda insuficiente;
+com quatro chega-se a $92{,}8\%$. São necessárias \textbf{4 componentes}. Para
+$99\%$: sete componentes dão $99{,}6\%$ e seis dão $98{,}4\%$; são necessárias
+\textbf{7}.
+
+Vale reparar no rendimento decrescente: as $4$ primeiras componentes carregam
+$92{,}8\%$, e as $4$ últimas somam $7{,}2\%$. Guardar metade das colunas custa
+menos de $8\%$ da variância.
+
+\smallskip
+\textbf{(c)} Quando \texttt{n\_components} é um \emph{float} em $(0,1)$, o
+\texttt{scikit-learn} o interpreta como a \textbf{proporção de variância a
+reter}, e escolhe automaticamente o menor número de componentes que a atinge.
+Neste exemplo, \texttt{PCA(n\_components=0.90)} guardaria $4$.
+
+É mais conveniente porque $0{,}90$ é uma quantidade \textbf{interpretável e
+transferível}: significa a mesma coisa em qualquer conjunto de dados, enquanto
+``4 componentes'' depende de $d$ e da estrutura de correlação. Num
+\texttt{Pipeline} com validação cruzada, o número escolhido pode até variar entre
+dobras --- e é isso que se quer, já que o critério é o mesmo.
+
+\smallskip
+\textbf{(d)} A soma dos autovalores é o \textbf{traço} de $\bm S$, isto é, a soma
+das variâncias das $d$ covariáveis originais --- a ``variância total'' dos dados.
+(Girar os eixos não muda o traço.)
+
+E aí está o problema: essa soma é medida nas \textbf{unidades} das covariáveis.
+Se uma delas estiver em milímetros e outra em quilômetros, a primeira terá
+variância $10^{12}$ vezes maior e sozinha responderá por praticamente toda a
+variância total. A primeira componente principal será, essencialmente, essa
+covariável --- não porque ela importa, mas porque a régua dela é menor.
+
+Por isso, salvo quando todas as covariáveis já estão na mesma unidade e a escala
+relativa entre elas é significativa, \textbf{padroniza-se antes da PCA} --- o que
+equivale a fazer a decomposição da matriz de \emph{correlação} em vez da de
+covariância. É o mesmo argumento do Exercício~2(c) da Lista Teórica~02, sobre
+Ridge e Lasso.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o que o t-SNE preserva, e o que não preserva]
+O t-SNE constrói, no espaço original, probabilidades $p_{ij}$ de que $i$ escolha
+$j$ como vizinho, e procura pontos $\bm z_i$ em $\R^2$ cujas probabilidades
+$q_{ij}$ minimizem $\mathrm{KL}(p\,\|\,q)$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item A divergência de Kullback--Leibler $\sum_{ij} p_{ij}\log(p_{ij}/q_{ij})$
+        não é simétrica. Que tipo de erro ela pune muito, e que tipo ela quase
+        não pune? \emph{Sugestão:} olhe o que acontece com o somando quando
+        $p_{ij}$ é grande e $q_{ij}$ pequeno, e vice-versa.
+  \item Conclua o que se pode e o que não se pode ler num diagrama de t-SNE
+        sobre: (i) pontos que aparecem próximos; (ii) a distância entre dois
+        grupos distantes; (iii) o tamanho relativo de dois grupos.
+  \item O parâmetro \texttt{perplexity} controla, grosso modo, quantos vizinhos
+        cada ponto considera. O que se espera do diagrama com
+        \texttt{perplexity} muito pequena? E muito grande?
+  \item Por que não se usa t-SNE como etapa de um \texttt{Pipeline} de predição,
+        do jeito que se usa PCA?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} O somando é $p_{ij}\log(p_{ij}/q_{ij})$, e o peso de cada termo é
+$p_{ij}$ --- a probabilidade no espaço \emph{original}.
+
+Se $p_{ij}$ é grande (os pontos são vizinhos de verdade) e $q_{ij}$ é pequeno
+(ficaram longe no mapa), o logaritmo vai a $+\infty$ e o termo é multiplicado por
+um $p_{ij}$ grande: \textbf{punição enorme}. Separar vizinhos verdadeiros é
+caríssimo.
+
+Se $p_{ij}$ é pequeno (os pontos são distantes) e $q_{ij}$ é grande (ficaram
+perto no mapa), o logaritmo vai a $-\infty$, mas o termo é multiplicado por
+$p_{ij} \approx 0$: \textbf{punição quase nula}. Aproximar pontos distantes é de
+graça.
+
+Em uma frase: a KL nesta direção pune \emph{omitir} vizinhança verdadeira e é
+quase indiferente a \emph{inventar} vizinhança falsa entre pontos distantes.
+
+\smallskip
+\textbf{(b)}
+\begin{enumerate}[label=(\roman*),leftmargin=1.1cm]
+  \item \textbf{Pontos próximos no mapa: pode confiar.} Como separar vizinhos
+        verdadeiros é caríssimo, dois pontos que aparecem juntos quase sempre
+        eram vizinhos no espaço original. É exatamente o que o t-SNE otimiza.
+  \item \textbf{Distância entre grupos distantes: não significa nada.} Se dois
+        grupos estão longe no espaço original, todos os $p_{ij}$ entre eles são
+        praticamente zero, e a KL é indiferente a onde eles vão parar no mapa.
+        Dizer ``o grupo A está mais perto do B do que do C'' a partir de um
+        diagrama de t-SNE é uma leitura sem base.
+  \item \textbf{Tamanho relativo dos grupos: também não.} O t-SNE normaliza a
+        escala local de cada ponto pela \texttt{perplexity}, de modo que uma
+        nuvem densa e uma esparsa podem ocupar áreas parecidas no mapa. A área de
+        um agrupamento no diagrama não é proporcional a nada.
+\end{enumerate}
+
+\smallskip
+\textbf{(c)} Com \texttt{perplexity} muito pequena, cada ponto só considera
+pouquíssimos vizinhos: o mapa se fragmenta em muitos grupinhos minúsculos, e a
+estrutura de médio alcance desaparece. Com \texttt{perplexity} muito grande, cada
+ponto considera quase todo mundo, os $p_{ij}$ ficam quase uniformes e o mapa
+tende a uma nuvem única e sem estrutura --- perto do que o PCA daria.
+
+Vale reter que \texttt{perplexity} não é um parâmetro que se ``otimiza'': não há
+função de risco a minimizar. Rodar com dois ou três valores e ver o que
+\emph{sobrevive} aos três é a conduta usual.
+
+\smallskip
+\textbf{(d)} Por duas razões, e a primeira é decisiva.
+
+\textbf{Não existe \texttt{transform}.} O t-SNE não aprende um mapa
+$\R^d\to\R^2$; ele resolve um problema de otimização cujas variáveis são as
+\emph{posições dos pontos que você lhe deu}. Não há como projetar uma observação
+nova sem refazer o ajuste --- e refazê-lo com o ponto novo muda as posições de
+todos os outros. Um `Pipeline` precisa de um passo que possa ser ajustado no
+treino e aplicado à validação, e o t-SNE não oferece isso. (Na API do
+\texttt{scikit-learn} isso aparece como um \texttt{fit\_transform} sem
+\texttt{transform} correspondente.)
+
+\textbf{E o objetivo é outro.} O t-SNE existe para produzir uma figura que um
+humano olha. As duas coordenadas que ele devolve não são features com significado
+--- não são combinações lineares interpretáveis das originais, como as da PCA, e
+nem sequer são determinadas de forma única (rodar de novo com outra semente dá
+outro mapa). Alimentar um classificador com elas é usar como covariável o
+resultado de um algoritmo de visualização.
+
+A PCA, ao contrário, é uma transformação linear fixa: ela aprende uma matriz no
+treino e a aplica a qualquer ponto novo. É por isso que ela cabe num
+\texttt{Pipeline} e o t-SNE não.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[PCA e SVD são a mesma coisa]
+Seja $\bm X$ a matriz $n\times d$ dos dados \textbf{centrados}, com decomposição
+em valores singulares $\bm X = \bm U\bm D\bm V^\top$, em que $\bm U$ é
+$n\times r$ com colunas ortonormais, $\bm D$ é diagonal $r\times r$ com
+$d_1\ge d_2\ge\dots\ge d_r>0$, e $\bm V$ é $d\times r$ com colunas ortonormais.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que as colunas de $\bm V$ são autovetores de
+        $\bm S=\tfrac1n\bm X^\top\bm X$ e que o autovalor associado a $\bm v_j$
+        é $\lambda_j = d_j^2/n$.
+  \item Conclua que as componentes principais podem ser calculadas por SVD, sem
+        formar $\bm X^\top\bm X$. Por que isso importa numericamente?
+  \item As coordenadas dos dados nas $k$ primeiras componentes são as $k$
+        primeiras colunas de $\bm U\bm D$. Verifique isso a partir de
+        $\bm Z = \bm X\bm V$.
+  \item O teorema de Eckart--Young diz que
+        $\bm X_k = \bm U_k\bm D_k\bm V_k^\top$ é a melhor aproximação de posto
+        $k$ de $\bm X$, no sentido de minimizar $\norm{\bm X - \bm A}_F$ entre
+        todas as $\bm A$ de posto $\le k$. Que interpretação isso dá à PCA?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Usando $\bm U^\top\bm U = \bm I$,
+\[
+  \bm X^\top\bm X = (\bm U\bm D\bm V^\top)^\top(\bm U\bm D\bm V^\top)
+   = \bm V\bm D\,\underbrace{\bm U^\top\bm U}_{\bm I}\,\bm D\bm V^\top
+   = \bm V\bm D^2\bm V^\top .
+\]
+Multiplicando à direita por $\bm v_j$ (a $j$-ésima coluna de $\bm V$) e usando
+$\bm V^\top\bm v_j = \bm e_j$:
+\[
+  \bm X^\top\bm X\,\bm v_j = \bm V\bm D^2\bm e_j = d_j^2\,\bm v_j .
+\]
+Dividindo por $n$, $\bm S\bm v_j = (d_j^2/n)\,\bm v_j$: os $\bm v_j$ são
+autovetores de $\bm S$ com autovalores $\lambda_j = d_j^2/n$. Como
+$d_1\ge\dots\ge d_r$, eles já vêm em ordem decrescente de autovalor.
+
+\smallskip
+\textbf{(b)} Basta calcular a SVD de $\bm X$ e ler $\bm V$ e $\bm D$; nunca é
+preciso formar $\bm X^\top\bm X$.
+
+Isso importa porque formar $\bm X^\top\bm X$ \textbf{eleva ao quadrado o número
+de condição} da matriz. Se $\bm X$ tem valores singulares indo de $d_1$ a $d_r$,
+o número de condição de $\bm X$ é $d_1/d_r$ e o de $\bm X^\top\bm X$ é
+$(d_1/d_r)^2$. Em precisão dupla, com $\kappa(\bm X)\approx 10^8$ --- nada
+absurdo em dados reais correlacionados --- o produto tem $\kappa\approx 10^{16}$
+e as componentes menores viram ruído numérico.
+
+É o mesmo motivo pelo qual bons solucionadores de mínimos quadrados usam QR ou
+SVD em vez de resolver as equações normais diretamente (Aula~02).
+
+\smallskip
+\textbf{(c)} As coordenadas nas componentes principais são as projeções sobre os
+$\bm v_j$, isto é $\bm Z = \bm X\bm V$. Substituindo a SVD e usando
+$\bm V^\top\bm V=\bm I$:
+\[
+  \bm Z = \bm X\bm V = \bm U\bm D\bm V^\top\bm V = \bm U\bm D .
+\]
+As $k$ primeiras colunas de $\bm Z$ são, portanto, as $k$ primeiras de
+$\bm U\bm D$ --- ou seja, $\bm u_j d_j$ para $j=1,\dots,k$. (Confere com o item
+(a): a variância da coluna $j$ é $\tfrac1n\norm{\bm u_j d_j}^2 = d_j^2/n =
+\lambda_j$, já que $\norm{\bm u_j}=1$.)
+
+\smallskip
+\textbf{(d)} Dá à PCA uma caracterização que não menciona variância nenhuma:
+\textbf{a projeção sobre as $k$ primeiras componentes principais é a
+aproximação de posto $k$ que menos distorce a matriz de dados}, medida pela soma
+dos quadrados de todos os erros de reconstrução.
+
+São duas leituras equivalentes do mesmo objeto:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \emph{maximizar} a variância retida nas $k$ direções escolhidas;
+  \item \emph{minimizar} o erro quadrático de reconstrução ao voltar de $k$
+        dimensões para $d$.
+\end{itemize}
+E elas são equivalentes pelo mesmo mecanismo do Exercício~4 da Lista Teórica~E1:
+a soma de quadrados total é fixa, então maximizar a parte ``explicada'' é
+minimizar a parte ``residual''. O $k$-médias parte a soma de quadrados entre
+grupos e dentro de grupos; a PCA a parte entre direções retidas e direções
+descartadas. É a mesma identidade, aplicada a dois tipos de estrutura.
+\end{solucao}
+
+\paraalem
+
+\end{document}
