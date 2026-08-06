@@ -1,0 +1,241 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 01 --- Introdução ao Aprendizado de Máquina
+%
+%  Este arquivo gera o ENUNCIADO. O gabarito sai de
+%  "Lista teorica 01 - gabarito.tex", que define \gabaritoopt e dá \input aqui.
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{01}{Introdução ao Aprendizado de Máquina}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o tipo de problema e o tipo de objetivo]
+Para cada situação abaixo, diga (i) se é um problema de \emph{regressão} ou de
+\emph{classificação} e (ii) se o interesse é de \emph{predição} ou de
+\emph{inferência}. Justifique cada resposta em uma linha.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Uma seguradora quer estimar quanto um segurado vai gastar em sinistros no
+        próximo ano, para calcular o prêmio.
+  \item Um epidemiologista quer saber \emph{quais} hábitos de vida estão associados
+        a maior pressão arterial, e com que magnitude.
+  \item Um aplicativo de e-mail precisa decidir se cada mensagem que chega vai para
+        a caixa de entrada ou para a pasta de spam.
+  \item Um banco precisa saber qual das variáveis do cadastro mais pesa na recusa
+        de crédito, porque a lei o obriga a explicar a recusa ao cliente.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item \textbf{Regressão} ($Y$ é um valor em reais, quantitativo) e
+        \textbf{predição}: o prêmio depende do número previsto, não de entender o
+        mecanismo. Faz sentido falar em ``gasto médio''.
+  \item \textbf{Regressão} (pressão arterial é quantitativa) e
+        \textbf{inferência}: a pergunta é sobre \emph{quais} covariáveis importam
+        e com que sinal e magnitude --- uma caixa-preta muito precisa não
+        responderia a isso.
+  \item \textbf{Classificação} ($Y\in\{\text{spam},\text{não-spam}\}$, qualitativa;
+        não faz sentido falar em ``e-mail médio'') e \textbf{predição}: só
+        interessa acertar o destino da mensagem.
+  \item \textbf{Classificação} (recusar ou não é qualitativa) e
+        \textbf{inferência}: a exigência legal é de \emph{interpretabilidade}, o
+        que restringe as famílias de modelo que podem ser usadas.
+\end{enumerate}
+Repare que (a) e (b) são os dois de regressão e (c) e (d) os dois de
+classificação, mas os objetivos se cruzam: o tipo de $Y$ e o tipo de objetivo são
+escolhas independentes.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o melhor preditor constante e o piso do risco]
+Considere a perda quadrática $L(y,\hat y)=(y-\hat y)^2$ e suponha
+$\E[Y^2]<\infty$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Entre todos os preditores \textbf{constantes} $g(\x)\equiv c$, mostre que o
+        risco $\risco(c)=\E[(Y-c)^2]$ é minimizado em $c^\ast=\E[Y]$ e que
+        $\risco(c^\ast)=\Var(Y)$.
+  \item A Proposição da Aula~01 diz que $r(\x)=\E[Y\mid\X=\x]$ minimiza o risco
+        entre \emph{todas} as funções. Conclua que $\risco(r)\le\Var(Y)$ e diga
+        em que situação vale a igualdade. Interprete essa situação em uma frase.
+  \item Na população sintética da Aula~01 o erro irredutível é
+        $\sigma^2=0{,}49$. Um colega mede o erro do seu modelo e obtém $0{,}42$;
+        ele conclui que conseguiu um risco abaixo do piso teórico. Dê \textbf{duas}
+        explicações possíveis para o número que ele viu.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Some e subtraia $\E[Y]$ dentro do quadrado:
+\[
+  \E[(Y-c)^2] = \E\big[\big((Y-\E[Y]) + (\E[Y]-c)\big)^2\big]
+              = \Var(Y) + 2(\E[Y]-c)\underbrace{\E[Y-\E[Y]]}_{=0} + (\E[Y]-c)^2,
+\]
+ou seja $\risco(c)=\Var(Y)+(\E[Y]-c)^2$. O primeiro termo não depende de $c$ e o
+segundo é um quadrado, logo o mínimo está em $c^\ast=\E[Y]$ e vale
+$\risco(c^\ast)=\Var(Y)$.
+
+\smallskip
+\textbf{(b)} O preditor constante $c^\ast$ é uma função como qualquer outra, e $r$
+minimiza o risco sobre todas elas; logo $\risco(r)\le\risco(c^\ast)=\Var(Y)$. A
+igualdade vale quando $r$ \emph{é} constante, isto é, quando
+$\E[Y\mid\X=\x]=\E[Y]$ para (quase) todo $\x$. Em palavras: \textbf{as covariáveis
+não carregam informação nenhuma sobre a média de $Y$}, e o melhor que se pode
+fazer é chutar a média geral. É o caso de referência contra o qual todo modelo
+deveria ser comparado.
+
+\smallskip
+\textbf{(c)} Duas explicações:
+\begin{enumerate}[label=(\roman*),leftmargin=1.1cm]
+  \item ele mediu o \textbf{erro de treino}, não o risco. O risco empírico
+        calculado nos próprios dados de ajuste subestima sistematicamente o risco,
+        e pode perfeitamente ficar abaixo de $\sigma^2$ --- o modelo foi escolhido
+        para ir bem justamente naqueles pontos;
+  \item ele mediu num conjunto de teste \textbf{pequeno}, e $0{,}42$ é uma
+        estimativa ruidosa de um risco que de fato é $\ge 0{,}49$. A barra de erro
+        $\riscohat\pm 2\sqrt{\widehat\sigma^2/m}$ da Aula~01 existe exatamente para
+        isso: com $m$ pequeno ela é larga o bastante para conter $0{,}49$.
+\end{enumerate}
+O que \emph{não} é possível é o risco verdadeiro ficar abaixo de $\sigma^2$: pela
+decomposição do risco, ele é um excesso de risco não-negativo somado ao piso.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[lendo a curva em U]
+A tabela abaixo traz o erro de treino e o risco de polinômios de vários graus,
+ajustados à população sintética da Aula~01 ($n=50$, $\sigma^2=0{,}49$). Cada
+número é a média sobre $400$ amostras de treino independentes.
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+grau            & 1 & 2 & 3 & 5 & 8 & 10 & 12 \\
+\midrule
+erro de treino  & 0{,}9417 & 0{,}9192 & 0{,}5152 & 0{,}4348 & 0{,}4037 & 0{,}3840 & 0{,}3642 \\
+risco           & 1{,}0079 & 1{,}0392 & 0{,}6129 & 0{,}5699 & 0{,}8915 & 4{,}8503 & 79{,}2438 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Que grau você escolheria, e por quê?
+  \item O [ISLP] define \emph{superajuste} como o caso em que \emph{um modelo menos
+        flexível teria dado um risco menor}. Segundo essa definição, em quais graus
+        da tabela há superajuste? (Cuidado: são mais do que os óbvios.)
+  \item No grau~12 o erro de treino vale $0{,}3642$, abaixo de $\sigma^2=0{,}49$.
+        Isso contradiz a afirmação de que nenhum método consegue risco abaixo de
+        $\sigma^2$? Explique.
+  \item O erro de treino cai de forma monótona em toda a tabela. Isso é uma
+        coincidência desta simulação ou era de se esperar? Justifique.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} O grau~\textbf{5}: é o menor risco da tabela ($0{,}5699$), e é o
+risco que mais se aproxima do piso $\sigma^2=0{,}49$. Note que \emph{não} é o
+menor erro de treino --- este está no grau~12, o pior modelo da tabela.
+
+\smallskip
+\textbf{(b)} Nos graus \textbf{2, 8, 10 e 12}. Os graus 8, 10 e 12 são os óbvios:
+todos têm risco maior que o do grau~5. O grau~\textbf{2} é o que costuma passar
+despercebido --- seu risco ($1{,}0392$) é \emph{maior} que o do grau~1
+($1{,}0079$), embora seu erro de treino seja menor. Ou seja: já existe superajuste
+no segundo ponto da tabela, muito antes da explosão. Superajuste não é sinônimo de
+``curva maluca''; é uma comparação de riscos.
+
+\smallskip
+\textbf{(c)} Não contradiz. A afirmação é sobre o \textbf{risco}, uma esperança
+sobre observações novas; $0{,}3642$ é o \textbf{erro de treino}, medido nos mesmos
+pontos que ajustaram o polinômio. O erro de treino é um estimador otimista do
+risco, e no grau~12 o otimismo é enorme: o risco correspondente é $79{,}2438$, mais
+de $200$ vezes o erro de treino. Aliás, é o par (treino baixo, risco alto) que
+caracteriza a situação.
+
+\smallskip
+\textbf{(d)} Era de se esperar. Os polinômios de grau $p$ formam uma família
+\textbf{encaixada}: todo polinômio de grau $p$ também é um polinômio de grau $p+1$
+(com o coeficiente líder igual a zero). Como o ajuste por mínimos quadrados escolhe
+o membro da família que minimiza o erro de treino, ampliar a família só pode
+manter ou reduzir esse mínimo. O risco, que não é o critério otimizado, não tem
+nenhuma obrigação de cair --- e não cai.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[a decomposição viés--variância]
+Fixe um ponto $\x_0$ e trate $\rhat(\x_0)$ como aleatório, porque depende da
+amostra de treino $\Dados$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que
+        \[
+          \E_{\Dados}\big[(\rhat(\x_0)-r(\x_0))^2\big]
+          = \underbrace{\big(\E_{\Dados}[\rhat(\x_0)]-r(\x_0)\big)^2}_{\text{viés}^2}
+          + \underbrace{\Var_{\Dados}\big(\rhat(\x_0)\big)}_{\text{variância}}.
+        \]
+        \emph{Dica:} $0 = \E_{\Dados}[\rhat(\x_0)] - \E_{\Dados}[\rhat(\x_0)]$.
+  \item Somando o erro irredutível, o risco no ponto $\x_0$ fica
+        $\text{viés}^2+\text{variância}+\sigma^2$. A tabela abaixo traz as três
+        parcelas para a mesma simulação do Exercício~3 (médias sobre a grade de
+        $\x_0$). Confira a identidade nos graus 1, 5 e 10, e descreva em uma frase
+        o que acontece com cada parcela quando o grau cresce.
+\end{enumerate}
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+grau & 1 & 5 & 10 & 12 \\
+\midrule
+viés$^2$    & 0{,}4786 & 0{,}0018 & 0{,}0034 & 0{,}5410 \\
+variância   & 0{,}0394 & 0{,}0781 & 4{,}3570 & 78{,}2128 \\
+risco       & 1{,}0079 & 0{,}5699 & 4{,}8503 & 79{,}2438 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Escreva $\mu:=\E_{\Dados}[\rhat(\x_0)]$ e insira $-\mu+\mu$:
+\[
+  \E_{\Dados}\big[(\rhat(\x_0)-r(\x_0))^2\big]
+  = \E_{\Dados}\Big[\big((\rhat(\x_0)-\mu) + (\mu-r(\x_0))\big)^2\Big].
+\]
+Expandindo o quadrado saem três termos. O primeiro é
+$\E_{\Dados}[(\rhat(\x_0)-\mu)^2]=\Var_{\Dados}(\rhat(\x_0))$. O terceiro,
+$(\mu-r(\x_0))^2$, é constante em relação a $\Dados$ e é o viés ao quadrado. O
+termo cruzado se anula porque $\mu-r(\x_0)$ é constante e
+$\E_{\Dados}[\rhat(\x_0)-\mu]=\mu-\mu=0$:
+\[
+  2(\mu-r(\x_0))\,\E_{\Dados}\big[\rhat(\x_0)-\mu\big] = 0.
+\]
+É a mesma conta do item (a) do Exercício~2, com $\rhat(\x_0)$ no lugar de $Y$ e
+$r(\x_0)$ no lugar de $c$ --- o que não é coincidência: nos dois casos estamos
+decompondo um erro quadrático médio em torno da média do estimador.
+
+\smallskip
+\textbf{(b)} Com $\sigma^2=0{,}49$:
+\[
+\begin{array}{lrcl}
+  \text{grau } 1:  & 0{,}4786 + 0{,}0394 + 0{,}49 &=& 1{,}0080 \quad(\approx 1{,}0079)\\
+  \text{grau } 5:  & 0{,}0018 + 0{,}0781 + 0{,}49 &=& 0{,}5699 \\
+  \text{grau } 10: & 0{,}0034 + 4{,}3570 + 0{,}49 &=& 4{,}8504 \quad(\approx 4{,}8503)
+\end{array}
+\]
+As diferenças na quarta casa são só arredondamento da tabela.
+
+\smallskip
+Comportamento das parcelas: o \textbf{viés$^2$} desaba entre os graus 1 e 5 --- do
+grau~5 em diante o polinômio já consegue reproduzir $r$, e o viés vira ruído numérico.
+A \textbf{variância} cresce sem parar, e a partir do grau~8 cresce de forma
+explosiva: é ela, sozinha, que produz o lado direito da curva em U. O
+\textbf{$\sigma^2$} é constante por definição --- não depende do modelo. O
+grau~12 é um caso à parte: ali o viés$^2$ \emph{volta a subir}, porque o ajuste
+está tão instável que a média das curvas ajustadas já não se parece com $r$.
+\end{solucao}
+
+\paraalem
+
+\end{document}

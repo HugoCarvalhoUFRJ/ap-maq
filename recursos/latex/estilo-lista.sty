@@ -1,0 +1,79 @@
+%==============================================================================
+%  estilo-lista.sty
+%  Estilo das Listas de Exercícios do curso de Aprendizado de Máquina.
+%
+%  Carrega estilo-notas.sty com a opção [aluno], de modo que a notação do curso,
+%  os ambientes de teorema e as caixas pedagógicas vêm de um lugar só. Como o
+%  caminho é relativo, a lista compila da pasta da própria aula --- igual às
+%  notas.
+%
+%      \usepackage{../../recursos/latex/estilo-lista}            % enunciado
+%      \usepackage[gabarito]{../../recursos/latex/estilo-lista}  % com soluções
+%==============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo-lista}[2026/08/06 Estilo das listas de exercicios de AM]
+
+% ----- Opções do pacote -------------------------------------------------------
+% [gabarito]: inclui os ambientes "solucao". Sem a opção, eles são descartados
+% pelo comment.sty e nem chegam ao PDF.
+\newif\ifgabarito\gabaritofalse
+\DeclareOption{gabarito}{\gabaritotrue}
+\ProcessOptions\relax
+
+\RequirePackage[aluno]{../../recursos/latex/estilo-notas}
+\RequirePackage{comment}
+
+% ----- Cabeçalho e rodapé -----------------------------------------------------
+% Sobrescreve o das notas (estilo-notas já chamou \pagestyle{fancy}).
+\fancyhead[L]{\small\itshape Aprendizado de Máquina}
+\ifgabarito
+  \fancyhead[R]{\small\itshape Lista de Exercícios --- gabarito}
+\else
+  \fancyhead[R]{\small\itshape Lista de Exercícios}
+\fi
+
+% ----- Cabeçalho da lista -----------------------------------------------------
+% \cabecalholista{número da aula}{título da aula}
+\newcommand{\cabecalholista}[2]{%
+  \begin{center}
+    {\Large\bfseries Lista Teórica #1\ifgabarito\ --- Gabarito\fi}\\[0.4em]
+    {\small\itshape Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
+    {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
+    {\small Aula #1 --- #2}
+  \end{center}
+  \vspace{0.5em}\hrule\vspace{1.2em}}
+
+% ----- Ambiente de exercício --------------------------------------------------
+% \begin{exercicio}[título curto]  ...  \end{exercicio}
+% A forma estrelada marca o exercício opcional, mais difícil:
+% \begin{exercicio}*[título]  ...  \end{exercicio}
+\newcounter{exercicio}
+\NewDocumentEnvironment{exercicio}{so}{%
+  \par\medskip\refstepcounter{exercicio}%
+  \noindent
+  {\bfseries\color{azulufrj}%
+    Exercício~\theexercicio
+    \IfBooleanT{#1}{\ $\star$}%
+    \IfValueT{#2}{ --- #2}%
+  .}\enspace\ignorespaces
+}{\par\medskip}
+
+% Rótulo para a seção dos exercícios opcionais.
+\newcommand{\paraalem}{%
+  \par\medskip\noindent
+  {\small\itshape Os exercícios marcados com $\star$ são opcionais e vão além do
+   que a prova cobra.}\par\medskip}
+
+% ----- Ambiente de solução ----------------------------------------------------
+% Só existe quando a opção [gabarito] está ativa. Sem ela, o comment.sty
+% descarta o corpo linha a linha --- por isso \begin{solucao} e \end{solucao}
+% precisam ficar sozinhos na linha.
+\ifgabarito
+  \DeclareTColorBox{solucao}{o}{%
+    enhanced, breakable, colback=verdeesc!5, colframe=verdeesc,
+    coltitle=white, fonttitle=\bfseries, title={Solução\IfValueT{#1}{: #1}}}
+\else
+  \excludecomment{solucao}
+\fi
+
+\endinput
