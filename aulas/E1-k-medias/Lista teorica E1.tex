@@ -1,0 +1,357 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica E1 --- Análise de Agrupamento: k-Médias
+%  O gabarito sai de "Lista teorica E1 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{E1}{Análise de Agrupamento: $k$-Médias}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o algoritmo de Lloyd, na mão]
+Quatro pontos em $\R^2$:
+\[
+  A=(1,1), \quad B=(1,2), \quad C=(5,4), \quad D=(5,5),
+\]
+e $K=2$. Inicialize os centroides de propósito mal, em
+$\bm\mu_1 = (1,1)$ e $\bm\mu_2=(1,2)$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Rode a \textbf{primeira} iteração: calcule as distâncias de cada ponto a
+        cada centroide, atribua cada ponto ao mais próximo e atualize os
+        centroides. Calcule a inércia resultante.
+  \item Rode a \textbf{segunda} iteração e calcule a nova inércia.
+  \item Mostre que uma terceira iteração não muda nada, isto é, que o algoritmo
+        convergiu.
+  \item A solução encontrada é o mínimo global? Justifique. E se os centroides
+        tivessem sido inicializados em $\bm\mu_1=(1,1)$ e $\bm\mu_2=(1{,}2)$
+        --- ou seja, os \emph{mesmos} de agora?
+\end{enumerate}
+\emph{Sugestões:} $\sqrt{20}\approx 4{,}4721$, $\sqrt{32}\approx 5{,}6569$.
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Distâncias a $\bm\mu_1=(1,1)$ e $\bm\mu_2=(1,2)$:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ponto & $d(\cdot,\bm\mu_1)$ & $d(\cdot,\bm\mu_2)$ & grupo \\
+\midrule
+$A=(1,1)$ & $0$ & $1$ & $1$ \\
+$B=(1,2)$ & $1$ & $0$ & $2$ \\
+$C=(5,4)$ & $\sqrt{16+9}=5$ & $\sqrt{16+4}=4{,}4721$ & $2$ \\
+$D=(5,5)$ & $\sqrt{16+16}=5{,}6569$ & $\sqrt{16+9}=5$ & $2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Atualização: $\bm\mu_1 = A = (1,1)$ e
+\[
+  \bm\mu_2 = \tfrac13\big[(1,2)+(5,4)+(5,5)\big] = \Big(\tfrac{11}{3},\tfrac{11}{3}\Big)
+  \approx (3{,}6667;\ 3{,}6667).
+\]
+Inércia (soma dos quadrados de cada ponto ao centroide do seu grupo):
+\[
+  \underbrace{0}_{A} + \underbrace{7{,}1111+2{,}7778}_{B} + \underbrace{1{,}7778+0{,}1111}_{C}
+  + \underbrace{1{,}7778+1{,}7778}_{D} = \mathbf{15{,}3333}.
+\]
+
+\smallskip
+\textbf{(b)} Novas distâncias, agora a $(1,1)$ e $(3{,}6667;3{,}6667)$:
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ponto & $d(\cdot,\bm\mu_1)$ & $d(\cdot,\bm\mu_2)$ & grupo \\
+\midrule
+$A$ & $0$ & $3{,}7712$ & $1$ \\
+$B$ & $1$ & $3{,}1447$ & $1$ \\
+$C$ & $5$ & $1{,}3744$ & $2$ \\
+$D$ & $5{,}6569$ & $1{,}8856$ & $2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Agora $B$ \emph{mudou de grupo}. Atualizando:
+$\bm\mu_1 = \tfrac12[(1,1)+(1,2)] = (1;\ 1{,}5)$ e
+$\bm\mu_2 = \tfrac12[(5,4)+(5,5)] = (5;\ 4{,}5)$. Inércia:
+\[
+  4\times 0{,}25 = \mathbf{1{,}0000},
+\]
+já que cada ponto está a $0{,}5$ do seu centroide.
+
+\smallskip
+\textbf{(c)} Com $\bm\mu_1=(1;1{,}5)$ e $\bm\mu_2=(5;4{,}5)$, as distâncias são
+$0{,}5$ ao centroide do próprio grupo e mais de $4{,}7$ ao outro, para os quatro
+pontos. Nenhuma atribuição muda; logo os centroides não mudam. O algoritmo
+convergiu em \textbf{2 iterações efetivas}.
+
+\smallskip
+\textbf{(d)} \textbf{Sim, é o mínimo global} --- neste caso dá para verificar por
+força bruta: com $n=4$ e $K=2$ há apenas $2^{4-1}-1 = 7$ partições não vazias
+distintas, e a que separa $\{A,B\}$ de $\{C,D\}$ tem inércia $1{,}0$, menor que
+todas as outras (a segunda melhor, $\{A\}$ contra $\{B,C,D\}$, dá $15{,}33$).
+
+O item embutido na pergunta é uma pegadinha: a inicialização proposta \emph{é} a
+que usamos, e ela era ruim --- $\bm\mu_1$ e $\bm\mu_2$ começaram nos dois pontos
+mais próximos entre si, do mesmo lado da nuvem. Ainda assim o algoritmo se
+recuperou em duas iterações.
+
+Isso \textbf{não} é garantido em geral. O algoritmo de Lloyd converge sempre
+(Exercício~2), mas para um mínimo \emph{local}, e há inicializações a partir das
+quais ele fica preso numa solução ruim. É por isso que o \texttt{KMeans} do
+\texttt{scikit-learn} roda o algoritmo \texttt{n\_init} vezes com sementes
+diferentes e devolve a melhor --- e por isso o padrão de \texttt{init} é o
+\texttt{k-means++}, que sorteia centroides iniciais afastados entre si em vez de
+uniformemente.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[por que o algoritmo sempre termina]
+A inércia de uma configuração (atribuição $c$ e centroides $\bm\mu$) é
+\[
+  J(c,\bm\mu) \;=\; \sum_{i=1}^{n} \norm{\x_i - \bm\mu_{c(i)}}^2 .
+\]
+Cada iteração de Lloyd faz duas coisas: (i) atualiza $c$ mantendo $\bm\mu$ fixo,
+e (ii) atualiza $\bm\mu$ mantendo $c$ fixo.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que o passo (i) não aumenta $J$.
+  \item Mostre que o passo (ii) não aumenta $J$. \emph{Sugestão:} para cada grupo
+        $k$ separadamente, qual $\bm\mu$ minimiza
+        $\sum_{i:\,c(i)=k}\norm{\x_i-\bm\mu}^2$? Você já provou isso no
+        Exercício~2(a) da Lista Teórica~01.
+  \item Conclua que o algoritmo termina em um número \textbf{finito} de
+        iterações. \emph{Sugestão:} quantas atribuições $c$ diferentes existem?
+  \item O algoritmo termina no mínimo global? Se não, o que a garantia dos itens
+        anteriores realmente dá?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $\bm\mu$ fixo, $J$ é uma soma de $n$ termos, e o termo $i$
+depende só de $c(i)$:
+\[
+  J(c,\bm\mu) = \sum_{i=1}^n \norm{\x_i-\bm\mu_{c(i)}}^2 .
+\]
+Cada termo é minimizado, independentemente dos outros, escolhendo
+$c(i)=\argmin_k\norm{\x_i-\bm\mu_k}^2$ --- que é exatamente o que o passo de
+atribuição faz. Minimizar cada parcela separadamente minimiza a soma, então o
+novo $c$ dá $J$ menor ou igual.
+
+\smallskip
+\textbf{(b)} Com $c$ fixo, $J$ se separa por grupo:
+\[
+  J(c,\bm\mu) = \sum_{k=1}^{K}\ \sum_{i:\,c(i)=k}\norm{\x_i-\bm\mu_k}^2 ,
+\]
+e cada parcela depende de um $\bm\mu_k$ diferente. Pelo Exercício~2(a) da Lista
+Teórica~01 --- a conta de que $\E[(Y-c)^2]$ é minimizada em $c=\E[Y]$, aqui na
+versão amostral e coordenada a coordenada --- o minimizador é a média do grupo:
+\[
+  \bm\mu_k^\ast = \frac{1}{n_k}\sum_{i:\,c(i)=k}\x_i .
+\]
+É exatamente o passo de atualização. Logo $J$ não aumenta.
+
+(Vale notar o que isso revela: \textbf{o ``médias'' do nome não é uma escolha de
+projeto, é a consequência de usar distância euclidiana ao quadrado}. Com a
+distância $\ell_1$, o minimizador seria a \emph{mediana} --- é o $k$-medianas.)
+
+\smallskip
+\textbf{(c)} Pelos itens (a) e (b), $J$ é não-crescente ao longo das iterações. E
+$J$ é determinado pela atribuição $c$: dado $c$, os centroides ótimos são as
+médias, e portanto o valor de $J$ ao final de cada iteração é uma função de $c$
+apenas.
+
+Ora, existem no máximo $K^n$ atribuições possíveis --- um número grande, mas
+\textbf{finito}. Como $J$ nunca aumenta e cada iteração que muda alguma coisa
+produz uma atribuição \emph{estritamente} melhor (se não melhorasse, nada teria
+mudado e o algoritmo teria parado), nenhuma atribuição pode se repetir. Com um
+número finito de candidatas e nenhuma repetição, o algoritmo para.
+
+\smallskip
+\textbf{(d)} \textbf{Não}, o algoritmo não encontra o mínimo global. Encontrar a
+partição ótima de $n$ pontos em $K$ grupos é NP-difícil, e Lloyd é uma heurística
+gulosa.
+
+O que a garantia dá é: \emph{o algoritmo termina, e termina num ponto em que
+nenhum dos dois passos consegue melhorar}. Isso é um mínimo local no sentido
+forte de que nem realocar um ponto sozinho, nem mover um centroide, reduz $J$.
+Nada impede que exista uma partição bem melhor, alcançável apenas movendo
+\emph{vários} pontos ao mesmo tempo.
+
+A consequência prática é \texttt{n\_init}: rodar de vários pontos de partida e
+ficar com o melhor resultado é a maneira barata de reduzir a chance de terminar
+num mínimo local ruim.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o cotovelo não é um critério]
+Considere de novo os quatro pontos do Exercício~1.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule a inércia da melhor solução para $K=1$, $K=2$, $K=3$ e $K=4$.
+  \item Prove, em geral, que a inércia ótima é \textbf{não-crescente} em $K$, e
+        que vale exatamente zero quando $K=n$. Por que isso impede que
+        ``minimize a inércia'' seja um critério para escolher $K$?
+  \item A silhueta de um ponto $i$ é
+        $s(i) = \dfrac{b(i)-a(i)}{\max\{a(i),\,b(i)\}}$, onde $a(i)$ é a
+        distância média de $i$ aos pontos do \emph{seu} grupo e $b(i)$ a menor
+        distância média de $i$ aos pontos de \emph{outro} grupo. Calcule $s(A)$
+        para a solução com $K=2$ e interprete o valor.
+  \item Por que a silhueta média \emph{pode} servir como critério, e a inércia
+        não?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)}
+\begin{itemize}[leftmargin=1.4cm]
+  \item $K=1$: o centroide é a média geral $(3,3)$, e a inércia é
+        $8+5+5+8 = \mathbf{26}$.
+  \item $K=2$: a solução do Exercício~1, $\mathbf{1{,}0}$.
+  \item $K=3$: por exemplo $\{A\},\{B\},\{C,D\}$, com inércia
+        $0+0+0{,}5 = \mathbf{0{,}5}$.
+  \item $K=4$: cada ponto é seu próprio grupo, inércia $\mathbf{0}$.
+\end{itemize}
+
+\smallskip
+\textbf{(b)} Seja $J_K^\ast$ a inércia ótima com $K$ grupos. Dada qualquer
+solução ótima com $K$ grupos, construa uma com $K+1$ assim: tome um grupo com ao
+menos dois pontos, separe um ponto dele e faça-o um grupo sozinho. O ponto
+separado passa a contribuir com $0$; os demais do grupo original passam a ter
+como centroide a média dos que sobraram, que (pelo Exercício~2(b)) minimiza a
+soma de quadrados deles --- em particular, não é pior do que manter o centroide
+antigo. Logo a inércia dessa solução com $K+1$ grupos é $\le J_K^\ast$, e
+portanto $J_{K+1}^\ast \le J_K^\ast$.
+
+Com $K=n$, cada ponto é seu próprio centroide e $J_n^\ast = 0$.
+
+Isso impede ``minimize a inércia'' de ser critério porque o mínimo é sempre
+atingido em $K=n$: um agrupamento com um grupo por observação, que não agrupa
+nada. É o mesmo defeito do erro de treino da Aula~01 --- um critério que premia a
+complexidade sem penalizá-la escolhe sempre o modelo mais complexo.
+
+O ``cotovelo'' tenta contornar isso procurando o ponto em que a curva deixa de
+cair rápido. É uma heurística visual, sem definição formal, e em dados reais a
+curva costuma ser suave demais para haver cotovelo algum.
+
+\smallskip
+\textbf{(c)} Para $A=(1,1)$, com grupos $\{A,B\}$ e $\{C,D\}$:
+\begin{itemize}[leftmargin=1.4cm]
+  \item $a(A) = d(A,B) = 1$;
+  \item $b(A) = \tfrac12\big[d(A,C)+d(A,D)\big] = \tfrac12[5 + 5{,}6569] = 5{,}3284$.
+\end{itemize}
+\[
+  s(A) = \frac{5{,}3284 - 1}{5{,}3284} = \mathbf{0{,}8123}.
+\]
+A silhueta varia em $[-1,1]$: perto de $1$ significa que o ponto está muito mais
+perto do seu grupo do que do vizinho mais próximo; perto de $0$, que está na
+fronteira entre dois grupos; negativa, que ele estaria melhor em outro grupo.
+Um valor de $0{,}81$ indica um ponto \textbf{confortavelmente} no grupo certo.
+(As silhuetas dos quatro pontos são $0{,}8123$, $0{,}7889$, $0{,}7889$ e
+$0{,}8123$, com média $0{,}8006$.)
+
+\smallskip
+\textbf{(d)} Porque a silhueta \textbf{compara duas quantidades que se movem em
+direções opostas} quando $K$ cresce: aumentar $K$ diminui $a(i)$ (grupos menores
+e mais compactos) mas também diminui $b(i)$ (o grupo vizinho mais próximo fica
+mais perto). Não há um lado para o qual empurrar $K$ que melhore os dois termos,
+e por isso a silhueta média tem um \textbf{máximo interior}.
+
+Nestes dados, a silhueta média vale $0{,}8006$ em $K=2$ e cai para $0{,}3941$ em
+$K=3$ --- ela escolhe $K=2$ sozinha, sem precisar de inspeção visual. Em $K=4$ ela
+nem está definida (com um ponto por grupo, $a(i)$ é média de um conjunto vazio).
+
+A inércia não tem essa propriedade porque só olha o \emph{primeiro} termo: mede
+compacidade dentro dos grupos e ignora completamente a separação entre eles.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[dentro e entre]
+Seja $\bar\x$ a média de todas as $n$ observações e, para uma atribuição $c$ em
+$K$ grupos de tamanhos $n_k$ e médias $\bm\mu_k$, defina
+\[
+  \mathrm{SQ}_{\text{total}} = \sum_{i=1}^n\norm{\x_i-\bar\x}^2, \qquad
+  \mathrm{SQ}_{\text{dentro}} = \sum_{k=1}^{K}\sum_{i:\,c(i)=k}\norm{\x_i-\bm\mu_k}^2, \qquad
+  \mathrm{SQ}_{\text{entre}} = \sum_{k=1}^{K} n_k\norm{\bm\mu_k-\bar\x}^2 .
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que
+        $\mathrm{SQ}_{\text{total}} = \mathrm{SQ}_{\text{dentro}} + \mathrm{SQ}_{\text{entre}}$.
+  \item Verifique numericamente nos quatro pontos do Exercício~1, com a solução
+        de $K=2$.
+  \item Conclua que minimizar $\mathrm{SQ}_{\text{dentro}}$ (que é a inércia)
+        equivale a \textbf{maximizar} $\mathrm{SQ}_{\text{entre}}$. Que leitura
+        isso dá ao $k$-médias?
+  \item Compare com a decomposição do risco da Aula~01. Que papel joga aqui a
+        quantidade que lá era o erro irredutível?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Some e subtraia $\bm\mu_{c(i)}$ dentro da norma:
+\[
+  \norm{\x_i-\bar\x}^2 = \norm{(\x_i-\bm\mu_{c(i)}) + (\bm\mu_{c(i)}-\bar\x)}^2
+  = \norm{\x_i-\bm\mu_{c(i)}}^2 + 2\,(\x_i-\bm\mu_{c(i)})^\top(\bm\mu_{c(i)}-\bar\x)
+    + \norm{\bm\mu_{c(i)}-\bar\x}^2 .
+\]
+Somando sobre $i$ e agrupando por grupo, o termo cruzado do grupo $k$ é
+\[
+  2\,\Big(\underbrace{\textstyle\sum_{i:\,c(i)=k}(\x_i-\bm\mu_k)}_{=\,\bm 0}\Big)^{\!\top}
+  (\bm\mu_k-\bar\x) = 0 ,
+\]
+porque $\bm\mu_k$ é justamente a média do grupo $k$ e os desvios em torno da
+média somam zero. Sobram
+$\sum_i\norm{\x_i-\bm\mu_{c(i)}}^2 = \mathrm{SQ}_{\text{dentro}}$ e
+$\sum_k n_k\norm{\bm\mu_k-\bar\x}^2 = \mathrm{SQ}_{\text{entre}}$.
+
+Note onde a hipótese entrou: o termo cruzado só se anula porque os centroides são
+as \emph{médias} dos grupos. Com centroides arbitrários a identidade é falsa.
+
+\smallskip
+\textbf{(b)} Média geral: $\bar\x = (3,3)$. Então
+\[
+  \mathrm{SQ}_{\text{total}} = 8+5+5+8 = 26 .
+\]
+Com $\bm\mu_1=(1;1{,}5)$, $\bm\mu_2=(5;4{,}5)$ e $n_1=n_2=2$:
+\[
+  \mathrm{SQ}_{\text{dentro}} = 4\times 0{,}25 = 1,
+  \qquad
+  \mathrm{SQ}_{\text{entre}} = 2\big[(1-3)^2+(1{,}5-3)^2\big] + 2\big[(5-3)^2+(4{,}5-3)^2\big]
+   = 2(6{,}25)+2(6{,}25) = 25 .
+\]
+E $1 + 25 = 26$. \checkmark
+
+\smallskip
+\textbf{(c)} $\mathrm{SQ}_{\text{total}}$ \textbf{não depende da atribuição} ---
+é uma propriedade dos dados. Logo
+$\mathrm{SQ}_{\text{entre}} = \mathrm{SQ}_{\text{total}} - \mathrm{SQ}_{\text{dentro}}$,
+e minimizar a inércia é literalmente a mesma coisa que maximizar a dispersão
+\emph{entre} os centroides.
+
+A leitura: o $k$-médias pode ser descrito de dois jeitos equivalentes ---
+``deixe os grupos o mais compactos possível'' ou ``deixe os centroides o mais
+espalhados possível''. A segunda formulação explica por que ele tende a produzir
+grupos de tamanho parecido e de forma aproximadamente esférica: essa é a
+configuração que mais afasta as médias, dada a dispersão total.
+
+\smallskip
+\textbf{(d)} O papel é análogo, mas em posição invertida. Na Aula~01,
+\[
+  \risco = \text{viés}^2 + \text{variância} + \sigma^2 ,
+\]
+com $\sigma^2$ fixo, fora do controle do modelo, e os outros dois disputando o
+que sobra. Aqui,
+\[
+  \mathrm{SQ}_{\text{total}} = \mathrm{SQ}_{\text{dentro}} + \mathrm{SQ}_{\text{entre}} ,
+\]
+com $\mathrm{SQ}_{\text{total}}$ fixo e os outros dois disputando o que sobra.
+
+A diferença é qual parcela é o alvo: lá, \emph{duas} parcelas são
+controláveis e existe um balanço entre elas; aqui há um jogo de soma zero entre
+apenas duas, e o algoritmo simplesmente empurra tudo para um lado. É por isso que
+o $k$-médias não tem um ``balanço'' interno que sugira o $K$ certo --- e por isso
+$K$ precisa vir de fora, pela silhueta ou pelo problema.
+\end{solucao}
+
+\paraalem
+
+\end{document}
