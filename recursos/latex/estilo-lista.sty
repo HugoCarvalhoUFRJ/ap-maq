@@ -45,24 +45,17 @@
 
 % ----- Ambiente de exercício --------------------------------------------------
 % \begin{exercicio}[título curto]  ...  \end{exercicio}
-% A forma estrelada marca o exercício opcional, mais difícil:
-% \begin{exercicio}*[título]  ...  \end{exercicio}
+% Todos os exercícios são tratados igual: não há forma estrelada nem marcação de
+% exercício opcional.
 \newcounter{exercicio}
-\NewDocumentEnvironment{exercicio}{so}{%
+\NewDocumentEnvironment{exercicio}{o}{%
   \par\medskip\refstepcounter{exercicio}%
   \noindent
   {\bfseries\color{azulufrj}%
     Exercício~\theexercicio
-    \IfBooleanT{#1}{\ $\star$}%
-    \IfValueT{#2}{ --- #2}%
+    \IfValueT{#1}{ --- #1}%
   .}\enspace\ignorespaces
 }{\par\medskip}
-
-% Rótulo para a seção dos exercícios opcionais.
-\newcommand{\paraalem}{%
-  \par\medskip\noindent
-  {\small\itshape Os exercícios marcados com $\star$ são opcionais e vão além do
-   que a prova cobra.}\par\medskip}
 
 % ----- Ambiente de solução ----------------------------------------------------
 % Só existe quando a opção [gabarito] está ativa. Sem ela, o comment.sty

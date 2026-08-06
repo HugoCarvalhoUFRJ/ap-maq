@@ -86,7 +86,7 @@ Cada aula tem uma lista, na pasta da própria aula, em duas partes:
 
 | Arquivo | O que é |
 | --- | --- |
-| `Lista teorica NN.tex` / `.pdf` | 3 ou 4 exercícios de nível fácil a mediano; o último, marcado com $\star$, é opcional e mais difícil |
+| `Lista teorica NN.tex` / `.pdf` | 3 ou 4 exercícios de nível fácil a mediano |
 | `Lista teorica NN - gabarito.pdf` | a mesma lista com as soluções |
 | `Lista prática NN.ipynb` | notebook com lacunas marcadas por `...` |
 | `Lista prática NN - gabarito.ipynb` | as lacunas preenchidas, com o valor esperado de cada saída |

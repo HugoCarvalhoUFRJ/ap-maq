@@ -188,15 +188,15 @@ Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, n
 pasta da própria aula, em duas partes e sempre com gabarito:
 
 - `Lista teorica NN.tex` → `Lista teorica NN.pdf` (3–4 exercícios, fácil a
-  mediano; o último, marcado com `$\star$`, é opcional e mais difícil);
+  mediano, todos tratados igual — não há exercício marcado como opcional);
 - `Lista teorica NN - gabarito.tex` → o **mesmo conteúdo** com as soluções;
 - `Lista prática NN.ipynb` (lacunas marcadas por `...`) e
   `Lista prática NN - gabarito.ipynb`.
 
 O estilo é `recursos/latex/estilo-lista.sty`, que **carrega** o
 `estilo-notas.sty` em vez de duplicá-lo — por isso mexer nas listas não obriga a
-recompilar nenhuma nota. Ele define `\cabecalholista`, o ambiente `exercicio`
-(com forma estrelada para o exercício opcional) e o ambiente `solucao`.
+recompilar nenhuma nota. Ele define `\cabecalholista`, o ambiente `exercicio` e o
+ambiente `solucao`.
 
 Quatro armadilhas, todas já pagas uma vez:
 
