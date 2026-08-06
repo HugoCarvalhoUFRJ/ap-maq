@@ -1,0 +1,273 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 04 --- Métodos Não Paramétricos (KNN)
+%  O gabarito sai de "Lista teorica 04 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{04}{Métodos Não Paramétricos (KNN)}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o KNN nos dois extremos]
+Considere a amostra abaixo, com $n=5$ e uma única covariável:
+\begin{center}\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+$x_i$ & $0$ & $1$ & $3$ & $6$ & $10$ \\
+$y_i$ & $2$ & $3$ & $7$ & $5$ & $12$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule $\rhat(4)$ pelo KNN com $k=1$, $k=3$ e $k=5$.
+  \item Para uma amostra genérica sem $x_i$ repetidos, qual é o erro quadrático
+        médio de \emph{treino} do KNN com $k=1$? E com $k=n$?
+  \item Descreva, em uma frase cada, a cara da função $\rhat$ ajustada nos dois
+        extremos.
+  \item Qual dos dois extremos tem viés alto e qual tem variância alta? Relacione
+        com a Aula~01.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} As distâncias a $x_0=4$ são $|0-4|=4$, $|1-4|=3$, $|3-4|=1$,
+$|6-4|=2$, $|10-4|=6$. Em ordem: $x=3$ (d.\ $1$), $x=6$ (d.\ $2$), $x=1$ (d.\ $3$),
+$x=0$ (d.\ $4$), $x=10$ (d.\ $6$). Logo
+\[
+  k=1:\ \rhat(4)=7; \qquad
+  k=3:\ \rhat(4)=\tfrac{7+5+3}{3}=\mathbf{5}; \qquad
+  k=5:\ \rhat(4)=\tfrac{2+3+7+5+12}{5}=\mathbf{5{,}8}.
+\]
+
+\smallskip
+\textbf{(b)} Com $k=1$ o erro de treino é \textbf{exatamente zero}: o vizinho mais
+próximo de $\X_i$ é o próprio $\X_i$ (distância $0$), então
+$\rhat(\X_i)=Y_i$ para todo $i$. Com $k=n$ todos os pontos são vizinhos de todos,
+$\rhat(\x)\equiv\bar Y$, e o erro de treino é
+$\frac1n\sum_i(Y_i-\bar Y)^2$: a \emph{variância amostral} de $Y$ (a menos do
+fator $n/(n-1)$).
+
+\smallskip
+\textbf{(c)} Com $k=1$, $\rhat$ é uma função \textbf{escada} que passa por todos
+os pontos: constante em cada célula de Voronoi, saltando no meio do caminho entre
+observações vizinhas. Com $k=n$, $\rhat$ é uma \textbf{reta horizontal} na altura
+$\bar Y$.
+
+\smallskip
+\textbf{(d)} $k=1$ é o extremo de \textbf{variância alta} e viés baixo: cada
+predição depende de uma única observação, e trocar a amostra muda tudo. $k=n$ é o
+extremo de \textbf{viés alto} e variância zero: a predição não depende de $\x$, e
+por isso não pode acompanhar $r$ --- é literalmente o preditor constante do
+Exercício~2 da Lista Teórica~01, cujo risco é $\Var(Y)$. O $k$ é o
+\emph{tuning parameter} que percorre o balanço da Aula~01, com a diferença de que
+aqui \textbf{mais flexível é $k$ menor}, ao contrário do grau do polinômio.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[os pesos do Nadaraya--Watson]
+O estimador de Nadaraya--Watson é
+\[
+  \rhat(\x)=\sum_{i=1}^n w_i(\x)\,Y_i,
+  \qquad
+  w_i(\x)=\frac{K(\x,\X_i)}{\sum_{j=1}^n K(\x,\X_j)} .
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que $\sum_{i=1}^n w_i(\x)=1$, qualquer que seja o kernel
+        $K\ge 0$ (desde que o denominador não se anule). Por que essa propriedade
+        importa? \emph{Sugestão:} o que $\rhat$ devolve se todos os $Y_i$ valem
+        a mesma constante $c$?
+  \item Tome o kernel \textbf{uniforme}, $K(\x,\X_i)=\1{\abs{x-x_i}\le h}$.
+        Mostre que $\rhat(x)$ vira a média simples dos $y_i$ com
+        $\abs{x-x_i}\le h$, e calcule $\rhat(4)$ na amostra do Exercício~1 para
+        $h=2{,}5$ e $h=4$.
+  \item Mostre que $\rhat(\x)$ da fórmula acima é exatamente o minimizador
+        \[
+          \widehat\beta_0=\argmin_{\beta_0}\sum_{i=1}^n w_i(\x)\,(Y_i-\beta_0)^2 .
+        \]
+        Em uma frase: que modelo estamos ajustando em cada ponto $\x$?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Some diretamente:
+\[
+  \sum_{i=1}^n w_i(\x)
+   = \sum_{i=1}^n \frac{K(\x,\X_i)}{\sum_j K(\x,\X_j)}
+   = \frac{\sum_i K(\x,\X_i)}{\sum_j K(\x,\X_j)} = 1 ,
+\]
+porque numerador e denominador são a mesma soma. Importa porque garante que
+$\rhat$ é uma \textbf{média ponderada}, e não uma soma ponderada qualquer: se
+todos os $Y_i=c$, então $\rhat(\x)=c\sum_i w_i(\x)=c$. Um estimador que não
+reproduzisse uma constante seria enviesado até no caso mais fácil possível. É
+também o que mantém $\rhat(\x)$ dentro do intervalo $[\min_i Y_i,\max_i Y_i]$.
+
+\smallskip
+\textbf{(b)} Com o kernel uniforme, $K(\x,\X_i)$ vale $1$ para os pontos a
+distância no máximo $h$ e $0$ para os demais. Chamando de $V=\{i:\abs{x-x_i}\le h\}$
+o conjunto dos vizinhos, o denominador é $\abs{V}$ e
+\[
+  w_i(x)=\begin{cases}1/\abs{V}, & i\in V\\ 0,&\text{caso contrário,}\end{cases}
+  \qquad\text{logo}\qquad
+  \rhat(x)=\frac{1}{\abs{V}}\sum_{i\in V}Y_i .
+\]
+Na amostra do Exercício~1, em $x=4$:
+\begin{itemize}[leftmargin=1.4cm]
+  \item $h=2{,}5$: entram $x=3$ e $x=6$ (distâncias $1$ e $2$);
+        $\rhat(4)=\frac{7+5}{2}=\mathbf{6}$;
+  \item $h=4$: entram $x=3,6,1$ e $0$ (distâncias $1,2,3,4$);
+        $\rhat(4)=\frac{7+5+3+2}{4}=\mathbf{4{,}25}$.
+\end{itemize}
+Compare com o KNN: em $x=4$, o $k=3$ deu $5$ e o NW com $h=2{,}5$ deu $6$. São
+regras de vizinhança diferentes --- o KNN fixa o \emph{número} de vizinhos e deixa
+o raio variar; o NW fixa o \emph{raio} e deixa o número variar.
+
+\smallskip
+\textbf{(c)} Derivando em $\beta_0$:
+\[
+  \frac{\partial}{\partial\beta_0}\sum_i w_i(\x)(Y_i-\beta_0)^2
+   = -2\sum_i w_i(\x)(Y_i-\beta_0) = 0
+  \;\Longrightarrow\;
+  \sum_i w_i(\x)Y_i = \beta_0\sum_i w_i(\x) = \beta_0 ,
+\]
+usando o item (a) na última igualdade. A segunda derivada é
+$2\sum_i w_i(\x)=2>0$, então é mínimo. Em cada ponto $\x$ estamos ajustando uma
+\textbf{constante} por mínimos quadrados ponderados, com pesos que decaem com a
+distância a $\x$ --- um polinômio local de grau zero.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o viés de fronteira, calculado exatamente]
+Este exercício mostra em conta fechada o que a figura da nota mostra em desenho.
+Suponha o caso mais favorável possível: $r(x)=x$ em $[0,1]$, \textbf{sem ruído}
+($Y_i=r(X_i)=X_i$), e uma amostra tão densa que podemos tratar os $X_i$ como
+espalhados uniformemente em $[0,1]$. Use o kernel uniforme de janela $h$, com
+$0<h<1/2$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule $\rhat_{\text{NW}}(x_0)$ num ponto \textbf{interior},
+        $h<x_0<1-h$. Qual é o viés?
+  \item Calcule $\rhat_{\text{NW}}(0)$, na \textbf{fronteira}. Qual é o viés?
+        \emph{Sugestão:} quais pontos estão a distância $\le h$ de $0$?
+  \item Agora a regressão linear local: em vez de uma constante, ajuste uma
+        \emph{reta} por mínimos quadrados aos pontos da janela e avalie em $x_0$.
+        Qual o viés em $x_0=0$? Justifique sem fazer contas.
+  \item Explique em duas ou três linhas por que a diferença aparece só na
+        fronteira, e o que isso implica na prática quando $d$ é grande.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Os pontos da janela são os de $[x_0-h,\,x_0+h]$, um intervalo
+simétrico em torno de $x_0$ e inteiramente dentro de $[0,1]$. Como
+$Y_i=X_i$, a média deles é a média de uma uniforme em $[x_0-h,x_0+h]$, ou seja
+$x_0$. Portanto
+\[
+  \rhat_{\text{NW}}(x_0)=x_0=r(x_0),
+  \qquad \text{viés} = 0 .
+\]
+
+\smallskip
+\textbf{(b)} Em $x_0=0$ a janela seria $[-h,h]$, mas não existem observações à
+esquerda de $0$: sobram apenas os pontos de $[0,h]$. A média de uma uniforme em
+$[0,h]$ é $h/2$, então
+\[
+  \rhat_{\text{NW}}(0)=\frac{h}{2},
+  \qquad \text{viés} = \frac{h}{2}-r(0)=\frac{h}{2}\;>\;0 .
+\]
+Note que o viés \textbf{não some com mais dados}: ele depende só de $h$. Some
+apenas se $h\to 0$, e aí a variância explode. E o sinal é informativo --- na
+fronteira esquerda o estimador puxa para \emph{cima}, porque todos os vizinhos
+disponíveis estão do lado de $r$ maior.
+
+\smallskip
+\textbf{(c)} Viés \textbf{zero}. A regressão linear local ajusta uma reta aos
+pontos de $[0,h]$; como nesse trecho $Y_i=X_i$ exatamente, a reta de mínimos
+quadrados \emph{é} a própria $y=x$, e avaliá-la em $0$ dá $0$. O argumento geral:
+a janela ser assimétrica só atrapalha o grau~0 porque a média dos vizinhos é
+puxada pela inclinação de $r$; ao estimar essa inclinação explicitamente, o grau~1
+a desconta. Formalmente, o linear local elimina o termo de primeira ordem da
+expansão de Taylor de $r$, e sobra viés de ordem $h^2$ em vez de $h$.
+
+\smallskip
+\textbf{(d)} No interior a janela é simétrica em torno de $x_0$, e os vizinhos à
+esquerda compensam exatamente os da direita: as contribuições de primeira ordem
+se cancelam. Na fronteira essa simetria se quebra --- todos os vizinhos estão do
+mesmo lado --- e a inclinação de $r$ passa a enviesar a média.
+
+A implicação prática é desconfortável: em dimensão $d$, a fração de pontos que
+está ``perto da fronteira'' cresce muito rápido com $d$. Numa bola ou num cubo em
+$\R^{20}$, praticamente \emph{toda} observação é um ponto de fronteira em alguma
+direção. Ou seja, o que em $d=1$ é um defeito localizado nas duas pontas vira, em
+$d$ grande, o comportamento típico. É a maldição da dimensionalidade vista por
+outro ângulo, e é o assunto da Aula~05.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[o KNN é um suavizador linear]
+Todos os métodos desta aula se escrevem como $\rhat(\x)=\sum_i w_i(\x)Y_i$ ---
+são \textbf{suavizadores lineares}. Avaliando nos próprios pontos de treino,
+$\widehat{\bm Y}=\bm H\bm Y$, onde $H_{ij}=w_j(\X_i)$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Para o KNN com $k$ vizinhos e $x_i$ distintos, mostre que $h_{ii}=1/k$
+        para todo $i$, e conclua que $\operatorname{tr}(\bm H)=n/k$.
+  \item A quantidade $\operatorname{tr}(\bm H)$ é o \textbf{número efetivo de
+        parâmetros} do ajuste. Calcule-a para $n=100$ e $k=1$, $k=5$, $k=25$.
+        Compare com o número de parâmetros de um polinômio de grau $p$ e comente.
+  \item Aplique a fórmula do LOOCV da Aula~03,
+        $\riscohat_{\text{LOO}}=\frac1n\sum_i\big((Y_i-\rhat(\X_i))/(1-h_{ii})\big)^2$,
+        ao KNN. O que acontece quando $k=1$? O resultado faz sentido?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Fixe $i$ e considere a predição no próprio ponto de treino $\X_i$. Os
+$k$ vizinhos mais próximos de $\X_i$ \emph{incluem o próprio $\X_i$}, que está a
+distância $0$ --- e é o único a essa distância, já que os pontos são distintos. O
+KNN dá peso $1/k$ a cada um dos $k$ vizinhos, então o peso da observação $i$ sobre
+a própria predição é $h_{ii}=1/k$. Somando na diagonal,
+\[
+  \operatorname{tr}(\bm H)=\sum_{i=1}^n h_{ii}=n\cdot\frac1k=\frac nk .
+\]
+
+\smallskip
+\textbf{(b)} Com $n=100$:
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$k$ & $1$ & $5$ & $25$ \\
+\midrule
+$\operatorname{tr}(\bm H)=n/k$ & $100$ & $20$ & $4$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Com $k=1$ o KNN gasta $100$ parâmetros efetivos para $100$ observações: um
+parâmetro por ponto, que é a definição de interpolar --- e casa com o erro de
+treino zero do Exercício~1(b). Com $k=25$ ele usa $4$, menos que um polinômio de
+grau~4.
+
+A comparação com o polinômio é a moral do exercício: $p+1$ conta parâmetros
+\emph{explícitos}, e $\operatorname{tr}(\bm H)$ generaliza isso para métodos que
+não têm parâmetros nenhum no sentido usual. É a mesma quantidade nos dois casos
+--- para o MQO com $p+1$ colunas, $\operatorname{tr}(\bm H)=p+1$ --- e é ela que
+aparece na fórmula do otimismo do Exercício~1 da Lista Teórica~03. Ou seja:
+``complexidade'' tem uma definição operacional que não depende de o modelo ser
+paramétrico.
+
+\smallskip
+\textbf{(c)} Com $k=1$ temos $h_{ii}=1$, logo $1-h_{ii}=0$: a fórmula divide por
+zero. E o numerador também é zero, porque $\rhat(\X_i)=Y_i$. Ou seja, $0/0$ --- a
+fórmula não diz nada.
+
+E está certa em não dizer. O atalho vale para ajustes lineares em que nenhuma
+observação determina sozinha a própria predição; com $k=1$ ela a determina
+inteiramente, e o resíduo de treino perdeu \emph{toda} a informação sobre o erro
+de validação. Não há como recuperar o LOOCV de um único ajuste nesse caso: é
+preciso rodar a força bruta, refazendo o ajuste $n$ vezes. Para $k\ge 2$ a fórmula
+funciona normalmente, com o fator de inflação $1/(1-1/k)=k/(k-1)$.
+\end{solucao}
+
+\paraalem
+
+\end{document}

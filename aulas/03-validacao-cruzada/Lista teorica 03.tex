@@ -1,0 +1,292 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 03 --- Seleção de Modelos e Validação Cruzada
+%  O gabarito sai de "Lista teorica 03 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{03}{Seleção de Modelos e Validação Cruzada}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o otimismo tem fórmula]
+Ajustando $p+1$ parâmetros por mínimos quadrados a $n$ pontos, o erro de treino
+esperado vale, quando o viés já é desprezível,
+\[
+  \E\big[\mathrm{EQM}_{\text{treino}}\big]
+  \;\approx\; \sigma^2\Big(1-\frac{p+1}{n}\Big).
+\]
+Tome $\sigma^2=0{,}49$ e $n=50$, que é a população da Aula~01.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule o erro de treino esperado para $p=1$, $p=5$ e $p=12$.
+  \item A Lista Teórica~01 traz os valores \emph{medidos} sobre 400 amostras:
+        $0{,}9417$ para $p=1$, $0{,}4348$ para $p=5$ e $0{,}3642$ para $p=12$.
+        A fórmula acerta em dois dos três casos e erra feio no terceiro. Em qual,
+        e por quê?
+  \item Segundo a fórmula, o que acontece quando $p+1=n$? Interprete o resultado.
+  \item Um colega propõe: ``se o otimismo tem fórmula, basta somar
+        $\sigma^2(p+1)/n$ ao erro de treino e pronto, temos o risco --- não
+        precisamos de validação cruzada''. Dê \textbf{duas} razões para isso não
+        funcionar na prática.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Basta substituir:
+\[
+  p=1:\ 0{,}49\Big(1-\tfrac{2}{50}\Big)=0{,}4704,\qquad
+  p=5:\ 0{,}49\Big(1-\tfrac{6}{50}\Big)=0{,}4312,\qquad
+  p=12:\ 0{,}49\Big(1-\tfrac{13}{50}\Big)=0{,}3626.
+\]
+
+\smallskip
+\textbf{(b)} A fórmula erra em \textbf{$p=1$}: prevê $0{,}4704$ e o medido é
+$0{,}9417$, o dobro. Nos outros dois ela é ótima ($0{,}4312$ contra $0{,}4348$;
+$0{,}3626$ contra $0{,}3642$, menos de $0{,}5\%$ de diferença).
+
+A razão está na hipótese que a fórmula carrega: \emph{viés desprezível}. Ela
+descreve quanto do \emph{ruído} o modelo consegue absorver, e supõe que a parte
+sistemática já foi capturada. Com $p=1$ estamos ajustando uma reta a
+$r(x)=\operatorname{sen}(1{,}5x)+0{,}3x$: o viés é enorme, e o erro de treino é
+dominado por ele, não pelo ruído. Do grau~5 em diante o polinômio já reproduz
+$r$, o viés some, e sobra exatamente o que a fórmula descreve.
+
+\smallskip
+\textbf{(c)} Quando $p+1=n$ a fórmula dá $\E[\mathrm{EQM}_{\text{treino}}]=0$: o
+modelo interpola os $n$ pontos exatamente, com resíduo nulo em todos. Não é sinal
+de qualidade nenhuma --- é o caso extremo do otimismo, em que o erro de treino
+perde \emph{toda} a informação sobre o risco. Com $n=50$, isso acontece em $p=49$.
+
+\smallskip
+\textbf{(d)} Duas razões:
+\begin{enumerate}[label=(\roman*),leftmargin=1.1cm]
+  \item \textbf{$\sigma^2$ é desconhecido.} Na população sintética sabemos que
+        vale $0{,}49$ porque nós a construímos; num banco real, não. E estimar
+        $\sigma^2$ a partir do resíduo do próprio modelo é circular --- o resíduo
+        já está contaminado pelo mesmo otimismo.
+  \item \textbf{A fórmula só vale para essa família de método.} Ela depende de o
+        ajuste ser linear nos parâmetros e de haver exatamente $p+1$ deles. Não
+        existe ``$p$'' para um KNN, uma floresta aleatória ou um \emph{boosting}
+        com parada antecipada, nem para um procedimento que \emph{escolheu} as
+        covariáveis olhando os dados. A validação cruzada não precisa saber nada
+        disso: ela mede o procedimento inteiro, seja ele qual for.
+\end{enumerate}
+Vale acrescentar a razão de fundo do item (b): a fórmula supõe viés desprezível,
+e o momento em que mais precisamos de uma estimativa de risco confiável é
+justamente quando não sabemos se o modelo é flexível o bastante.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o atalho do LOOCV, na mão]
+A Proposição da Aula~03 diz que, para um ajuste linear com matriz de projeção
+$\bm H$,
+\[
+  \riscohat_{\text{LOO}}
+   = \frac1n\sum_{i=1}^n\left(\frac{Y_i-\widehat g(\X_i)}{1-h_{ii}}\right)^2 ,
+\]
+com $\widehat g$ ajustado usando \emph{todos} os dados. Vamos conferir no menor
+modelo linear possível: o que só tem intercepto, $\widehat g(\x)=\bar Y$.
+
+Tome $n=4$ e $Y=(2,\,4,\,4,\,6)$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Para esse modelo, $\bm X$ é a coluna de uns. Mostre que
+        $h_{ii}=1/n$ para todo $i$.
+  \item Calcule o erro quadrático médio de \textbf{treino}.
+  \item Calcule $\riscohat_{\text{LOO}}$ pela fórmula do atalho.
+  \item Calcule $\riscohat_{\text{LOO}}$ pela \textbf{força bruta}: deixe cada
+        observação de fora, ajuste (isto é, tire a média das outras três), meça o
+        erro na que ficou de fora e faça a média dos quatro. Confira que bate com
+        o item (c).
+  \item Compare os itens (b) e (d). Por quanto o erro de treino subestima?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $\bm X=\bm 1$ (coluna de uns, $n\times 1$), temos
+$\bm X^\top\bm X=n$ e
+\[
+  \bm H=\bm X(\bm X^\top\bm X)^{-1}\bm X^\top=\frac1n\bm 1\bm 1^\top ,
+\]
+a matriz cujas entradas são todas $1/n$. Em particular $h_{ii}=1/n$. (Faz
+sentido: $\widehat g(\X_i)=\bar Y$ dá o mesmo peso $1/n$ a cada observação,
+inclusive à própria $i$.) Aqui $h_{ii}=1/4$.
+
+\smallskip
+\textbf{(b)} $\bar Y=(2+4+4+6)/4=4$, resíduos $(-2,0,0,2)$, e
+\[
+  \mathrm{EQM}_{\text{treino}}=\tfrac14(4+0+0+4)=\mathbf{2}.
+\]
+
+\smallskip
+\textbf{(c)} Com $1-h_{ii}=1-\tfrac14=\tfrac34$, cada resíduo é inflado por
+$1/(3/4)=4/3$:
+\[
+  \riscohat_{\text{LOO}}
+  =\frac14\left[\Big(\frac{-2}{3/4}\Big)^2+0+0+\Big(\frac{2}{3/4}\Big)^2\right]
+  =\frac14\Big[\tfrac{64}{9}+\tfrac{64}{9}\Big]
+  =\frac{32}{9}\approx \mathbf{3{,}5556}.
+\]
+
+\smallskip
+\textbf{(d)} Força bruta, uma linha por observação deixada de fora:
+\begin{center}\small
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+fora & restantes & média & erro & \\
+\midrule
+$Y_1=2$ & $4,4,6$ & $14/3$ & $(2-14/3)^2=64/9$ & \\
+$Y_2=4$ & $2,4,6$ & $4$    & $0$ & \\
+$Y_3=4$ & $2,4,6$ & $4$    & $0$ & \\
+$Y_4=6$ & $2,4,4$ & $10/3$ & $(6-10/3)^2=64/9$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+Média: $\tfrac14(64/9+0+0+64/9)=32/9\approx 3{,}5556$. Bate com (c) exatamente ---
+o atalho não é aproximação, é identidade.
+
+\smallskip
+\textbf{(e)} $32/9$ contra $2$: a razão é $16/9\approx 1{,}78$. O erro de treino
+subestima o risco em cerca de \textbf{44\%} ($2$ é $56\%$ de $3{,}5556$), e isso
+num modelo com \emph{um} parâmetro só. Note que a razão é exatamente
+$1/(1-h_{ii})^2=(4/3)^2$, o que mostra de onde vem o otimismo: quanto maior a
+alavancagem de um ponto, mais o resíduo de treino dele engana.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[a regra de um erro-padrão]
+A tabela abaixo traz a validação cruzada de 5 dobras para polinômios de grau 1 a
+10, numa amostra de $n=120$ da população da Aula~01. Cada linha traz a média das
+5 dobras e o erro-padrão dessa média.
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lrrrrrrrrrr@{}}
+\toprule
+grau & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+\midrule
+EQM (CV) & 0{,}9413 & 0{,}9436 & 0{,}5858 & 0{,}6649 & 0{,}5134 & 0{,}5155 & 0{,}5137 & 0{,}5177 & 0{,}5197 & 0{,}5106 \\
+erro-padrão & 0{,}1383 & 0{,}1381 & 0{,}1119 & 0{,}1454 & 0{,}0583 & 0{,}0595 & 0{,}0656 & 0{,}0653 & 0{,}0662 & 0{,}0675 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Qual grau tem o menor EQM estimado? Comente o resultado.
+  \item Aplique a \textbf{regra de um erro-padrão}: escolha o modelo mais simples
+        cujo EQM estimado esteja a no máximo um erro-padrão do mínimo. Qual grau
+        ela escolhe?
+  \item A nota de aula diz que o mínimo do risco \emph{verdadeiro} desta
+        população está no grau~5. Qual dos dois critérios acertou?
+  \item Justifique a regra: por que faz sentido não confiar na diferença entre
+        $0{,}5106$ e $0{,}5134$?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} O menor EQM é $0{,}5106$, no \textbf{grau 10} --- o modelo
+\emph{mais flexível} da grade. Se o critério fosse só ``pegue o mínimo'', a
+validação cruzada teria escolhido justamente o candidato que a Aula~01 nos
+ensinou a desconfiar. Note também que a curva é praticamente plana do grau~5 ao
+grau~10: todos os valores estão entre $0{,}5106$ e $0{,}5197$.
+
+\smallskip
+\textbf{(b)} O mínimo é $0{,}5106$ com erro-padrão $0{,}0675$, então o limite é
+\[
+  0{,}5106+0{,}0675=0{,}5781 .
+\]
+Estão abaixo desse limite os graus $5$ ($0{,}5134$), $6$ ($0{,}5155$), $7$
+($0{,}5137$), $8$ ($0{,}5177$), $9$ ($0{,}5197$) e $10$ ($0{,}5106$). O mais
+simples deles é o \textbf{grau 5}. (Os graus 3 e 4 ficam de fora: $0{,}5858$ e
+$0{,}6649$ passam do limite.)
+
+\smallskip
+\textbf{(c)} A \textbf{regra de um erro-padrão}, que acertou o grau~5 na mosca. O
+critério do mínimo escolheu o grau~10, um modelo com o dobro de parâmetros e o
+mesmo desempenho.
+
+\smallskip
+\textbf{(d)} Porque a diferença é muito menor que a incerteza da própria
+estimativa. Os dois números diferem em $0{,}0028$, enquanto o erro-padrão de cada
+um é da ordem de $0{,}065$ --- vinte vezes maior. Dizer que o grau~10 é melhor
+que o grau~5 com base nesses dados é ler ruído como sinal.
+
+Há ainda um argumento que a tabela não mostra e que reforça a regra: estamos
+tomando o \emph{mínimo de dez} estimativas ruidosas. Mesmo que os dez modelos
+fossem exatamente equivalentes, o vencedor pareceria melhor que os outros só por
+sorte --- é o assunto do Exercício~4. Diante de um empate estatístico, a regra
+desempata pelo critério que não depende dos dados: preferir o modelo mais
+simples, que tende a ter menor variância e é mais fácil de interpretar.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[por que quem escolheu não pode reportar]
+Suponha que você compare $M=10$ modelos que, sem que você saiba, têm
+\textbf{exatamente o mesmo} risco verdadeiro $\risco=1$. A validação cruzada lhe
+dá, para cada um, uma estimativa
+\[
+  \riscohat_m = 1 + \varepsilon_m,
+  \qquad \varepsilon_1,\dots,\varepsilon_{10}
+  \stackrel{\text{i.i.d.}}{\sim} N(0;\,0{,}2^2).
+\]
+Você escolhe o modelo de menor $\riscohat_m$ e reporta esse valor como estimativa
+do risco.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Sabendo que a esperança do \emph{máximo} de 10 normais padrão
+        independentes vale aproximadamente $1{,}539$, calcule
+        $\E\big[\min_m \riscohat_m\big]$.
+        \emph{Sugestão:} $\min_m(1+\varepsilon_m) = 1 - \max_m(-\varepsilon_m)$, e
+        $-\varepsilon_m$ tem a mesma distribuição de $\varepsilon_m$.
+  \item Por quantos por cento o valor reportado subestima o risco verdadeiro?
+  \item Todos os modelos eram igualmente bons. De onde veio o viés?
+  \item Descreva o procedimento que resolve o problema e diga qual conjunto de
+        dados faz cada papel nele.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Escreva $\varepsilon_m=0{,}2\,Z_m$ com $Z_m\sim N(0,1)$ i.i.d. Então
+\[
+  \min_m \riscohat_m = 1 + 0{,}2\min_m Z_m = 1 - 0{,}2\max_m(-Z_m),
+\]
+e como $-Z_m$ também é $N(0,1)$,
+\[
+  \E\Big[\min_m \riscohat_m\Big] = 1 - 0{,}2\cdot\E\Big[\max_m Z_m\Big]
+  \approx 1 - 0{,}2\times 1{,}539 = \mathbf{0{,}692}.
+\]
+
+\smallskip
+\textbf{(b)} O risco verdadeiro é $1$ e o reportado é $0{,}692$: uma subestimação
+de cerca de \textbf{31\%}. E note que ela não desaparece com mais dados de
+validação --- diminuir o desvio $0{,}2$ ajuda, mas aumentar $M$ piora, e comparar
+mais modelos é exatamente o que se costuma fazer.
+
+\smallskip
+\textbf{(c)} Do fato de que \textbf{selecionar é otimizar}. O mínimo de dez
+variáveis aleatórias não é uma delas escolhida ao acaso: é a que teve a maior
+sorte. A estimativa $\riscohat_m$ era não-viesada \emph{antes} de você olhar para
+ela; ao usar essas mesmas estimativas para escolher, você transformou o valor
+reportado no mínimo de dez sorteios, e o mínimo é enviesado para baixo. É o
+mesmo mecanismo do erro de treino do Exercício~1, num nível acima: lá o modelo
+foi escolhido para ir bem naqueles pontos, aqui o \emph{hiperparâmetro} foi.
+
+\smallskip
+\textbf{(d)} \textbf{Validação cruzada aninhada}. A ideia é dar papéis
+diferentes a dados diferentes:
+\begin{itemize}[leftmargin=1.4cm]
+  \item o laço \textbf{interno} usa apenas a parte de treino de cada dobra
+        externa, e nele a CV escolhe o hiperparâmetro --- pode enviesar à
+        vontade, porque ninguém vai reportar esse número;
+  \item o laço \textbf{externo} avalia o \emph{procedimento inteiro} (``rodar a
+        busca e ajustar o vencedor'') em dados que não participaram nem do
+        ajuste nem da escolha. É esse número que se reporta.
+\end{itemize}
+Em uma frase: quem escolheu não pode reportar. A alternativa mais simples, quando
+há dados de sobra, é separar um conjunto de teste no começo e não tocar nele até
+o fim.
+\end{solucao}
+
+\paraalem
+
+\end{document}
