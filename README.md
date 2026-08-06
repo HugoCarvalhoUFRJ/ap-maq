@@ -31,10 +31,9 @@ aulas/
 recursos/
 ├── livros/        AME.pdf, ISLP.pdf
 ├── dados/         conjuntos de dados (.csv) usados nas aulas práticas
-├── listas/        listas de exercícios 01–08
 ├── avaliacoes/    avaliações presenciais (AP1, AP2) com gabarito
 ├── figuras/       figuras das notas + gerar-figuras.py que as produz
-└── latex/         estilo-notas.sty (estilo compartilhado das notas de aula)
+└── latex/         estilo-notas.sty e estilo-lista.sty (estilos compartilhados)
 
 requirements.txt   pacotes necessários para rodar as aulas práticas
 ```
@@ -42,7 +41,10 @@ requirements.txt   pacotes necessários para rodar as aulas práticas
 Cada pasta de aula contém, conforme disponível:
 - o **slide** (`.html` ou `.pdf`);
 - as **notas de aula** em duas versões (`.tex` + `.pdf` compilado);
-- a **aula prática** (`Aula prática NN.ipynb`), um laboratório guiado por aula;
+- a **aula prática** (`Aula prática NN.ipynb`), um laboratório guiado, para
+  acompanhar em sala;
+- a **lista de exercícios** da aula, em duas partes e com gabarito
+  (`Lista teorica NN.tex/.pdf` e `Lista prática NN.ipynb`), para depois da aula;
 - eventuais **notebooks de exemplo** (`Exemplo - ...`), demonstrações curtas.
 
 ## Aulas práticas
@@ -77,6 +79,32 @@ necessário para a compressão de imagem da aula E1.
 
 Os dados vêm de `recursos/dados/` quando o repositório está clonado e da web quando
 não está — os notebooks rodam no Google Colab sem ajuste.
+
+## Listas de exercícios
+
+Cada aula tem uma lista, na pasta da própria aula, em duas partes:
+
+| Arquivo | O que é |
+| --- | --- |
+| `Lista teorica NN.tex` / `.pdf` | 3 ou 4 exercícios de nível fácil a mediano; o último, marcado com $\star$, é opcional e mais difícil |
+| `Lista teorica NN - gabarito.pdf` | a mesma lista com as soluções |
+| `Lista prática NN.ipynb` | notebook com lacunas marcadas por `...` |
+| `Lista prática NN - gabarito.ipynb` | as lacunas preenchidas, com o valor esperado de cada saída |
+
+O gabarito teórico **sai do mesmo arquivo-fonte** do enunciado: `Lista teorica
+NN - gabarito.tex` apenas liga a opção `[gabarito]` do estilo e inclui o outro.
+Isso torna impossível que enunciado e solução divirjam. Para compilar os dois,
+de dentro da pasta da aula:
+
+```bash
+cd aulas/03-validacao-cruzada
+pdflatex "Lista teorica 03.tex"             # enunciado
+pdflatex "Lista teorica 03 - gabarito.tex"  # com as soluções
+```
+
+Todo número que aparece nos gabaritos foi **medido**, executando o notebook — e
+em vários casos a medição contrariou o que se esperava. Esses casos estão
+registrados nos próprios gabaritos, com a explicação.
 
 ## Notas de aula (LaTeX)
 

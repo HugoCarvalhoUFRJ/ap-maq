@@ -189,19 +189,28 @@ As notas de aula são teóricas; o curso conta ainda com material de apoio ao qu
 as notas fazem referência. Os \textbf{notebooks} ficam na pasta da própria aula,
 em \texttt{aulas/}, e os materiais transversais em \texttt{recursos/}:
 \begin{itemize}[leftmargin=1.4cm]
-  \item \textbf{Aulas práticas} (notebooks): 01, 02, 03--05, 06--07 e 08,
-        alinhadas às aulas teóricas correspondentes e guardadas na pasta da
-        primeira aula que cada uma cobre (\texttt{01-introducao},
-        \texttt{02-regressao-linear}, \texttt{03-validacao-cruzada},
-        \texttt{06-arvores-ensembles} e
-        \texttt{08-classificadores-gaussianos}). As práticas 01 e 02 seguem a
-        conduta dos laboratórios do [ISLP]: texto e código alternados, uma ideia
-        por célula, com blocos ``Sua vez'' para exercício em sala.
+  \item \textbf{Aulas práticas} (notebooks): uma por aula,
+        \texttt{Aula prática NN.ipynb}, na pasta da própria aula. São
+        laboratórios guiados, para acompanhar em sala: texto e código
+        alternados, uma ideia por célula, com blocos ``Sua vez'' para exercício.
+        Cada uma reproduz as simulações das figuras da nota correspondente, com
+        os mesmos parâmetros e a mesma semente.
+  \item \textbf{Listas de exercícios}, também uma por aula e na pasta da própria
+        aula, para depois da aula:
+        \begin{itemize}
+          \item \texttt{Lista teorica NN.tex/.pdf} --- 3 ou 4 exercícios de
+                nível fácil a mediano, o último deles opcional e mais difícil.
+                O gabarito sai do \emph{mesmo} arquivo-fonte
+                (\texttt{Lista teorica NN - gabarito.pdf}), o que impede que
+                enunciado e solução divirjam;
+          \item \texttt{Lista prática NN.ipynb} --- notebook com lacunas
+                marcadas por \texttt{...} para o aluno completar, acompanhado de
+                \texttt{Lista prática NN - gabarito.ipynb}.
+        \end{itemize}
   \item \textbf{Exemplos} em Python, na pasta da aula correspondente: comparação
         de classificadores paramétricos (aula 08), SVM (10), KNN e árvores (11),
-        $k$-médias (E1), PCA (E2) e NLP (E3).
-  \item \textbf{Listas de exercícios} 01--08, em \texttt{recursos/listas}, e duas
-        \textbf{avaliações presenciais} (AP1 e AP2) com gabarito, em
+        $k$-médias (E1) e PCA (E2).
+  \item Duas \textbf{avaliações presenciais} (AP1 e AP2) com gabarito, em
         \texttt{recursos/avaliacoes}.
 \end{itemize}
 

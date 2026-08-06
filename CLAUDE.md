@@ -182,6 +182,55 @@ são curtos, estão em estilo antigo e as notas os citam — mas **não** seguem
 convenções acima. Os quatro `Aula prática` herdados foram aposentados; continuam na
 `main` e no histórico.
 
+## Listas de exercícios
+
+Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, na
+pasta da própria aula, em duas partes e sempre com gabarito:
+
+- `Lista teorica NN.tex` → `Lista teorica NN.pdf` (3–4 exercícios, fácil a
+  mediano; o último, marcado com `$\star$`, é opcional e mais difícil);
+- `Lista teorica NN - gabarito.tex` → o **mesmo conteúdo** com as soluções;
+- `Lista prática NN.ipynb` (lacunas marcadas por `...`) e
+  `Lista prática NN - gabarito.ipynb`.
+
+O estilo é `recursos/latex/estilo-lista.sty`, que **carrega** o
+`estilo-notas.sty` em vez de duplicá-lo — por isso mexer nas listas não obriga a
+recompilar nenhuma nota. Ele define `\cabecalholista`, o ambiente `exercicio`
+(com forma estrelada para o exercício opcional) e o ambiente `solucao`.
+
+Quatro armadilhas, todas já pagas uma vez:
+
+1. **Os `.tex` das listas não têm acento no nome, de propósito.** O invólucro do
+   gabarito é literalmente `\def\gabaritoopt{gabarito}` seguido de
+   `\input{Lista teorica NN.tex}`, e esse `\input` é lido **antes** do
+   `\documentclass` — quando o kernel do LaTeX já tratou os bytes UTF-8 como
+   ativos mas o `fontenc` ainda não os definiu. Um nome acentuado ali quebra a
+   compilação com `Undefined control sequence` em `\UseTextAccent`. Os `.ipynb`
+   podem ter acento (não passam por `\input`).
+2. **`\begin{solucao}` e `\end{solucao}` precisam ficar sozinhos na linha.** Sem
+   a opção `[gabarito]`, quem descarta o corpo é o `comment.sty`, que trabalha
+   por linha.
+3. **As listas práticas usam semente diferente da aula prática correspondente**,
+   para o aluno não copiar o número do laboratório. Consequência: todo número do
+   gabarito precisa ser **medido**, não previsto.
+4. **Enunciado e gabarito são gerados da mesma fonte** (um script com as lacunas
+   marcadas). Editar um dos dois `.ipynb` à mão faz os dois divergirem, e o
+   script de conferência acusa.
+
+Como compilar, de dentro da pasta da aula:
+
+```bash
+cd aulas/03-validacao-cruzada
+pdflatex "Lista teorica 03.tex"
+pdflatex "Lista teorica 03 - gabarito.tex"
+```
+
+**As 8 listas herdadas saíram desta branch** (seguem na `main` e no histórico).
+Elas creditavam o docente anterior, não tinham fonte `.tex` em lugar nenhum e
+estavam numeradas pela ordem antiga dos slides — o que fazia 8 das 10 citações
+`Para praticar` nas notas apontarem para a lista errada. Com uma lista por aula,
+a numeração é 1:1 e essa classe de erro deixa de existir.
+
 ## Dados
 
 Os `.csv` ficam em `recursos/dados/`. Os notebooks os carregam com um padrão de

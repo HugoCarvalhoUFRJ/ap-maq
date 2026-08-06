@@ -11,7 +11,8 @@ Materiais usados ao longo de todo o curso (não pertencem a uma aula específica
   Fontes: [superconductivity](https://archive.ics.uci.edu/dataset/464/superconductivty+data)
   e [bank_train_redux](https://www.kaggle.com/competitions/santander-customer-transaction-prediction/)
   (excerto da base do Kaggle, por motivos de espaço no GitHub).
-- **`listas/`** — listas de exercícios 01–08.
 - **`avaliacoes/`** — avaliações presenciais (AP1, AP2) com gabarito.
+  As **listas de exercícios** não ficam aqui: são uma por aula, e moram na
+  pasta da própria aula, em `aulas/`.
 - **`latex/`** — `estilo-notas.sty`, estilo LaTeX compartilhado por todas as notas
   de aula (referenciado por cada `.tex` em `aulas/`).
