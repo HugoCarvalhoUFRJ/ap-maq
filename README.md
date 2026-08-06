@@ -35,6 +35,8 @@ recursos/
 ├── avaliacoes/    avaliações presenciais (AP1, AP2) com gabarito
 ├── figuras/       figuras das notas + gerar-figuras.py que as produz
 └── latex/         estilo-notas.sty (estilo compartilhado das notas de aula)
+
+requirements.txt   pacotes necessários para rodar as aulas práticas
 ```
 
 Cada pasta de aula contém, conforme disponível:
@@ -53,12 +55,25 @@ depender do pacote `ISLP`: bastam `numpy`, `pandas`, `matplotlib`, `scikit-learn
 
 Cada notebook **reproduz as simulações das figuras das notas**, com os mesmos
 parâmetros, de modo que o número que aparece na figura é o número que a célula
-imprime. São commitados sem saída; para rodar:
+imprime. São commitados sem saída.
+
+### Como rodar
+
+No **Google Colab** não é preciso instalar nada: todos os pacotes já vêm no
+ambiente padrão e os dados são baixados automaticamente. Basta abrir o `.ipynb`.
+
+**Localmente**, as dependências estão em [`requirements.txt`](requirements.txt):
 
 ```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 cd aulas/03-validacao-cruzada
 jupyter lab "Aula prática 03.ipynb"
 ```
+
+São seis pacotes (`numpy`, `pandas`, `matplotlib`, `scikit-learn`, `scipy`,
+`statsmodels`), mais `pillow` — que o `scikit-learn` **não** instala junto e é
+necessário para a compressão de imagem da aula E1.
 
 Os dados vêm de `recursos/dados/` quando o repositório está clonado e da web quando
 não está — os notebooks rodam no Google Colab sem ajuste.

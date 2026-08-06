@@ -1,0 +1,77 @@
+# Aprendizado de Máquina — UFF — Prof. Gabriel Sanfins
+# Dependências das 14 aulas práticas (aulas/*/Aula prática *.ipynb)
+#
+#     pip install -r requirements.txt
+#
+# No Google Colab não é preciso instalar nada: todos os pacotes abaixo já vêm
+# no ambiente padrão. Localmente, o recomendado é um ambiente isolado:
+#
+#     python3 -m venv .venv && source .venv/bin/activate
+#     pip install -r requirements.txt
+#     jupyter lab
+#
+# Os limites inferiores não são chute: cada um corresponde a uma API que os
+# notebooks de fato usam, anotada abaixo. Não há limite superior — nada no
+# material depende de comportamento que versões novas tenham mudado.
+
+# ----- o núcleo, usado nas 14 aulas ------------------------------------------
+numpy>=1.23
+pandas>=1.5
+matplotlib>=3.4          # pcolormesh(shading="auto"), aula 10
+scikit-learn>=1.2        # ver a lista de APIs no fim do arquivo
+scipy>=1.7               # aulas 05, 08, E1 e E2
+
+# ----- usados em algumas aulas ----------------------------------------------
+statsmodels>=0.13        # KernelReg e lowess: aulas 01, 02 e 04
+pillow>=9.0              # aula E1: o load_sample_image do scikit-learn depende
+                         # dele, e NÃO é instalado junto com o scikit-learn
+
+# ----- para abrir e executar os notebooks ------------------------------------
+jupyterlab>=4.0
+ipykernel>=6.0
+
+# =============================================================================
+# Por que scikit-learn >= 1.2
+# =============================================================================
+# As APIs abaixo aparecem nos notebooks e fixam esse piso:
+#
+#   LogisticRegression(penalty=None)     aula 08  -> exige >= 1.2
+#                                        (antes disso era a string "none")
+#   RandomForestRegressor().max_features aula 11  -> vale 1.0 a partir de 1.1
+#                                        (antes era "auto", e a aula comenta o valor)
+#   SplineTransformer                    aula 04  -> >= 1.0
+#   get_feature_names_out                aulas 07 e E3 -> >= 1.0
+#   permutation_importance               aula 06  -> >= 0.22
+#   cost_complexity_pruning_path         aula 06  -> >= 0.22
+#   calibration_curve(strategy=...)      aula 09  -> >= 0.24
+#
+# =============================================================================
+# Versões em que tudo foi executado de ponta a ponta (05/08/2026)
+# =============================================================================
+# Se algum notebook der resultado diferente do que o texto afirma, este é o
+# conjunto exato em que as 14 aulas rodaram sem erro:
+#
+#   numpy         1.26.4
+#   pandas        2.2.2
+#   matplotlib    3.9.2
+#   scikit-learn  1.5.1
+#   scipy         1.13.1
+#   statsmodels   0.14.2
+#   pillow        10.4.0
+#   jupyterlab    4.2.5
+#   ipykernel     6.28.0
+#   Python        3.12.7
+#
+# =============================================================================
+# Dados
+# =============================================================================
+# Nenhum notebook baixa conjunto de dados do scikit-learn pela rede: os que
+# vêm de lá (breast_cancer, digits, sample_image) são embutidos no pacote.
+#
+# Três arquivos .csv são lidos de recursos/dados/ quando o repositório está
+# clonado e da web quando não está — então os notebooks rodam no Colab sem
+# ajuste, desde que haja internet:
+#
+#   superconductivity.csv    aulas 01 a 06 (~24 MB)
+#   bank_train_redux.csv     aulas 07 e 09 (~100 MB)
+#   spam.csv                 aula E3       (~0,5 MB)
