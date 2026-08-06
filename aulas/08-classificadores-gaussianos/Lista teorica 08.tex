@@ -1,0 +1,406 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 08 --- Classificação e Classificadores Gaussianos
+%  O gabarito sai de "Lista teorica 08 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{08}{Classificação e Classificadores Gaussianos}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o classificador de Bayes, em uma dimensão]
+Seja $Y\in\{0,1\}$ e, condicionalmente a $Y$,
+\[
+  X\mid Y=0 \sim N(-1,\,1), \qquad X\mid Y=1 \sim N(+1,\,1).
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Com $\Prob(Y=1)=\Prob(Y=0)=1/2$, mostre que o classificador de Bayes
+        decide por $Y=1$ quando $x>0$.
+  \item Calcule o \textbf{erro de Bayes} nesse caso, em função de $\Phi$ (a
+        distribuição acumulada da normal padrão), e dê o valor numérico.
+        \emph{Dado:} $\Phi(-1)=0{,}1587$.
+  \item Agora suponha $\Prob(Y=1)=0{,}1$. Mostre que o corte passa a ser
+        $x^\ast=\tfrac12\ln 9 \approx 1{,}0986$, e calcule o novo erro de Bayes.
+        \emph{Dados:} $\Phi(-2{,}0986)=0{,}0179$ e $\Phi(0{,}0986)=0{,}5393$.
+  \item Compare o resultado de (c) com o erro do classificador que responde
+        sempre $Y=0$. O que isso antecipa sobre a Aula~09?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} O classificador de Bayes escolhe a classe de maior probabilidade a
+posteriori, o que com duas classes equivale a decidir por $Y=1$ quando
+$\pi_1 f_1(x) > \pi_0 f_0(x)$. Com $\pi_0=\pi_1$ as prioris cancelam e a condição
+vira $f_1(x)>f_0(x)$, isto é
+\[
+  \exp\Big(-\tfrac{(x-1)^2}{2}\Big) > \exp\Big(-\tfrac{(x+1)^2}{2}\Big)
+  \iff -(x-1)^2 > -(x+1)^2
+  \iff (x+1)^2 > (x-1)^2 .
+\]
+Expandindo, $x^2+2x+1 > x^2-2x+1 \iff 4x>0 \iff x>0$. O corte é o ponto médio
+entre as duas médias, como a simetria já sugeria.
+
+\smallskip
+\textbf{(b)} O erro é a probabilidade de errar, decomposta pelas duas classes:
+\[
+  \risco^\ast = \tfrac12\,\Prob(X>0\mid Y=0) + \tfrac12\,\Prob(X<0\mid Y=1).
+\]
+Sob $Y=0$, $X\sim N(-1,1)$, então $\Prob(X>0)=\Prob(Z>1)=1-\Phi(1)=\Phi(-1)$. Por
+simetria, o segundo termo é igual. Logo
+\[
+  \risco^\ast = \Phi(-1) = \mathbf{0{,}1587}.
+\]
+Quase 16\% de erro é o \emph{piso}: nenhum classificador, com quaisquer dados,
+faz melhor. É o análogo em classificação do $\sigma^2$ da Aula~01.
+
+\smallskip
+\textbf{(c)} Agora as prioris não cancelam. Decidimos por $Y=1$ quando
+\[
+  0{,}1\,\exp\Big(-\tfrac{(x-1)^2}{2}\Big) > 0{,}9\,\exp\Big(-\tfrac{(x+1)^2}{2}\Big).
+\]
+Tomando logaritmo,
+\[
+  \ln 0{,}1 - \tfrac{(x-1)^2}{2} > \ln 0{,}9 - \tfrac{(x+1)^2}{2}
+  \iff \ln\tfrac{0{,}1}{0{,}9} > \tfrac{(x-1)^2-(x+1)^2}{2} = -2x,
+\]
+ou seja $-\ln 9 > -2x$, isto é $x > \tfrac12\ln 9 \approx 1{,}0986$.
+
+O erro fica
+\[
+  \risco^\ast = 0{,}9\,\Prob(X>x^\ast\mid Y=0) + 0{,}1\,\Prob(X<x^\ast\mid Y=1)
+   = 0{,}9\,\Phi(-2{,}0986) + 0{,}1\,\Phi(0{,}0986),
+\]
+usando $\Prob(X>x^\ast\mid Y=0)=1-\Phi(x^\ast+1)=\Phi(-x^\ast-1)$ e
+$\Prob(X<x^\ast\mid Y=1)=\Phi(x^\ast-1)$. Numericamente,
+\[
+  \risco^\ast = 0{,}9\times 0{,}0179 + 0{,}1\times 0{,}5393
+   = 0{,}0161 + 0{,}0539 = \mathbf{0{,}0701}.
+\]
+
+\smallskip
+\textbf{(d)} O classificador que responde sempre $Y=0$ erra exatamente
+$\Prob(Y=1)=\mathbf{0{,}10}$. O classificador de Bayes erra $0{,}0701$ --- melhor,
+mas não muito: a diferença é de menos de 3 pontos percentuais.
+
+E vale olhar de onde vem o erro de Bayes: das duas parcelas, $0{,}0539$ vêm de
+classificar como $0$ observações que eram $1$. Ou seja, o classificador ótimo
+**erra mais da metade dos positivos** ($0{,}5393$ deles!) --- e ainda assim é
+ótimo, porque acertar mais positivos custaria muitos falsos positivos entre os
+$90\%$ de negativos.
+
+É exatamente a situação em que a acurácia deixa de ser informativa, e é o assunto
+da Aula~09. Quando a prevalência é desbalanceada, um número de acurácia próximo
+do trivial pode esconder tanto um classificador excelente quanto um inútil.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[por que a fronteira do LDA é uma reta]
+No modelo gaussiano com covariância \textbf{comum},
+$X\mid Y=k \sim N(\bm\mu_k,\,\bm\Sigma)$ com prioris $\pi_k$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Escreva $\ln\big(\pi_k f_k(\x)\big)$ e mostre que, ao comparar duas
+        classes, os termos que dependem de $\x$ de forma \emph{quadrática}
+        se cancelam.
+  \item Conclua que o classificador decide pela classe que maximiza a
+        \emph{função discriminante linear}
+        \[
+          \delta_k(\x) = \x^\top\bm\Sigma^{-1}\bm\mu_k
+            - \tfrac12\bm\mu_k^\top\bm\Sigma^{-1}\bm\mu_k + \ln\pi_k .
+        \]
+  \item Em que ponto exato do item (a) a hipótese $\bm\Sigma_0=\bm\Sigma_1$ é
+        usada? O que sobra se ela for relaxada?
+  \item No caso $d=1$, $\bm\Sigma=\sigma^2$, $\mu_0=-1$, $\mu_1=+1$ e
+        $\pi_0=\pi_1$, recupere o corte do Exercício~1(a) a partir de
+        $\delta_1(x)=\delta_0(x)$.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} A densidade gaussiana multivariada dá
+\[
+  \ln\big(\pi_k f_k(\x)\big)
+  = \ln\pi_k - \tfrac{d}{2}\ln(2\pi) - \tfrac12\ln\abs{\bm\Sigma}
+    - \tfrac12(\x-\bm\mu_k)^\top\bm\Sigma^{-1}(\x-\bm\mu_k).
+\]
+Expandindo a forma quadrática:
+\[
+  (\x-\bm\mu_k)^\top\bm\Sigma^{-1}(\x-\bm\mu_k)
+  = \underbrace{\x^\top\bm\Sigma^{-1}\x}_{\text{não depende de }k}
+    - 2\,\x^\top\bm\Sigma^{-1}\bm\mu_k
+    + \bm\mu_k^\top\bm\Sigma^{-1}\bm\mu_k .
+\]
+Ao comparar duas classes $k$ e $\ell$, subtraímos as duas expressões. Os termos
+$-\tfrac d2\ln(2\pi)$, $-\tfrac12\ln\abs{\bm\Sigma}$ e
+$-\tfrac12\x^\top\bm\Sigma^{-1}\x$ são \textbf{idênticos} nas duas e desaparecem
+--- e é justamente o último deles que era quadrático em $\x$.
+
+\smallskip
+\textbf{(b)} O que sobra depois de descartar os termos comuns e multiplicar por
+$-\tfrac12\cdot(-2)=1$ é
+\[
+  \delta_k(\x) = \x^\top\bm\Sigma^{-1}\bm\mu_k
+    - \tfrac12\bm\mu_k^\top\bm\Sigma^{-1}\bm\mu_k + \ln\pi_k ,
+\]
+que é \textbf{afim em $\x$}: um produto interno com o vetor fixo
+$\bm\Sigma^{-1}\bm\mu_k$, mais uma constante. A fronteira entre duas classes é o
+conjunto $\{\x: \delta_k(\x)=\delta_\ell(\x)\}$, isto é
+$\x^\top\bm\Sigma^{-1}(\bm\mu_k-\bm\mu_\ell) = \text{const}$ --- um
+\textbf{hiperplano}.
+
+\smallskip
+\textbf{(c)} A hipótese é usada exatamente ao afirmar que
+$\x^\top\bm\Sigma^{-1}\x$ e $\ln\abs{\bm\Sigma}$ \emph{não dependem de $k$}. Com
+covariâncias distintas teríamos $\x^\top\bm\Sigma_k^{-1}\x$ e
+$\ln\abs{\bm\Sigma_k}$, que dependem de $k$ e portanto \textbf{não se cancelam}.
+
+Sobra então
+\[
+  \delta_k(\x) = -\tfrac12\x^\top\bm\Sigma_k^{-1}\x
+    + \x^\top\bm\Sigma_k^{-1}\bm\mu_k
+    - \tfrac12\bm\mu_k^\top\bm\Sigma_k^{-1}\bm\mu_k
+    - \tfrac12\ln\abs{\bm\Sigma_k} + \ln\pi_k ,
+\]
+que é \emph{quadrática} em $\x$ --- é o QDA, e a fronteira vira uma cônica
+(elipse, parábola ou hipérbole, conforme o caso). Em uma frase: \textbf{a
+linearidade do LDA não vem da gaussianidade, vem da covariância comum}.
+
+\smallskip
+\textbf{(d)} Com $d=1$, $\bm\Sigma^{-1}=1/\sigma^2$ e $\pi_0=\pi_1$ (então
+$\ln\pi_k$ cancela):
+\[
+  \delta_1(x)=\frac{x\cdot 1}{\sigma^2}-\frac{1}{2\sigma^2},
+  \qquad
+  \delta_0(x)=\frac{x\cdot(-1)}{\sigma^2}-\frac{1}{2\sigma^2}.
+\]
+Igualando: $x/\sigma^2 = -x/\sigma^2$, ou seja $2x/\sigma^2=0$, isto é
+$\mathbf{x=0}$. É o corte do Exercício~1(a), e note que ele \emph{não depende de
+$\sigma^2$} --- a variância muda o quanto se erra, não onde fica a fronteira.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[quantos parâmetros cada um estima]
+Considere $K=2$ classes em $\R^d$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Conte os parâmetros livres do LDA e do QDA. Considere: as médias das
+        classes, a(s) matriz(es) de covariância --- lembrando que uma matriz
+        simétrica $d\times d$ tem $d(d+1)/2$ entradas livres --- e as prioris.
+  \item Preencha a tabela para $d=2$, $d=10$ e $d=50$.
+  \item Mostre que a diferença QDA menos LDA vale $d(d+1)/2$ e comente a ordem de
+        grandeza.
+  \item A tabela abaixo traz a acurácia medida (média sobre 60 amostras, avaliada
+        em 20 mil observações novas) do LDA e do QDA, nas mesmas duas dimensões.
+        Em ambas o QDA passa a ganhar a partir de $n=50$ --- mas o que acontece
+        \emph{antes} disso é muito diferente. Use a contagem de (b) para
+        explicar, e diga por que a regra ``prefira LDA com poucos dados'' está
+        incompleta.
+\end{enumerate}
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+        &     & $n=20$ & $30$ & $50$ & $100$ & $300$ & $1000$ \\
+\midrule
+\multirow{2}{*}{$d=2$}  & LDA & $0{,}8602$ & $0{,}8681$ & $0{,}8724$ & $0{,}8775$ & $0{,}8785$ & $0{,}8793$ \\
+                        & QDA & $0{,}8508$ & $0{,}8669$ & $0{,}8737$ & $0{,}8806$ & $0{,}8824$ & $0{,}8834$ \\
+\midrule
+\multirow{2}{*}{$d=10$} & LDA & $0{,}7053$ & $0{,}7422$ & $0{,}7773$ & $0{,}8013$ & $0{,}8175$ & $0{,}8241$ \\
+                        & QDA & $0{,}5475$ & $0{,}7030$ & $0{,}7896$ & $0{,}8440$ & $0{,}8792$ & $0{,}8905$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $K=2$:
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{médias}: dois vetores de $\R^d$, logo $2d$ parâmetros, nos dois
+        métodos;
+  \item \textbf{covariância}: o LDA estima \emph{uma} matriz comum,
+        $d(d+1)/2$; o QDA estima \emph{duas}, $2\cdot d(d+1)/2 = d(d+1)$;
+  \item \textbf{prioris}: $\pi_0$ e $\pi_1$ somam 1, então há $K-1=1$ parâmetro
+        livre.
+\end{itemize}
+\[
+  \#\text{LDA} = 2d + \tfrac{d(d+1)}{2} + 1,
+  \qquad
+  \#\text{QDA} = 2d + d(d+1) + 1 .
+\]
+
+\smallskip
+\textbf{(b)}
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+$d$ & $2$ & $10$ & $50$ \\
+\midrule
+LDA & $8$  & $76$  & $1\,376$ \\
+QDA & $11$ & $131$ & $2\,651$ \\
+\midrule
+diferença & $3$ & $55$ & $1\,275$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\smallskip
+\textbf{(c)} A diferença é
+$\big(2d+d(d+1)+1\big)-\big(2d+\tfrac{d(d+1)}{2}+1\big)=\tfrac{d(d+1)}{2}$: a
+segunda matriz de covariância, exatamente. Ela cresce como $d^2/2$, ou seja
+\textbf{quadraticamente}. Em $d=2$ são 3 parâmetros a mais --- nada. Em $d=50$ são
+$1\,275$ a mais, quase o dobro do modelo inteiro do LDA.
+
+\smallskip
+\textbf{(d)} O ponto de virada é o mesmo nas duas dimensões --- $n=50$ --- e
+justamente por isso ele é a parte \emph{menos} informativa da tabela. O que muda
+é o \textbf{tamanho} da vantagem de cada lado:
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+                                    & $d=2$ & $d=10$ \\
+\midrule
+LDA $-$ QDA em $n=20$ (antes da virada)   & $+0{,}0094$ & $\mathbf{+0{,}1578}$ \\
+QDA $-$ LDA em $n=1000$ (depois)          & $+0{,}0041$ & $\mathbf{+0{,}0664}$ \\
+custo da matriz extra, $d(d+1)/2$         & $3$ & $55$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Em $d=2$ os dois métodos são praticamente equivalentes em toda a tabela: a maior
+diferença é de menos de um ponto percentual. A matriz de covariância extra custa
+$3$ parâmetros, e $3$ parâmetros a mais ou a menos não mudam nada, nem para bem
+nem para mal.
+
+Em $d=10$ os dois erram feio, em direções opostas. Com $n=20$, o QDA precisa
+estimar $131$ parâmetros a partir de $20$ observações --- as matrizes de
+covariância mal são invertíveis --- e despenca para $0{,}5475$, quase o acaso,
+$16$ pontos abaixo do LDA. Com $n=1000$ ele reproduz a estrutura verdadeira e
+ganha $6{,}6$ pontos.
+
+Portanto a regra ``prefira LDA com poucos dados'' está incompleta em dois
+sentidos. Primeiro, \textbf{o que decide não é $n$ sozinho, e sim $n$ contra
+$d(d+1)/2$}, que é o custo da matriz extra. Segundo, e mais útil na prática:
+\textbf{em dimensão baixa a escolha quase não importa}; ela só passa a importar
+quando $d$ é grande, e aí importa muito, nos dois sentidos. Gastar validação
+cruzada decidindo entre LDA e QDA em $d=2$ é desperdício; em $d=50$ é obrigatório.
+
+É a mesma lógica do balanço viés--variância da Aula~01: o QDA é o modelo mais
+flexível, e modelos flexíveis só compensam quando há dados para sustentá-los.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[naive Bayes gaussiano é QDA com as mãos amarradas]
+O \texttt{GaussianNB} supõe que, \emph{dentro de cada classe}, as covariáveis são
+independentes: $\bm\Sigma_k$ é \textbf{diagonal}, com entradas
+$\sigma_{k1}^2,\dots,\sigma_{kd}^2$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Quantos parâmetros ele estima, com $K=2$? Acrescente a coluna à tabela
+        do Exercício~3.
+  \item Mostre que a função discriminante do naive Bayes gaussiano é
+        \[
+          \delta_k(\x) = \ln\pi_k
+            - \tfrac12\sum_{j=1}^{d}\left[\ln\sigma_{kj}^2
+              + \frac{(x_j-\mu_{kj})^2}{\sigma_{kj}^2}\right],
+        \]
+        e diga se a fronteira é linear ou quadrática.
+  \item A suposição de independência é quase sempre \emph{falsa}. Dê uma razão
+        pela qual o método ainda assim costuma classificar bem.
+  \item Descreva uma situação em que a suposição custa caro, isto é, em que a
+        correlação entre covariáveis carrega informação essencial sobre a classe.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} São $2d$ médias, $2d$ variâncias (uma por covariável e por classe) e
+$1$ priori: $\#\text{NB}=4d+1$. Comparando:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+$d$ & $2$ & $10$ & $50$ \\
+\midrule
+naive Bayes ($4d+1$) & $9$  & $41$  & $201$ \\
+LDA                  & $8$  & $76$  & $1\,376$ \\
+QDA                  & $11$ & $131$ & $2\,651$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Note a inversão: em $d=2$ o naive Bayes custa \emph{mais} que o LDA (9 contra 8),
+porque estima duas variâncias por covariável em vez de uma covariância comum. Em
+$d=50$ ele custa $201$ contra $1\,376$ --- quase sete vezes menos. O crescimento
+é \textbf{linear} em $d$, contra o quadrático dos outros dois, e é isso que o
+torna viável em dimensão alta (a Aula~E3 o usa com dezenas de milhares de
+colunas).
+
+\smallskip
+\textbf{(b)} Com $\bm\Sigma_k$ diagonal, a densidade conjunta fatora:
+$f_k(\x)=\prod_{j=1}^d f_{kj}(x_j)$, com
+$f_{kj}$ a densidade de $N(\mu_{kj},\sigma_{kj}^2)$. Então
+\[
+  \ln\big(\pi_k f_k(\x)\big)
+   = \ln\pi_k + \sum_{j=1}^{d}\left[
+       -\tfrac12\ln(2\pi) - \tfrac12\ln\sigma_{kj}^2
+       - \frac{(x_j-\mu_{kj})^2}{2\sigma_{kj}^2}\right],
+\]
+e descartando $-\tfrac d2\ln(2\pi)$, que é comum a todas as classes, chega-se à
+expressão do enunciado.
+
+A fronteira é \textbf{quadrática}: o termo $(x_j-\mu_{kj})^2/\sigma_{kj}^2$
+depende de $k$ pelo denominador, então o termo em $x_j^2$ não cancela entre
+classes. O naive Bayes gaussiano é, portanto, um \textbf{QDA restrito a
+covariâncias diagonais} --- e não uma versão simplificada do LDA. (Se as
+variâncias fossem forçadas a ser iguais entre as classes, aí sim ele viraria um
+LDA diagonal, com fronteira linear.)
+
+\smallskip
+\textbf{(c)} Porque para \emph{classificar} basta acertar qual $\delta_k$ é o
+maior, e não estimar bem as probabilidades. Erros na modelagem da dependência
+tendem a deslocar todos os $\delta_k$ na mesma direção, preservando a ordem entre
+eles. Some-se a isso o argumento de variância do item (a): com $4d+1$ parâmetros
+em vez de $2\,651$, as estimativas são muito mais estáveis, e o viés introduzido
+pela suposição falsa é compensado pela variância que se economiza.
+
+O preço aparece na \textbf{calibração}: as probabilidades do naive Bayes são
+notoriamente ruins, tipicamente empurradas para 0 ou 1, porque ele multiplica
+evidências correlacionadas como se fossem independentes e conta a mesma
+informação várias vezes. É exatamente a medição da Aula~09 --- AUC praticamente
+empatada com a logística ($0{,}776$ contra $0{,}774$) e Brier muito pior
+($0{,}1523$ contra $0{,}0653$). \emph{Ordenar bem não é estimar bem.}
+
+\smallskip
+\textbf{(d)} Quando a informação está na \textbf{correlação}, e não nas médias.
+Um exemplo em $d=2$: suponha que nas duas classes cada covariável tenha média
+zero e variância um, mas que na classe 0 elas sejam positivamente correlacionadas
+($\rho=+0{,}9$) e na classe 1, negativamente ($\rho=-0{,}9$). As nuvens são duas
+elipses cruzadas, perfeitamente distinguíveis --- mas as médias e as variâncias
+marginais são \emph{idênticas} nas duas classes.
+
+O naive Bayes vê exatamente médias e variâncias marginais, então para ele as duas
+classes são indistinguíveis. Simulando $4\,000$ observações por classe e medindo
+a acurácia por validação cruzada de 5 dobras:
+\begin{center}\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+\texttt{GaussianNB} & $0{,}5104$ \\
+LDA                 & $0{,}4949$ \\
+QDA                 & $\mathbf{0{,}8575}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+O naive Bayes e o LDA acertam o mesmo que jogar uma moeda; o QDA, que estima as
+duas matrizes de covariância inteiras, chega a $86\%$. É o caso em que a
+suposição de independência não custa precisão --- custa \emph{tudo}.
+
+(O LDA falha pelo mesmo motivo, e é instrutivo: ele estima uma covariância
+\emph{comum}, e a média das duas matrizes tem correlação $\approx 0$. A
+informação está justamente na \emph{diferença} entre elas.)
+\end{solucao}
+
+\paraalem
+
+\end{document}
