@@ -1,0 +1,234 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 02 --- Regressão Linear e Regularização
+%  O gabarito sai de "Lista teorica 02 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{02}{Regressão Linear e Regularização}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[a reta passa pela média]
+Considere a regressão linear simples $y_i=\beta_0+\beta_1 x_i+\varepsilon_i$,
+com $i=1,\dots,n$, ajustada por mínimos quadrados.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Escreva a primeira equação normal (a que vem de derivar a soma de
+        quadrados em relação a $\beta_0$) e conclua que
+        $\widehat\beta_0=\bar y-\widehat\beta_1\bar x$. Interprete: por onde passa
+        a reta ajustada?
+  \item Mostre que os resíduos $e_i=y_i-\widehat\beta_0-\widehat\beta_1 x_i$
+        somam zero.
+  \item As duas propriedades acima valem se você ajustar o modelo \emph{sem}
+        intercepto, isto é, $y_i=\beta_1x_i+\varepsilon_i$? Explique.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $S(\beta_0,\beta_1)=\sum_i(y_i-\beta_0-\beta_1x_i)^2$,
+\[
+  \frac{\partial S}{\partial\beta_0} = -2\sum_{i=1}^n(y_i-\beta_0-\beta_1x_i) = 0
+  \;\Longrightarrow\;
+  \sum_i y_i = n\beta_0 + \beta_1\sum_i x_i .
+\]
+Dividindo por $n$: $\bar y=\widehat\beta_0+\widehat\beta_1\bar x$, ou seja
+$\widehat\beta_0=\bar y-\widehat\beta_1\bar x$. Lida ao contrário, a igualdade
+$\bar y=\widehat\beta_0+\widehat\beta_1\bar x$ diz que o ponto $(\bar x,\bar y)$
+\textbf{satisfaz a equação da reta ajustada}: a reta de mínimos quadrados sempre
+passa pelo centro de massa da nuvem, qualquer que seja o conjunto de dados.
+
+\smallskip
+\textbf{(b)} É a mesma equação. A primeira equação normal é literalmente
+$\sum_i e_i=0$, pois $e_i=y_i-\widehat\beta_0-\widehat\beta_1x_i$ é exatamente o
+que está dentro da soma que igualamos a zero.
+
+\smallskip
+\textbf{(c)} \textbf{Não}. As duas propriedades são consequência de haver um
+parâmetro $\beta_0$ para derivar --- sem intercepto, essa equação normal
+simplesmente não existe. Sobra apenas
+$\sum_i x_i(y_i-\widehat\beta_1x_i)=0$, que força os resíduos a serem ortogonais a
+$\x$, e não a somar zero. Na prática: uma regressão sem intercepto pode ter
+resíduos com média bem diferente de zero, e a reta não precisa passar por
+$(\bar x,\bar y)$.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o que $\lambda$ faz, e por que padronizar]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Para a Ridge, use a solução fechada
+        $\widehat{\bbeta}^{\,\text{ridge}}=(\bm X^\top\bm X+\lambda\bm I)^{-1}\bm X^\top\bm Y$
+        para descrever o que acontece com as estimativas quando $\lambda\to 0$ e
+        quando $\lambda\to\infty$. Em qual dos dois extremos o viés é maior? E a
+        variância?
+  \item O intercepto $\beta_0$ não entra na penalização. Dê um argumento concreto
+        para essa escolha. \emph{Sugestão:} pense no que aconteceria se você
+        somasse $1000$ a todos os $y_i$.
+  \item Suponha que a covariável $x_1$ esteja medida em metros e que você resolva
+        passá-la para centímetros, sem mexer em mais nada. O que acontece com
+        $\widehat\beta_1$ do MQO? E com a solução da Ridge, para um mesmo
+        $\lambda$? Que conclusão prática se tira daí?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Quando $\lambda\to 0$, $(\bm X^\top\bm X+\lambda\bm I)^{-1}\to
+(\bm X^\top\bm X)^{-1}$ (se esta existir) e a Ridge tende ao MQO: viés zero sob o
+modelo linear correto, e variância máxima. Quando $\lambda\to\infty$, a matriz
+$\lambda\bm I$ domina, o inverso vai a zero e
+$\widehat{\bbeta}^{\,\text{ridge}}\to\bm 0$: o modelo vira o preditor constante
+$\widehat\beta_0$. Aí o \textbf{viés é máximo} e a \textbf{variância é zero}. É o
+balanço viés--variância da Aula~01 parametrizado por $\lambda$, e é por isso que
+existe um $\lambda$ intermediário melhor que os dois extremos.
+
+\smallskip
+\textbf{(b)} Some $1000$ a todos os $y_i$. A relação entre $\x$ e $y$ não mudou em
+nada --- só a origem da escala de $y$ --- e o que \emph{deveria} acontecer é
+$\widehat\beta_0$ subir $1000$ e os demais coeficientes ficarem iguais. É
+exatamente o que ocorre quando $\beta_0$ não é penalizado. Se ele fosse
+penalizado, um $\beta_0$ de valor $1000$ pagaria um preço enorme, e o ajuste
+preferiria distorcer os outros coeficientes para compensar: a solução passaria a
+depender de onde você pôs o zero da régua, o que não faz sentido nenhum.
+
+\smallskip
+\textbf{(c)} No \textbf{MQO}, nada de importante: se $x_1$ é multiplicada por
+$100$, então $\widehat\beta_1$ é dividida por $100$, o produto
+$\widehat\beta_1 x_1$ não muda e as predições são idênticas. O MQO é
+\emph{equivariante} a mudanças de escala.
+
+Na \textbf{Ridge} (e no Lasso) não. O ajuste continua querendo dividir
+$\widehat\beta_1$ por $100$, mas agora esse coeficiente cem vezes menor paga uma
+penalização praticamente nula: na prática, a covariável em centímetros passa a ser
+quase \emph{isenta} do encolhimento, e as predições mudam. Ou seja: com escalas
+diferentes, $\lambda$ significa coisas diferentes para cada covariável.
+
+Conclusão prática: \textbf{padronize as covariáveis antes de qualquer método
+penalizado}. E, como a padronização estima média e desvio-padrão a partir dos
+dados, ela precisa acontecer \emph{dentro} do procedimento de ajuste --- é o
+assunto da Aula~07 e o motivo de existir o \texttt{Pipeline}.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[Ridge e Lasso com números]
+No caso ortonormal ($\bm X^\top\bm X=\bm I$) as duas soluções têm forma fechada em
+função do MQO:
+\[
+  \widehat\beta_j^{\,\text{ridge}} = \frac{\widehat\beta_j}{1+\lambda},
+  \qquad
+  \widehat\beta_j^{\,\text{lasso}}
+     = \operatorname{sinal}(\widehat\beta_j)\Big(\abs{\widehat\beta_j}-\tfrac{\lambda}{2}\Big)_+,
+\]
+onde $(u)_+=\max(u,0)$. Tome $\lambda=1$ e
+$\widehat{\bbeta}^{\,\text{MQO}}=(2{,}00;\ 0{,}30;\ -0{,}80)$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule $\widehat{\bbeta}^{\,\text{ridge}}$ e
+        $\widehat{\bbeta}^{\,\text{lasso}}$.
+  \item Algum coeficiente foi zerado? Por qual dos dois métodos, e qual é a
+        condição exata para que isso aconteça com o coeficiente $j$?
+  \item Compare o quanto \emph{cada método} encolheu o maior coeficiente
+        ($2{,}00$) e o menor em módulo ($0{,}30$), em valor absoluto. Descreva em
+        uma frase a diferença de comportamento.
+  \item A partir de qual valor de $\lambda$ o Lasso zeraria \emph{todos} os três
+        coeficientes?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Ridge: divide-se tudo por $1+\lambda=2$,
+\[
+  \widehat{\bbeta}^{\,\text{ridge}} = (1{,}00;\ 0{,}15;\ -0{,}40).
+\]
+Lasso: subtrai-se $\lambda/2=0{,}5$ do módulo, truncando em zero,
+\[
+  \widehat{\bbeta}^{\,\text{lasso}}
+   = \big(2{,}00-0{,}5;\ \ 0;\ \ -(0{,}80-0{,}5)\big) = (1{,}50;\ 0;\ -0{,}30).
+\]
+
+\smallskip
+\textbf{(b)} Sim: o segundo coeficiente, e só pelo \textbf{Lasso}, porque
+$\abs{0{,}30}<\lambda/2=0{,}5$. A condição geral é
+$\abs{\widehat\beta_j}\le\lambda/2$. A Ridge nunca zera: ela multiplica por
+$1/(1+\lambda)$, que é positivo para todo $\lambda$ finito.
+
+\smallskip
+\textbf{(c)} Encolhimento em valor absoluto:
+\begin{center}\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+                & coeficiente $2{,}00$ & coeficiente $0{,}30$ \\
+\midrule
+Ridge           & $2{,}00\to1{,}00$: encolheu $1{,}00$ & $0{,}30\to0{,}15$: encolheu $0{,}15$ \\
+Lasso           & $2{,}00\to1{,}50$: encolheu $0{,}50$ & $0{,}30\to0{,}00$: encolheu $0{,}30$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+A Ridge encolhe \textbf{proporcionalmente}: quem é grande perde muito em valor
+absoluto, quem é pequeno perde pouco --- e sobrevive. O Lasso encolhe \textbf{todo
+mundo pela mesma quantidade} $\lambda/2$: quem é grande mal sente, e quem é menor
+que o corte é aniquilado. É por isso que só o Lasso faz seleção de variáveis.
+
+\smallskip
+\textbf{(d)} Todos zeram quando $\lambda/2\ge\max_j\abs{\widehat\beta_j}=2{,}00$,
+isto é, $\lambda\ge 4$.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[a solução fechada da Ridge]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Minimizando
+        $S_\lambda(\bbeta)=\norm{\bm Y-\bm X\bbeta}^2+\lambda\norm{\bbeta}^2$,
+        obtenha
+        $\widehat{\bbeta}^{\,\text{ridge}}=(\bm X^\top\bm X+\lambda\bm I)^{-1}\bm X^\top\bm Y$.
+        \emph{Sugestão:} o gradiente de $\norm{\bm Y-\bm X\bbeta}^2$ está na
+        demonstração das equações normais, na nota de aula.
+  \item Mostre que, para todo $\lambda>0$, a matriz
+        $\bm X^\top\bm X+\lambda\bm I$ é invertível --- \textbf{mesmo quando
+        $d>n$}, caso em que o MQO nem está definido.
+  \item Explique, em duas ou três linhas, por que o item (b) é uma das razões de o
+        Ridge ser útil em alta dimensão.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Expandindo,
+\[
+  S_\lambda(\bbeta)=\bm Y^\top\bm Y-2\bbeta^\top\bm X^\top\bm Y
+                   +\bbeta^\top\bm X^\top\bm X\bbeta+\lambda\bbeta^\top\bbeta,
+\]
+cujo gradiente é
+$\nabla S_\lambda(\bbeta)=-2\bm X^\top\bm Y+2\bm X^\top\bm X\bbeta+2\lambda\bbeta$.
+Igualando a zero:
+\[
+  (\bm X^\top\bm X+\lambda\bm I)\,\bbeta=\bm X^\top\bm Y .
+\]
+Pelo item (b) a matriz é invertível, então a solução é única e vale
+$(\bm X^\top\bm X+\lambda\bm I)^{-1}\bm X^\top\bm Y$. A Hessiana
+$2(\bm X^\top\bm X+\lambda\bm I)$ é definida positiva, logo é mínimo.
+
+\smallskip
+\textbf{(b)} Basta mostrar que a forma quadrática é positiva. Para
+$\bm v\neq\bm 0$,
+\[
+  \bm v^\top(\bm X^\top\bm X+\lambda\bm I)\bm v
+  = \norm{\bm X\bm v}^2+\lambda\norm{\bm v}^2
+  \;\ge\; \lambda\norm{\bm v}^2 \;>\; 0 ,
+\]
+pois $\lambda>0$ e $\norm{\bm v}>0$. Uma matriz simétrica definida positiva é
+invertível. Note onde a hipótese $d>n$ \emph{não} foi usada: a conta não depende
+de $\bm X$ ter posto cheio. Se $d>n$, existe $\bm v\neq\bm 0$ com
+$\bm X\bm v=\bm 0$ --- e é justamente aí que a primeira parcela morre e a segunda
+salva a conta.
+
+\smallskip
+\textbf{(c)} Quando $d>n$ o MQO não tem solução única: a matriz
+$\bm X^\top\bm X$ é singular e existem infinitos $\bbeta$ com o mesmo erro de
+treino. Somar $\lambda$ à diagonal levanta o menor autovalor de perto de zero (ou
+de exatamente zero) para pelo menos $\lambda$, o que torna o problema bem-posto e
+derruba o número de condição. Em outras palavras, a penalização não é só um freio
+contra o superajuste: ela é o que faz o problema \emph{ter} resposta.
+\end{solucao}
+
+\paraalem
+
+\end{document}
