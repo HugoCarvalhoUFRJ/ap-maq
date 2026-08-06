@@ -1,0 +1,359 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 10 --- Máquinas de Vetores de Suporte (SVM)
+%  O gabarito sai de "Lista teorica 10 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{10}{Máquinas de Vetores de Suporte (SVM)}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[a margem, na mão]
+Quatro observações em $\R^2$, linearmente separáveis:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+        & $A$ & $B$ & $C$ & $D$ \\
+\midrule
+$\x_i$  & $(3,1)$ & $(3,3)$ & $(1,1)$ & $(1,3)$ \\
+$y_i$   & $+1$ & $+1$ & $-1$ & $-1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Lembre que o hiperplano de margem máxima é escrito na forma canônica
+$\bm w^\top\x + b = 0$ com $y_i(\bm w^\top\x_i+b)\ge 1$ para todo $i$, e que a
+margem de cada lado vale $1/\norm{\bm w}$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Desenhe os quatro pontos e determine, por inspeção, o hiperplano de
+        margem máxima. Escreva $\bm w$ e $b$ na forma canônica e calcule a margem.
+  \item Quais pontos são vetores de suporte?
+  \item Acrescente $E=(5,2)$ com $y_E=+1$. O hiperplano muda? Justifique sem
+        refazer a conta.
+  \item Agora mova $A$ de $(3,1)$ para $(2{,}5\,;\,1)$, mantendo os demais. Qual
+        é o novo hiperplano e a nova margem? Quais são agora os vetores de
+        suporte?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Os positivos estão todos em $x_1=3$ e os negativos em $x_1=1$; a
+coordenada $x_2$ não distingue nada. O hiperplano que mais se afasta dos dois
+grupos é a reta vertical no meio, $x_1=2$.
+
+Na forma canônica precisamos de $y_i(\bm w^\top\x_i+b)=1$ nos pontos mais
+próximos. Tomando $\bm w=(1,0)$ e $b=-2$:
+\[
+  A:\ (1)(3-2)=1,\quad B:\ (1)(3-2)=1,\quad
+  C:\ (-1)(1-2)=1,\quad D:\ (-1)(1-2)=1 .
+\]
+Todos valem exatamente $1$, como exige a forma canônica. A margem é
+\[
+  \frac{1}{\norm{\bm w}} = \frac{1}{1} = \mathbf{1}
+\]
+de cada lado, ou seja uma faixa de largura total $2$, entre $x_1=1$ e $x_1=3$.
+
+\smallskip
+\textbf{(b)} \textbf{Todos os quatro.} Vetor de suporte é o ponto que satisfaz
+$y_i(\bm w^\top\x_i+b)=1$, isto é, que \emph{toca} a margem --- e aqui os quatro
+tocam.
+
+\begin{atencao}[o que o \texttt{scikit-learn} vai dizer]
+Se você conferir com \texttt{SVC(kernel="linear", C=1e6)} e imprimir
+\texttt{support\_vectors\_}, vão aparecer \textbf{dois} pontos, não quatro. Não é
+erro: nesta configuração simétrica a solução \emph{dual} não é única, e o
+otimizador devolve um conjunto mínimo de multiplicadores que já reproduz o mesmo
+$\bm w$. A definição geométrica (pontos sobre a margem) e a computacional
+(pontos com multiplicador de Lagrange não nulo) coincidem no caso genérico e
+podem divergir em casos degenerados como este.
+\end{atencao}
+
+\smallskip
+\textbf{(c)} \textbf{Não muda.} Para $E=(5,2)$ temos
+$y_E(\bm w^\top\x_E+b) = 5-2 = 3 > 1$: o ponto está \emph{fora} da margem, do
+lado certo. A solução do problema de margem máxima depende apenas dos pontos que
+tocam a margem --- os demais têm multiplicador de Lagrange zero e poderiam ser
+apagados do conjunto de dados sem alterar nada.
+
+É a propriedade que dá nome ao método e o distingue, por exemplo, do LDA, cuja
+fronteira depende das \emph{médias} e portanto de todas as observações. Mover $E$
+para $(50,2)$ também não mudaria nada; mover $A$ um pouco muda tudo --- é o item
+seguinte.
+
+\smallskip
+\textbf{(d)} Agora os positivos são $(2{,}5\,;1)$ e $(3,3)$, e os negativos
+continuam em $x_1=1$. O ponto positivo mais próximo dos negativos é
+$A=(2{,}5\,;1)$, e o negativo mais próximo dele é $C=(1,1)$: a distância entre
+eles é $1{,}5$, na horizontal. O hiperplano de margem máxima é a mediatriz desse
+segmento,
+\[
+  x_1 = \frac{1+2{,}5}{2} = 1{,}75,
+  \qquad\text{margem} = \frac{1{,}5}{2} = \mathbf{0{,}75}.
+\]
+Na forma canônica, $\bm w = (1/0{,}75,\ 0) = (4/3,\ 0)$ e
+$b = -1{,}75\cdot 4/3 = -7/3$, de modo que $1/\norm{\bm w} = 0{,}75$.
+
+Confira que $D=(1,3)$ também toca: $(-1)(4/3 - 7/3) = 1$. Já $B=(3,3)$ dá
+$(1)(4 - 7/3) = 5/3 > 1$ e ficou de fora. Os vetores de suporte são portanto
+$\mathbf{A}$, $\mathbf{C}$ e $\mathbf{D}$.
+
+Compare com o item (a): mover \emph{um} ponto de $0{,}5$ encolheu a margem em
+$25\%$ e mudou o conjunto de vetores de suporte. A SVM de margem rígida é
+extremamente sensível aos pontos da fronteira --- e é exatamente esse defeito que
+o parâmetro $C$ do próximo exercício vem corrigir.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o que $C$ faz, e por que ele é invertido]
+A SVM de margem suave resolve
+\[
+  \min_{\bm w,\,b,\,\bm\xi}\ \tfrac12\norm{\bm w}^2 + C\sum_{i=1}^n \xi_i
+  \qquad\text{sujeito a}\qquad
+  y_i(\bm w^\top\x_i+b)\ge 1-\xi_i,\quad \xi_i\ge 0 .
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Descreva o que acontece quando $C\to\infty$. Existe sempre solução?
+  \item Descreva o que acontece quando $C\to 0$. O que ocorre com $\bm w$, com a
+        margem e com o número de vetores de suporte?
+  \item Portanto: $C$ grande corresponde a um modelo mais \emph{flexível} ou mais
+        \emph{rígido}? Compare com o papel de $\lambda$ na Ridge (Aula~02) e
+        explique por que essa comparação confunde tanta gente.
+  \item Ao montar uma grade de busca para $C$, por que se usa
+        \texttt{np.logspace(-3, 3, 7)} e não \texttt{np.linspace(0.001, 1000, 7)}?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $C\to\infty$, qualquer $\xi_i>0$ paga um preço infinito, então a
+solução força $\xi_i=0$ para todo $i$: é a \textbf{margem rígida} do
+Exercício~1. A margem fica a mais larga possível \emph{sem que nenhum ponto a
+invada}, e poucos pontos são vetores de suporte.
+
+\textbf{Não existe sempre solução:} se os dados não forem linearmente separáveis,
+o problema com $\xi_i=0$ é \emph{inviável} --- não há hiperplano que satisfaça
+todas as restrições. É por isso que a margem suave existe: sem ela, o método
+simplesmente não se aplica a dados reais.
+
+\smallskip
+\textbf{(b)} Com $C\to 0$ a soma dos $\xi_i$ deixa de custar, e o objetivo vira
+essencialmente $\min\tfrac12\norm{\bm w}^2$, cuja solução é $\bm w\to\bm 0$.
+Então:
+\begin{itemize}[leftmargin=1.4cm]
+  \item $\norm{\bm w}\to 0$, logo a margem $1/\norm{\bm w}\to\infty$: a faixa
+        engole todo o espaço;
+  \item \textbf{todos} os pontos passam a estar dentro da margem, e portanto
+        todos viram vetores de suporte;
+  \item a fronteira deixa de depender dos dados de forma útil --- o classificador
+        degenera.
+\end{itemize}
+
+\smallskip
+\textbf{(c)} $C$ \textbf{grande} é modelo \textbf{mais flexível} (menos
+regularizado): ele persegue os dados de treino e aceita margens estreitas para
+não errar ninguém.
+
+A confusão com $\lambda$ da Ridge é natural, porque os dois parâmetros aparecem
+em posições análogas mas com papéis \emph{opostos}. Escrevendo os dois objetivos
+lado a lado:
+\[
+  \underbrace{\norm{\bm Y-\bm X\bbeta}^2 + \lambda\norm{\bbeta}^2}_{\text{Ridge}},
+  \qquad
+  \underbrace{\tfrac12\norm{\bm w}^2 + C\textstyle\sum_i\xi_i}_{\text{SVM}} .
+\]
+Na Ridge, o hiperparâmetro multiplica a \textbf{penalização}, então
+$\lambda$ grande $\Rightarrow$ mais regularização $\Rightarrow$ mais rígido. Na
+SVM, ele multiplica o \textbf{erro}, então $C$ grande $\Rightarrow$ menos
+regularização $\Rightarrow$ mais flexível. Dividindo o objetivo da SVM por $C$
+fica claro: $\tfrac{1}{2C}\norm{\bm w}^2 + \sum_i\xi_i$, e $1/(2C)$ é que faz o
+papel de $\lambda$.
+
+Um jeito de nunca mais errar: \textbf{$C$ é o preço de errar}. Preço alto, o
+modelo não erra no treino.
+
+\smallskip
+\textbf{(d)} Porque o efeito de $C$ é \textbf{multiplicativo}, não aditivo: o que
+importa é a ordem de grandeza. A diferença entre $C=0{,}001$ e $C=0{,}01$ é
+enorme (um fator de 10 na regularização), e a diferença entre $C=900$ e
+$C=1000$ é irrelevante.
+
+Uma grade linear de $0{,}001$ a $1000$ com 7 pontos daria
+$\{0{,}001;\ 166{,}7;\ 333{,}3;\ 500;\ 666{,}7;\ 833{,}3;\ 1000\}$: seis pontos
+espremidos na região em que nada muda, e \emph{nenhum} entre $0{,}001$ e $166$ ---
+justamente o intervalo onde está o ótimo na maioria dos problemas. A grade
+logarítmica dá $\{10^{-3},10^{-2},\dots,10^{3}\}$, um ponto por ordem de
+grandeza.
+
+A mesma regra vale para o $\alpha$ da Ridge e do Lasso, para o $\gamma$ do kernel
+RBF e para a taxa de aprendizado do \emph{boosting}.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o truque do kernel, explicitamente]
+Em $\R^2$, considere o kernel polinomial de grau 2
+\[
+  K(\x,\bm z) = (\x^\top\bm z + 1)^2 .
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Expanda $K$ e exiba um mapa $\varphi:\R^2\to\R^m$ tal que
+        $K(\x,\bm z)=\varphi(\x)^\top\varphi(\bm z)$. Qual é $m$?
+  \item Conte as operações necessárias para calcular $K(\x,\bm z)$ pelos dois
+        caminhos: pela fórmula fechada e via $\varphi$.
+  \item Em $\R^d$, o espaço de atributos do kernel polinomial de grau $p$ tem
+        $\binom{d+p}{p}$ dimensões. Calcule para $d=100$, $p=3$ e para
+        $d=1000$, $p=3$.
+  \item Enuncie em uma frase o que é o ``truque do kernel'', usando os números
+        do item (c).
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $\x=(x_1,x_2)$ e $\bm z=(z_1,z_2)$,
+\[
+  (x_1z_1+x_2z_2+1)^2
+  = x_1^2z_1^2 + x_2^2z_2^2 + 1 + 2x_1x_2z_1z_2 + 2x_1z_1 + 2x_2z_2 .
+\]
+Agrupando cada termo como um produto de uma parte em $\x$ por uma parte em
+$\bm z$, lê-se diretamente
+\[
+  \varphi(\x) = \Big(x_1^2,\ x_2^2,\ \sqrt2\,x_1x_2,\ \sqrt2\,x_1,\ \sqrt2\,x_2,\ 1\Big),
+\]
+com $m=\mathbf{6}$. (Os $\sqrt2$ aparecem para que, ao multiplicar
+$\varphi(\x)$ por $\varphi(\bm z)$, cada termo cruzado seja contado com o fator
+$2$ da expansão.) Confere com $\binom{2+2}{2}=6$.
+
+\smallskip
+\textbf{(b)} Pela \textbf{fórmula fechada}: 2 multiplicações e 1 soma para o
+produto interno $\x^\top\bm z$, mais 1 soma e 1 elevação ao quadrado. Cerca de
+\textbf{5 operações}, e nenhuma memória extra.
+
+Via $\varphi$: construir os dois vetores de 6 componentes (com quadrados,
+produtos e multiplicações por $\sqrt2$) e depois fazer um produto interno em
+$\R^6$, ou seja 6 multiplicações e 5 somas. Cerca de \textbf{25 operações}, mais
+o armazenamento dos dois vetores de dimensão 6.
+
+Em $d=2$ e $p=2$ a diferença é pequena; o item (c) mostra o que acontece quando
+não é.
+
+\smallskip
+\textbf{(c)}
+\[
+  \binom{103}{3} = \frac{103\cdot102\cdot101}{6} = \mathbf{176\,851},
+  \qquad
+  \binom{1003}{3} = \frac{1003\cdot1002\cdot1001}{6} = \mathbf{167\,668\,501}.
+\]
+Com $d=1000$ e grau 3, o espaço de atributos tem \textbf{167 milhões} de
+dimensões. Guardar um único $\varphi(\x)$ em precisão dupla custaria cerca de
+$1{,}3$ GB; guardar os $\varphi(\x_i)$ de mil observações seria impossível.
+
+\smallskip
+\textbf{(d)} O truque do kernel é: \textbf{a SVM só precisa de produtos internos
+entre observações, nunca das coordenadas em si} --- então dá para trabalhar num
+espaço de 167 milhões de dimensões calculando, para cada par, um produto interno
+em $\R^{1000}$ seguido de uma soma e um cubo, \emph{sem nunca construir esse
+espaço}.
+
+O que torna isso possível é a formulação \textbf{dual} do problema: nela $\x$
+aparece exclusivamente dentro de produtos $\x_i^\top\x_j$, que podem ser
+substituídos por $K(\x_i,\x_j)$. O preço é que o custo passa a ser governado por
+$n$, não por $d$ --- a matriz de Gram é $n\times n$, o que explica o custo entre
+$O(n^2)$ e $O(n^3)$ do treino e por que a SVM não escala para milhões de
+observações.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}*[a perda \emph{hinge} e a esparsidade]
+A SVM de margem suave é equivalente a minimizar
+\[
+  \sum_{i=1}^{n} \underbrace{\max\big(0,\ 1 - y_i f(\x_i)\big)}_{\text{perda \emph{hinge}}}
+   \;+\; \lambda\norm{\bm w}^2,
+  \qquad f(\x)=\bm w^\top\x+b .
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Complete a tabela abaixo com o valor das três perdas, em função da
+        \emph{margem funcional} $m = y f(\x)$.
+        \begin{center}\small
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        $m=yf(\x)$ & $-1$ & $0$ & $0{,}5$ & $1$ & $2$ \\
+        \midrule
+        $0$--$1$: $\1{m<0}$          & & & & & \\
+        \emph{hinge}: $\max(0,1-m)$  & & & & & \\
+        logística: $\ln(1+e^{-m})$   & & & & & \\
+        \bottomrule
+        \end{tabular}
+        \end{center}
+  \item Para quais valores de $m$ a perda \emph{hinge} vale exatamente zero?
+        Relacione com o conceito de vetor de suporte.
+  \item A perda logística vale zero para algum $m$ finito? Que consequência isso
+        tem sobre \emph{quais} observações influenciam o ajuste de uma regressão
+        logística?
+  \item Por que não se minimiza diretamente a perda $0$--$1$, que é a que
+        realmente interessa?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)}
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+$m=yf(\x)$ & $-1$ & $0$ & $0{,}5$ & $1$ & $2$ \\
+\midrule
+$0$--$1$    & $1$ & $1$ & $0$ & $0$ & $0$ \\
+\emph{hinge}& $2$ & $1$ & $0{,}5$ & $\mathbf{0}$ & $\mathbf{0}$ \\
+logística   & $1{,}3133$ & $0{,}6931$ & $0{,}4741$ & $0{,}3133$ & $0{,}1269$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+(Na perda $0$--$1$ o valor em $m=0$ é convenção; o ponto está exatamente sobre a
+fronteira.)
+
+\smallskip
+\textbf{(b)} A \emph{hinge} vale zero exatamente quando $m\ge 1$, isto é
+$y_i f(\x_i)\ge 1$: o ponto está classificado corretamente \textbf{e fora da
+margem}.
+
+Esses são precisamente os pontos que \textbf{não} são vetores de suporte. Como
+eles contribuem com zero para a soma, movê-los (sem cruzar a margem) não altera
+o objetivo, e portanto não altera a solução --- que é a propriedade do
+Exercício~1(c), agora vista pelo lado da função de perda em vez da geometria.
+
+A esparsidade da SVM é, portanto, consequência direta de a \emph{hinge} ter uma
+região \textbf{plana em zero}. É o análogo, em perda, do que a quina do losango
+$\ell_1$ faz com os coeficientes no Lasso (Aula~02): um ``bico'' na função gera
+soluções exatamente nulas.
+
+\smallskip
+\textbf{(c)} \textbf{Nunca.} $\ln(1+e^{-m})>0$ para todo $m$ finito, por menor
+que seja --- em $m=2$ ainda vale $0{,}1269$, e só tende a zero quando
+$m\to\infty$.
+
+A consequência é que, na regressão logística, \textbf{todas as observações
+influenciam o ajuste}, inclusive as que estão longe e do lado certo da fronteira.
+Não existe ``vetor de suporte'' na logística: apagar um ponto bem classificado
+muda a solução, ainda que pouco. Isso a torna mais sensível a observações
+distantes --- em compensação, é o que permite que ela estime probabilidades, já
+que ela precisa dizer algo sobre todo o espaço, não só perto da fronteira.
+
+\smallskip
+\textbf{(d)} Porque a perda $0$--$1$ é \textbf{não convexa e descontínua}: ela é
+constante por partes, com um salto em $m=0$, e sua derivada é zero em quase todo
+ponto. Nenhum método baseado em gradiente tem por onde começar, e minimizá-la
+exatamente é um problema NP-difícil em geral.
+
+Tanto a \emph{hinge} quanto a logística são \textbf{cotas superiores convexas} da
+perda $0$--$1$ --- confira na tabela: em cada coluna, as duas últimas linhas são
+$\ge$ a primeira. Minimizar uma cota superior convexa é tratável e controla o que
+interessa. É o mesmo movimento da Aula~02, em que a norma $\ell_1$ substitui a
+$\ell_0$ por ser sua relaxação convexa: \emph{trocar o objetivo verdadeiro por
+uma aproximação convexa que se pode de fato otimizar}.
+\end{solucao}
+
+\paraalem
+
+\end{document}
