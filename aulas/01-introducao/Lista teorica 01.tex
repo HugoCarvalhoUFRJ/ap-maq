@@ -113,19 +113,32 @@ número é a média sobre $400$ amostras de treino independentes.
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-grau            & 1 & 2 & 3 & 5 & 8 & 10 & 12 \\
+grau                  & 1 & 2 & 3 & 5 & 8 & 10 & 12 \\
 \midrule
-erro de treino  & 0{,}9417 & 0{,}9192 & 0{,}5152 & 0{,}4348 & 0{,}4037 & 0{,}3840 & 0{,}3642 \\
-risco           & 1{,}0079 & 1{,}0392 & 0{,}6129 & 0{,}5699 & 0{,}8915 & 4{,}8503 & 79{,}2438 \\
+erro de treino        & 0{,}9417 & 0{,}9192 & 0{,}5152 & 0{,}4348 & 0{,}4037 & 0{,}3840 & 0{,}3642 \\
+risco $\risco(\rhat)$ & 1{,}0079 & 1{,}0392 & 0{,}6129 & 0{,}5699 & 0{,}8915 & 4{,}8503 & 79{,}2438 \\
 \bottomrule
 \end{tabular}
+
+\smallskip
+\begin{minipage}{0.92\textwidth}\footnotesize
+O risco aqui é o \emph{erro de teste esperado}: a média sobre as $400$ amostras de
+treino, com o piso $\sigma^2$ entrando exatamente, e \textbf{não} a medida num
+conjunto de teste finito. A diferença é o que separa este exercício do
+Exercício~2(c), e é ela que sustenta o item~(c).
+\end{minipage}
 \end{center}
 
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Que grau você escolheria, e por quê?
   \item O [ISLP] define \emph{superajuste} como o caso em que \emph{um modelo menos
         flexível teria dado um risco menor}. Segundo essa definição, em quais graus
-        da tabela há superajuste? (Cuidado: são mais do que os óbvios.)
+        da tabela há superajuste? (Cuidado: são mais do que os óbvios.) Um dos graus
+        que você vai encontrar tem erro de treino \emph{alto} e variância baixíssima
+        --- a tabela do Exercício~4 traz as duas parcelas dele. Explique por que,
+        ainda assim, ele perde para o grau~1. \emph{Dica:} tanto
+        $r(x)=\operatorname{sen}(1{,}5x)+0{,}3x$ quanto o intervalo $[-3,3]$ são
+        simétricos em relação à origem.
   \item No grau~12 o erro de treino vale $0{,}3642$, abaixo de $\sigma^2=0{,}49$.
         Isso contradiz a afirmação de que nenhum método consegue risco abaixo de
         $\sigma^2$? Explique.
@@ -146,6 +159,31 @@ despercebido --- seu risco ($1{,}0392$) é \emph{maior} que o do grau~1
 ($1{,}0079$), embora seu erro de treino seja menor. Ou seja: já existe superajuste
 no segundo ponto da tabela, muito antes da explosão. Superajuste não é sinônimo de
 ``curva maluca''; é uma comparação de riscos.
+
+\smallskip
+E o grau~2 merece um segundo olhar, porque ele mostra o que essa definição
+\emph{não} diz. Pela tabela do Exercício~4, ali o viés$^2$ vale $0{,}4794$ contra
+uma variância de $0{,}0698$: \textbf{87\% do excesso de risco é viés}. E o erro de
+treino, $0{,}9192$, é o segundo mais alto da tabela. Esse é um modelo
+\emph{rígido demais} --- o retrato do subajuste --- e ainda assim satisfaz o
+critério de superajuste. Os dois rótulos não são exclusivos.
+
+\smallskip
+A razão de ele perder para o grau~1 é a \textbf{paridade}. Como
+$r(x)=\operatorname{sen}(1{,}5x)+0{,}3x$ é uma função \emph{ímpar} e $[-3,3]$ é
+simétrico em torno da origem, um termo par como $x^2$ não tem nada a aproximar:
+o viés$^2$ nem cai --- sobe de leve, de $0{,}4786$ para $0{,}4794$ --- e em troca a
+variância quase dobra, de $0{,}0394$ para $0{,}0698$. É um parâmetro pago e não
+usado. O mesmo acontece em \emph{todo} grau par: fora da tabela, o grau~4 tem risco
+$0{,}6452$ contra $0{,}6129$ do grau~3, e o grau~6 tem $0{,}6156$ contra $0{,}5699$
+do grau~5. A curva em ``U'' de fato ziguezagueia; a tabela parece lisa porque pula
+os graus 4, 6, 7, 9 e 11.
+
+\smallskip
+A lição é dupla. O critério do [ISLP] é \textbf{relativo} --- ele diz ``você está
+do lado errado da curva'', não ``o seu modelo tem variância alta''. E ele não
+diagnostica a \emph{causa}: para saber se o culpado é o viés ou a variância, só a
+decomposição do Exercício~4 responde.
 
 \smallskip
 \textbf{(c)} Não contradiz. A afirmação é sobre o \textbf{risco}, uma esperança
@@ -175,23 +213,24 @@ amostra de treino $\Dados$.
           = \underbrace{\big(\E_{\Dados}[\rhat(\x_0)]-r(\x_0)\big)^2}_{\text{viés}^2}
           + \underbrace{\Var_{\Dados}\big(\rhat(\x_0)\big)}_{\text{variância}}.
         \]
-        \emph{Dica:} $0 = \E_{\Dados}[\rhat(\x_0)] - \E_{\Dados}[\rhat(\x_0)]$.
+        \emph{Dica:} some e subtraia $\mu:=\E_{\Dados}[\rhat(\x_0)]$ dentro do
+        quadrado --- é a mesma manipulação do Exercício~2(a).
   \item Somando o erro irredutível, o risco no ponto $\x_0$ fica
         $\text{viés}^2+\text{variância}+\sigma^2$. A tabela abaixo traz as três
         parcelas para a mesma simulação do Exercício~3 (médias sobre a grade de
-        $\x_0$). Confira a identidade nos graus 1, 5 e 10, e descreva em uma frase
-        o que acontece com cada parcela quando o grau cresce.
+        $\x_0$). Confira a identidade em \textbf{todas} as colunas da tabela, e
+        descreva em uma frase o que acontece com cada parcela quando o grau cresce.
 \end{enumerate}
 
 \begin{center}\small
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-grau & 1 & 5 & 10 & 12 \\
+grau & 1 & 2 & 5 & 10 & 12 \\
 \midrule
-viés$^2$    & 0{,}4786 & 0{,}0018 & 0{,}0034 & 0{,}5410 \\
-variância   & 0{,}0394 & 0{,}0781 & 4{,}3570 & 78{,}2128 \\
-risco       & 1{,}0079 & 0{,}5699 & 4{,}8503 & 79{,}2438 \\
+viés$^2$    & 0{,}4786 & 0{,}4794 & 0{,}0018 & 0{,}0034 & 0{,}5410 \\
+variância   & 0{,}0394 & 0{,}0698 & 0{,}0781 & 4{,}3570 & 78{,}2128 \\
+risco       & 1{,}0079 & 1{,}0392 & 0{,}5699 & 4{,}8503 & 79{,}2438 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -211,24 +250,29 @@ $\E_{\Dados}[\rhat(\x_0)-\mu]=\mu-\mu=0$:
 \[
   2(\mu-r(\x_0))\,\E_{\Dados}\big[\rhat(\x_0)-\mu\big] = 0.
 \]
-É a mesma conta do item (a) do Exercício~2, com $\rhat(\x_0)$ no lugar de $Y$ e
-$r(\x_0)$ no lugar de $c$ --- o que não é coincidência: nos dois casos estamos
-decompondo um erro quadrático médio em torno da média do estimador.
+Como a dica antecipa, é a mesma conta do item (a) do Exercício~2, com
+$\rhat(\x_0)$ no lugar de $Y$ e $r(\x_0)$ no lugar de $c$ --- o que não é
+coincidência: nos dois casos estamos decompondo um erro quadrático médio em torno
+da média do objeto aleatório.
 
 \smallskip
 \textbf{(b)} Com $\sigma^2=0{,}49$:
 \[
 \begin{array}{lrcl}
-  \text{grau } 1:  & 0{,}4786 + 0{,}0394 + 0{,}49 &=& 1{,}0080 \quad(\approx 1{,}0079)\\
-  \text{grau } 5:  & 0{,}0018 + 0{,}0781 + 0{,}49 &=& 0{,}5699 \\
-  \text{grau } 10: & 0{,}0034 + 4{,}3570 + 0{,}49 &=& 4{,}8504 \quad(\approx 4{,}8503)
+  \text{grau } 1:  & 0{,}4786 + 0{,}0394 + 0{,}49  &=& 1{,}0080 \quad(\approx 1{,}0079)\\
+  \text{grau } 2:  & 0{,}4794 + 0{,}0698 + 0{,}49  &=& 1{,}0392 \\
+  \text{grau } 5:  & 0{,}0018 + 0{,}0781 + 0{,}49  &=& 0{,}5699 \\
+  \text{grau } 10: & 0{,}0034 + 4{,}3570 + 0{,}49  &=& 4{,}8504 \quad(\approx 4{,}8503)\\
+  \text{grau } 12: & 0{,}5410 + 78{,}2128 + 0{,}49 &=& 79{,}2438
 \end{array}
 \]
 As diferenças na quarta casa são só arredondamento da tabela.
 
 \smallskip
-Comportamento das parcelas: o \textbf{viés$^2$} desaba entre os graus 1 e 5 --- do
-grau~5 em diante o polinômio já consegue reproduzir $r$, e o viés vira ruído numérico.
+Comportamento das parcelas: o \textbf{viés$^2$} fica \emph{parado} do grau~1 para o
+grau~2 --- o termo par não aproxima nada, que é a discussão do Exercício~3(b) --- e
+só então desaba: do grau~5 em diante o polinômio já consegue reproduzir $r$, e o
+viés vira ruído numérico.
 A \textbf{variância} cresce sem parar, e a partir do grau~8 cresce de forma
 explosiva: é ela, sozinha, que produz o lado direito da curva em U. O
 \textbf{$\sigma^2$} é constante por definição --- não depende do modelo. O
