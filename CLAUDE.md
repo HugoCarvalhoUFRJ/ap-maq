@@ -261,8 +261,26 @@ a numeração é 1:1 e essa classe de erro deixa de existir.
 
 ## Dados
 
-Os `.csv` ficam em `recursos/dados/`. Os notebooks os carregam com um padrão de
-caminho local + fallback para a web:
+**Os notebooks do curso rodam localmente, não no Google Colab.** Decisão do Gabriel
+em 07/08/2026: os alunos baixam a pasta da aula e abrem o `.ipynb` de dentro dela.
+Consequência para qualquer notebook novo ou revisado:
+
+```python
+_nome = "superconductivity.csv"      # nesta mesma pasta, ao lado do notebook
+
+if not os.path.exists(_nome):
+    raise FileNotFoundError(...)     # mensagem dizendo para copiar o .csv para ca
+
+df = pd.read_csv(_nome)
+```
+
+Ou seja: **nada de URL para o GitHub, e nada de caminho `../../recursos/dados/`**.
+O `.csv` fica ao lado do notebook, e falhar com mensagem clara é preferível a
+baixar da web pelas costas do aluno.
+
+**A migração está pela metade.** Só a `Aula prática 01` foi convertida (§10,
+`superconductivity.csv` copiado para `aulas/01-introducao/`). Os outros **16
+notebooks** ainda usam o padrão antigo, de caminho local com fallback para a web:
 
 ```python
 _local = os.path.join("..", "..", "recursos", "dados", _nome)
@@ -270,14 +288,21 @@ _url = "https://raw.githubusercontent.com/HugoCarvalhoUFRJ/ap-maq/refs/heads/ref
 _fonte = _local if os.path.exists(_local) else _url
 ```
 
-**A branch na URL importa.** O fallback (usado no Google Colab) tem de apontar para
-`refactoring-baby`: na `main` os `.csv` seguem em `materiais-didaticos/`, não em
-`recursos/dados/`, e como não há merge planejado isso não vai mudar — apontar para
-`main` dá 404 permanente. Consequência: **renomear a branch quebra o fallback de
-todos os notebooks**; se isso acontecer, revise as URLs.
+Enquanto eles existirem, **a branch na URL importa**: o fallback tem de apontar para
+`refactoring-baby`, porque na `main` os `.csv` seguem em `materiais-didaticos/` e
+não há merge planejado — apontar para `main` dá 404 permanente. Renomear a branch
+quebra o fallback dos 16.
 
-`bank_train_redux.csv` tem ~100 MB e é um excerto reduzido da base do Kaggle, por
-limite de espaço do GitHub.
+**Cuidado ao converter o resto: o custo é em disco.** `superconductivity.csv` tem
+23,9 MB e é lido por **11** notebooks; uma cópia por pasta são ~260 MB. Antes de
+replicar a conversão, decida com o Gabriel entre copiar mesmo, mover cada base para
+a pasta da única aula que a usa, ou manter `recursos/dados/` e só remover o
+fallback web. As três atendem "roda offline"; só a primeira atende "na mesma pasta
+do notebook".
+
+Os `.csv` originais seguem em `recursos/dados/`. `bank_train_redux.csv` tem ~96 MiB
+e é um excerto reduzido da base do Kaggle, por limite de espaço do GitHub — atenção
+ao teto de 100 MiB por arquivo se alguma conversão for duplicá-lo.
 
 ## Convenções
 
