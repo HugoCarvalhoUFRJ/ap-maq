@@ -1,0 +1,39 @@
+SOBRE OS DADOS: superconductivity.csv
+=====================================
+
+Um supercondutor é um material que, abaixo de certa temperatura, perde toda a
+resistência elétrica. Essa temperatura é a temperatura crítica, e prevê-la a
+partir da composição química do material é o problema desta base.
+
+São 21.263 materiais e 82 colunas: 81 covariáveis e a resposta, critical_temp,
+a temperatura crítica em kelvin. Ela vai de 0 a 185 K, com mediana de 20 K —
+ou seja, a maioria dos materiais só perde a resistência a temperaturas
+baixíssimas, e os poucos casos de temperatura alta são justamente os
+interessantes. Não há valores faltantes.
+
+As 81 covariáveis não são 81 medidas independentes. Elas vêm de oito
+propriedades atômicas dos elementos da fórmula química — massa atômica, raio
+atômico, densidade, energia de primeira ionização, afinidade eletrônica, calor
+de fusão, condutividade térmica e valência — e cada uma delas é resumida por
+dez estatísticas: média, média ponderada, média geométrica, média geométrica
+ponderada, entropia, entropia ponderada, faixa, faixa ponderada, desvio-padrão
+e desvio-padrão ponderado. São 8 x 10 = 80 colunas, mais number_of_elements, o
+número de elementos da fórmula.
+
+Vale guardar a consequência disso, porque ela reaparece o curso inteiro: dez
+resumos da mesma propriedade são fortemente redundantes. Padronizando as 81
+colunas e rodando um PCA, o primeiro componente sozinho explica 38,9% da
+variância e doze componentes chegam a 90%. Isto é, as 81 colunas carregam
+cerca de uma dúzia de dimensões de informação — e é por isso que métodos de
+vizinhança, que deveriam sofrer com d = 81, vão bem aqui.
+
+Fonte: UCI Machine Learning Repository, "Superconductivty Data".
+https://archive.ics.uci.edu/dataset/464/superconductivty+data
+
+Onde a base aparece no curso:
+  Aula 01  primeiro contato com dados reais
+  Aula 02  regressão linear, Ridge e Lasso com d = 81
+  Aula 03  escolha do lambda da Ridge por validação cruzada
+  Aula 04  KNN, e a diferença entre número de colunas e dimensão efetiva
+  Aula 06  árvores e ensembles
+  Aula E2  PCA — as tais doze direções, encontradas
