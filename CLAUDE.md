@@ -157,11 +157,18 @@ respeitar em qualquer notebook novo:
 - `rng = np.random.default_rng(semente)` em toda simulação;
 - nomes iguais aos das notas: `X_tr`, `X_te`, `y_tr`, `y_te`, `modelo`;
 - markdown antes de cada célula dizendo **por que** aquilo vem agora;
-- blocos `> **Sua vez.**` seguidos de célula de código **vazia**;
 - commitados **sem outputs** e sem `execution_count`;
 - **o notebook explica estatística, não explica as próprias escolhas de estilo** —
   meta-comentário do tipo "seguimos a conduta do [ISLP]" foi explicitamente
   removido pelo Gabriel da versão que ele leu.
+
+**Os blocos `> **Sua vez.**` estão sendo aposentados.** Eles eram um enunciado
+seguido de célula de código vazia, e faziam sentido quando a aula prática era o
+único material de exercício. Com uma lista prática por aula, o laboratório guiado
+passa a **mostrar** em vez de deixar em aberto: cada `Sua vez` vira markdown +
+código + leitura do resultado. A **aula prática 01 já foi convertida** (06/08/2026,
+quatro blocos); as outras 13 ainda têm 29 blocos e serão convertidas quando o
+Gabriel pedir. Não escreva `Sua vez` em notebook novo.
 
 Cada notebook reproduz as simulações da figura correspondente em
 `recursos/figuras/gerar-figuras.py`, **com os mesmos parâmetros e a mesma semente**,
@@ -169,12 +176,33 @@ para que o número que o aluno lê na nota seja o número que ele obtém na cél
 mexer num dos dois, confira o outro.
 
 Antes de commitar um notebook, rode-o inteiro e confira as afirmações do texto
-contra o que as células imprimem:
+contra o que as células imprimem — mas **num diretório de saída separado**, para
+não gravar as saídas no arquivo do repositório:
 
 ```bash
 cd aulas/03-validacao-cruzada
 jupyter nbconvert --to notebook --execute "Aula prática 03.ipynb" --output-dir /tmp
 ```
+
+**Armadilha ao abrir um notebook no Jupyter:** salvar grava as saídas e os
+`execution_count`, e ainda **reordena as chaves de cada célula** para a ordem
+canônica do `nbformat` (`cell_type, execution_count, id, metadata, outputs,
+source`). Os notebooks gerados por script estão em outra ordem (`cell_type, id,
+metadata, source, execution_count, outputs`), então uma abertura sem edição
+nenhuma já produz um diff do arquivo inteiro. Antes de commitar, limpe:
+
+```python
+import json
+p = "aulas/01-introducao/Aula prática 01.ipynb"
+nb = json.load(open(p, encoding="utf-8"))
+for c in nb["cells"]:
+    if c["cell_type"] == "code":
+        c["outputs"], c["execution_count"] = [], None
+json.dump(nb, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+```
+
+Isso resolve as saídas; a reordenação fica, e é inofensiva (o JSON é
+equivalente). Hoje 40 notebooks estão na ordem do script e 2 na do Jupyter.
 
 Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
 `EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
