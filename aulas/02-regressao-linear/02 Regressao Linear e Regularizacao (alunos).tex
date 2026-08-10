@@ -25,7 +25,7 @@ Ao final desta aula você deve ser capaz de:
   \item escrever o modelo de regressão linear em forma matricial e deduzir o
         estimador de mínimos quadrados (MQO);
   \item explicar por que MQO falha (ou nem existe) em \emph{altas dimensões}
-        ($d$ grande, ou $d>n$);
+        ($p$ grande, ou $p>n$);
   \item descrever seleção de subconjuntos e regressão \emph{stepwise};
   \item definir as penalizações \textbf{Ridge} ($\ell_2$) e \textbf{Lasso}
         ($\ell_1$) e interpretá-las como controle do balanço viés--variância;
@@ -56,10 +56,10 @@ todas com erro de treino zero''. A Seção~\ref{sec:altadim} explica por quê.
 Métodos \textbf{paramétricos} supõem que a função de predição é descrita por um
 número finito de parâmetros. A regressão linear usa
 \begin{equation}\label{eq:linear}
-  g(\x) = \bbeta^\top \x = \beta_0 x_0 + \beta_1 x_1 + \dots + \beta_d x_d,
+  g(\x) = \bbeta^\top \x = \beta_0 x_0 + \beta_1 x_1 + \dots + \beta_p x_p,
   \qquad x_0 \equiv 1,
 \end{equation}
-com $\bbeta=(\beta_0,\dots,\beta_d)$. É essencial notar que $x_j$ \emph{não} precisa
+com $\bbeta=(\beta_0,\dots,\beta_p)$. É essencial notar que $x_j$ \emph{não} precisa
 ser uma covariável original: podemos criar atributos derivados ($x_j^2$, $x_jx_k$,
 $\log x_j$, etc.). Assim, ``linear'' refere-se à linearidade \textbf{nos
 parâmetros} $\bbeta$, não nas variáveis --- o modelo é muito mais flexível do que
@@ -80,7 +80,7 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
      \big(Y_i - \bbeta^\top \X_i\big)^2
    = \argmin_{\bbeta} \norm{\bm{Y} - \bm{X}\bbeta}^2 ,
 \end{equation}
-onde $\bm{X}\in\R^{n\times(d+1)}$ é a matriz de delineamento (linha $i$ igual a
+onde $\bm{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
 $\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
@@ -137,34 +137,34 @@ Traduzindo: mesmo com o modelo ``errado'', o MQO acerta \emph{a melhor aproxima�
 linear possível} de $r$ --- a projeção de $Y$ no espaço gerado pelas covariáveis. O
 viés que sobra não é culpa do estimador, é culpa da classe de modelos escolhida.
 Por isso ampliar o conjunto de atributos (incluir $x^2$, interações) reduz esse viés
-de especificação --- ao custo de aumentar $d$, que é exatamente o problema da próxima
+de especificação --- ao custo de aumentar $p$, que é exatamente o problema da próxima
 seção.
 \end{ideia}
 
 %==============================================================================
 \section{O problema das altas dimensões}\label{sec:altadim}
 %==============================================================================
-Quando $d$ é grande relativamente a $n$, o MQO sofre de três males:
+Quando $p$ é grande relativamente a $n$, o MQO sofre de três males:
 \begin{enumerate}[leftmargin=1.6cm]
   \item \textbf{Variância alta.} Quanto mais parâmetros, maior $\Var(\widehat{\bbeta})$
         --- o modelo superajusta (Aula~01). A matriz $\Var(\widehat{\bbeta})
         =\sigma^2(\bm{X}^\top\bm{X})^{-1}$ ``explode'' quando as colunas de
         $\bm{X}$ são quase colineares.
-  \item \textbf{Não unicidade.} Se $d>n$, então $\bm{X}^\top\bm{X}$ é singular e
+  \item \textbf{Não unicidade.} Se $p>n$, então $\bm{X}^\top\bm{X}$ é singular e
         \eqref{eq:betahat} \emph{não tem solução única}: há infinitos $\bbeta$ com
         RSS nulo (superajuste perfeito).
   \item \textbf{Interpretabilidade.} Muitas covariáveis irrelevantes dificultam a
         leitura do modelo.
 \end{enumerate}
 
-Vale ver o primeiro mal acontecer. Fixe $n=60$ observações e vá aumentando $d$, com
+Vale ver o primeiro mal acontecer. Fixe $n=60$ observações e vá aumentando $p$, com
 apenas 5 covariáveis de fato relevantes e o resto puro ruído
 (Figura~\ref{fig:altadim}).
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/02-mqo-alta-dim.pdf}
-  \caption{Com $n=60$ fixo e $d$ crescendo. À esquerda, o número de condição de
+  \caption{Com $n=60$ fixo e $p$ crescendo. À esquerda, o número de condição de
   $\bm{X}^\top\bm{X}$ --- a razão entre seu maior e seu menor autovalor --- sai de
   $1{,}4$ e chega a $3\times10^4$: inverter essa matriz vira uma operação
   numericamente delicada. À direita, a consequência: o risco do MQO sai de $1{,}0$
@@ -173,10 +173,10 @@ apenas 5 covariáveis de fato relevantes e o resto puro ruído
   \label{fig:altadim}
 \end{figure}
 
-\begin{atencao}[o caso $d>n$ é qualitativamente diferente]
-Repare que os problemas 1 e 2 não são o mesmo. Se $d<n$ mas as colunas são quase
-colineares, a solução \emph{existe e é única}, só que instável. Se $d>n$, ela nem é
-única: o núcleo de $\bm{X}$ tem dimensão $\ge d-n$, e somar a $\widehat{\bbeta}$
+\begin{atencao}[o caso $p>n$ é qualitativamente diferente]
+Repare que os problemas 1 e 2 não são o mesmo. Se $p<n$ mas as colunas são quase
+colineares, a solução \emph{existe e é única}, só que instável. Se $p>n$, ela nem é
+única: o núcleo de $\bm{X}$ tem dimensão $\ge p-n$, e somar a $\widehat{\bbeta}$
 qualquer vetor desse núcleo dá \emph{outra} solução com exatamente o mesmo RSS
 nulo. O erro de treino não distingue entre elas, e não há nada nos dados que
 justifique preferir uma. A regularização, entre outras coisas, serve para desempatar.
@@ -187,18 +187,18 @@ subconjunto de covariáveis, ou \emph{encolhendo} os coeficientes (regularizaç�
 
 \subsection{Seleção de subconjuntos e \emph{stepwise}}
 \begin{description}[leftmargin=2.4cm,style=nextline]
-  \item[Melhor subconjunto] ajusta-se o modelo para \emph{todos} os $2^d$
+  \item[Melhor subconjunto] ajusta-se o modelo para \emph{todos} os $2^p$
         subconjuntos de covariáveis e escolhe-se o melhor segundo um critério que
         penaliza complexidade (AIC, BIC) ou via validação cruzada. Inviável para
-        $d$ moderado ($2^d$ explode).
+        $p$ moderado ($2^p$ explode).
   \item[\emph{Forward stepwise}] começa com o modelo vazio e adiciona, a cada
         passo, a covariável que mais reduz o RSS, até um critério de parada.
   \item[\emph{Backward stepwise}] começa com o modelo completo e remove, a cada
-        passo, a covariável menos útil (exige $n>d$).
+        passo, a covariável menos útil (exige $n>p$).
 \end{description}
 
-A economia do \emph{stepwise} é enorme: ele examina $1+d(d+1)/2$ modelos em vez de
-$2^d$. Para $d=20$ isso é $211$ contra $1\,048\,576$; para $d=40$, $821$ contra
+A economia do \emph{stepwise} é enorme: ele examina $1+p(p+1)/2$ modelos em vez de
+$2^p$. Para $p=20$ isso é $211$ contra $1\,048\,576$; para $p=40$, $821$ contra
 mais de $10^{12}$.
 
 \begin{exemplo}[Quanto isso custa, na prática]\label{ex:ame31}
@@ -253,7 +253,7 @@ cruzada} (Aula~03).
 
 \begin{ideia}
 Regularizar = introduzir \emph{viés} de propósito para reduzir \emph{variância}.
-Sob $d$ grande, o ganho na variância supera a perda no viés e o risco total cai.
+Sob $p$ grande, o ganho na variância supera a perda no viés e o risco total cai.
 É a Aula~01 em ação.
 \end{ideia}
 
@@ -264,7 +264,7 @@ candidatas naturais, e a comparação entre elas explica por que o Lasso é o qu
 \renewcommand{\arraystretch}{1.25}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-$\bbeta$ (com $d=10$) & $\sum_j\1{\beta_j\neq0}$ ($\ell_0$)
+$\bbeta$ (com $p=10$) & $\sum_j\1{\beta_j\neq0}$ ($\ell_0$)
                       & $\sum_j\abs{\beta_j}$ ($\ell_1$)
                       & $\sum_j\beta_j^2$ ($\ell_2$) \\
 \midrule
@@ -293,21 +293,21 @@ resolúvel em milissegundos. Não é exagero dizer que o Lasso existe porque a $
 \begin{equation}\label{eq:ridge}
   \widehat{\bbeta}^{\,\text{ridge}}
    = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
-       + \lambda \sum_{j=1}^{d}\beta_j^2 \Big\}.
+       + \lambda \sum_{j=1}^{p}\beta_j^2 \Big\}.
 \end{equation}
 A grande vantagem é a solução fechada:
 \begin{equation}\label{eq:ridgesol}
   \widehat{\bbeta}^{\,\text{ridge}}
    = (\bm{X}^\top\bm{X} + \lambda \bm{I}_0)^{-1}\bm{X}^\top\bm{Y},
 \end{equation}
-onde $\bm{I}_0$ é a identidade $(d+1)\times(d+1)$ \emph{com o primeiro elemento
+onde $\bm{I}_0$ é a identidade $(p+1)\times(p+1)$ \emph{com o primeiro elemento
 trocado por zero} --- é assim que se deixa o intercepto $\beta_0$ fora da
 penalização. (Faz sentido: penalizar $\beta_0$ tornaria a solução dependente de onde
 você pôs a origem de $Y$.)
 
 \begin{proposicao}[Ridge sempre tem solução única]
 Para todo $\lambda>0$, a matriz $\bm{X}^\top\bm{X}+\lambda\bm{I}$ é definida
-positiva (logo invertível), mesmo quando $d>n$.
+positiva (logo invertível), mesmo quando $p>n$.
 \end{proposicao}
 \begin{proof}
 Para qualquer $\bm{v}\neq 0$,
@@ -325,7 +325,7 @@ em geral \textbf{nenhum é exatamente zero}.
 \begin{equation}\label{eq:lasso}
   \widehat{\bbeta}^{\,\text{lasso}}
    = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
-       + \lambda \sum_{j=1}^{d}\abs{\beta_j} \Big\}.
+       + \lambda \sum_{j=1}^{p}\abs{\beta_j} \Big\}.
 \end{equation}
 Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
 $\abs{\beta_j}$ não é diferenciável em $0$), mas o problema é convexo e resolvido
@@ -337,14 +337,14 @@ vários $\widehat\beta_j$ são \emph{exatamente} zero. Obtemos um modelo
 \emph{esparso} e interpretável de graça --- ao contrário do Ridge.
 \end{ideia}
 
-\begin{observacao}[Por que o Lasso aguenta $d$ enorme]
+\begin{observacao}[Por que o Lasso aguenta $p$ enorme]
 Greenshtein e Ritov (2004) mostram que, sob condições de limitação, o Lasso com
 restrição $\norm{\bbeta}_1\le L$ satisfaz, com probabilidade $\ge 1-\delta$,
 \[
   \risco(g_{\widehat{\bbeta}_L}) - \risco(g_{\bbeta^*_L})
-  \;\le\; \sqrt{\frac{16(L+1)^4B^2}{n}\,\log\!\Big(\frac{2d}{\delta}\Big)} .
+  \;\le\; \sqrt{\frac{16(L+1)^4B^2}{n}\,\log\!\Big(\frac{2p}{\delta}\Big)} .
 \]
-O detalhe que importa é onde o $d$ aparece: dentro de um \textbf{logaritmo}. Dobrar
+O detalhe que importa é onde o $p$ aparece: dentro de um \textbf{logaritmo}. Dobrar
 o número de covariáveis quase não muda a garantia --- é por isso que o Lasso funciona
 com milhares de covariáveis e $n$ modesto, situação em que o MQO nem está definido.
 \end{observacao}
@@ -445,8 +445,8 @@ $\beta_j$ é exatamente zero.
 Perceba que a esparsidade do Lasso é um acidente \emph{feliz} da geometria, e não
 uma regra infalível. Se a elipse estivesse orientada de outro jeito --- por exemplo,
 se $\widehat{\bbeta}^{\text{MQO}}$ estivesse perto da diagonal ---, o toque cairia
-numa aresta e nenhum coeficiente seria zerado. Em dimensão $d$, porém, o losango tem
-$2d$ quinas e $2^d$ faces de dimensão baixa, e a chance de acertar alguma cresce
+numa aresta e nenhum coeficiente seria zerado. Em dimensão $p$, porém, o losango tem
+$2p$ quinas e $2^p$ faces de dimensão baixa, e a chance de acertar alguma cresce
 depressa. É por isso que ``o Lasso zera coeficientes'' é uma afirmação sobre o
 comportamento \emph{típico}, não um teorema.
 \end{atencao}
@@ -485,7 +485,7 @@ conhecido. Então:
   \item se $\bbeta\sim N(0,\sigma_\beta^2\bm{I})$, a \textbf{moda a posteriori} de
         $\bbeta$ é exatamente a solução Ridge \eqref{eq:ridge} com
         $\lambda=\sigma^2/\sigma_\beta^2$;
-  \item se $\beta_1,\dots,\beta_d\stackrel{\text{i.i.d.}}{\sim}
+  \item se $\beta_1,\dots,\beta_p\stackrel{\text{i.i.p.}}{\sim}
         \mathrm{Laplace}(0,\tau_\beta)$, a moda a posteriori é exatamente a solução
         Lasso \eqref{eq:lasso} com $\lambda=\sigma^2\tau_\beta$.
 \end{itemize}
@@ -529,7 +529,7 @@ diferença entre os dois métodos de uma vez só (Figura~\ref{fig:caminhos}).
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/02-caminho-coeficientes.pdf}
-  \caption{Coeficientes em função da penalização, num problema com $n=80$, $d=30$ e
+  \caption{Coeficientes em função da penalização, num problema com $n=80$, $p=30$ e
   apenas 5 covariáveis relevantes. À esquerda o Ridge: todos os 30 coeficientes saem
   de zero \emph{juntos} e crescem suavemente --- em nenhum momento algum deles é
   exatamente nulo. À direita o Lasso: os coeficientes ficam \emph{grudados no zero} e
@@ -580,17 +580,17 @@ famílias na mesma grade, converta.
 \end{atencao}
 
 O notebook \texttt{Aula prática 02} percorre tudo isso com dados de verdade
-(\texttt{superconductivity.csv}, $d=81$): mede o número de condição, exibe duas
-soluções distintas de MQO com o mesmo RSS quando $d>n$, levanta os caminhos de
+(\texttt{superconductivity.csv}, $p=81$): mede o número de condição, exibe duas
+soluções distintas de MQO com o mesmo RSS quando $p>n$, levanta os caminhos de
 regularização e compara MQO, Ridge, Lasso e Elastic Net.
 
 \begin{observacao}[quando a regularização \emph{não} ajuda]
-Vale saber de antemão o que você vai encontrar lá: com $n=14\,884$ e $d=81$, o MQO
+Vale saber de antemão o que você vai encontrar lá: com $n=14\,884$ e $p=81$, o MQO
 vai bem e o Lasso \emph{não} melhora a predição --- as amostras sobram para estimar
 81 parâmetros com precisão. O ganho aparece em outro lugar: o Lasso entrega o mesmo
 desempenho com 66 covariáveis em vez de 81. Já num recorte com $n=40$, os papéis se
 invertem e a regularização ganha com folga. Regularizar não é sempre melhor; é melhor
-quando $d$ é grande \emph{em relação a} $n$.
+quando $p$ é grande \emph{em relação a} $n$.
 \end{observacao}
 
 %==============================================================================
@@ -602,15 +602,15 @@ quando $d$ é grande \emph{em relação a} $n$.
         o modelo errado, o MQO acerta o melhor preditor linear
         (Teo.~\ref{teo:oraculo}).
   \item Em altas dimensões MQO tem variância alta (Fig.~\ref{fig:altadim}) e nem
-        existe de forma única se $d>n$.
+        existe de forma única se $p>n$.
   \item Entre as medidas de complexidade, a $\ell_1$ é a única que induz esparsidade
         \emph{e} mantém o problema convexo.
   \item \textbf{Ridge} ($\ell_2$): solução fechada, sempre única, encolhe sem
         zerar.
   \item \textbf{Lasso} ($\ell_1$): faz seleção de variáveis pela geometria das
         quinas (Fig.~\ref{fig:geometria}) / \emph{soft thresholding}
-        (Fig.~\ref{fig:soft}); a garantia teórica depende de $d$ apenas como
-        $\log d$.
+        (Fig.~\ref{fig:soft}); a garantia teórica depende de $p$ apenas como
+        $\log p$.
   \item Ridge $\equiv$ priori gaussiana ($\lambda=\sigma^2/\sigma_\beta^2$);
         Lasso $\equiv$ priori de Laplace ($\lambda=\sigma^2\tau_\beta$).
   \item $\lambda$ é \emph{tuning parameter} (validação cruzada, Aula~03); sempre

@@ -13,7 +13,7 @@ Ao final desta aula o aluno deve ser capaz de:
   \item escrever o modelo de regressão linear em forma matricial e deduzir o
         estimador de mínimos quadrados (MQO);
   \item explicar por que MQO falha (ou nem existe) em \emph{altas dimensões}
-        ($d$ grande, ou $d>n$);
+        ($p$ grande, ou $p>n$);
   \item descrever seleção de subconjuntos e regressão \emph{stepwise};
   \item definir as penalizações \textbf{Ridge} ($\ell_2$) e \textbf{Lasso}
         ($\ell_1$) e interpretá-las como controle do balanço viés--variância;
@@ -36,10 +36,10 @@ acontece com os mínimos quadrados?''}
 Métodos \textbf{paramétricos} supõem que a função de predição é descrita por um
 número finito de parâmetros. A regressão linear usa
 \begin{equation}\label{eq:linear}
-  g(\x) = \bbeta^\top \x = \beta_0 x_0 + \beta_1 x_1 + \dots + \beta_d x_d,
+  g(\x) = \bbeta^\top \x = \beta_0 x_0 + \beta_1 x_1 + \dots + \beta_p x_p,
   \qquad x_0 \equiv 1,
 \end{equation}
-com $\bbeta=(\beta_0,\dots,\beta_d)$. É essencial notar que $x_j$ \emph{não} precisa
+com $\bbeta=(\beta_0,\dots,\beta_p)$. É essencial notar que $x_j$ \emph{não} precisa
 ser uma covariável original: podemos criar atributos derivados ($x_j^2$, $x_jx_k$,
 $\log x_j$, etc.). Assim, ``linear'' refere-se à linearidade \textbf{nos
 parâmetros} $\bbeta$, não nas variáveis --- o modelo é muito mais flexível do que
@@ -53,7 +53,7 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
      \big(Y_i - \bbeta^\top \X_i\big)^2
    = \argmin_{\bbeta} \norm{\bm{Y} - \bm{X}\bbeta}^2 ,
 \end{equation}
-onde $\bm{X}\in\R^{n\times(d+1)}$ é a matriz de delineamento (linha $i$ igual a
+onde $\bm{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
 $\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
@@ -89,13 +89,13 @@ especificação.
 %==============================================================================
 \section{O problema das altas dimensões}
 %==============================================================================
-Quando $d$ é grande relativamente a $n$, o MQO sofre de três males:
+Quando $p$ é grande relativamente a $n$, o MQO sofre de três males:
 \begin{enumerate}[leftmargin=1.6cm]
   \item \textbf{Variância alta.} Quanto mais parâmetros, maior $\Var(\widehat{\bbeta})$
         --- o modelo superajusta (Aula~01). A matriz $\Var(\widehat{\bbeta})
         =\sigma^2(\bm{X}^\top\bm{X})^{-1}$ ``explode'' quando as colunas de
         $\bm{X}$ são quase colineares.
-  \item \textbf{Não unicidade.} Se $d>n$, então $\bm{X}^\top\bm{X}$ é singular e
+  \item \textbf{Não unicidade.} Se $p>n$, então $\bm{X}^\top\bm{X}$ é singular e
         \eqref{eq:betahat} \emph{não tem solução única}: há infinitos $\bbeta$ com
         RSS nulo (superajuste perfeito).
   \item \textbf{Interpretabilidade.} Muitas covariáveis irrelevantes dificultam a
@@ -106,14 +106,14 @@ subconjunto de covariáveis, ou \emph{encolhendo} os coeficientes (regularizaç�
 
 \subsection{Seleção de subconjuntos e \emph{stepwise}}
 \begin{description}[leftmargin=2.4cm,style=nextline]
-  \item[Melhor subconjunto] ajusta-se o modelo para \emph{todos} os $2^d$
+  \item[Melhor subconjunto] ajusta-se o modelo para \emph{todos} os $2^p$
         subconjuntos de covariáveis e escolhe-se o melhor segundo um critério que
         penaliza complexidade (AIC, BIC) ou via validação cruzada. Inviável para
-        $d$ moderado ($2^d$ explode).
+        $p$ moderado ($2^p$ explode).
   \item[\emph{Forward stepwise}] começa com o modelo vazio e adiciona, a cada
         passo, a covariável que mais reduz o RSS, até um critério de parada.
   \item[\emph{Backward stepwise}] começa com o modelo completo e remove, a cada
-        passo, a covariável menos útil (exige $n>d$).
+        passo, a covariável menos útil (exige $n>p$).
 \end{description}
 
 \begin{atencao}
@@ -140,7 +140,7 @@ cruzada} (Aula~03).
 
 \begin{ideia}
 Regularizar = introduzir \emph{viés} de propósito para reduzir \emph{variância}.
-Sob $d$ grande, o ganho na variância supera a perda no viés e o risco total cai.
+Sob $p$ grande, o ganho na variância supera a perda no viés e o risco total cai.
 É a Aula~01 em ação.
 \end{ideia}
 
@@ -148,7 +148,7 @@ Sob $d$ grande, o ganho na variância supera a perda no viés e o risco total ca
 \begin{equation}\label{eq:ridge}
   \widehat{\bbeta}^{\,\text{ridge}}
    = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
-       + \lambda \sum_{j=1}^{d}\beta_j^2 \Big\}.
+       + \lambda \sum_{j=1}^{p}\beta_j^2 \Big\}.
 \end{equation}
 (O intercepto $\beta_0$ em geral não é penalizado.) A grande vantagem é a solução
 fechada:
@@ -159,7 +159,7 @@ fechada:
 
 \begin{proposicao}[Ridge sempre tem solução única]
 Para todo $\lambda>0$, a matriz $\bm{X}^\top\bm{X}+\lambda\bm{I}$ é definida
-positiva (logo invertível), mesmo quando $d>n$.
+positiva (logo invertível), mesmo quando $p>n$.
 \end{proposicao}
 \begin{proof}
 Para qualquer $\bm{v}\neq 0$,
@@ -174,7 +174,7 @@ em geral \textbf{nenhum é exatamente zero}.
 \begin{equation}\label{eq:lasso}
   \widehat{\bbeta}^{\,\text{lasso}}
    = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
-       + \lambda \sum_{j=1}^{d}\abs{\beta_j} \Big\}.
+       + \lambda \sum_{j=1}^{p}\abs{\beta_j} \Big\}.
 \end{equation}
 Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
 $\abs{\beta_j}$ não é diferenciável em $0$), mas o problema é convexo e resolvido
@@ -258,10 +258,10 @@ print("coeficientes nao-nulos:", (lasso.coef_ != 0).sum(), "de", X.shape[1])
 \end{lstlisting}
 O exemplo clássico (dados de câncer de próstata, ou as resenhas da Amazon no [AME])
 mostra o padrão típico: o Lasso seleciona poucas covariáveis com desempenho
-comparável ou superior ao MQO, especialmente quando $d$ é grande.
+comparável ou superior ao MQO, especialmente quando $p$ é grande.
 
 O notebook \texttt{Aula prática 02} percorre tudo isso no
-\texttt{superconductivity.csv} ($d=81$), inclusive a pegadinha de escala entre
+\texttt{superconductivity.csv} ($p=81$), inclusive a pegadinha de escala entre
 \texttt{Ridge} e \texttt{Lasso}.
 
 %==============================================================================
@@ -270,7 +270,7 @@ O notebook \texttt{Aula prática 02} percorre tudo isso no
 \begin{itemize}[leftmargin=1.4cm]
   \item Regressão linear: $g(\x)=\bbeta^\top\x$, linear \emph{nos parâmetros};
         MQO $\widehat{\bbeta}=(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top\bm{Y}$.
-  \item Em altas dimensões MQO tem variância alta e nem existe se $d>n$.
+  \item Em altas dimensões MQO tem variância alta e nem existe se $p>n$.
   \item \textbf{Ridge} ($\ell_2$): solução fechada, sempre única, encolhe sem
         zerar.
   \item \textbf{Lasso} ($\ell_1$): faz seleção de variáveis (esparsidade) pela

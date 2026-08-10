@@ -1386,7 +1386,7 @@ def _mqo_alta_dim():
 
     fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
     ax1.plot(dims, condic.mean(axis=0), "o-", color=AZUL, ms=3)
-    ax1.set_xlabel("$d$ (número de covariáveis)")
+    ax1.set_xlabel("$p$ (número de covariáveis)")
     ax1.set_ylabel(r"condicionamento de $\bm{X}^\top\bm{X}$".replace(r"\bm", r"\mathbf"))
     ax1.set_title(f"o sistema fica mal-condicionado ($n={n}$)")
     ax1.set_yscale("log")
@@ -1397,7 +1397,7 @@ def _mqo_alta_dim():
              label=r"$\|\widehat{\beta}^{\,\mathrm{MQO}}\|_2$")
     ax2.axhline(1.0, color=VERDE, ls="--", lw=1.2,
                 label=r"erro irredutível $\sigma^2$")
-    ax2.set_xlabel("$d$ (número de covariáveis)")
+    ax2.set_xlabel("$p$ (número de covariáveis)")
     ax2.set_ylabel("risco / norma")
     ax2.set_title("e o ajuste vai junto")
     ax2.set_yscale("log")
