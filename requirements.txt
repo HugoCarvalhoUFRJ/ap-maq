@@ -3,16 +3,19 @@
 #
 #     pip install -r requirements.txt
 #
-# No Google Colab não é preciso instalar nada: todos os pacotes abaixo já vêm
-# no ambiente padrão. Localmente, o recomendado é um ambiente isolado:
+# No Google Colab não é preciso instalar nenhum PACOTE: todos os abaixo já vêm
+# no ambiente padrão. Os dados são outra história — ver "Dados", no fim do
+# arquivo. Localmente, o recomendado é um ambiente isolado:
 #
 #     python3 -m venv .venv && source .venv/bin/activate
 #     pip install -r requirements.txt
 #     jupyter lab
 #
 # Os limites inferiores não são chute: cada um corresponde a uma API que os
-# notebooks de fato usam, anotada abaixo. Não há limite superior — nada no
-# material depende de comportamento que versões novas tenham mudado.
+# notebooks de fato usam, anotada abaixo. Não há limite superior, mas ele não
+# sai de graça: o scikit-learn já removeu um parâmetro que o material usava, e
+# a aula 02 parou de rodar até ser corrigida. Ver "o que já quebrou em versão
+# nova", no fim do arquivo.
 
 # ----- o núcleo, usado nas 14 aulas ------------------------------------------
 numpy>=1.23
@@ -46,6 +49,23 @@ ipykernel>=6.0
 #   calibration_curve(strategy=...)      aula 09  -> >= 0.24
 #
 # =============================================================================
+# O que já quebrou em versão nova
+# =============================================================================
+#   LassoCV(n_alphas=...)       aula 02  -> removido na 1.7, junto com o de
+#   ElasticNetCV(n_alphas=...)              ElasticNetCV. Desde a 1.7 quem faz
+#                                           esse papel é `alphas`, que passou a
+#                                           aceitar um inteiro. O notebook agora
+#                                           omite o parâmetro e fica com o
+#                                           padrão de 100 — que vale em todas as
+#                                           versões, das antigas às novas.
+#
+# Em 10/08/2026 os argumentos de todas as chamadas do scikit-learn em todos os
+# notebooks foram conferidos contra as assinaturas da 1.9.0, e não há outro
+# caso. Mas isso cobre apenas o NOME dos parâmetros: mudança de comportamento
+# padrão, que altera número sem levantar erro, não é detectada assim. Se um
+# resultado divergir do que o texto afirma, suspeite disso antes de tudo.
+#
+# =============================================================================
 # Versões em que tudo foi executado de ponta a ponta (05/08/2026)
 # =============================================================================
 # Se algum notebook der resultado diferente do que o texto afirma, este é o
@@ -62,16 +82,29 @@ ipykernel>=6.0
 #   ipykernel     6.28.0
 #   Python        3.12.7
 #
+# A aula prática 02 foi reexecutada inteira em 10/08/2026, com scikit-learn
+# 1.9.0, numpy 1.26.2, pandas 2.x e matplotlib 3.8.3: roda sem erro, e os
+# números que o texto dela afirma são os que as células imprimem.
+#
 # =============================================================================
 # Dados
 # =============================================================================
 # Nenhum notebook baixa conjunto de dados do scikit-learn pela rede: os que
 # vêm de lá (breast_cancer, digits, sample_image) são embutidos no pacote.
 #
-# Três arquivos .csv são lidos de recursos/dados/ quando o repositório está
-# clonado e da web quando não está — então os notebooks rodam no Colab sem
-# ajuste, desde que haja internet:
+# Três arquivos .csv ficam em recursos/dados/:
 #
-#   superconductivity.csv    aulas 01 a 06 (~24 MB)
-#   bank_train_redux.csv     aulas 07 e 09 (~100 MB)
-#   spam.csv                 aula E3       (~0,5 MB)
+#   superconductivity.csv    aulas 01 a 06 e E2  (23 MB, 11 notebooks)
+#   bank_train_redux.csv     aulas 07, 09 e 11   (96 MB, 5 notebooks)
+#   spam.csv                 aula E3             (0,5 MB, 3 notebooks)
+#
+# As aulas práticas 01 e 02 NÃO baixam nada da rede. Elas procuram o .csv em
+# dois lugares, nesta ordem — a pasta do próprio notebook e depois
+# ../../recursos/dados/ — e falham com mensagem clara se não acharem. Assim
+# funcionam no repositório clonado e também para o aluno que recebe só o .ipynb
+# e o .csv lado a lado. No Colab é preciso subir o .csv.
+#
+# Os outros 15 notebooks ainda usam o padrão antigo: caminho local, com
+# fallback para uma URL do GitHub quando o arquivo não está lá. Só esses ainda
+# dependem de internet fora do repositório, e são os únicos que rodam no Colab
+# sem ajuste nenhum. A conversão deles está pendente.
