@@ -77,31 +77,31 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
 \begin{equation}\label{eq:mqo}
   \widehat{\bbeta}
    = \argmin_{\bbeta} \sum_{i=1}^n
-     \big(Y_i - \bbeta^\top \X_i\big)^2
-   = \argmin_{\bbeta} \norm{\bm{Y} - \mathbb{X}\bbeta}^2 ,
+     \big(Y_i - \bbeta^\top \x_i\big)^2
+   = \argmin_{\bbeta} \norm{\bm{y} - \mathbb{X}\bbeta}^2 ,
 \end{equation}
 onde $\mathbb{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
-$\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
+$\x_i^\top$, com a coluna de $1$s) e $\bm{y}=(Y_1,\dots,Y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
 Se $\mathbb{X}^\top\mathbb{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
 \begin{equation}\label{eq:betahat}
-  \widehat{\bbeta} = (\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top \bm{Y}.
+  \widehat{\bbeta} = (\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top \bm{y}.
 \end{equation}
 \end{proposicao}
 \begin{proof}
-Seja $S(\bbeta)=\norm{\bm{Y}-\mathbb{X}\bbeta}^2
-=\bm{Y}^\top\bm{Y}-2\bbeta^\top\mathbb{X}^\top\bm{Y}+\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta$.
-O gradiente é $\nabla S(\bbeta)=-2\mathbb{X}^\top\bm{Y}+2\mathbb{X}^\top\mathbb{X}\bbeta$.
+Seja $S(\bbeta)=\norm{\bm{y}-\mathbb{X}\bbeta}^2
+=\bm{y}^\top\bm{y}-2\bbeta^\top\mathbb{X}^\top\bm{y}+\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta$.
+O gradiente é $\nabla S(\bbeta)=-2\mathbb{X}^\top\bm{y}+2\mathbb{X}^\top\mathbb{X}\bbeta$.
 Igualando a zero obtêm-se as \emph{equações normais}
-$\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm{Y}$; como a Hessiana
+$\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm{y}$; como a Hessiana
 $2\mathbb{X}^\top\mathbb{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
 $\mathbb{X}^\top\mathbb{X}$ é invertível, vale \eqref{eq:betahat}.
 \end{proof}
 
 \begin{observacao}
 $\widehat{\bbeta}$ é o estimador de máxima verossimilhança sob o modelo
-$Y_i = \bbeta^\top\X_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
+$Y_i = \bbeta^\top\x_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
 i.i.d. A predição é $\rhat(\x)=\widehat{\bbeta}^\top\x$. Sob o modelo linear
 correto, MQO é o melhor estimador linear não-viesado (Gauss--Markov).
 \end{observacao}
@@ -111,9 +111,9 @@ Quase sempre é. Vale então perguntar o que o MQO estima quando $r(\x)$ \emph{n
 linear --- e a resposta é tranquilizadora.
 
 \begin{teorema}[MQO converge para o melhor preditor linear]\label{teo:oraculo}
-Seja $\bbeta^*=\argmin_{\bbeta}\E\big[(Y-\bbeta^\top\X)^2\big]$ o
+Seja $\bbeta^*=\argmin_{\bbeta}\E\big[(Y-\bbeta^\top\x)^2\big]$ o
 \textbf{melhor preditor linear} (o ``oráculo''), e suponha
-$\Sigma=\E[\X\X^\top]$ bem definida. Então, quando $n\to\infty$,
+$\Sigma=\E[\x\x^\top]$ bem definida. Então, quando $n\to\infty$,
 \[
   \widehat{\bbeta} \;\xrightarrow{\ P\ }\; \bbeta^*
   \qquad\text{e}\qquad
@@ -121,14 +121,14 @@ $\Sigma=\E[\X\X^\top]$ bem definida. Então, quando $n\to\infty$,
 \]
 \end{teorema}
 \begin{proof}[Esboço]
-Minimizando $\E[(Y-\bbeta^\top\X)^2]$ obtém-se $\bbeta^*=\Sigma^{-1}\alpha$, com
+Minimizando $\E[(Y-\bbeta^\top\x)^2]$ obtém-se $\bbeta^*=\Sigma^{-1}\bm{\alpha}$, com
 $\alpha_j=\E[YX_j]$. O estimador se escreve na mesma forma,
-$\widehat{\bbeta}=\widehat\Sigma^{-1}\widehat\alpha$, com
-$\widehat\Sigma=n^{-1}\sum_i\X_i\X_i^\top$ e
+$\widehat{\bbeta}=\widehat\Sigma^{-1}\widehat{\bm{\alpha}}$, com
+$\widehat\Sigma=n^{-1}\sum_i\x_i\x_i^\top$ e
 $\widehat\alpha_j=n^{-1}\sum_i Y_iX_{i,j}$. Pela lei dos grandes números
-$\widehat\Sigma\to\Sigma$ e $\widehat\alpha\to\alpha$; o teorema de Mann--Wald
+$\widehat\Sigma\to\Sigma$ e $\widehat{\bm{\alpha}}\to\bm{\alpha}$; o teorema de Mann--Wald
 transporta a convergência através da função contínua
-$(\Sigma,\alpha)\mapsto\Sigma^{-1}\alpha$, e de novo através de
+$(\Sigma,\bm{\alpha})\mapsto\Sigma^{-1}\bm{\alpha}$, e de novo através de
 $\bbeta\mapsto \risco(g_{\bbeta})$.
 \end{proof}
 
@@ -244,7 +244,7 @@ A ideia da regularização (ou \emph{penalização}, ou \emph{shrinkage}) é adi
 ao RSS um termo que penaliza coeficientes grandes, desencorajando o superajuste:
 \[
   \widehat{\bbeta}_{\text{pen}}
-  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+  = \argmin_{\bbeta}\Big\{ \norm{\bm{y}-\mathbb{X}\bbeta}^2
        + \lambda\, \mathrm{Pen}(\bbeta) \Big\}.
 \]
 O hiperparâmetro $\lambda\ge 0$ controla a intensidade: $\lambda=0$ recupera MQO;
@@ -292,13 +292,13 @@ resolúvel em milissegundos. Não é exagero dizer que o Lasso existe porque a $
 \subsection{Regressão Ridge ($\ell_2$)}
 \begin{equation}\label{eq:ridge}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\beta_j^2 \Big\}.
 \end{equation}
 A grande vantagem é a solução fechada:
 \begin{equation}\label{eq:ridgesol}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = (\mathbb{X}^\top\mathbb{X} + \lambda \mathbb{I}_0)^{-1}\mathbb{X}^\top\bm{Y},
+   = (\mathbb{X}^\top\mathbb{X} + \lambda \mathbb{I}_0)^{-1}\mathbb{X}^\top\bm{y},
 \end{equation}
 onde $\mathbb{I}_0$ é a identidade $(p+1)\times(p+1)$ \emph{com o primeiro elemento
 trocado por zero} --- é assim que se deixa o intercepto $\beta_0$ fora da
@@ -324,7 +324,7 @@ em geral \textbf{nenhum é exatamente zero}.
 \subsection{O Lasso ($\ell_1$)}
 \begin{equation}\label{eq:lasso}
   \widehat{\bbeta}^{\,\text{lasso}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\abs{\beta_j} \Big\}.
 \end{equation}
 Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
@@ -353,7 +353,7 @@ com milhares de covariáveis e $n$ modesto, situação em que o MQO nem está de
 Ambos têm a formulação equivalente \emph{com restrição}: para cada $\lambda$ existe
 um orçamento $t$ tal que resolver \eqref{eq:lasso} é o mesmo que resolver
 \[
-  \min_{\bbeta}\ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+  \min_{\bbeta}\ \norm{\bm{y}-\mathbb{X}\bbeta}^2
   \quad\text{sujeito a}\quad
   \underbrace{\textstyle\sum_j\abs{\beta_j}\le t}_{\text{Lasso}}
   \quad\text{ou}\quad
@@ -572,9 +572,9 @@ print("coeficientes nao-nulos:", (lasso.coef_ != 0).sum(), "de", X.shape[1])
 
 \begin{atencao}[um detalhe de escala que já custou caro a muita gente]
 As classes do \texttt{scikit-learn} \textbf{não} usam a mesma normalização.
-\texttt{Ridge} minimiza $\norm{y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}^2$, enquanto
+\texttt{Ridge} minimiza $\norm{\bm{y}-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}^2$, enquanto
 \texttt{Lasso} e \texttt{ElasticNet} minimizam
-$\tfrac{1}{2n}\norm{y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$. Há um fator $n$ de
+$\tfrac{1}{2n}\norm{\bm{y}-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$. Há um fator $n$ de
 diferença: um $\alpha$ que é forte num é desprezível no outro. Ao comparar as duas
 famílias na mesma grade, converta.
 \end{atencao}
@@ -598,7 +598,7 @@ quando $p$ é grande \emph{em relação a} $n$.
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
   \item Regressão linear: $g(\x)=\bbeta^\top\x$, linear \emph{nos parâmetros};
-        MQO $\widehat{\bbeta}=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm{Y}$. Mesmo com
+        MQO $\widehat{\bbeta}=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm{y}$. Mesmo com
         o modelo errado, o MQO acerta o melhor preditor linear
         (Teo.~\ref{teo:oraculo}).
   \item Em altas dimensões MQO tem variância alta (Fig.~\ref{fig:altadim}) e nem

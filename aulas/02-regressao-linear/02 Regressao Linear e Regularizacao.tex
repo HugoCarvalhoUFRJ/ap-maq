@@ -50,31 +50,31 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
 \begin{equation}\label{eq:mqo}
   \widehat{\bbeta}
    = \argmin_{\bbeta} \sum_{i=1}^n
-     \big(Y_i - \bbeta^\top \X_i\big)^2
-   = \argmin_{\bbeta} \norm{\bm{Y} - \mathbb{X}\bbeta}^2 ,
+     \big(Y_i - \bbeta^\top \x_i\big)^2
+   = \argmin_{\bbeta} \norm{\bm{y} - \mathbb{X}\bbeta}^2 ,
 \end{equation}
 onde $\mathbb{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
-$\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
+$\x_i^\top$, com a coluna de $1$s) e $\bm{y}=(Y_1,\dots,Y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
 Se $\mathbb{X}^\top\mathbb{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
 \begin{equation}\label{eq:betahat}
-  \widehat{\bbeta} = (\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top \bm{Y}.
+  \widehat{\bbeta} = (\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top \bm{y}.
 \end{equation}
 \end{proposicao}
 \begin{proof}
-Seja $S(\bbeta)=\norm{\bm{Y}-\mathbb{X}\bbeta}^2
-=\bm{Y}^\top\bm{Y}-2\bbeta^\top\mathbb{X}^\top\bm{Y}+\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta$.
-O gradiente é $\nabla S(\bbeta)=-2\mathbb{X}^\top\bm{Y}+2\mathbb{X}^\top\mathbb{X}\bbeta$.
+Seja $S(\bbeta)=\norm{\bm{y}-\mathbb{X}\bbeta}^2
+=\bm{y}^\top\bm{y}-2\bbeta^\top\mathbb{X}^\top\bm{y}+\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta$.
+O gradiente é $\nabla S(\bbeta)=-2\mathbb{X}^\top\bm{y}+2\mathbb{X}^\top\mathbb{X}\bbeta$.
 Igualando a zero obtêm-se as \emph{equações normais}
-$\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm{Y}$; como a Hessiana
+$\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm{y}$; como a Hessiana
 $2\mathbb{X}^\top\mathbb{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
 $\mathbb{X}^\top\mathbb{X}$ é invertível, vale \eqref{eq:betahat}.
 \end{proof}
 
 \begin{observacao}
 $\widehat{\bbeta}$ é o estimador de máxima verossimilhança sob o modelo
-$Y_i = \bbeta^\top\X_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
+$Y_i = \bbeta^\top\x_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
 i.i.d. A predição é $\rhat(\x)=\widehat{\bbeta}^\top\x$. Sob o modelo linear
 correto, MQO é o melhor estimador linear não-viesado (Gauss--Markov).
 \end{observacao}
@@ -131,7 +131,7 @@ A ideia da regularização (ou \emph{penalização}, ou \emph{shrinkage}) é adi
 ao RSS um termo que penaliza coeficientes grandes, desencorajando o superajuste:
 \[
   \widehat{\bbeta}_{\text{pen}}
-  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+  = \argmin_{\bbeta}\Big\{ \norm{\bm{y}-\mathbb{X}\bbeta}^2
        + \lambda\, \mathrm{Pen}(\bbeta) \Big\}.
 \]
 O hiperparâmetro $\lambda\ge 0$ controla a intensidade: $\lambda=0$ recupera MQO;
@@ -147,14 +147,14 @@ Sob $p$ grande, o ganho na variância supera a perda no viés e o risco total ca
 \subsection{Regressão Ridge ($\ell_2$)}
 \begin{equation}\label{eq:ridge}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\beta_j^2 \Big\}.
 \end{equation}
 (O intercepto $\beta_0$ em geral não é penalizado.) A grande vantagem é a solução
 fechada:
 \begin{equation}\label{eq:ridgesol}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = (\mathbb{X}^\top\mathbb{X} + \lambda \mathbb{I})^{-1}\mathbb{X}^\top\bm{Y}.
+   = (\mathbb{X}^\top\mathbb{X} + \lambda \mathbb{I})^{-1}\mathbb{X}^\top\bm{y}.
 \end{equation}
 
 \begin{proposicao}[Ridge sempre tem solução única]
@@ -173,7 +173,7 @@ em geral \textbf{nenhum é exatamente zero}.
 \subsection{O Lasso ($\ell_1$)}
 \begin{equation}\label{eq:lasso}
   \widehat{\bbeta}^{\,\text{lasso}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\abs{\beta_j} \Big\}.
 \end{equation}
 Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
@@ -189,7 +189,7 @@ vários $\widehat\beta_j$ são \emph{exatamente} zero. Obtemos um modelo
 \subsubsection*{Por que o Lasso zera coeficientes e o Ridge não?}
 Ambos têm a formulação equivalente \emph{com restrição}:
 \[
-  \min_{\bbeta}\ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
+  \min_{\bbeta}\ \norm{\bm{y}-\mathbb{X}\bbeta}^2
   \quad\text{sujeito a}\quad
   \underbrace{\textstyle\sum_j\abs{\beta_j}\le t}_{\text{Lasso}}
   \quad\text{ou}\quad
@@ -269,7 +269,7 @@ O notebook \texttt{Aula prática 02} percorre tudo isso no
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
   \item Regressão linear: $g(\x)=\bbeta^\top\x$, linear \emph{nos parâmetros};
-        MQO $\widehat{\bbeta}=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm{Y}$.
+        MQO $\widehat{\bbeta}=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm{y}$.
   \item Em altas dimensões MQO tem variância alta e nem existe se $p>n$.
   \item \textbf{Ridge} ($\ell_2$): solução fechada, sempre única, encolhe sem
         zerar.
