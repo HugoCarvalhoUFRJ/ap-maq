@@ -55,6 +55,37 @@ e completo e não tem versão para alunos. O `estilo-notas.sty` define a notaç�
 curso (`\x`, `\X`, `\E`, `\rhat`, `\risco`, `\Dados`, ...), os ambientes de teorema
 em português e as três caixas pedagógicas: `emsala`, `ideia` e `atencao`.
 
+### A notação da aula 02, que as outras ainda não seguem
+
+Pedido do Gabriel em 10/08/2026, aplicado por ora **só na aula 02** (as duas
+versões). Vale para material novo; ao mexer em qualquer outra aula, **veja qual
+convenção ela usa antes de escrever**.
+
+- **matriz** — maiúscula, sem negrito, em `\mathbb`: `\mathbb{X}` (delineamento),
+  `\mathbb{I}` (identidade). É o que os slides já faziam;
+- **vetor** — **minúscula**, em negrito: `\x`, `\bm{y}`, `\bbeta`, `\bm{\alpha}`.
+  Maiúscula ficou reservada a matriz, então `\X` e `\bm{Y}` saíram da aula 02 —
+  a macro `\X` do estilo continua existindo para as outras 13;
+- **escalar** — sem negrito: `y_i`, `\beta_j`, `\lambda`, `p`, `n`.
+
+O número de covariáveis é **`p`**, não `d`. Fora da aula 02 ainda é `d`: ~190
+ocorrências em 22 arquivos `.tex`, mais as figuras `05-taxas` e `05-vizinho-longe`,
+que rotulam `$d$`, e os notebooks.
+
+O motivo do arranjo não era estética: a macro `\X` é `\bm{X}`, e a matriz de
+delineamento também era escrita `\bm{X}` — vetor e matriz saíam com o mesmo glifo,
+lado a lado na mesma equação da §1.1.
+
+Duas colisões que a convenção cria, ambas correntes na literatura e toleradas:
+`p` também aparece como *p*-valor e como densidade `p(\bbeta)`; e `\mathbb` serve
+tanto para matriz (`\mathbb{X}`) quanto para conjunto ou operador (`\R`, `\E`).
+
+**O limiar do lasso no caso ortonormal é $\lambda/2$**, não $\lambda$. Sai de
+derivar $\|y-\mathbb{X}\beta\|^2 + \lambda\sum_j|\beta_j|$, sem $\frac12$ no RSS —
+a mesma convenção que dá $\hat\beta/(1+\lambda)$ para o Ridge. Notas, slide,
+`Lista teorica 02` e `gerar-figuras.py` já estavam certos; o notebook da aula 02
+foi corrigido em 10/08/2026.
+
 **`pgfplots` está em `compat=1.16`** porque é a versão do TeX Live desta máquina;
 valores mais novos fazem o pacote abortar com "compat=1.18 is unknown".
 
@@ -166,9 +197,20 @@ respeitar em qualquer notebook novo:
 seguido de célula de código vazia, e faziam sentido quando a aula prática era o
 único material de exercício. Com uma lista prática por aula, o laboratório guiado
 passa a **mostrar** em vez de deixar em aberto: cada `Sua vez` vira markdown +
-código + leitura do resultado. A **aula prática 01 já foi convertida** (06/08/2026,
-quatro blocos); as outras 13 ainda têm 29 blocos e serão convertidas quando o
-Gabriel pedir. Não escreva `Sua vez` em notebook novo.
+código + leitura do resultado. Já foram convertidas a **aula prática 01**
+(06/08/2026, quatro blocos) e a **02** (10/08/2026, três); as outras 12 ainda têm
+26 blocos e serão convertidas quando o Gabriel pedir. Não escreva `Sua vez` em
+notebook novo.
+
+Ao converter, **meça antes de escrever**: em três dos sete blocos já convertidos o
+resultado contrariou a pergunta que o enunciado fazia, e o texto foi escrito sobre
+o medido. Um deles precisou de repetições e erro-padrão para não afirmar bobagem —
+a diferença que parecia existir entre Ridge e MQO com $n=500$ era menor que a
+incerteza da medida.
+
+As **listas práticas e seus gabaritos** têm outros ~40 blocos `Sua vez`. Ali eles
+talvez façam sentido, já que a lista é o material de exercício — não os converta
+sem perguntar ao Gabriel.
 
 Cada notebook reproduz as simulações da figura correspondente em
 `recursos/figuras/gerar-figuras.py`, **com os mesmos parâmetros e a mesma semente**,
@@ -183,6 +225,23 @@ não gravar as saídas no arquivo do repositório:
 cd aulas/03-validacao-cruzada
 jupyter nbconvert --to notebook --execute "Aula prática 03.ipynb" --output-dir /tmp
 ```
+
+**Rode no ambiente do Gabriel, não no `python3` do sistema.** O interpretador
+padrão desta máquina tem scikit-learn 1.3; o dele é o conda `barennet_env`, com
+1.9 — e a versão velha esconde quebras que os alunos veriam:
+
+```bash
+/home/exxon-lp-003/anaconda3/envs/barennet_env/bin/jupyter nbconvert \
+  --to notebook --execute "Aula prática 02.ipynb" --output-dir /tmp
+```
+
+Isso já pegou uma quebra real: `LassoCV` e `ElasticNetCV` perderam o parâmetro
+`n_alphas` no scikit-learn 1.7, e a aula prática 02 morria da §8 em diante. Omitir
+o parâmetro usa o padrão de 100 alphas e funciona em qualquer versão. Uma varredura
+dos argumentos de **todas** as chamadas do scikit-learn em **todos** os notebooks
+contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas ela cobre nome
+de parâmetro, não mudança de comportamento padrão, que altera número sem levantar
+erro. O `requirements.txt` registra isso.
 
 **Armadilha ao abrir um notebook no Jupyter:** salvar grava as saídas e os
 `execution_count`, e ainda **reordena as chaves de cada célula** para a ordem
@@ -261,26 +320,39 @@ a numeração é 1:1 e essa classe de erro deixa de existir.
 
 ## Dados
 
-**Os notebooks do curso rodam localmente, não no Google Colab.** Decisão do Gabriel
-em 07/08/2026: os alunos baixam a pasta da aula e abrem o `.ipynb` de dentro dela.
-Consequência para qualquer notebook novo ou revisado:
+**Os notebooks não baixam dados da rede, e os `.csv` ficam numa cópia única em
+`recursos/dados/`.** A decisão passou por três rodadas e fechou em 10/08/2026:
+os alunos recebem o notebook e o `.csv`, e **podem não ter o repositório**. O
+padrão para qualquer notebook novo ou revisado é procurar em dois lugares:
 
 ```python
-_nome = "superconductivity.csv"      # nesta mesma pasta, ao lado do notebook
+import os
 
-if not os.path.exists(_nome):
-    raise FileNotFoundError(...)     # mensagem dizendo para copiar o .csv para ca
+_nome = "superconductivity.csv"
 
-df = pd.read_csv(_nome)
+# procura em dois lugares, sem baixar nada da internet: a pasta deste
+# notebook primeiro e, se o repositorio estiver clonado, recursos/dados/
+_lugares = [_nome, os.path.join("..", "..", "recursos", "dados", _nome)]
+_caminho = next((c for c in _lugares if os.path.exists(c)), None)
+
+if _caminho is None:
+    raise FileNotFoundError(...)     # dizendo onde procurou
+
+df = pd.read_csv(_caminho)
 ```
 
-Ou seja: **nada de URL para o GitHub, e nada de caminho `../../recursos/dados/`**.
-O `.csv` fica ao lado do notebook, e falhar com mensagem clara é preferível a
-baixar da web pelas costas do aluno.
+A ordem importa: a pasta do notebook vem **primeiro**, então um `.csv` posto ao
+lado vence o do repositório. **Nada de URL para o GitHub** — falhar com mensagem
+clara é preferível a baixar pelas costas do aluno.
 
-**A migração está pela metade.** Só a `Aula prática 01` foi convertida (§10,
-`superconductivity.csv` copiado para `aulas/01-introducao/`). Os outros **16
-notebooks** ainda usam o padrão antigo, de caminho local com fallback para a web:
+Por que não só a pasta da aula: `superconductivity.csv` tem 23 MB e é lido por 11
+notebooks; uma cópia por pasta custaria ~260 MB. Por que não só `recursos/dados/`:
+sem o repositório esse caminho nunca resolve, e o aluno teria de editar a primeira
+célula em toda aula. As duas tentativas anteriores foram essas, nessa ordem.
+
+**A migração está pela metade.** As aulas práticas **01 e 02** já usam o padrão
+acima. Os outros **15 notebooks** ainda usam o antigo, de caminho local com
+fallback para a web:
 
 ```python
 _local = os.path.join("..", "..", "recursos", "dados", _nome)
@@ -291,18 +363,21 @@ _fonte = _local if os.path.exists(_local) else _url
 Enquanto eles existirem, **a branch na URL importa**: o fallback tem de apontar para
 `refactoring-baby`, porque na `main` os `.csv` seguem em `materiais-didaticos/` e
 não há merge planejado — apontar para `main` dá 404 permanente. Renomear a branch
-quebra o fallback dos 16.
+quebra o fallback dos 15.
 
-**Cuidado ao converter o resto: o custo é em disco.** `superconductivity.csv` tem
-23,9 MB e é lido por **11** notebooks; uma cópia por pasta são ~260 MB. Antes de
-replicar a conversão, decida com o Gabriel entre copiar mesmo, mover cada base para
-a pasta da única aula que a usa, ou manter `recursos/dados/` e só remover o
-fallback web. As três atendem "roda offline"; só a primeira atende "na mesma pasta
-do notebook".
+Converter os que faltam é mecânico: é a mesma célula, trocando o nome do arquivo.
 
-Os `.csv` originais seguem em `recursos/dados/`. `bank_train_redux.csv` tem ~96 MiB
-e é um excerto reduzido da base do Kaggle, por limite de espaço do GitHub — atenção
-ao teto de 100 MiB por arquivo se alguma conversão for duplicá-lo.
+Quem lê o quê, medido em 10/08/2026:
+
+| arquivo | tamanho | notebooks |
+| --- | --- | --- |
+| `superconductivity.csv` | 23 MB | 11 — aulas 01 a 06 e E2 |
+| `bank_train_redux.csv` | 96 MB | 5 — aulas 07, 09 e 11 |
+| `spam.csv` | 0,5 MB | 3 — aula E3 |
+
+`bank_train_redux.csv` é um excerto reduzido da base do Kaggle, por limite de
+espaço do GitHub — atenção ao teto de 100 MiB por arquivo se alguma conversão for
+duplicá-lo.
 
 ## Convenções
 
@@ -347,9 +422,9 @@ uma linha. O que mudou é onde gastar vigilância.
 
 ## Histórico de correções relevantes
 
-Duas edições foram feitas **diretamente nos HTMLs** e portanto se perdem se alguém
+Estas edições foram feitas **diretamente nos HTMLs** e portanto se perdem se alguém
 recompilar as apresentações a partir dos `.qmd` (que não estão no repositório).
-Quem mantiver os `.qmd` precisa replicar as duas:
+Quem mantiver os `.qmd` precisa replicar todas:
 
 1. Os slides das aulas 01 e 03 traziam invertidas as definições de regressão e
    classificação (diziam "Y qualitativa: problema de regressão"). O correto: $Y$
@@ -360,6 +435,21 @@ Quem mantiver os `.qmd` precisa replicar as duas:
    `gabrielsanfins@id.uff.br`, com os `id` das duas headings atualizados junto
    (`gabriel-sanfins` e `gabrielsanfinsid.uff.br` — o Quarto derruba o `@`).
    Nenhum link apontava para os `id` antigos.
+3. Em 10/08/2026, `[ITSL]` virou `[ISLP]` em **14 citações de seis decks** (01, 02,
+   03, 06, 08 e o EXTRA de k-médias). É o mesmo livro: a entrada bibliográfica da
+   aula 01 diz "with Applications in Python". Provavelmente a sigla está uma vez só
+   no fonte de cada apresentação.
+4. Em 10/08/2026, três correções no deck da aula 02: saiu um slide vazio (sem
+   título e sem conteúdo) entre "Além da linearidade" e a capa de "Regularização";
+   o argmin do MQO passou a ser repetido no segundo membro, que igualava um argmin
+   a uma norma; e o limiar do lasso virou $(|\hat\beta| - \lambda/2)_+$.
+
+**Pendente, e não é edição de HTML:** as três citações do deck de k-médias agora
+nomeiam o `[ISLP]` com número de figura da edição antiga. No ISLP o capítulo de
+não supervisionado é o 12 — o 10 é *Deep Learning* —, então as figuras 10.5, 10.6
+e 10.7 correspondem a **12.7, 12.8 e 12.9** (conferido no `recursos/livros/ISLP.pdf`).
+Os capítulos 2 a 9 não mudaram entre as edições, então as outras sete citações
+(2.2, 2.9, 4.6, 4.9, 5.5, 6.7 e 8.3) seguem válidas.
 
 **`aulas/10-svm/10 SVM - slide.pdf` continua creditando "Hugo Carvalho"** em todas
 as páginas, e nomeia a UFRJ na capa. É um PDF compilado (aparentemente Beamer) sem
