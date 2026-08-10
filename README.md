@@ -51,9 +51,13 @@ Cada pasta de aula contém, conforme disponível:
 
 Há um notebook `Aula prática NN.ipynb` para cada uma das 14 aulas. Eles seguem a
 conduta dos laboratórios do [ISLP] — narrativa antes de cada bloco de código, API
-orientada a objeto do `matplotlib`, pausas `Sua vez` com célula vazia — mas sem
-depender do pacote `ISLP`: bastam `numpy`, `pandas`, `matplotlib`, `scikit-learn`,
-`scipy` e `statsmodels`.
+orientada a objeto do `matplotlib` — mas sem depender do pacote `ISLP`: bastam
+`numpy`, `pandas`, `matplotlib`, `scikit-learn`, `scipy` e `statsmodels`.
+
+O laboratório guiado **mostra**, não deixa exercício em aberto: quem propõe
+exercício é a lista prática da mesma aula. Onde havia uma pausa `Sua vez` seguida
+de célula vazia, hoje há enunciado, código e leitura do resultado. As aulas 01 e
+02 já estão assim; as outras doze ainda têm as pausas antigas.
 
 Cada notebook **reproduz as simulações das figuras das notas**, com os mesmos
 parâmetros, de modo que o número que aparece na figura é o número que a célula
@@ -61,8 +65,8 @@ imprime. São commitados sem saída.
 
 ### Como rodar
 
-No **Google Colab** não é preciso instalar nada: todos os pacotes já vêm no
-ambiente padrão e os dados são baixados automaticamente. Basta abrir o `.ipynb`.
+No **Google Colab** não é preciso instalar nenhum pacote: todos já vêm no ambiente
+padrão. Quanto aos dados, depende da aula — ver a seção seguinte.
 
 **Localmente**, as dependências estão em [`requirements.txt`](requirements.txt):
 
@@ -77,8 +81,20 @@ São seis pacotes (`numpy`, `pandas`, `matplotlib`, `scikit-learn`, `scipy`,
 `statsmodels`), mais `pillow` — que o `scikit-learn` **não** instala junto e é
 necessário para a compressão de imagem da aula E1.
 
-Os dados vêm de `recursos/dados/` quando o repositório está clonado e da web quando
-não está — os notebooks rodam no Google Colab sem ajuste.
+### De onde vêm os dados
+
+Os `.csv` ficam em [`recursos/dados/`](recursos/dados), em uma cópia única para o
+curso todo. Duas maneiras de lê-los convivem, e a migração de uma para a outra
+está em andamento:
+
+- as **aulas práticas 01 e 02** não baixam nada da rede. Procuram o arquivo na
+  pasta do próprio notebook e, em seguida, em `../../recursos/dados/`, falhando
+  com mensagem clara se não acharem em nenhum dos dois. Funcionam com o
+  repositório clonado e também para quem recebe só o `.ipynb` e o `.csv` lado a
+  lado; no Colab, é preciso subir o `.csv`;
+- os **outros 15 notebooks** ainda usam o padrão antigo, de caminho local com
+  *fallback* para uma URL do GitHub. São os que rodam no Colab sem ajuste
+  nenhum, desde que haja internet.
 
 ## Listas de exercícios
 
