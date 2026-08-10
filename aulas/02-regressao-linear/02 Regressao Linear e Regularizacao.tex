@@ -50,11 +50,11 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
 \begin{equation}\label{eq:mqo}
   \widehat{\bbeta}
    = \argmin_{\bbeta} \sum_{i=1}^n
-     \big(Y_i - \bbeta^\top \x_i\big)^2
+     \big(y_i - \bbeta^\top \x_i\big)^2
    = \argmin_{\bbeta} \norm{\bm{y} - \mathbb{X}\bbeta}^2 ,
 \end{equation}
 onde $\mathbb{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
-$\x_i^\top$, com a coluna de $1$s) e $\bm{y}=(Y_1,\dots,Y_n)^\top$.
+$\x_i^\top$, com a coluna de $1$s) e $\bm{y}=(y_1,\dots,y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
 Se $\mathbb{X}^\top\mathbb{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
@@ -74,7 +74,7 @@ $\mathbb{X}^\top\mathbb{X}$ é invertível, vale \eqref{eq:betahat}.
 
 \begin{observacao}
 $\widehat{\bbeta}$ é o estimador de máxima verossimilhança sob o modelo
-$Y_i = \bbeta^\top\x_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
+$y_i = \bbeta^\top\x_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
 i.i.d. A predição é $\rhat(\x)=\widehat{\bbeta}^\top\x$. Sob o modelo linear
 correto, MQO é o melhor estimador linear não-viesado (Gauss--Markov).
 \end{observacao}

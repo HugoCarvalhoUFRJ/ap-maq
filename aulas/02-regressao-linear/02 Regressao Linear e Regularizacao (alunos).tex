@@ -77,11 +77,11 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
 \begin{equation}\label{eq:mqo}
   \widehat{\bbeta}
    = \argmin_{\bbeta} \sum_{i=1}^n
-     \big(Y_i - \bbeta^\top \x_i\big)^2
+     \big(y_i - \bbeta^\top \x_i\big)^2
    = \argmin_{\bbeta} \norm{\bm{y} - \mathbb{X}\bbeta}^2 ,
 \end{equation}
 onde $\mathbb{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
-$\x_i^\top$, com a coluna de $1$s) e $\bm{y}=(Y_1,\dots,Y_n)^\top$.
+$\x_i^\top$, com a coluna de $1$s) e $\bm{y}=(y_1,\dots,y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
 Se $\mathbb{X}^\top\mathbb{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
@@ -101,7 +101,7 @@ $\mathbb{X}^\top\mathbb{X}$ é invertível, vale \eqref{eq:betahat}.
 
 \begin{observacao}
 $\widehat{\bbeta}$ é o estimador de máxima verossimilhança sob o modelo
-$Y_i = \bbeta^\top\x_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
+$y_i = \bbeta^\top\x_i + \varepsilon_i$, com $\varepsilon_i\sim N(0,\sigma^2)$
 i.i.d. A predição é $\rhat(\x)=\widehat{\bbeta}^\top\x$. Sob o modelo linear
 correto, MQO é o melhor estimador linear não-viesado (Gauss--Markov).
 \end{observacao}
@@ -111,7 +111,7 @@ Quase sempre é. Vale então perguntar o que o MQO estima quando $r(\x)$ \emph{n
 linear --- e a resposta é tranquilizadora.
 
 \begin{teorema}[MQO converge para o melhor preditor linear]\label{teo:oraculo}
-Seja $\bbeta^*=\argmin_{\bbeta}\E\big[(Y-\bbeta^\top\x)^2\big]$ o
+Seja $\bbeta^*=\argmin_{\bbeta}\E\big[(y-\bbeta^\top\x)^2\big]$ o
 \textbf{melhor preditor linear} (o ``oráculo''), e suponha
 $\Sigma=\E[\x\x^\top]$ bem definida. Então, quando $n\to\infty$,
 \[
@@ -121,11 +121,11 @@ $\Sigma=\E[\x\x^\top]$ bem definida. Então, quando $n\to\infty$,
 \]
 \end{teorema}
 \begin{proof}[Esboço]
-Minimizando $\E[(Y-\bbeta^\top\x)^2]$ obtém-se $\bbeta^*=\Sigma^{-1}\bm{\alpha}$, com
-$\alpha_j=\E[YX_j]$. O estimador se escreve na mesma forma,
+Minimizando $\E[(y-\bbeta^\top\x)^2]$ obtém-se $\bbeta^*=\Sigma^{-1}\bm{\alpha}$, com
+$\alpha_j=\E[yX_j]$. O estimador se escreve na mesma forma,
 $\widehat{\bbeta}=\widehat\Sigma^{-1}\widehat{\bm{\alpha}}$, com
 $\widehat\Sigma=n^{-1}\sum_i\x_i\x_i^\top$ e
-$\widehat\alpha_j=n^{-1}\sum_i Y_iX_{i,j}$. Pela lei dos grandes números
+$\widehat\alpha_j=n^{-1}\sum_i y_iX_{i,j}$. Pela lei dos grandes números
 $\widehat\Sigma\to\Sigma$ e $\widehat{\bm{\alpha}}\to\bm{\alpha}$; o teorema de Mann--Wald
 transporta a convergência através da função contínua
 $(\Sigma,\bm{\alpha})\mapsto\Sigma^{-1}\bm{\alpha}$, e de novo através de
@@ -625,6 +625,6 @@ Teorema~2) e Capítulo~3 inteiro --- em especial a Tabela~3.1 (as três normas),
 §6.2 (\emph{shrinkage}); a Figura~6.7 deles é a versão da nossa
 Figura~\ref{fig:geometria}, e a 6.10 é a nossa Figura~\ref{fig:soft}.
 
-\paragraph{Para praticar.} \texttt{Lista teorica 02.pdf} (teórica, com gabarito) e \texttt{Lista prática 02.ipynb} (prática, para completar as lacunas), nesta mesma pasta.
+\paragraph{Para praticar.} \texttt{Lista teorica 02.pdf} e \texttt{Lista prática 02.ipynb}
 
 \end{document}
