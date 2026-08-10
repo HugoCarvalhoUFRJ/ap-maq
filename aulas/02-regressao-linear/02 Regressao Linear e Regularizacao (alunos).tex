@@ -78,25 +78,25 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
   \widehat{\bbeta}
    = \argmin_{\bbeta} \sum_{i=1}^n
      \big(Y_i - \bbeta^\top \X_i\big)^2
-   = \argmin_{\bbeta} \norm{\bm{Y} - \bm{X}\bbeta}^2 ,
+   = \argmin_{\bbeta} \norm{\bm{Y} - \mathbb{X}\bbeta}^2 ,
 \end{equation}
-onde $\bm{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
+onde $\mathbb{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
 $\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
-Se $\bm{X}^\top\bm{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
+Se $\mathbb{X}^\top\mathbb{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
 \begin{equation}\label{eq:betahat}
-  \widehat{\bbeta} = (\bm{X}^\top\bm{X})^{-1}\bm{X}^\top \bm{Y}.
+  \widehat{\bbeta} = (\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top \bm{Y}.
 \end{equation}
 \end{proposicao}
 \begin{proof}
-Seja $S(\bbeta)=\norm{\bm{Y}-\bm{X}\bbeta}^2
-=\bm{Y}^\top\bm{Y}-2\bbeta^\top\bm{X}^\top\bm{Y}+\bbeta^\top\bm{X}^\top\bm{X}\bbeta$.
-O gradiente é $\nabla S(\bbeta)=-2\bm{X}^\top\bm{Y}+2\bm{X}^\top\bm{X}\bbeta$.
+Seja $S(\bbeta)=\norm{\bm{Y}-\mathbb{X}\bbeta}^2
+=\bm{Y}^\top\bm{Y}-2\bbeta^\top\mathbb{X}^\top\bm{Y}+\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta$.
+O gradiente é $\nabla S(\bbeta)=-2\mathbb{X}^\top\bm{Y}+2\mathbb{X}^\top\mathbb{X}\bbeta$.
 Igualando a zero obtêm-se as \emph{equações normais}
-$\bm{X}^\top\bm{X}\,\bbeta=\bm{X}^\top\bm{Y}$; como a Hessiana
-$2\bm{X}^\top\bm{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
-$\bm{X}^\top\bm{X}$ é invertível, vale \eqref{eq:betahat}.
+$\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm{Y}$; como a Hessiana
+$2\mathbb{X}^\top\mathbb{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
+$\mathbb{X}^\top\mathbb{X}$ é invertível, vale \eqref{eq:betahat}.
 \end{proof}
 
 \begin{observacao}
@@ -148,9 +148,9 @@ Quando $p$ é grande relativamente a $n$, o MQO sofre de três males:
 \begin{enumerate}[leftmargin=1.6cm]
   \item \textbf{Variância alta.} Quanto mais parâmetros, maior $\Var(\widehat{\bbeta})$
         --- o modelo superajusta (Aula~01). A matriz $\Var(\widehat{\bbeta})
-        =\sigma^2(\bm{X}^\top\bm{X})^{-1}$ ``explode'' quando as colunas de
-        $\bm{X}$ são quase colineares.
-  \item \textbf{Não unicidade.} Se $p>n$, então $\bm{X}^\top\bm{X}$ é singular e
+        =\sigma^2(\mathbb{X}^\top\mathbb{X})^{-1}$ ``explode'' quando as colunas de
+        $\mathbb{X}$ são quase colineares.
+  \item \textbf{Não unicidade.} Se $p>n$, então $\mathbb{X}^\top\mathbb{X}$ é singular e
         \eqref{eq:betahat} \emph{não tem solução única}: há infinitos $\bbeta$ com
         RSS nulo (superajuste perfeito).
   \item \textbf{Interpretabilidade.} Muitas covariáveis irrelevantes dificultam a
@@ -165,7 +165,7 @@ apenas 5 covariáveis de fato relevantes e o resto puro ruído
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/02-mqo-alta-dim.pdf}
   \caption{Com $n=60$ fixo e $p$ crescendo. À esquerda, o número de condição de
-  $\bm{X}^\top\bm{X}$ --- a razão entre seu maior e seu menor autovalor --- sai de
+  $\mathbb{X}^\top\mathbb{X}$ --- a razão entre seu maior e seu menor autovalor --- sai de
   $1{,}4$ e chega a $3\times10^4$: inverter essa matriz vira uma operação
   numericamente delicada. À direita, a consequência: o risco do MQO sai de $1{,}0$
   (o próprio $\sigma^2$, ou seja, praticamente perfeito) e passa de $10^4$. O modelo
@@ -176,7 +176,7 @@ apenas 5 covariáveis de fato relevantes e o resto puro ruído
 \begin{atencao}[o caso $p>n$ é qualitativamente diferente]
 Repare que os problemas 1 e 2 não são o mesmo. Se $p<n$ mas as colunas são quase
 colineares, a solução \emph{existe e é única}, só que instável. Se $p>n$, ela nem é
-única: o núcleo de $\bm{X}$ tem dimensão $\ge p-n$, e somar a $\widehat{\bbeta}$
+única: o núcleo de $\mathbb{X}$ tem dimensão $\ge p-n$, e somar a $\widehat{\bbeta}$
 qualquer vetor desse núcleo dá \emph{outra} solução com exatamente o mesmo RSS
 nulo. O erro de treino não distingue entre elas, e não há nada nos dados que
 justifique preferir uma. A regularização, entre outras coisas, serve para desempatar.
@@ -244,7 +244,7 @@ A ideia da regularização (ou \emph{penalização}, ou \emph{shrinkage}) é adi
 ao RSS um termo que penaliza coeficientes grandes, desencorajando o superajuste:
 \[
   \widehat{\bbeta}_{\text{pen}}
-  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
        + \lambda\, \mathrm{Pen}(\bbeta) \Big\}.
 \]
 O hiperparâmetro $\lambda\ge 0$ controla a intensidade: $\lambda=0$ recupera MQO;
@@ -292,39 +292,39 @@ resolúvel em milissegundos. Não é exagero dizer que o Lasso existe porque a $
 \subsection{Regressão Ridge ($\ell_2$)}
 \begin{equation}\label{eq:ridge}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\beta_j^2 \Big\}.
 \end{equation}
 A grande vantagem é a solução fechada:
 \begin{equation}\label{eq:ridgesol}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = (\bm{X}^\top\bm{X} + \lambda \bm{I}_0)^{-1}\bm{X}^\top\bm{Y},
+   = (\mathbb{X}^\top\mathbb{X} + \lambda \mathbb{I}_0)^{-1}\mathbb{X}^\top\bm{Y},
 \end{equation}
-onde $\bm{I}_0$ é a identidade $(p+1)\times(p+1)$ \emph{com o primeiro elemento
+onde $\mathbb{I}_0$ é a identidade $(p+1)\times(p+1)$ \emph{com o primeiro elemento
 trocado por zero} --- é assim que se deixa o intercepto $\beta_0$ fora da
 penalização. (Faz sentido: penalizar $\beta_0$ tornaria a solução dependente de onde
 você pôs a origem de $Y$.)
 
 \begin{proposicao}[Ridge sempre tem solução única]
-Para todo $\lambda>0$, a matriz $\bm{X}^\top\bm{X}+\lambda\bm{I}$ é definida
+Para todo $\lambda>0$, a matriz $\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I}$ é definida
 positiva (logo invertível), mesmo quando $p>n$.
 \end{proposicao}
 \begin{proof}
 Para qualquer $\bm{v}\neq 0$,
-$\bm{v}^\top(\bm{X}^\top\bm{X}+\lambda\bm{I})\bm{v}
-=\norm{\bm{X}\bm{v}}^2+\lambda\norm{\bm{v}}^2\ge \lambda\norm{\bm{v}}^2>0$.
+$\bm{v}^\top(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})\bm{v}
+=\norm{\mathbb{X}\bm{v}}^2+\lambda\norm{\bm{v}}^2\ge \lambda\norm{\bm{v}}^2>0$.
 \end{proof}
 Eis a primeira virtude do Ridge: \emph{estabiliza} o problema mal-condicionado das
 altas dimensões. Note que a demonstração é exatamente o antídoto para a
 Figura~\ref{fig:altadim}: somar $\lambda$ à diagonal levanta o menor autovalor de
-$\bm{X}^\top\bm{X}$ de perto de zero para pelo menos $\lambda$, e o número de
+$\mathbb{X}^\top\mathbb{X}$ de perto de zero para pelo menos $\lambda$, e o número de
 condição desaba. Os coeficientes são encolhidos suavemente em direção a zero, mas
 em geral \textbf{nenhum é exatamente zero}.
 
 \subsection{O Lasso ($\ell_1$)}
 \begin{equation}\label{eq:lasso}
   \widehat{\bbeta}^{\,\text{lasso}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\abs{\beta_j} \Big\}.
 \end{equation}
 Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
@@ -353,7 +353,7 @@ com milhares de covariáveis e $n$ modesto, situação em que o MQO nem está de
 Ambos têm a formulação equivalente \emph{com restrição}: para cada $\lambda$ existe
 um orçamento $t$ tal que resolver \eqref{eq:lasso} é o mesmo que resolver
 \[
-  \min_{\bbeta}\ \norm{\bm{Y}-\bm{X}\bbeta}^2
+  \min_{\bbeta}\ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
   \quad\text{sujeito a}\quad
   \underbrace{\textstyle\sum_j\abs{\beta_j}\le t}_{\text{Lasso}}
   \quad\text{ou}\quad
@@ -407,7 +407,7 @@ $\beta_j$ é exatamente zero.
       \fill[black] (1.573,0.808) circle (1.3pt);
       \node[font=\scriptsize,right=2pt] at (1.573,0.808) {$\widehat{\bbeta}^{\text{MQO}}$};
       \fill[vinho] (0.4846,0) circle (1.9pt);
-      \node[font=\scriptsize,vinho,below right=1pt and -3pt] at (0.4846,0) {$(0{,}48\,;\,\mathbf{0})$};
+      \node[font=\scriptsize,vinho,below right=1pt and -3pt] at (0.4846,0) {$(0{,}48\,;\,0)$};
       \node[font=\small\bfseries,vinho] at (0.75,-1.45) {Lasso ($\ell_1$)};
     \end{scope}
 
@@ -452,7 +452,7 @@ comportamento \emph{típico}, não um teorema.
 \end{atencao}
 
 \begin{exemplo}[Caso ortonormal: fórmulas explícitas]
-Quando $\bm{X}^\top\bm{X}=\bm{I}$, os estimadores têm forma fechada em função do
+Quando $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, os estimadores têm forma fechada em função do
 MQO $\widehat\beta_j$:
 \[
   \widehat\beta_j^{\,\text{ridge}} = \frac{\widehat\beta_j}{1+\lambda},
@@ -482,7 +482,7 @@ Ambas as penalizações são o \emph{logaritmo de uma priori} sobre $\bbeta$. Su
 $Y_i\mid\x_i,\bbeta\sim N(\bbeta^\top\x_i,\sigma^2)$ independentes, com $\sigma^2$
 conhecido. Então:
 \begin{itemize}[leftmargin=1.4cm]
-  \item se $\bbeta\sim N(0,\sigma_\beta^2\bm{I})$, a \textbf{moda a posteriori} de
+  \item se $\bbeta\sim N(0,\sigma_\beta^2\mathbb{I})$, a \textbf{moda a posteriori} de
         $\bbeta$ é exatamente a solução Ridge \eqref{eq:ridge} com
         $\lambda=\sigma^2/\sigma_\beta^2$;
   \item se $\beta_1,\dots,\beta_p\stackrel{\text{i.i.p.}}{\sim}
@@ -572,9 +572,9 @@ print("coeficientes nao-nulos:", (lasso.coef_ != 0).sum(), "de", X.shape[1])
 
 \begin{atencao}[um detalhe de escala que já custou caro a muita gente]
 As classes do \texttt{scikit-learn} \textbf{não} usam a mesma normalização.
-\texttt{Ridge} minimiza $\norm{y-\bm{X}\bbeta}^2+\alpha\norm{\bbeta}^2$, enquanto
+\texttt{Ridge} minimiza $\norm{y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}^2$, enquanto
 \texttt{Lasso} e \texttt{ElasticNet} minimizam
-$\tfrac{1}{2n}\norm{y-\bm{X}\bbeta}^2+\alpha\norm{\bbeta}_1$. Há um fator $n$ de
+$\tfrac{1}{2n}\norm{y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$. Há um fator $n$ de
 diferença: um $\alpha$ que é forte num é desprezível no outro. Ao comparar as duas
 famílias na mesma grade, converta.
 \end{atencao}
@@ -598,7 +598,7 @@ quando $p$ é grande \emph{em relação a} $n$.
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
   \item Regressão linear: $g(\x)=\bbeta^\top\x$, linear \emph{nos parâmetros};
-        MQO $\widehat{\bbeta}=(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top\bm{Y}$. Mesmo com
+        MQO $\widehat{\bbeta}=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm{Y}$. Mesmo com
         o modelo errado, o MQO acerta o melhor preditor linear
         (Teo.~\ref{teo:oraculo}).
   \item Em altas dimensões MQO tem variância alta (Fig.~\ref{fig:altadim}) e nem

@@ -51,25 +51,25 @@ Estimamos $\bbeta$ minimizando a soma dos quadrados dos resíduos (RSS):
   \widehat{\bbeta}
    = \argmin_{\bbeta} \sum_{i=1}^n
      \big(Y_i - \bbeta^\top \X_i\big)^2
-   = \argmin_{\bbeta} \norm{\bm{Y} - \bm{X}\bbeta}^2 ,
+   = \argmin_{\bbeta} \norm{\bm{Y} - \mathbb{X}\bbeta}^2 ,
 \end{equation}
-onde $\bm{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
+onde $\mathbb{X}\in\R^{n\times(p+1)}$ é a matriz de delineamento (linha $i$ igual a
 $\X_i^\top$, com a coluna de $1$s) e $\bm{Y}=(Y_1,\dots,Y_n)^\top$.
 
 \begin{proposicao}[Equações normais]\label{prop:normal}
-Se $\bm{X}^\top\bm{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
+Se $\mathbb{X}^\top\mathbb{X}$ é invertível, o minimizador de \eqref{eq:mqo} é
 \begin{equation}\label{eq:betahat}
-  \widehat{\bbeta} = (\bm{X}^\top\bm{X})^{-1}\bm{X}^\top \bm{Y}.
+  \widehat{\bbeta} = (\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top \bm{Y}.
 \end{equation}
 \end{proposicao}
 \begin{proof}
-Seja $S(\bbeta)=\norm{\bm{Y}-\bm{X}\bbeta}^2
-=\bm{Y}^\top\bm{Y}-2\bbeta^\top\bm{X}^\top\bm{Y}+\bbeta^\top\bm{X}^\top\bm{X}\bbeta$.
-O gradiente é $\nabla S(\bbeta)=-2\bm{X}^\top\bm{Y}+2\bm{X}^\top\bm{X}\bbeta$.
+Seja $S(\bbeta)=\norm{\bm{Y}-\mathbb{X}\bbeta}^2
+=\bm{Y}^\top\bm{Y}-2\bbeta^\top\mathbb{X}^\top\bm{Y}+\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta$.
+O gradiente é $\nabla S(\bbeta)=-2\mathbb{X}^\top\bm{Y}+2\mathbb{X}^\top\mathbb{X}\bbeta$.
 Igualando a zero obtêm-se as \emph{equações normais}
-$\bm{X}^\top\bm{X}\,\bbeta=\bm{X}^\top\bm{Y}$; como a Hessiana
-$2\bm{X}^\top\bm{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
-$\bm{X}^\top\bm{X}$ é invertível, vale \eqref{eq:betahat}.
+$\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm{Y}$; como a Hessiana
+$2\mathbb{X}^\top\mathbb{X}$ é semidefinida positiva, o ponto crítico é mínimo. Se
+$\mathbb{X}^\top\mathbb{X}$ é invertível, vale \eqref{eq:betahat}.
 \end{proof}
 
 \begin{observacao}
@@ -93,9 +93,9 @@ Quando $p$ é grande relativamente a $n$, o MQO sofre de três males:
 \begin{enumerate}[leftmargin=1.6cm]
   \item \textbf{Variância alta.} Quanto mais parâmetros, maior $\Var(\widehat{\bbeta})$
         --- o modelo superajusta (Aula~01). A matriz $\Var(\widehat{\bbeta})
-        =\sigma^2(\bm{X}^\top\bm{X})^{-1}$ ``explode'' quando as colunas de
-        $\bm{X}$ são quase colineares.
-  \item \textbf{Não unicidade.} Se $p>n$, então $\bm{X}^\top\bm{X}$ é singular e
+        =\sigma^2(\mathbb{X}^\top\mathbb{X})^{-1}$ ``explode'' quando as colunas de
+        $\mathbb{X}$ são quase colineares.
+  \item \textbf{Não unicidade.} Se $p>n$, então $\mathbb{X}^\top\mathbb{X}$ é singular e
         \eqref{eq:betahat} \emph{não tem solução única}: há infinitos $\bbeta$ com
         RSS nulo (superajuste perfeito).
   \item \textbf{Interpretabilidade.} Muitas covariáveis irrelevantes dificultam a
@@ -131,7 +131,7 @@ A ideia da regularização (ou \emph{penalização}, ou \emph{shrinkage}) é adi
 ao RSS um termo que penaliza coeficientes grandes, desencorajando o superajuste:
 \[
   \widehat{\bbeta}_{\text{pen}}
-  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+  = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
        + \lambda\, \mathrm{Pen}(\bbeta) \Big\}.
 \]
 O hiperparâmetro $\lambda\ge 0$ controla a intensidade: $\lambda=0$ recupera MQO;
@@ -147,24 +147,24 @@ Sob $p$ grande, o ganho na variância supera a perda no viés e o risco total ca
 \subsection{Regressão Ridge ($\ell_2$)}
 \begin{equation}\label{eq:ridge}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\beta_j^2 \Big\}.
 \end{equation}
 (O intercepto $\beta_0$ em geral não é penalizado.) A grande vantagem é a solução
 fechada:
 \begin{equation}\label{eq:ridgesol}
   \widehat{\bbeta}^{\,\text{ridge}}
-   = (\bm{X}^\top\bm{X} + \lambda \bm{I})^{-1}\bm{X}^\top\bm{Y}.
+   = (\mathbb{X}^\top\mathbb{X} + \lambda \mathbb{I})^{-1}\mathbb{X}^\top\bm{Y}.
 \end{equation}
 
 \begin{proposicao}[Ridge sempre tem solução única]
-Para todo $\lambda>0$, a matriz $\bm{X}^\top\bm{X}+\lambda\bm{I}$ é definida
+Para todo $\lambda>0$, a matriz $\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I}$ é definida
 positiva (logo invertível), mesmo quando $p>n$.
 \end{proposicao}
 \begin{proof}
 Para qualquer $\bm{v}\neq 0$,
-$\bm{v}^\top(\bm{X}^\top\bm{X}+\lambda\bm{I})\bm{v}
-=\norm{\bm{X}\bm{v}}^2+\lambda\norm{\bm{v}}^2\ge \lambda\norm{\bm{v}}^2>0$.
+$\bm{v}^\top(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})\bm{v}
+=\norm{\mathbb{X}\bm{v}}^2+\lambda\norm{\bm{v}}^2\ge \lambda\norm{\bm{v}}^2>0$.
 \end{proof}
 Eis a primeira virtude do Ridge: \emph{estabiliza} o problema mal-condicionado das
 altas dimensões. Os coeficientes são encolhidos suavemente em direção a zero, mas
@@ -173,7 +173,7 @@ em geral \textbf{nenhum é exatamente zero}.
 \subsection{O Lasso ($\ell_1$)}
 \begin{equation}\label{eq:lasso}
   \widehat{\bbeta}^{\,\text{lasso}}
-   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\bm{X}\bbeta}^2
+   = \argmin_{\bbeta}\Big\{ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
        + \lambda \sum_{j=1}^{p}\abs{\beta_j} \Big\}.
 \end{equation}
 Trocamos a norma $\ell_2$ pela $\ell_1$. Não há solução fechada (o termo
@@ -189,7 +189,7 @@ vários $\widehat\beta_j$ são \emph{exatamente} zero. Obtemos um modelo
 \subsubsection*{Por que o Lasso zera coeficientes e o Ridge não?}
 Ambos têm a formulação equivalente \emph{com restrição}:
 \[
-  \min_{\bbeta}\ \norm{\bm{Y}-\bm{X}\bbeta}^2
+  \min_{\bbeta}\ \norm{\bm{Y}-\mathbb{X}\bbeta}^2
   \quad\text{sujeito a}\quad
   \underbrace{\textstyle\sum_j\abs{\beta_j}\le t}_{\text{Lasso}}
   \quad\text{ou}\quad
@@ -202,7 +202,7 @@ $\widehat{\bbeta}^{\text{MQO}}$) restrita a uma região. A região do Ridge é u
 restrição exatamente numa quina, onde algum $\beta_j=0$. Daí a esparsidade.
 
 \begin{exemplo}[Caso ortonormal: fórmulas explícitas]
-Quando $\bm{X}^\top\bm{X}=\bm{I}$, os estimadores têm forma fechada em função do
+Quando $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, os estimadores têm forma fechada em função do
 MQO $\widehat\beta_j$:
 \[
   \widehat\beta_j^{\,\text{ridge}} = \frac{\widehat\beta_j}{1+\lambda},
@@ -269,7 +269,7 @@ O notebook \texttt{Aula prática 02} percorre tudo isso no
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
   \item Regressão linear: $g(\x)=\bbeta^\top\x$, linear \emph{nos parâmetros};
-        MQO $\widehat{\bbeta}=(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top\bm{Y}$.
+        MQO $\widehat{\bbeta}=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm{Y}$.
   \item Em altas dimensões MQO tem variância alta e nem existe se $p>n$.
   \item \textbf{Ridge} ($\ell_2$): solução fechada, sempre única, encolhe sem
         zerar.
