@@ -87,6 +87,14 @@ Duas colisões que a convenção cria, ambas correntes na literatura e toleradas
 `p` também aparece como *p*-valor e como densidade `p(\bbeta)`; e `\mathbb` serve
 tanto para matriz (`\mathbb{X}`) quanto para conjunto ou operador (`\R`, `\E`).
 
+**No código dos notebooks, a dimensão continua sendo `d`.** Ali o nome `p` já é
+probabilidade — o que `predict_proba` devolve, o argumento `p=` do `rng.choice`, o
+`gini(p)` da aula 11 —, em 14 dos 26 notebooks que têm uma variável de dimensão.
+Renomear exigiria mexer em 116 usos de `p` para abrir espaço, e trocaria uma
+colisão por outra. Decisão do Gabriel em 12/08/2026: o markdown diz `p`, a célula
+diz `d`. A exceção é a `Aula prática 02`, onde não há probabilidade nenhuma e o
+código já usa `p`, igual ao texto.
+
 **O limiar do lasso no caso ortonormal é $\lambda/2$**, não $\lambda$. Sai de
 derivar $\|y-\mathbb{X}\beta\|^2 + \lambda\sum_j|\beta_j|$, sem $\frac12$ no RSS —
 a mesma convenção que dá $\hat\beta/(1+\lambda)$ para o Ridge. Notas, slide, lista
