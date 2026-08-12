@@ -58,7 +58,7 @@ $(\bar x,\bar y)$.
 \begin{exercicio}[o que $\lambda$ faz, e por que padronizar]
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Para a Ridge, use a solução fechada
-        $\widehat{\bbeta}^{\,\text{ridge}}=(\bm X^\top\bm X+\lambda\bm I)^{-1}\bm X^\top\bm Y$
+        $\widehat{\bbeta}^{\,\text{ridge}}=(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\mathbb{X}^\top\bm y$
         para descrever o que acontece com as estimativas quando $\lambda\to 0$ e
         quando $\lambda\to\infty$. Em qual dos dois extremos o viés é maior? E a
         variância?
@@ -73,10 +73,10 @@ $(\bar x,\bar y)$.
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Quando $\lambda\to 0$, $(\bm X^\top\bm X+\lambda\bm I)^{-1}\to
-(\bm X^\top\bm X)^{-1}$ (se esta existir) e a Ridge tende ao MQO: viés zero sob o
+\textbf{(a)} Quando $\lambda\to 0$, $(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\to
+(\mathbb{X}^\top\mathbb{X})^{-1}$ (se esta existir) e a Ridge tende ao MQO: viés zero sob o
 modelo linear correto, e variância máxima. Quando $\lambda\to\infty$, a matriz
-$\lambda\bm I$ domina, o inverso vai a zero e
+$\lambda\mathbb{I}$ domina, o inverso vai a zero e
 $\widehat{\bbeta}^{\,\text{ridge}}\to\bm 0$: o modelo vira o preditor constante
 $\widehat\beta_0$. Aí o \textbf{viés é máximo} e a \textbf{variância é zero}. É o
 balanço viés--variância da Aula~01 parametrizado por $\lambda$, e é por isso que
@@ -111,7 +111,7 @@ assunto da Aula~07 e o motivo de existir o \texttt{Pipeline}.
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[Ridge e Lasso com números]
-No caso ortonormal ($\bm X^\top\bm X=\bm I$) as duas soluções têm forma fechada em
+No caso ortonormal ($\mathbb{X}^\top\mathbb{X}=\mathbb{I}$) as duas soluções têm forma fechada em
 função do MQO:
 \[
   \widehat\beta_j^{\,\text{ridge}} = \frac{\widehat\beta_j}{1+\lambda},
@@ -177,14 +177,14 @@ isto é, $\lambda\ge 4$.
 \begin{exercicio}[a solução fechada da Ridge]
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Minimizando
-        $S_\lambda(\bbeta)=\norm{\bm Y-\bm X\bbeta}^2+\lambda\norm{\bbeta}^2$,
+        $S_\lambda(\bbeta)=\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\norm{\bbeta}^2$,
         obtenha
-        $\widehat{\bbeta}^{\,\text{ridge}}=(\bm X^\top\bm X+\lambda\bm I)^{-1}\bm X^\top\bm Y$.
-        \emph{Sugestão:} o gradiente de $\norm{\bm Y-\bm X\bbeta}^2$ está na
+        $\widehat{\bbeta}^{\,\text{ridge}}=(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\mathbb{X}^\top\bm y$.
+        \emph{Sugestão:} o gradiente de $\norm{\bm y-\mathbb{X}\bbeta}^2$ está na
         demonstração das equações normais, na nota de aula.
   \item Mostre que, para todo $\lambda>0$, a matriz
-        $\bm X^\top\bm X+\lambda\bm I$ é invertível --- \textbf{mesmo quando
-        $d>n$}, caso em que o MQO nem está definido.
+        $\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I}$ é invertível --- \textbf{mesmo quando
+        $p>n$}, caso em que o MQO nem está definido.
   \item Explique, em duas ou três linhas, por que o item (b) é uma das razões de o
         Ridge ser útil em alta dimensão.
 \end{enumerate}
@@ -193,36 +193,36 @@ isto é, $\lambda\ge 4$.
 \begin{solucao}
 \textbf{(a)} Expandindo,
 \[
-  S_\lambda(\bbeta)=\bm Y^\top\bm Y-2\bbeta^\top\bm X^\top\bm Y
-                   +\bbeta^\top\bm X^\top\bm X\bbeta+\lambda\bbeta^\top\bbeta,
+  S_\lambda(\bbeta)=\bm y^\top\bm y-2\bbeta^\top\mathbb{X}^\top\bm y
+                   +\bbeta^\top\mathbb{X}^\top\mathbb{X}\bbeta+\lambda\bbeta^\top\bbeta,
 \]
 cujo gradiente é
-$\nabla S_\lambda(\bbeta)=-2\bm X^\top\bm Y+2\bm X^\top\bm X\bbeta+2\lambda\bbeta$.
+$\nabla S_\lambda(\bbeta)=-2\mathbb{X}^\top\bm y+2\mathbb{X}^\top\mathbb{X}\bbeta+2\lambda\bbeta$.
 Igualando a zero:
 \[
-  (\bm X^\top\bm X+\lambda\bm I)\,\bbeta=\bm X^\top\bm Y .
+  (\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})\,\bbeta=\mathbb{X}^\top\bm y .
 \]
 Pelo item (b) a matriz é invertível, então a solução é única e vale
-$(\bm X^\top\bm X+\lambda\bm I)^{-1}\bm X^\top\bm Y$. A Hessiana
-$2(\bm X^\top\bm X+\lambda\bm I)$ é definida positiva, logo é mínimo.
+$(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\mathbb{X}^\top\bm y$. A Hessiana
+$2(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})$ é definida positiva, logo é mínimo.
 
 \smallskip
 \textbf{(b)} Basta mostrar que a forma quadrática é positiva. Para
 $\bm v\neq\bm 0$,
 \[
-  \bm v^\top(\bm X^\top\bm X+\lambda\bm I)\bm v
-  = \norm{\bm X\bm v}^2+\lambda\norm{\bm v}^2
+  \bm v^\top(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})\bm v
+  = \norm{\mathbb{X}\bm v}^2+\lambda\norm{\bm v}^2
   \;\ge\; \lambda\norm{\bm v}^2 \;>\; 0 ,
 \]
 pois $\lambda>0$ e $\norm{\bm v}>0$. Uma matriz simétrica definida positiva é
-invertível. Note onde a hipótese $d>n$ \emph{não} foi usada: a conta não depende
-de $\bm X$ ter posto cheio. Se $d>n$, existe $\bm v\neq\bm 0$ com
-$\bm X\bm v=\bm 0$ --- e é justamente aí que a primeira parcela morre e a segunda
+invertível. Note onde a hipótese $p>n$ \emph{não} foi usada: a conta não depende
+de $\mathbb{X}$ ter posto cheio. Se $p>n$, existe $\bm v\neq\bm 0$ com
+$\mathbb{X}\bm v=\bm 0$ --- e é justamente aí que a primeira parcela morre e a segunda
 salva a conta.
 
 \smallskip
-\textbf{(c)} Quando $d>n$ o MQO não tem solução única: a matriz
-$\bm X^\top\bm X$ é singular e existem infinitos $\bbeta$ com o mesmo erro de
+\textbf{(c)} Quando $p>n$ o MQO não tem solução única: a matriz
+$\mathbb{X}^\top\mathbb{X}$ é singular e existem infinitos $\bbeta$ com o mesmo erro de
 treino. Somar $\lambda$ à diagonal levanta o menor autovalor de perto de zero (ou
 de exatamente zero) para pelo menos $\lambda$, o que torna o problema bem-posto e
 derruba o número de condição. Em outras palavras, a penalização não é só um freio
