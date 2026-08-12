@@ -58,6 +58,18 @@ ipykernel>=6.0
 #                                           omite o parâmetro e fica com o
 #                                           padrão de 100 — que vale em todas as
 #                                           versões, das antigas às novas.
+#                                           Atenção: Lasso.path é outra função e
+#                                           ainda aceita n_alphas.
+#
+#   QuadraticDiscriminant       aula 08  -> passou a levantar LinAlgError em vez
+#   Analysis()                              de avisar quando a covariância de uma
+#                                           classe fica mal condicionada. As 30
+#                                           medidas do breast_cancer são
+#                                           colineares o bastante para isso. O
+#                                           notebook agora usa reg_param=1e-4, um
+#                                           ridge minúsculo na covariância — o
+#                                           que MUDA o resultado, e o texto foi
+#                                           reescrito sobre o novo número.
 #
 # Em 10/08/2026 os argumentos de todas as chamadas do scikit-learn em todos os
 # notebooks foram conferidos contra as assinaturas da 1.9.0, e não há outro

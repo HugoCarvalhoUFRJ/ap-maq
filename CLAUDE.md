@@ -205,18 +205,19 @@ respeitar em qualquer notebook novo:
   meta-comentário do tipo "seguimos a conduta do [ISLP]" foi explicitamente
   removido pelo Gabriel da versão que ele leu.
 
-**Os blocos `> **Sua vez.**` estão sendo aposentados.** Eles eram um enunciado
-seguido de célula de código vazia, e faziam sentido quando a aula prática era o
-único material de exercício. Com uma lista prática por aula, o laboratório guiado
-passa a **mostrar** em vez de deixar em aberto: cada `Sua vez` vira markdown +
-código + leitura do resultado. Já foram convertidas a **aula prática 01**
-(06/08/2026, quatro blocos) e a **02** (10/08/2026, três); as outras 12 ainda têm
-**33 blocos** e serão convertidas quando o Gabriel pedir. Não escreva `Sua vez` em
-notebook novo.
+**Os blocos `> **Sua vez.**` acabaram nas 14 aulas práticas** (12/08/2026). Eles
+eram um enunciado seguido de célula de código vazia, e faziam sentido quando a aula
+prática era o único material de exercício. Com uma lista prática por aula, o
+laboratório guiado **mostra** em vez de deixar em aberto: cada bloco virou markdown
++ código + leitura do resultado. Não escreva `Sua vez` em notebook novo.
 
-Ao converter, **meça antes de escrever**: em três dos sete blocos já convertidos o
-resultado contrariou a pergunta do enunciado, e um deles precisou de repetições e
-erro-padrão para não afirmar bobagem.
+Foram 40 blocos ao todo, e **meça antes de escrever** não é conselho de estilo: em
+mais de um terço deles o resultado contrariou o que o enunciado sugeria. A árvore
+gananciosa precisa de profundidade 6, não 3, para o `sinal(x1x2x3)`; o desvio-padrão
+da CV continua caindo com $k$ mesmo em $n=200$; ficar com as 5 colunas mais
+correlacionadas piora o KNN *e* a Ridge; o t-SNE com `init="pca"` é reprodutível; e
+acrescentar comprimento e dígitos ao filtro de spam melhora a AUC e **piora** a AP.
+Um bloco precisou de repetições e erro-padrão para não afirmar bobagem.
 
 As **listas práticas e seus gabaritos** têm outros **46 blocos** `Sua vez`, em 28
 notebooks. Ali eles talvez façam sentido, já que a lista é o material de exercício
@@ -249,10 +250,20 @@ Isso já pegou uma quebra real: `LassoCV` e `ElasticNetCV` perderam o parâmetro
 `n_alphas` no scikit-learn 1.7, e a aula prática 02 parava no meio. Omitir o
 parâmetro usa o padrão de 100 alphas e funciona em qualquer versão. Cuidado para
 não "corrigir" demais: o `Lasso.path` é outra função, ainda aceita `n_alphas`, e a
-aula 02 o usa na §5. Uma varredura dos argumentos de **todas** as chamadas do
-scikit-learn em **todos** os notebooks contra as assinaturas da 1.9 não achou outro
-caso (10/08/2026) — mas ela cobre nome de parâmetro, não mudança de comportamento
-padrão, que altera número sem levantar erro. O `requirements.txt` registra isso.
+aula 02 o usa na §5.
+
+E pegou uma segunda, em 12/08/2026: o **`QuadraticDiscriminantAnalysis` levanta
+`LinAlgError`** em vez de avisar quando a covariância de uma classe fica mal
+condicionada, e a `Aula prática 08` morria da §8 em diante — as 30 medidas do
+`breast_cancer` são colineares o bastante. A correção é `QDA(reg_param=1e-4)`, um
+ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empatado
+na frente para terceiro lugar, atrás do LDA. O texto foi reescrito sobre o medido.
+
+Uma varredura dos argumentos de **todas** as chamadas do scikit-learn em **todos**
+os notebooks contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas
+ela cobre nome de parâmetro, não exceção nova nem mudança de comportamento padrão,
+que é justamente a classe destas duas. Rodar é a única varredura que pega.
+O `requirements.txt` registra as duas.
 
 **Armadilha ao abrir um notebook no Jupyter:** salvar grava as saídas e os
 `execution_count`, e ainda **reordena as chaves de cada célula** para a ordem

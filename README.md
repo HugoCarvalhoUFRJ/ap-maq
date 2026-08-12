@@ -56,8 +56,8 @@ orientada a objeto do `matplotlib` — mas sem depender do pacote `ISLP`: bastam
 
 O laboratório guiado **mostra**, não deixa exercício em aberto: quem propõe
 exercício é a lista prática da mesma aula. Onde havia uma pausa `Sua vez` seguida
-de célula vazia, hoje há enunciado, código e leitura do resultado. As aulas 01 e
-02 já estão assim; as outras doze ainda têm as pausas antigas.
+de célula vazia, hoje há enunciado, código e leitura do resultado — nas catorze
+aulas. Todo número que o texto afirma foi medido executando a célula.
 
 Cada notebook **reproduz as simulações das figuras das notas**, com os mesmos
 parâmetros, de modo que o número que aparece na figura é o número que a célula
