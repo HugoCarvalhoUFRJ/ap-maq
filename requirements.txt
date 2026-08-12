@@ -94,17 +94,18 @@ ipykernel>=6.0
 #
 # Três arquivos .csv ficam em recursos/dados/:
 #
-#   superconductivity.csv    aulas 01 a 06 e E2  (23 MB, 11 notebooks)
-#   bank_train_redux.csv     aulas 07, 09 e 11   (96 MB, 5 notebooks)
-#   spam.csv                 aula E3             (0,5 MB, 3 notebooks)
+#   superconductivity.csv    aulas 01 a 06  (23 MB, 10 notebooks)
+#   bank_train_redux.csv     aulas 07 e 09  (96 MB, 4 notebooks)
+#   spam.csv                 aula E3        (0,5 MB, 3 notebooks)
 #
-# As aulas práticas 01 e 02 NÃO baixam nada da rede. Elas procuram o .csv em
-# dois lugares, nesta ordem — a pasta do próprio notebook e depois
-# ../../recursos/dados/ — e falham com mensagem clara se não acharem. Assim
-# funcionam no repositório clonado e também para o aluno que recebe só o .ipynb
-# e o .csv lado a lado. No Colab é preciso subir o .csv.
+# As aulas práticas 01 e 02 e a lista prática 02 (enunciado e gabarito) NÃO
+# baixam nada da rede. Elas procuram o .csv em dois lugares, nesta ordem — a
+# pasta do próprio notebook e depois ../../recursos/dados/ — e falham com
+# mensagem clara se não acharem. Assim funcionam no repositório clonado e também
+# para o aluno que recebe só o .ipynb e o .csv lado a lado. No Colab é preciso
+# subir o .csv.
 #
-# Os outros 15 notebooks ainda usam o padrão antigo: caminho local, com
+# Os outros 13 notebooks ainda usam o padrão antigo: caminho local, com
 # fallback para uma URL do GitHub quando o arquivo não está lá. Só esses ainda
 # dependem de internet fora do repositório, e são os únicos que rodam no Colab
 # sem ajuste nenhum. A conversão deles está pendente.

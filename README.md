@@ -87,12 +87,12 @@ Os `.csv` ficam em [`recursos/dados/`](recursos/dados), em uma cópia única par
 curso todo. Duas maneiras de lê-los convivem, e a migração de uma para a outra
 está em andamento:
 
-- as **aulas práticas 01 e 02** não baixam nada da rede. Procuram o arquivo na
-  pasta do próprio notebook e, em seguida, em `../../recursos/dados/`, falhando
-  com mensagem clara se não acharem em nenhum dos dois. Funcionam com o
-  repositório clonado e também para quem recebe só o `.ipynb` e o `.csv` lado a
-  lado; no Colab, é preciso subir o `.csv`;
-- os **outros 15 notebooks** ainda usam o padrão antigo, de caminho local com
+- as **aulas práticas 01 e 02** e a **lista prática 02** (enunciado e gabarito)
+  não baixam nada da rede. Procuram o arquivo na pasta do próprio notebook e, em
+  seguida, em `../../recursos/dados/`, falhando com mensagem clara se não acharem
+  em nenhum dos dois. Funcionam com o repositório clonado e também para quem
+  recebe só o `.ipynb` e o `.csv` lado a lado; no Colab, é preciso subir o `.csv`;
+- os **outros 13 notebooks** ainda usam o padrão antigo, de caminho local com
   *fallback* para uma URL do GitHub. São os que rodam no Colab sem ajuste
   nenhum, desde que haja internet.
 

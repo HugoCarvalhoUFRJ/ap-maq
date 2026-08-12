@@ -301,8 +301,12 @@ Quatro armadilhas, todas já pagas uma vez:
    para o aluno não copiar o número do laboratório. Consequência: todo número do
    gabarito precisa ser **medido**, não previsto.
 4. **Enunciado e gabarito são gerados da mesma fonte** (um script com as lacunas
-   marcadas). Editar um dos dois `.ipynb` à mão faz os dois divergirem, e o
-   script de conferência acusa.
+   marcadas), **e esse script não está no repositório** — o único `.py` que já
+   existiu aqui, em qualquer commit de qualquer branch, é o `gerar-figuras.py`.
+   Ele está na máquina de quem produziu o material, como os `.qmd` dos slides.
+   Consequência: ao mexer nos dois `.ipynb` à mão, edite-os no mesmo passo e
+   confira que só divergem nas lacunas — foi assim que a lista prática 02 migrou
+   para o padrão de dois lugares em 12/08/2026.
 
 Como compilar, de dentro da pasta da aula:
 
@@ -345,14 +349,14 @@ A ordem importa: a pasta do notebook vem **primeiro**, então um `.csv` posto ao
 lado vence o do repositório. **Nada de URL para o GitHub** — falhar com mensagem
 clara é preferível a baixar pelas costas do aluno.
 
-Por que não só a pasta da aula: `superconductivity.csv` tem 23 MB e é lido por 11
-notebooks; uma cópia por pasta custaria ~260 MB. Por que não só `recursos/dados/`:
+Por que não só a pasta da aula: `superconductivity.csv` tem 23 MB e é lido por 10
+notebooks; uma cópia por pasta custaria ~230 MB. Por que não só `recursos/dados/`:
 sem o repositório esse caminho nunca resolve, e o aluno teria de editar a primeira
 célula em toda aula. As duas tentativas anteriores foram essas, nessa ordem.
 
-**A migração está pela metade.** As aulas práticas **01 e 02** já usam o padrão
-acima. Os outros **15 notebooks** ainda usam o antigo, de caminho local com
-fallback para a web:
+**A migração está pela metade.** Já usam o padrão acima as **aulas práticas 01 e
+02** e a **lista prática 02** (enunciado e gabarito). Os outros **13 notebooks**
+ainda usam o antigo, de caminho local com fallback para a web:
 
 ```python
 _local = os.path.join("..", "..", "recursos", "dados", _nome)
@@ -363,17 +367,19 @@ _fonte = _local if os.path.exists(_local) else _url
 Enquanto eles existirem, **a branch na URL importa**: o fallback tem de apontar para
 `refactoring-baby`, porque na `main` os `.csv` seguem em `materiais-didaticos/` e
 não há merge planejado — apontar para `main` dá 404 permanente. Renomear a branch
-quebra o fallback dos 15.
+quebra o fallback dos 13.
 
 Converter os que faltam é mecânico: é a mesma célula, trocando o nome do arquivo.
 
-Quem lê o quê, medido em 10/08/2026:
+Quem **carrega** o quê, medido em 12/08/2026 (a contagem anterior era por menção
+ao nome do arquivo, e somava dois notebooks que só o citam no texto — a `E2` e a
+`Aula prática 11`):
 
 | arquivo | tamanho | notebooks |
 | --- | --- | --- |
-| `superconductivity.csv` | 23 MB | 11 — aulas 01 a 06 e E2 |
-| `bank_train_redux.csv` | 96 MB | 5 — aulas 07, 09 e 11 |
-| `spam.csv` | 0,5 MB | 3 — aula E3 |
+| `superconductivity.csv` | 23 MB | 10 — aulas 01 a 06, incluindo as listas 02 e 06 |
+| `bank_train_redux.csv` | 96 MB | 4 — aulas 07 e 09, incluindo a lista 09 |
+| `spam.csv` | 0,5 MB | 3 — aula E3, incluindo a lista |
 
 `bank_train_redux.csv` é um excerto reduzido da base do Kaggle, por limite de
 espaço do GitHub — atenção ao teto de 100 MiB por arquivo se alguma conversão for
