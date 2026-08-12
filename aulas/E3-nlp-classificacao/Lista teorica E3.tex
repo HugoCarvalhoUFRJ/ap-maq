@@ -275,7 +275,7 @@ Duas razões que se somam:
 
 \begin{itemize}[leftmargin=1.4cm]
   \item é a \textbf{maldição da dimensionalidade} da Aula~05 na sua forma mais
-        extrema: com $d\approx 8\,700$, a taxa $n^{-2/(2+d)}$ é indistinguível de
+        extrema: com $p\approx 8\,700$, a taxa $n^{-2/(2+p)}$ é indistinguível de
         $n^{0}$, e todos os pontos ficam praticamente equidistantes;
   \item pior, com esparsidade alta, duas mensagens quaisquer quase não
         compartilham palavras, então a distância entre elas é essencialmente
@@ -362,7 +362,7 @@ fora dele --- exatamente o mecanismo do Exercício~3(c). Mas:
         coeficientes das colunas que sobram;
   \item modelos lineares em alta dimensão esparsa toleram bem colunas extras
         inúteis, desde que regularizados --- é a observação de Greenshtein e
-        Ritov citada na Aula~02, em que $d$ aparece só dentro de um logaritmo.
+        Ritov citada na Aula~02, em que $p$ aparece só dentro de um logaritmo.
 \end{itemize}
 Na prática, \texttt{ngram\_range} e \texttt{min\_df} são escolhidos \emph{juntos},
 por validação cruzada, dentro do mesmo \texttt{Pipeline} --- e é comum que a

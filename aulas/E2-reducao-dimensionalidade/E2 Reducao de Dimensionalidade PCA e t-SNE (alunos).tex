@@ -31,10 +31,10 @@ Ao final desta aula você deve ser capaz de:
 \noindent
 Esta aula ataca de frente a maldição da dimensionalidade da Aula~05, mas pelo lado
 da \emph{redundância}: se as covariáveis são correlacionadas, os dados ocupam
-apenas uma fatia fina do espaço $\R^d$, e talvez baste descrevê-la. A pergunta:
+apenas uma fatia fina do espaço $\R^p$, e talvez baste descrevê-la. A pergunta:
 
 \begin{center}\itshape
-  como resumir $d$ covariáveis em bem menos, sem perder o essencial?
+  como resumir $p$ covariáveis em bem menos, sem perder o essencial?
 \end{center}
 
 %==============================================================================
@@ -52,7 +52,7 @@ apenas uma fatia fina do espaço $\R^d$, e talvez baste descrevê-la. A pergunta
 \begin{ideia}
 O último item é o mais importante conceitualmente, e liga esta aula ao Bloco~I. Na
 Aula~05 vimos que o KNN e a regressão local \emph{se adaptam sozinhos} à dimensão
-intrínseca $u$, mas que métodos que somam todas as coordenadas sofrem com $d$
+intrínseca $u$, mas que métodos que somam todas as coordenadas sofrem com $p$
 grande. O PCA faz esse trabalho \emph{explicitamente}: ele encontra a subvariedade
 --- desde que ela seja aproximadamente um subespaço linear.
 \end{ideia}
@@ -63,7 +63,7 @@ grande. O PCA faz esse trabalho \emph{explicitamente}: ele encontra a subvarieda
 Suponha as covariáveis \emph{centradas} (média zero). O \textbf{primeiro componente
 principal} é a combinação linear
 \[
-  Z_1 = \phi_{11}X_1+\dots+\phi_{d1}X_d = \bm{\phi}_1^\top\X
+  Z_1 = \phi_{11}X_1+\dots+\phi_{p1}X_p = \bm{\phi}_1^\top\X
 \]
 de \textbf{variância máxima}, sob a restrição $\norm{\bm{\phi}_1}^2=\sum_k\phi_{k1}^2=1$
 (sem ela, bastaria inflar os coeficientes). O $i$-ésimo componente $Z_i$ tem variância
@@ -116,15 +116,15 @@ decrescente de autovalor.
 \begin{ideia}
 Vale apreciar quanto essa proposição entrega. O problema original --- ``ache a
 melhor direção, depois a melhor entre as ortogonais a ela, e assim por diante''
---- parece uma sequência de $d$ otimizações encadeadas. A proposição diz que
+--- parece uma sequência de $p$ otimizações encadeadas. A proposição diz que
 \textbf{uma única} decomposição espectral de $\bm{C}$ resolve todas de uma vez, e
-ainda ordena o resultado. É por isso que o PCA é barato mesmo com $d$ grande.
+ainda ordena o resultado. É por isso que o PCA é barato mesmo com $p$ grande.
 \end{ideia}
 
 Empilhando os autovetores (ordenados por autovalor decrescente) nas colunas de
 $\bm{U}$ (a \textbf{matriz de cargas}), os \emph{scores} são
 \[
-  \bm{Z} = \bm{X}\bm{U}\quad (n\times d),
+  \bm{Z} = \bm{X}\bm{U}\quad (n\times p),
 \]
 e a $i$-ésima nova coordenada da observação $\x$ é $z_{i}=\bm{u}_i^\top\x$. Como os
 autovetores são ortogonais, os componentes são \emph{não correlacionados} --- sem
@@ -134,7 +134,7 @@ informação redundante.
 Cada autovalor $\lambda_i$ é a variância capturada pelo $i$-ésimo componente. A
 \textbf{proporção de variância explicada} pelos $p$ primeiros é
 \begin{equation}\label{eq:pve}
-  \text{PVE}(p) = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^d \lambda_i}.
+  \text{PVE}(p) = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^p \lambda_i}.
 \end{equation}
 Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
 ``cotovelo'') ou exigindo PVE acima de um limiar (ex.: 90\%).
@@ -154,7 +154,7 @@ Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
 \section{Interpretação geométrica e compressão}
 %==============================================================================
 \subsection{PCA como escalonamento multidimensional}
-O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $m<d$ dimensões que
+O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $m<p$ dimensões que
 melhor \emph{preserva as distâncias} entre pares,
 \[
   \min_{\bm{Z}}\ \sum_{i,j}\big(\norm{\x_i-\x_j}^2 - \norm{\bm{z}_i-\bm{z}_j}^2\big).
@@ -222,7 +222,7 @@ O principal hiperparâmetro é a \textbf{perplexidade} (ordem de grandeza do nú
 vizinhos considerados).
 
 \begin{ideia}[por que a distribuição $t$]
-O detalhe do nome tem uma razão precisa. Ao espremer dados de $\R^d$ em $\R^2$, não
+O detalhe do nome tem uma razão precisa. Ao espremer dados de $\R^p$ em $\R^2$, não
 há espaço para manter todo mundo afastado --- pontos moderadamente distantes seriam
 esmagados uns sobre os outros. A distribuição $t$, com caudas pesadas, atribui
 probabilidade razoável a distâncias grandes no espaço reduzido, o que permite ao
@@ -283,7 +283,7 @@ O PCA \textbf{não olha o $Y$}. Sem a resposta, não há como escolher direçõe
 finjam explicar ruído.
 
 E a medição confirma: o notebook desta aula repete o experimento cruel da Aula~07 --
-$y$ de ruído puro -- em quatro configurações de $(n,d,k)$, e em \emph{nenhuma} delas
+$y$ de ruído puro -- em quatro configurações de $(n,p,k)$, e em \emph{nenhuma} delas
 calcular o PCA fora da dobra inflou o $R^2$. Ele o \emph{piorou}, porque componentes
 calculados sobre o conjunto todo não são os componentes ótimos de nenhuma dobra de
 treino. Na hierarquia da Aula~07, portanto, o PCA fica na categoria \textbf{leve},

@@ -170,7 +170,7 @@ Toda a Aula~06 se transfere; as árvores individuais agora classificam:
         \textbf{voto da maioria} (ou média das probabilidades --- em geral melhor,
         porque preserva alguma informação sobre a confiança). Florestas
         descorrelacionam sorteando $m$ variáveis por nó; regra empírica em
-        classificação: $m\approx\sqrt{d}$, mais agressiva que o $d/3$ da regressão.
+        classificação: $m\approx\sqrt{p}$, mais agressiva que o $p/3$ da regressão.
         Robustas a $B$; OOB e importância de variáveis ``de graça''.
   \item[Boosting] ajuste sequencial. A variante clássica para classificação é o
         \textbf{AdaBoost}: a cada rodada, reponderam-se as observações dando mais
@@ -271,7 +271,7 @@ vale rodar os dois.
   \item A \emph{taxa de erro} não serve para dividir porque é linear por partes e
         registra redução zero em divisões que aumentam a pureza
         (Fig.~\ref{fig:impureza}); serve para podar.
-  \item \emph{Ensembles} transferem-se inteiros: florestas com $m\approx\sqrt d$,
+  \item \emph{Ensembles} transferem-se inteiros: florestas com $m\approx\sqrt p$,
         AdaBoost como \emph{boosting} com perda exponencial.
   \item Não há método universalmente melhor: escolha pela estrutura dos dados e
         pelo objetivo, e compare por validação cruzada com a métrica certa

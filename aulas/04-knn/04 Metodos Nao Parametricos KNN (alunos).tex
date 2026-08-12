@@ -45,14 +45,14 @@ pergunta desta aula é a consequência natural:
 
 \noindent
 A resposta é deixar os \emph{dados} ditarem a forma. O preço, você já sabe qual é
---- e a Aula~05 vai mostrar que ele é bem mais alto do que parece quando $d$ cresce.
+--- e a Aula~05 vai mostrar que ele é bem mais alto do que parece quando $p$ cresce.
 
 %==============================================================================
 \section{O que é um método não paramétrico?}
 %==============================================================================
 Um método \textbf{paramétrico} supõe que $r(\x)=\E[Y\mid\X=\x]$ pertence a uma
 família indexada por um número \emph{fixo e finito} de parâmetros (ex.: regressão
-linear, $d+1$ coeficientes). Um método \textbf{não paramétrico} não impõe uma
+linear, $p+1$ coeficientes). Um método \textbf{não paramétrico} não impõe uma
 forma funcional fixa: a complexidade efetiva do modelo \emph{cresce com $n$}. A
 suposição é mais fraca --- tipicamente apenas que $r$ é \emph{suave}.
 
@@ -136,7 +136,7 @@ a \emph{média das respostas dos $k$ pontos de treino mais próximos de $\x$}.
 
 \begin{definicao}[Regressão KNN]
 Seja $\mathcal{N}_{\x}$ o conjunto dos índices das $k$ observações de treino mais
-próximas de $\x$ (segundo uma distância $d$, em geral euclidiana):
+próximas de $\x$ (segundo uma distância $p$, em geral euclidiana):
 $\mathcal{N}_{\x}=\{i : d(\X_i,\x)\le d^{k}_{\x}\}$, onde $d^k_{\x}$ é a distância
 do $k$-ésimo vizinho. Então
 \begin{equation}\label{eq:knn}
@@ -177,7 +177,7 @@ KNN exige uma noção de distância e, portanto, \textbf{depende fortemente da e
 das covariáveis. Se uma variável está em reais e outra em milhares de reais, a
 segunda domina completamente a distância euclidiana e a primeira poderia nem existir.
 \emph{Padronize} antes (Aula~07). Além disso, o KNN sofre da \emph{maldição da
-dimensionalidade}: em $d$ alto, ``vizinhos'' deixam de ser próximos --- é o tema
+dimensionalidade}: em $p$ alto, ``vizinhos'' deixam de ser próximos --- é o tema
 inteiro da Aula~05.
 \end{atencao}
 

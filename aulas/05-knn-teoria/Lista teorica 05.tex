@@ -14,16 +14,16 @@
 \begin{exercicio}[o preço de cada dimensão]
 O Teorema da Aula~05 diz que o KNN com $k$ bem escolhido atinge risco
 \[
-  \E\big[(\rhat_k(\X)-r(\X))^2\big] \;\le\; K'\,n^{-2/(2+d)} .
+  \E\big[(\rhat_k(\X)-r(\X))^2\big] \;\le\; K'\,n^{-2/(2+p)} .
 \]
-Suponha que, em $d=1$, $n=100$ observações bastem para atingir um risco alvo
+Suponha que, em $p=1$, $n=100$ observações bastem para atingir um risco alvo
 $\delta$ (tratando a desigualdade como igualdade).
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Isolando $n$, mostre que $n=(K'/\delta)^{(2+d)/2}$.
-  \item Use o dado de $d=1$ para achar $K'/\delta$ e calcule quantas observações
-        seriam necessárias, para o \emph{mesmo} risco, em $d=2$, $d=5$, $d=10$ e
-        $d=20$.
-  \item O crescimento é polinomial ou exponencial em $d$? Justifique olhando a
+  \item Isolando $n$, mostre que $n=(K'/\delta)^{(2+p)/2}$.
+  \item Use o dado de $p=1$ para achar $K'/\delta$ e calcule quantas observações
+        seriam necessárias, para o \emph{mesmo} risco, em $p=2$, $p=5$, $p=10$ e
+        $p=20$.
+  \item O crescimento é polinomial ou exponencial em $p$? Justifique olhando a
         fórmula.
   \item Um colega diz: ``mas com $n$ grande o KNN converge para o classificador
         ótimo em qualquer dimensão, isso é um teorema''. Ele está certo. Por que,
@@ -32,41 +32,41 @@ $\delta$ (tratando a desigualdade como igualdade).
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} De $\delta=K'n^{-2/(2+d)}$ vem $n^{2/(2+d)}=K'/\delta$ e, elevando
-a $(2+d)/2$,
+\textbf{(a)} De $\delta=K'n^{-2/(2+p)}$ vem $n^{2/(2+p)}=K'/\delta$ e, elevando
+a $(2+p)/2$,
 \[
-  n = \Big(\frac{K'}{\delta}\Big)^{(2+d)/2}.
+  n = \Big(\frac{K'}{\delta}\Big)^{(2+p)/2}.
 \]
 
 \smallskip
-\textbf{(b)} Em $d=1$ o expoente é $3/2$, então
+\textbf{(b)} Em $p=1$ o expoente é $3/2$, então
 $100=(K'/\delta)^{3/2}$ e $K'/\delta=100^{2/3}\approx 21{,}54$. Substituindo:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-$d$ & $1$ & $2$ & $5$ & $10$ & $20$ \\
-expoente $(2+d)/2$ & $1{,}5$ & $2$ & $3{,}5$ & $6$ & $11$ \\
+$p$ & $1$ & $2$ & $5$ & $10$ & $20$ \\
+expoente $(2+p)/2$ & $1{,}5$ & $2$ & $3{,}5$ & $6$ & $11$ \\
 \midrule
 $n$ necessário & $100$ & $464$ & $4{,}6\times10^{4}$ & $\mathbf{10^{8}}$ & $4{,}6\times10^{14}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Cem observações em $d=1$ viram \textbf{cem milhões} em $d=10$. Em $d=20$ seriam
+Cem observações em $p=1$ viram \textbf{cem milhões} em $p=10$. Em $p=20$ seriam
 $4{,}6\times10^{14}$, cerca de sessenta mil vezes a população da Terra.
 
 \smallskip
-\textbf{(c)} \textbf{Exponencial.} O $d$ aparece no \emph{expoente}: escrevendo
-$c=K'/\delta$, temos $n=c^{(2+d)/2}=c\cdot(\sqrt{c}\,)^{d}$. Cada dimensão nova
+\textbf{(c)} \textbf{Exponencial.} O $p$ aparece no \emph{expoente}: escrevendo
+$c=K'/\delta$, temos $n=c^{(2+p)/2}=c\cdot(\sqrt{c}\,)^{p}$. Cada dimensão nova
 multiplica $n$ por um fator constante $\sqrt{c}$ --- aqui, $\sqrt{21{,}54}\approx
-4{,}64$. É exatamente o que a tabela mostra: de $d=10$ para $d=20$, dez
+4{,}64$. É exatamente o que a tabela mostra: de $p=10$ para $p=20$, dez
 multiplicações por $4{,}64$, ou seja um fator de $4{,}6$ milhões.
 
 \smallskip
 \textbf{(d)} As duas afirmações são compatíveis porque falam de coisas
 diferentes. A consistência é um resultado \emph{assintótico}: garante que o erro
 vai a zero quando $n\to\infty$, mas não diz \emph{a que velocidade}. A taxa
-$n^{-2/(2+d)}$ diz a velocidade --- e em $d=20$ o expoente é $-1/11$, de modo que
+$n^{-2/(2+p)}$ diz a velocidade --- e em $p=20$ o expoente é $-1/11$, de modo que
 para dividir o erro por 2 é preciso multiplicar $n$ por $2^{11}=2048$.
 
 Em outras palavras: a garantia existe, mas o $n$ que a torna útil não existe.
@@ -76,18 +76,18 @@ uma razão para usá-lo em dimensão alta.
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[a vizinhança que deixou de ser vizinha]
-Espalhe $n$ pontos uniformemente no cubo $[0,1]^d$. Para que uma bola de raio
+Espalhe $n$ pontos uniformemente no cubo $[0,1]^p$. Para que uma bola de raio
 $\rho$ em torno de um ponto contenha em média $k$ deles, é preciso
-$n\rho^d\approx k$, ou seja
+$n\rho^p\approx k$, ou seja
 \[
-  \rho \;\approx\; \Big(\frac{k}{n}\Big)^{1/d} .
+  \rho \;\approx\; \Big(\frac{k}{n}\Big)^{1/p} .
 \]
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Com $k=10$ e $n=10\,000$, calcule $\rho$ para $d=1$, $2$, $5$, $10$ e
+  \item Com $k=10$ e $n=10\,000$, calcule $\rho$ para $p=1$, $2$, $5$, $10$ e
         $20$. (Repare que $k/n=0{,}001$ em todos os casos.)
-  \item Interprete o valor de $d=20$ em palavras: que fração da largura do cubo
+  \item Interprete o valor de $p=20$ em palavras: que fração da largura do cubo
         o raio cobre? O que resta da palavra ``vizinho''?
-  \item Ainda em $d=20$, quantas observações seriam necessárias para que os $10$
+  \item Ainda em $p=20$, quantas observações seriam necessárias para que os $10$
         vizinhos mais próximos coubessem num raio de $\rho=0{,}1$?
   \item Ligue este exercício ao Exercício~3 da Lista Teórica~04, sobre o viés de
         fronteira. Que relação há entre os dois fenômenos?
@@ -95,12 +95,12 @@ $n\rho^d\approx k$, ou seja
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Com $k/n=10^{-3}$, temos $\rho=(10^{-3})^{1/d}=10^{-3/d}$:
+\textbf{(a)} Com $k/n=10^{-3}$, temos $\rho=(10^{-3})^{1/p}=10^{-3/p}$:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-$d$ & $1$ & $2$ & $5$ & $10$ & $20$ \\
+$p$ & $1$ & $2$ & $5$ & $10$ & $20$ \\
 \midrule
 $\rho$ & $0{,}001$ & $0{,}032$ & $0{,}251$ & $0{,}501$ & $\mathbf{0{,}708}$ \\
 \bottomrule
@@ -108,7 +108,7 @@ $\rho$ & $0{,}001$ & $0{,}032$ & $0{,}251$ & $0{,}501$ & $\mathbf{0{,}708}$ \\
 \end{center}
 
 \smallskip
-\textbf{(b)} Em $d=20$ o raio necessário é $0{,}708$: a bola cobre cerca de
+\textbf{(b)} Em $p=20$ o raio necessário é $0{,}708$: a bola cobre cerca de
 \textbf{71\% da largura do cubo em cada direção}. Um ``vizinho'' a essa distância
 está tão longe de $\x$ quanto um ponto qualquer sorteado ao acaso.
 
@@ -116,7 +116,7 @@ E aí o método perde o argumento que o justifica. O KNN estima $r(\x)$ pela mé
 dos $Y$ dos vizinhos porque supõe que, se $\x_i$ está perto de $\x$, então
 $r(\x_i)$ está perto de $r(\x)$ --- é a hipótese de Lipschitz. Com vizinhos a
 $71\%$ da largura do domínio, essa hipótese não diz nada de útil, e o viés do
-Teorema, que vale $(k/n)^{2/d}$, deixa de ser pequeno.
+Teorema, que vale $(k/n)^{2/p}$, deixa de ser pequeno.
 
 \smallskip
 \textbf{(c)} Queremos $\rho=(10/n)^{1/20}=0{,}1$, isto é
@@ -135,7 +135,7 @@ dimensão alta, a janela necessária é tão grande que \emph{todo} ponto está
 efetivamente na fronteira do domínio: com $\rho=0{,}708$ num cubo de lado $1$,
 não existe ponto cuja bola de vizinhos caiba inteira dentro do cubo.
 
-Ou seja, o defeito que em $d=1$ é localizado nas duas pontas passa, em $d$
+Ou seja, o defeito que em $p=1$ é localizado nas duas pontas passa, em $p$
 grande, a ser o comportamento típico em todo lugar. É a mesma maldição descrita
 duas vezes.
 \end{solucao}
@@ -145,17 +145,17 @@ duas vezes.
 A demonstração do Teorema chega a
 \[
   \E\big[(\rhat_k(\X)-r(\X))^2\big]
-   \;\le\; \underbrace{K\Big(\frac{k}{n}\Big)^{2/d}}_{\text{viés}^2}
+   \;\le\; \underbrace{K\Big(\frac{k}{n}\Big)^{2/p}}_{\text{viés}^2}
         + \underbrace{\frac{\sigma^2}{k}}_{\text{variância}} .
 \]
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Explique, em uma frase cada, por que o primeiro termo cresce com $k$ e o
         segundo decresce.
   \item Minimize a soma em $k$ e mostre que o ótimo satisfaz
-        $k \asymp n^{2/(2+d)}$. \emph{Sugestão:} derive em $k$ e iguale a zero, ou
+        $k \asymp n^{2/(2+p)}$. \emph{Sugestão:} derive em $k$ e iguale a zero, ou
         simplesmente iguale os dois termos --- a menos de constantes dá o mesmo.
-  \item Substitua de volta e obtenha a taxa $n^{-2/(2+d)}$.
-  \item O que acontece com o $k$ ótimo quando $d$ cresce, com $n$ fixo? Comente o
+  \item Substitua de volta e obtenha a taxa $n^{-2/(2+p)}$.
+  \item O que acontece com o $k$ ótimo quando $p$ cresce, com $n$ fixo? Comente o
         que isso significa na prática.
 \end{enumerate}
 \end{exercicio}
@@ -163,7 +163,7 @@ A demonstração do Teorema chega a
 \begin{solucao}
 \textbf{(a)} O \textbf{viés$^2$} cresce com $k$ porque pedir mais vizinhos obriga
 a ir buscá-los mais longe, e quanto mais longe estão os $\x_i$, menos $r(\x_i)$
-se parece com $r(\x)$ --- é o fator $(k/n)^{2/d}$, que é o raio ao quadrado. A
+se parece com $r(\x)$ --- é o fator $(k/n)^{2/p}$, que é o raio ao quadrado. A
 \textbf{variância} decresce com $k$ porque $\rhat_k$ é a média de $k$ respostas
 condicionalmente independentes, e a variância de uma média de $k$ termos é
 $\sigma^2/k$.
@@ -173,30 +173,30 @@ $\sigma^2/k$.
 de uma função crescente e uma decrescente está, a menos de constantes, onde elas
 se cruzam):
 \[
-  \Big(\frac{k}{n}\Big)^{2/d} \asymp \frac1k
+  \Big(\frac{k}{n}\Big)^{2/p} \asymp \frac1k
   \;\Longrightarrow\;
-  k^{2/d}\,k \asymp n^{2/d}
+  k^{2/p}\,k \asymp n^{2/p}
   \;\Longrightarrow\;
-  k^{(2+d)/d} \asymp n^{2/d}
+  k^{(2+p)/p} \asymp n^{2/p}
   \;\Longrightarrow\;
-  k \asymp n^{2/(2+d)} .
+  k \asymp n^{2/(2+p)} .
 \]
-Pela derivada dá o mesmo: $\frac{d}{dk}\big[Kn^{-2/d}k^{2/d}+\sigma^2k^{-1}\big]
-= \frac{2K}{d}n^{-2/d}k^{2/d-1}-\sigma^2k^{-2}=0$, o que leva a
-$k^{2/d+1}=\frac{d\sigma^2}{2K}n^{2/d}$ e à mesma ordem.
+Pela derivada dá o mesmo: $\frac{p}{dk}\big[Kn^{-2/p}k^{2/p}+\sigma^2k^{-1}\big]
+= \frac{2K}{p}n^{-2/p}k^{2/p-1}-\sigma^2k^{-2}=0$, o que leva a
+$k^{2/p+1}=\frac{p\sigma^2}{2K}n^{2/p}$ e à mesma ordem.
 
 \smallskip
-\textbf{(c)} Levando $k\asymp n^{2/(2+d)}$ ao termo de variância (o mais fácil
+\textbf{(c)} Levando $k\asymp n^{2/(2+p)}$ ao termo de variância (o mais fácil
 dos dois):
 \[
-  \frac{\sigma^2}{k} \asymp \sigma^2\,n^{-2/(2+d)} .
+  \frac{\sigma^2}{k} \asymp \sigma^2\,n^{-2/(2+p)} .
 \]
 No termo de viés dá o mesmo, por construção --- foi assim que escolhemos $k$.
-Logo a soma é da ordem de $n^{-2/(2+d)}$.
+Logo a soma é da ordem de $n^{-2/(2+p)}$.
 
 \smallskip
-\textbf{(d)} O expoente $2/(2+d)$ vai a zero quando $d\to\infty$, então
-$k\asymp n^{2/(2+d)}\to n^0=$ constante. Ou seja: em dimensão alta, o $k$ ótimo
+\textbf{(d)} O expoente $2/(2+p)$ vai a zero quando $p\to\infty$, então
+$k\asymp n^{2/(2+p)}\to n^0=$ constante. Ou seja: em dimensão alta, o $k$ ótimo
 \textbf{para de crescer com $n$}.
 
 O que isso significa é desanimador. Em dimensão baixa, ganhar mais dados permite
@@ -211,28 +211,28 @@ você colete. É a tradução, em termos de $k$, da taxa lenta do Exercício~1.
 A maldição vale para métodos que estimam $r$ \emph{sem nenhuma suposição de
 forma}. Se estivermos dispostos a supor que $r$ é \textbf{aditiva},
 \[
-  r(\x) = f_1(x_1) + f_2(x_2) + \dots + f_d(x_d),
+  r(\x) = f_1(x_1) + f_2(x_2) + \dots + f_p(x_p),
 \]
 cada $f_j$ é uma função de \textbf{uma} variável e pode ser estimada à taxa
-unidimensional $n^{-2/3}$. Somando os $d$ erros, o risco fica da ordem de
-$d\,n^{-2/3}$.
+unidimensional $n^{-2/3}$. Somando os $p$ erros, o risco fica da ordem de
+$p\,n^{-2/3}$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Com $d=10$ e $n=10\,000$, calcule as duas taxas: $n^{-2/(2+d)}$ (sem
-        suposição) e $d\,n^{-2/3}$ (aditiva). Qual a razão entre elas?
+  \item Com $p=10$ e $n=10\,000$, calcule as duas taxas: $n^{-2/(2+p)}$ (sem
+        suposição) e $p\,n^{-2/3}$ (aditiva). Qual a razão entre elas?
   \item Quantas observações o método sem suposição precisaria para alcançar o
         erro que o aditivo alcança com $10\,000$?
-  \item Onde entra $d$ em cada uma das duas taxas? É essa a diferença essencial.
+  \item Onde entra $p$ em cada uma das duas taxas? É essa a diferença essencial.
   \item Qual é o preço da suposição? Dê um exemplo de $r$ que o modelo aditivo
         não consegue representar, por mais dados que se tenha.
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Com $n=10^4$ e $d=10$:
+\textbf{(a)} Com $n=10^4$ e $p=10$:
 \[
-  n^{-2/(2+d)} = (10^4)^{-1/6} = 10^{-2/3} \approx \mathbf{0{,}215},
+  n^{-2/(2+p)} = (10^4)^{-1/6} = 10^{-2/3} \approx \mathbf{0{,}215},
   \qquad
-  d\,n^{-2/3} = 10\times(10^4)^{-2/3} = 10\times 10^{-8/3} \approx \mathbf{0{,}0215}.
+  p\,n^{-2/3} = 10\times(10^4)^{-2/3} = 10\times 10^{-8/3} \approx \mathbf{0{,}0215}.
 \]
 A razão é exatamente \textbf{10}: a suposição de aditividade divide o erro por
 dez, com os mesmos dados e sem mudar nada no experimento.
@@ -243,10 +243,10 @@ dez, com os mesmos dados e sem mudar nada no experimento.
 dez mil --- um fator de um milhão.
 
 \smallskip
-\textbf{(c)} Na taxa sem suposição, $d$ está no \textbf{expoente}:
-$n^{-2/(2+d)}$. É por isso que ela degrada exponencialmente. Na taxa aditiva, $d$
-é um \textbf{fator multiplicativo}: $d\cdot n^{-2/3}$, com expoente $-2/3$ fixo,
-o mesmo de um problema unidimensional. Dobrar $d$ dobra o erro, em vez de exigir
+\textbf{(c)} Na taxa sem suposição, $p$ está no \textbf{expoente}:
+$n^{-2/(2+p)}$. É por isso que ela degrada exponencialmente. Na taxa aditiva, $p$
+é um \textbf{fator multiplicativo}: $p\cdot n^{-2/3}$, com expoente $-2/3$ fixo,
+o mesmo de um problema unidimensional. Dobrar $p$ dobra o erro, em vez de exigir
 que $n$ seja elevado a uma potência maior.
 
 Essa é a lição geral do curso, e ela não é sobre aditividade em particular:

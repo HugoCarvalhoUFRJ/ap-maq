@@ -52,7 +52,7 @@ teórica, e está nesta aula.
 Queremos comparar estimadores não pela performance em \emph{um} conjunto de dados,
 mas pela rapidez com que o risco $\E[(\rhat(\X)-r(\X))^2]$ tende a zero conforme
 $n\to\infty$. Uma \textbf{taxa de convergência} expressa esse decaimento em função
-de $n$ (e da dimensão $d$, da suavidade etc.). Por exemplo, uma taxa $n^{-1/2}$ é
+de $n$ (e da dimensão $p$, da suavidade etc.). Por exemplo, uma taxa $n^{-1/2}$ é
 mais rápida (melhor) que $n^{-1/5}$.
 
 \begin{ideia}
@@ -86,45 +86,45 @@ Considere o estimador KNN $\rhat_k(\x)=\frac1k\sum_{i\in\mathcal{N}_{\x}}Y_i$
 é a peça central --- e a mais reveladora --- do argumento.
 
 \begin{lema}[Distância média aos $k$ vizinhos]\label{lem:viz}
-Se $\X$ é limitado e $d\ge 3$, então
+Se $\X$ é limitado e $p\ge 3$, então
 \[
   \E\!\left[\Big(\frac1k\sum_{i\in\mathcal{N}_{\X}}\norm{\X_i-\X}\Big)^2\right]
-  \le C\,\Big(\frac{k}{n}\Big)^{2/d}.
+  \le C\,\Big(\frac{k}{n}\Big)^{2/p}.
 \]
 \end{lema}
 
-\begin{ideia}[de onde vem esse $2/d$]
-O expoente não é mágica; é volume. Numa bola de raio $\rho$ em $\R^d$, o volume
-cresce como $\rho^d$. Se os $n$ pontos estão espalhados num conjunto de volume $1$,
-uma bola de raio $\rho$ contém, em média, $\approx n\rho^d$ deles. Para que ela
-contenha os $k$ vizinhos que queremos, precisamos de $n\rho^d\approx k$, ou seja
+\begin{ideia}[de onde vem esse $2/p$]
+O expoente não é mágica; é volume. Numa bola de raio $\rho$ em $\R^p$, o volume
+cresce como $\rho^p$. Se os $n$ pontos estão espalhados num conjunto de volume $1$,
+uma bola de raio $\rho$ contém, em média, $\approx n\rho^p$ deles. Para que ela
+contenha os $k$ vizinhos que queremos, precisamos de $n\rho^p\approx k$, ou seja
 \[
-  \rho \;\approx\; \Big(\frac{k}{n}\Big)^{1/d}.
+  \rho \;\approx\; \Big(\frac{k}{n}\Big)^{1/p}.
 \]
 Elevando ao quadrado (porque o lema fala do quadrado da distância) sai o
-$(k/n)^{2/d}$. \textbf{Todo o resto da aula é consequência desse expoente $1/d$.}
+$(k/n)^{2/p}$. \textbf{Todo o resto da aula é consequência desse expoente $1/p$.}
 \end{ideia}
 
 \noindent
 Em palavras: quanto mais vizinhos ($k$) eu exijo, mais \emph{longe} eles ficam. E o
-$1/d$ no expoente diz que, em dimensão alta, essa distância cresce de forma
-brutal --- a raiz $d$-ésima de um número pequeno está perto de $1$.
+$1/p$ no expoente diz que, em dimensão alta, essa distância cresce de forma
+brutal --- a raiz $p$-ésima de um número pequeno está perto de $1$.
 
 \begin{exemplo}[um número para sentir o problema]
 Tome $n=10\,000$ pontos e $k=10$ vizinhos, num cubo de lado $1$. Então
-$\rho\approx (10/10\,000)^{1/d} = (0{,}001)^{1/d}$:
+$\rho\approx (10/10\,000)^{1/p} = (0{,}001)^{1/p}$:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-$d$ & $1$ & $2$ & $5$ & $10$ & $20$ \\
+$p$ & $1$ & $2$ & $5$ & $10$ & $20$ \\
 \midrule
 raio $\rho$ necessário & $0{,}001$ & $0{,}032$ & $0{,}25$ & $0{,}50$ & $0{,}71$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Em $d=1$, os dez vizinhos cabem num intervalo de comprimento $0{,}001$: são
-\emph{de fato} vizinhos. Em $d=20$, para reunir dez pontos você precisa de uma bola
+Em $p=1$, os dez vizinhos cabem num intervalo de comprimento $0{,}001$: são
+\emph{de fato} vizinhos. Em $p=20$, para reunir dez pontos você precisa de uma bola
 que cobre \emph{setenta por cento} da largura do cubo --- ou seja, quase tudo. A
 palavra ``vizinho'' perdeu o sentido, e com ela a justificativa do método.
 \end{exemplo}
@@ -134,11 +134,11 @@ Sob as hipóteses do Lema~\ref{lem:viz}, com $r$ $L$-Lipschitz e
 $\sup_{\x}\Var(Y\mid\x)\le\sigma^2<\infty$,
 \[
   \E\big[(\rhat_k(\X)-r(\X))^2\big]
-   \;\le\; K\,\Big(\frac{k}{n}\Big)^{2/d} + \frac{\sigma^2}{k}.
+   \;\le\; K\,\Big(\frac{k}{n}\Big)^{2/p} + \frac{\sigma^2}{k}.
 \]
-Otimizando em $k$ (tomando $k \asymp n^{2/(2+d)}$), obtém-se
+Otimizando em $k$ (tomando $k \asymp n^{2/(2+p)}$), obtém-se
 \[
-  \E\big[(\rhat_k(\X)-r(\X))^2\big] \;\le\; K'\, n^{-2/(2+d)}.
+  \E\big[(\rhat_k(\X)-r(\X))^2\big] \;\le\; K'\, n^{-2/(2+p)}.
 \]
 \end{teorema}
 \begin{proof}
@@ -160,18 +160,18 @@ $\Var(\rhat_k(\x)\mid\widetilde{\x})\le \sigma^2/k$. Logo
   \le \Big(\tfrac{L}{k}\!\sum_{i\in\mathcal{N}_{\x}}\!\norm{\x_i-\x}\Big)^2 + \frac{\sigma^2}{k}.
 \]
 Tomando esperança e aplicando o Lema~\ref{lem:viz} ao primeiro termo, resulta
-$\E[(\rhat_k(\X)-r(\X))^2]\le K(k/n)^{2/d}+\sigma^2/k$. Para minimizar em $k$,
-iguale (a menos de constantes) os dois termos: $(k/n)^{2/d}\asymp 1/k$, isto é,
-$k^{1+2/d}\asymp n^{2/d}$, ou seja $k\asymp n^{2/(2+d)}$, e substituindo obtém-se
-a taxa $n^{-2/(2+d)}$.
+$\E[(\rhat_k(\X)-r(\X))^2]\le K(k/n)^{2/p}+\sigma^2/k$. Para minimizar em $k$,
+iguale (a menos de constantes) os dois termos: $(k/n)^{2/p}\asymp 1/k$, isto é,
+$k^{1+2/p}\asymp n^{2/p}$, ou seja $k\asymp n^{2/(2+p)}$, e substituindo obtém-se
+a taxa $n^{-2/(2+p)}$.
 \end{proof}
 
 \begin{ideia}
 A prova exibe explicitamente o balanço viés--variância da Aula~01: o termo
-$(k/n)^{2/d}$ \emph{cresce} com $k$ (viés --- vizinhos mais distantes, respostas
+$(k/n)^{2/p}$ \emph{cresce} com $k$ (viés --- vizinhos mais distantes, respostas
 menos parecidas com $r(\x)$) e $\sigma^2/k$ \emph{decresce} com $k$ (variância ---
 média sobre mais observações). O $k$ ótimo equilibra os dois, e a validação cruzada
-(Aula~03) é a maneira prática de encontrá-lo sem conhecer $L$, $\sigma^2$ nem $d$.
+(Aula~03) é a maneira prática de encontrá-lo sem conhecer $L$, $\sigma^2$ nem $p$.
 \end{ideia}
 
 \begin{observacao}
@@ -198,7 +198,7 @@ para a classe $\mathcal{S}$ de funções suaves elas coincidem com a \textbf{tax
 minimax}
 \[
   \inf_{\rhat}\ \sup_{r\in\mathcal{S}}\ \E\big[(\rhat(\X)-r(\X))^2\big]
-  \asymp n^{-\alpha/(\alpha+d)},
+  \asymp n^{-\alpha/(\alpha+p)},
 \]
 ou seja, \emph{nenhum} estimador faz essencialmente melhor no pior caso. Um
 estimador que atinge essa taxa é dito \emph{minimax-ótimo}. ($\alpha$ liga-se à
@@ -212,51 +212,51 @@ Isso importa porque transforma a próxima seção de ``o KNN tem um problema'' e
 %==============================================================================
 \section{A maldição da dimensionalidade}
 %==============================================================================
-Olhe a taxa minimax $n^{-\alpha/(\alpha+d)}$: para $d$ grande, o expoente
-$\alpha/(\alpha+d)$ se aproxima de $0$ --- a convergência fica \emph{lentíssima}.
+Olhe a taxa minimax $n^{-\alpha/(\alpha+p)}$: para $p$ grande, o expoente
+$\alpha/(\alpha+p)$ se aproxima de $0$ --- a convergência fica \emph{lentíssima}.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/05-taxas.pdf}
-  \caption{À esquerda, a taxa $n^{-2/(2+d)}$ em escala log--log: em $d=1$ a reta
-  desce com inclinação $-2/3$; em $d=20$, com $-1/11$ --- quase horizontal. Aumentar
+  \caption{À esquerda, a taxa $n^{-2/(2+p)}$ em escala log--log: em $p=1$ a reta
+  desce com inclinação $-2/3$; em $p=20$, com $-1/11$ --- quase horizontal. Aumentar
   a amostra deixa de adiantar. À direita, a leitura prática: quantas observações são
-  necessárias para atingir risco $0{,}05$. Em $d=1$ bastam $90$; em $d=10$ já são
-  $6{,}4\times10^{7}$; em $d=20$, $2\times10^{14}$ --- vinte e cinco mil vezes a
+  necessárias para atingir risco $0{,}05$. Em $p=1$ bastam $90$; em $p=10$ já são
+  $6{,}4\times10^{7}$; em $p=20$, $2\times10^{14}$ --- vinte e cinco mil vezes a
   população da Terra.}
   \label{fig:taxas}
 \end{figure}
 
-\begin{teorema}[Tamanho de amostra explode com $d$]
+\begin{teorema}[Tamanho de amostra explode com $p$]
 Para garantir risco $\le\delta$ na classe $\mathcal{S}$, é necessário
 \[
-  n \;\gtrsim\; \Big(\frac{K}{\delta}\Big)^{(\alpha+d)/\alpha},
+  n \;\gtrsim\; \Big(\frac{K}{\delta}\Big)^{(\alpha+p)/\alpha},
 \]
-um crescimento \textbf{exponencial} em $d$.
+um crescimento \textbf{exponencial} em $p$.
 \end{teorema}
 Mesmo dimensões moderadas exigem amostras astronômicas. Esta é a
 \textbf{maldição da dimensionalidade} (Bellman, 1966).
 
 \begin{ideia}[A intuição da vizinhança vazia]
 Para estimar $r(\x)$ por média local, preciso de pontos \emph{perto} de $\x$. Em
-$\R^d$ com $d$ grande, qualquer vizinhança de raio fixo tem volume
+$\R^p$ com $p$ grande, qualquer vizinhança de raio fixo tem volume
 desprezível: com alta probabilidade \emph{não há nenhum dado dentro dela}. Para
-capturar $k$ vizinhos preciso de um raio $\asymp (k/n)^{1/d}$, que cresce com $d$
+capturar $k$ vizinhos preciso de um raio $\asymp (k/n)^{1/p}$, que cresce com $p$
 --- os ``vizinhos'' deixam de ser próximos, e o viés explode (é exatamente o
 Lema~\ref{lem:viz}).
 \end{ideia}
 
 \noindent
 Dá para medir isso diretamente, sem nenhuma teoria: espalhe $1000$ pontos ao acaso
-num cubo $[0,1]^d$ e veja o quão longe fica o vizinho mais próximo de um ponto
+num cubo $[0,1]^p$ e veja o quão longe fica o vizinho mais próximo de um ponto
 qualquer (Figura~\ref{fig:vizinho}).
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.72\textwidth]{../../recursos/figuras/05-vizinho-longe.pdf}
   \caption{Distância ao vizinho mais próximo entre $n=1000$ pontos uniformes em
-  $[0,1]^d$, medida como fração do diâmetro do cubo. Em $d=1$ ela é praticamente
-  zero; em $d=10$ já é $16\%$ do diâmetro; em $d=100$, um terço. Dito de outro modo:
+  $[0,1]^p$, medida como fração do diâmetro do cubo. Em $p=1$ ela é praticamente
+  zero; em $p=10$ já é $16\%$ do diâmetro; em $p=100$, um terço. Dito de outro modo:
   em dimensão alta \emph{todos os pontos estão a distâncias parecidas de todos os
   outros}, e ``os $k$ mais próximos'' vira uma seleção quase arbitrária.}
   \label{fig:vizinho}
@@ -275,11 +275,11 @@ pior caso. As duas mais úteis: esparsidade e redundância.
 %==============================================================================
 \subsection{Esparsidade}\label{sec:esparsidade}
 A hipótese de \textbf{esparsidade} diz que $r$ depende apenas de um subconjunto
-$S\subset\{1,\dots,d\}$ de covariáveis:
+$S\subset\{1,\dots,p\}$ de covariáveis:
 \[
-  r(\x) = r\big((x_i)_{i\in S}\big),\qquad \abs{S}=s \ll d.
+  r(\x) = r\big((x_i)_{i\in S}\big),\qquad \abs{S}=s \ll p.
 \]
-Embora haja $d$ covariáveis, só $s$ importam. Sob esparsidade a dimensão
+Embora haja $p$ covariáveis, só $s$ importam. Sob esparsidade a dimensão
 \emph{efetiva} é $s$, e a taxa melhora para $\approx n^{-\alpha/(\alpha+s)}$.
 
 Voltemos à pergunta da abertura. No problema das resenhas da Amazon, cada covariável
@@ -290,7 +290,7 @@ resultado:
 \begin{itemize}[leftmargin=1.4cm]
   \item Métodos que \textbf{selecionam variáveis} --- Lasso (Aula~02), árvores e
         florestas, \emph{boosting} (Aula~06) --- descartam as irrelevantes e passam
-        a operar na dimensão efetiva $s$. Para eles, o $d$ gigante quase não custa.
+        a operar na dimensão efetiva $s$. Para eles, o $p$ gigante quase não custa.
   \item O KNN \textbf{não faz seleção de variáveis}. Ele soma \emph{todas} as
         coordenadas na distância euclidiana, com peso igual. Cada palavra
         irrelevante acrescenta ruído à distância, e com milhares delas a distância
@@ -302,7 +302,7 @@ resultado:
 Este é o ponto da aula que mais vale levar: o KNN não perdeu por ser fraco, e sim
 por ser \emph{indiferente à estrutura do problema}. Um método que trata todas as
 covariáveis igualmente está apostando que todas importam igualmente --- e quando
-essa aposta está errada, ele paga o preço integral da dimensão $d$, mesmo que a
+essa aposta está errada, ele paga o preço integral da dimensão $p$, mesmo que a
 dimensão efetiva seja $s=20$.
 \end{ideia}
 
@@ -314,16 +314,16 @@ relevantes, pois divisões inúteis raramente são escolhidas) e \emph{SpAM}
 \end{observacao}
 
 \subsection{Redundância}
-A hipótese de \textbf{redundância} diz que as covariáveis, embora em número $d$,
+A hipótese de \textbf{redundância} diz que as covariáveis, embora em número $p$,
 vivem (aproximadamente) sobre uma \emph{subvariedade} de dimensão intrínseca
-$u\ll d$. Exemplos:
+$u\ll p$. Exemplos:
 \begin{itemize}[leftmargin=1.4cm,nosep]
   \item altura, peso e IMC: três variáveis, mas duas determinam a terceira;
   \item imagens: \emph{pixels} adjacentes são quase iguais --- enorme redundância.
 \end{itemize}
 Sob redundância, KNN e regressão local \emph{se adaptam automaticamente} à dimensão
 intrínseca: sua taxa passa a ser $n^{-4/(4+u)}$, muito mais rápida que
-$n^{-4/(4+d)}$ quando $u\ll d$. SVR com kernel gaussiano e séries \emph{espectrais}
+$n^{-4/(4+p)}$ quando $u\ll p$. SVR com kernel gaussiano e séries \emph{espectrais}
 (base construída a partir dos dados) também exploram redundância.
 
 \begin{ideia}
@@ -344,7 +344,7 @@ subvariedade, e a redução de dimensionalidade (PCA, aula extra) ajuda ainda ma
 \toprule
 \textbf{Situação} & \textbf{O que ajuda} & \textbf{Métodos} \\
 \midrule
-$d$ pequeno, $r$ suave & nada extra & KNN, NW, regressão local \\
+$p$ pequeno, $r$ suave & nada extra & KNN, NW, regressão local \\
 Poucas covariáveis relevantes & seleção de variáveis & Lasso, florestas, XGBoost, SpAM \\
 Covariáveis redundantes & dimensão intrínseca & KNN/local, SVR, séries espectrais, PCA \\
 \bottomrule
@@ -352,8 +352,8 @@ Covariáveis redundantes & dimensão intrínseca & KNN/local, SVR, séries espec
 \end{center}
 
 O notebook \texttt{Aula prática 05} é um laboratório de simulação: mede o expoente
-$1/d$ do raio que reúne $k$ vizinhos, estima a taxa de convergência do KNN em
-$d=1,2,4,8$, abre o risco em viés$^2$ e variância para ver as duas parcelas se
+$1/p$ do raio que reúne $k$ vizinhos, estima a taxa de convergência do KNN em
+$p=1,2,4,8$, abre o risco em viés$^2$ e variância para ver as duas parcelas se
 cruzarem no $k$ ótimo, e separa esparsidade de redundância medindo a dimensão
 intrínseca --- inclusive a do \texttt{superconductivity.csv}.
 
@@ -371,12 +371,12 @@ razões que eram previsíveis no papel.
 \begin{itemize}[leftmargin=1.4cm]
   \item Taxas de convergência medem a qualidade assintótica; só existem sob
         \emph{suavidade} (Lipschitz, Sobolev).
-  \item KNN: risco $\le K(k/n)^{2/d}+\sigma^2/k$, ótimo em
-        $k\asymp n^{2/(2+d)}$, taxa $n^{-2/(2+d)}$ (Teo.~\ref{teo:knn}). O expoente
-        $1/d$ nasce do volume da bola em $\R^d$ (Lema~\ref{lem:viz}).
+  \item KNN: risco $\le K(k/n)^{2/p}+\sigma^2/k$, ótimo em
+        $k\asymp n^{2/(2+p)}$, taxa $n^{-2/(2+p)}$ (Teo.~\ref{teo:knn}). O expoente
+        $1/p$ nasce do volume da bola em $\R^p$ (Lema~\ref{lem:viz}).
   \item Séries ($m$-suaves): taxa $n^{-2m/(2m+1)}$; ambas atingem a taxa
-        \emph{minimax} $n^{-\alpha/(\alpha+d)}$ --- ou seja, não há método melhor.
-  \item \textbf{Maldição da dimensionalidade}: a taxa degrada com $d$
+        \emph{minimax} $n^{-\alpha/(\alpha+p)}$ --- ou seja, não há método melhor.
+  \item \textbf{Maldição da dimensionalidade}: a taxa degrada com $p$
         (Fig.~\ref{fig:taxas}) e os vizinhos deixam de ser vizinhos
         (Fig.~\ref{fig:vizinho}).
   \item \emph{Esparsidade} (poucas relevantes) $\to$ Lasso/florestas; o KNN vai mal

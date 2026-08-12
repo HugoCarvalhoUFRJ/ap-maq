@@ -35,7 +35,7 @@ distribuição dos dados?''}
 %==============================================================================
 Agora $Y$ assume valores num conjunto finito de \textbf{classes} $\mathcal{C}$ (ex.:
 $\mathcal{C}=\{0,1\}$ no caso binário). Um \textbf{classificador} é uma função
-$g:\R^d\to\mathcal{C}$. A perda natural é a \textbf{perda 0--1},
+$g:\R^p\to\mathcal{C}$. A perda natural é a \textbf{perda 0--1},
 $L(y,g(\x))=\1{y\ne g(\x)}$, e o risco é a \emph{probabilidade de erro}:
 \begin{equation}\label{eq:risco01}
   \risco(g) = \E\big[\1{Y\ne g(\X)}\big] = \Prob\big(Y\ne g(\X)\big).
@@ -112,8 +112,8 @@ modelo que respeite $[0,1]$: a logística.
 %==============================================================================
 No caso binário $\mathcal{C}=\{0,1\}$, a regressão logística modela
 \begin{equation}\label{eq:logit}
-  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^d\beta_i x_i}}
-                          {1+e^{\beta_0+\sum_{i=1}^d\beta_i x_i}}
+  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+                          {1+e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
   = \sigma\big(\beta_0+\bbeta^\top\x\big),
 \end{equation}
 onde $\sigma(u)=e^u/(1+e^u)$ é a função logística. Equivalentemente, o
@@ -152,7 +152,7 @@ $f(\x\mid Y=c)$.
 \subsection{Bayes ingênuo}
 Supõe \textbf{independência condicional} das covariáveis dada a classe:
 \begin{equation}\label{eq:nb}
-  f(\x\mid Y=c) = \prod_{j=1}^d f(x_j\mid Y=c).
+  f(\x\mid Y=c) = \prod_{j=1}^p f(x_j\mid Y=c).
 \end{equation}
 A suposição quase nunca é literalmente verdadeira, mas é \emph{conveniente} (reduz
 drasticamente o número de parâmetros) e frequentemente gera bons classificadores.
@@ -256,7 +256,7 @@ for nome, modelo in [("logit", logit), ("LDA", lda), ("QDA", qda), ("NB", nb)]:
 \end{lstlisting}
 O notebook \texttt{Comparação entre classificadores paramétricos} confronta esses
 métodos; \texttt{Aula prática 08} calcula o erro de Bayes numa população conhecida
-e mede a troca LDA$\times$QDA em $d=2$ e $d=10$.
+e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
 
 %==============================================================================
 \section*{Resumo}

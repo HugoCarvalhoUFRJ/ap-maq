@@ -51,7 +51,7 @@ Aula~01: define o alvo que todo método vai tentar aproximar.
 %==============================================================================
 Agora $Y$ assume valores num conjunto finito de \textbf{classes} $\mathcal{C}$ (ex.:
 $\mathcal{C}=\{0,1\}$ no caso binário). Um \textbf{classificador} é uma função
-$g:\R^d\to\mathcal{C}$. A perda natural é a \textbf{perda 0--1},
+$g:\R^p\to\mathcal{C}$. A perda natural é a \textbf{perda 0--1},
 $L(y,g(\x))=\1{y\ne g(\x)}$, e o risco é a \emph{probabilidade de erro}:
 \begin{equation}\label{eq:risco01}
   \risco(g) = \E\big[\1{Y\ne g(\X)}\big] = \Prob\big(Y\ne g(\X)\big).
@@ -133,8 +133,8 @@ construção: a logística.
 %==============================================================================
 No caso binário $\mathcal{C}=\{0,1\}$, a regressão logística modela
 \begin{equation}\label{eq:logit}
-  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^d\beta_i x_i}}
-                          {1+e^{\beta_0+\sum_{i=1}^d\beta_i x_i}}
+  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+                          {1+e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
   = \sigma\big(\beta_0+\bbeta^\top\x\big),
 \end{equation}
 onde $\sigma(u)=e^u/(1+e^u)$ é a função logística. Equivalentemente, o
@@ -168,7 +168,7 @@ Se existir um hiperplano que separa as duas classes \emph{sem erro} no treino, a
 verossimilhança \eqref{eq:vero} não tem máximo: empurrar $\norm{\bbeta}\to\infty$
 faz as probabilidades tenderem a $0$ e $1$ e a verossimilhança crescer sem parar. O
 otimizador roda até o limite de iterações e devolve coeficientes gigantescos e sem
-sentido. Acontece com frequência quando $d$ é grande em relação a $n$. A solução é
+sentido. Acontece com frequência quando $p$ é grande em relação a $n$. A solução é
 a penalização --- e é por isso que o \texttt{scikit-learn} aplica $\ell_2$ por
 \emph{padrão} na \texttt{LogisticRegression}.
 \end{atencao}
@@ -201,12 +201,12 @@ observações novas de cada classe, coisa que a logística não faz.
 \subsection{Bayes ingênuo}
 Supõe \textbf{independência condicional} das covariáveis dada a classe:
 \begin{equation}\label{eq:nb}
-  f(\x\mid Y=c) = \prod_{j=1}^d f(x_j\mid Y=c).
+  f(\x\mid Y=c) = \prod_{j=1}^p f(x_j\mid Y=c).
 \end{equation}
 A suposição quase nunca é literalmente verdadeira, mas é \emph{conveniente} e
 frequentemente gera bons classificadores. A conveniência é enorme: em vez de
-estimar uma densidade em $\R^d$ --- tarefa condenada pela maldição da
-dimensionalidade da Aula~05 --- estimam-se $d$ densidades em $\R^1$. É a
+estimar uma densidade em $\R^p$ --- tarefa condenada pela maldição da
+dimensionalidade da Aula~05 --- estimam-se $p$ densidades em $\R^1$. É a
 esparsidade de suposições comprando viabilidade. Para covariáveis contínuas,
 modela-se cada $X_j\mid Y=c \sim N(\mu_{j,c},\sigma^2_{j,c})$; para discretas,
 usa-se multinomial (ótimo em texto --- ponte com a Aula extra E3).
@@ -280,15 +280,15 @@ hipérboles). A Figura~\ref{fig:fronteiras} mostra as quatro fronteiras lado a l
 \end{figure}
 
 \subsection{LDA ou QDA? Uma questão de viés e variância}
-QDA é mais flexível (menos viés) mas estima muito mais parâmetros. A conta: em $d$
-dimensões, LDA estima \emph{uma} matriz de covariância, com $d(d+1)/2$ entradas
-livres; QDA estima \emph{uma por classe}. Com $d=10$ e duas classes, são $55$
+QDA é mais flexível (menos viés) mas estima muito mais parâmetros. A conta: em $p$
+dimensões, LDA estima \emph{uma} matriz de covariância, com $p(p+1)/2$ entradas
+livres; QDA estima \emph{uma por classe}. Com $p=10$ e duas classes, são $55$
 parâmetros contra $110$ --- e cada um deles precisa de dados.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.72\textwidth]{../../recursos/figuras/08-lda-qda.pdf}
-  \caption{Acurácia dos dois métodos em função de $n$, com $d=10$ covariáveis e
+  \caption{Acurácia dos dois métodos em função de $n$, com $p=10$ covariáveis e
   covariâncias genuinamente diferentes por classe --- ou seja, num cenário em que o
   \textbf{QDA está certo e o LDA está errado}. Ainda assim, com $n=30$ o LDA ganha
   ($0{,}748$ contra $0{,}692$): não há dados para estimar $110$ parâmetros de
@@ -302,7 +302,7 @@ parâmetros contra $110$ --- e cada um deles precisa de dados.
 Esta figura é a Aula~01 vestida de classificação. O modelo \emph{correto} pode
 perder para o modelo \emph{errado} quando não há dados suficientes para estimá-lo
 --- exatamente o que o Exemplo~1.7 do [AME] mostrou lá atrás com polinômios de grau
-5 e 2. Regra de bolso: LDA com poucos dados ou $d$ grande, QDA com muitos dados.
+5 e 2. Regra de bolso: LDA com poucos dados ou $p$ grande, QDA com muitos dados.
 E, como sempre, valide de forma cruzada em vez de decidir por regra de bolso.
 \end{ideia}
 
@@ -367,7 +367,7 @@ Aula~09 antes de tirar conclusões dessas quatro linhas.
 
 O notebook \texttt{Comparação entre classificadores paramétricos} confronta esses
 métodos; \texttt{Aula prática 08} calcula o erro de Bayes numa população conhecida
-e mede a troca LDA$\times$QDA em $d=2$ e $d=10$.
+e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
 
 %==============================================================================
 \section*{Resumo}

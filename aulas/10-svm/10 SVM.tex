@@ -32,7 +32,7 @@ classes, qual é o melhor?''}
 %==============================================================================
 \section{Hiperplanos e o classificador de margem máxima}
 %==============================================================================
-Codifique as classes como $y\in\{-1,+1\}$. Um \textbf{hiperplano} em $\R^d$ é o
+Codifique as classes como $y\in\{-1,+1\}$. Um \textbf{hiperplano} em $\R^p$ é o
 conjunto $\{\x: f(\x)=0\}$ com $f(\x)=\beta_0+\bbeta^\top\x$. Ele separa o espaço
 em dois lados conforme o sinal de $f$. Dizemos que os dados são \emph{linearmente
 separáveis} se existe $f$ tal que
@@ -52,7 +52,7 @@ possível entre as classes tende a generalizar melhor.
 Procura-se o hiperplano que maximiza a margem $M$:
 \[
   \max_{\beta_0,\bbeta}\ M \quad\text{s.a.}\quad
-  \sum_{j=1}^d \beta_j^2 = 1,\qquad
+  \sum_{j=1}^p \beta_j^2 = 1,\qquad
   y_i\,f(\X_i)\ge M \ \ \forall i.
 \]
 A restrição $\norm{\bbeta}=1$ torna os hiperplanos comparáveis (assim $y_if(\X_i)$
@@ -103,7 +103,7 @@ A chave que torna a SVM poderosa: a solução depende dos dados \emph{apenas atr
 de produtos internos}. Pode-se mostrar que a função ótima se escreve
 \begin{equation}\label{eq:dual}
   f(\x) = \beta_0 + \sum_{k=1}^n \alpha_k\,\inner{\x}{\X_k},
-  \qquad \inner{\x}{\X_k}=\textstyle\sum_{j=1}^d x_j x_{k,j},
+  \qquad \inner{\x}{\X_k}=\textstyle\sum_{j=1}^p x_j x_{k,j},
 \end{equation}
 e que o cálculo dos $\alpha_k$ também só requer os produtos internos
 $\inner{\X_i}{\X_k}$ entre as observações. Crucialmente, $\alpha_k=0$ para todos os

@@ -62,7 +62,7 @@ supervisionado aparece nas aulas extras ($k$-médias, PCA).
 \section{Notação e suposições}
 %==============================================================================
 Seja $Y\in\R$ a \textbf{variável resposta} (também: variável dependente, rótulo,
-\emph{label}) e $\x=(x_1,\dots,x_d)\in\R^d$ o vetor de \textbf{covariáveis}
+\emph{label}) e $\x=(x_1,\dots,x_p)\in\R^p$ o vetor de \textbf{covariáveis}
 (também: atributos, preditores, \emph{features}, variáveis explicativas). O
 objetivo central da Parte~I do [AME] é estimar a \textbf{função de regressão}
 \begin{equation}\label{eq:r}
@@ -75,7 +75,7 @@ qualitativo, um problema de \textbf{classificação}.
 Salvo menção em contrário, supomos uma amostra i.i.d.
 $\Dados=\{(\X_1,Y_1),\dots,(\X_n,Y_n)\}$, com $(\X_i,Y_i)\sim (\X,Y)$, de uma
 distribuição conjunta $P$ desconhecida. Denotamos por $x_{i,j}$ o valor da
-$j$-ésima covariável na $i$-ésima observação, $\X_i=(x_{i,1},\dots,x_{i,d})$.
+$j$-ésima covariável na $i$-ésima observação, $\X_i=(x_{i,1},\dots,x_{i,p})$.
 \end{definicao}
 
 \begin{atencao}
@@ -105,7 +105,7 @@ esperança condicional.
 \end{ideia}
 
 \begin{proposicao}[$r$ minimiza o erro quadrático esperado]\label{prop:r}
-Entre todas as funções $g:\R^d\to\R$, a função de regressão
+Entre todas as funções $g:\R^p\to\R$, a função de regressão
 $r(\x)=\E[Y\mid\X=\x]$ minimiza o erro quadrático esperado
 $\E\big[(Y-g(\X))^2\big]$.
 \end{proposicao}

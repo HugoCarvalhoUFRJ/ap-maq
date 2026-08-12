@@ -201,9 +201,9 @@ Em $\R^2$, considere o kernel polinomial de grau 2
         $K(\x,\bm z)=\varphi(\x)^\top\varphi(\bm z)$. Qual é $m$?
   \item Conte as operações necessárias para calcular $K(\x,\bm z)$ pelos dois
         caminhos: pela fórmula fechada e via $\varphi$.
-  \item Em $\R^d$, o espaço de atributos do kernel polinomial de grau $p$ tem
-        $\binom{d+p}{p}$ dimensões. Calcule para $d=100$, $p=3$ e para
-        $d=1000$, $p=3$.
+  \item Em $\R^p$, o espaço de atributos do kernel polinomial de grau $p$ tem
+        $\binom{p+p}{p}$ dimensões. Calcule para $p=100$, $p=3$ e para
+        $p=1000$, $p=3$.
   \item Enuncie em uma frase o que é o ``truque do kernel'', usando os números
         do item (c).
 \end{enumerate}
@@ -234,7 +234,7 @@ produtos e multiplicações por $\sqrt2$) e depois fazer um produto interno em
 $\R^6$, ou seja 6 multiplicações e 5 somas. Cerca de \textbf{25 operações}, mais
 o armazenamento dos dois vetores de dimensão 6.
 
-Em $d=2$ e $p=2$ a diferença é pequena; o item (c) mostra o que acontece quando
+Em $p=2$ e $p=2$ a diferença é pequena; o item (c) mostra o que acontece quando
 não é.
 
 \smallskip
@@ -244,7 +244,7 @@ não é.
   \qquad
   \binom{1003}{3} = \frac{1003\cdot1002\cdot1001}{6} = \mathbf{167\,668\,501}.
 \]
-Com $d=1000$ e grau 3, o espaço de atributos tem \textbf{167 milhões} de
+Com $p=1000$ e grau 3, o espaço de atributos tem \textbf{167 milhões} de
 dimensões. Guardar um único $\varphi(\x)$ em precisão dupla custaria cerca de
 $1{,}3$ GB; guardar os $\varphi(\x_i)$ de mil observações seria impossível.
 
@@ -258,7 +258,7 @@ espaço}.
 O que torna isso possível é a formulação \textbf{dual} do problema: nela $\x$
 aparece exclusivamente dentro de produtos $\x_i^\top\x_j$, que podem ser
 substituídos por $K(\x_i,\x_j)$. O preço é que o custo passa a ser governado por
-$n$, não por $d$ --- a matriz de Gram é $n\times n$, o que explica o custo entre
+$n$, não por $p$ --- a matriz de Gram é $n\times n$, o que explica o custo entre
 $O(n^2)$ e $O(n^3)$ do treino e por que a SVM não escala para milhões de
 observações.
 \end{solucao}

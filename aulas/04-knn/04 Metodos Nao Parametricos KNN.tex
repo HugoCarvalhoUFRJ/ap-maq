@@ -37,7 +37,7 @@ $r(\x)$?''}
 %==============================================================================
 Um método \textbf{paramétrico} supõe que $r(\x)=\E[Y\mid\X=\x]$ pertence a uma
 família indexada por um número \emph{fixo e finito} de parâmetros (ex.: regressão
-linear, $d+1$ coeficientes). Um método \textbf{não paramétrico} não impõe uma
+linear, $p+1$ coeficientes). Um método \textbf{não paramétrico} não impõe uma
 forma funcional fixa: a complexidade efetiva do modelo \emph{cresce com $n$}. A
 suposição é mais fraca --- tipicamente apenas que $r$ é \emph{suave}.
 
@@ -103,7 +103,7 @@ a \emph{média das respostas dos $k$ pontos de treino mais próximos de $\x$}.
 
 \begin{definicao}[Regressão KNN]
 Seja $\mathcal{N}_{\x}$ o conjunto dos índices das $k$ observações de treino mais
-próximas de $\x$ (segundo uma distância $d$, em geral euclidiana):
+próximas de $\x$ (segundo uma distância $p$, em geral euclidiana):
 $\mathcal{N}_{\x}=\{i : d(\X_i,\x)\le d^{k}_{\x}\}$, onde $d^k_{\x}$ é a distância
 do $k$-ésimo vizinho. Então
 \begin{equation}\label{eq:knn}
@@ -125,7 +125,7 @@ Escolhe-se $k$ por validação cruzada.
 \begin{atencao}
 KNN exige uma noção de distância e, portanto, \textbf{depende fortemente da escala}
 das covariáveis: uma variável em unidade grande domina a distância. \emph{Padronize}
-antes (Aula~07). Além disso, sofre da \emph{maldição da dimensionalidade}: em $d$
+antes (Aula~07). Além disso, sofre da \emph{maldição da dimensionalidade}: em $p$
 alto, ``vizinhos'' deixam de ser próximos (tema da Aula~05).
 \end{atencao}
 

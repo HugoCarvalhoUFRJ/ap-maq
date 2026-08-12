@@ -113,7 +113,7 @@ Toda a Aula~06 se transfere; as árvores individuais agora classificam:
   \item[Bagging / Florestas] treina $B$ árvores em amostras bootstrap e agrega por
         \textbf{voto da maioria} (ou média das probabilidades). Florestas
         descorrelacionam sorteando $m$ variáveis por nó; regra empírica em
-        classificação: $m\approx\sqrt{d}$. Robustas a $B$; OOB e importância de
+        classificação: $m\approx\sqrt{p}$. Robustas a $B$; OOB e importância de
         variáveis ``de graça''.
   \item[Boosting] ajuste sequencial. A variante clássica para classificação é o
         \textbf{AdaBoost}: a cada rodada, reponderam-se as observações dando mais
@@ -189,7 +189,7 @@ for nome, modelo in [("KNN", knn), ("arvore", arv), ("RF", rf), ("Ada", ada)]:
   \item \textbf{Árvore de classificação}: prediz a moda \eqref{eq:arvcls}; divide
         por \textbf{Gini} \eqref{eq:gini} ou \textbf{entropia} \eqref{eq:entropia}
         (melhores que a taxa de erro); cresce e poda como na Aula~06.
-  \item \textbf{Florestas} ($m\approx\sqrt d$) e \textbf{boosting/AdaBoost} agregam
+  \item \textbf{Florestas} ($m\approx\sqrt p$) e \textbf{boosting/AdaBoost} agregam
         árvores por voto --- topo de desempenho em dados tabulares.
   \item Não há classificador universalmente melhor: escolha pela estrutura/objetivo
         e compare por CV com as métricas da Aula~09.

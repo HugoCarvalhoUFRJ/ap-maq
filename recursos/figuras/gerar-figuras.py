@@ -496,23 +496,23 @@ def _taxas():
     fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
 
     for d, cor in zip([1, 2, 5, 10, 20], [VERDE, AZUL, "#B8860B", VINHO, "black"]):
-        ax1.plot(n, n ** (-2 / (2 + d)), color=cor, label=f"$d={d}$")
+        ax1.plot(n, n ** (-2 / (2 + d)), color=cor, label=f"$p={d}$")
     ax1.set_xscale("log"); ax1.set_yscale("log")
     ax1.set_xlabel("$n$"); ax1.set_ylabel(r"risco $\propto n^{-2/(2+d)}$")
-    ax1.set_title("a taxa achata conforme $d$ cresce")
+    ax1.set_title("a taxa achata conforme $p$ cresce")
     ax1.legend(fontsize=7.5)
 
     # n necessário para um risco alvo fixo
     alvo = 0.05
     dd = np.arange(1, 21)
     preciso = alvo ** (-(2 + dd) / 2)
-    print(f"     [conferência] n para risco {alvo}: d=1 -> {preciso[0]:.0f}, "
-          f"d=5 -> {preciso[4]:.3g}, d=10 -> {preciso[9]:.3g}, d=20 -> {preciso[19]:.3g}")
+    print(f"     [conferência] n para risco {alvo}: p=1 -> {preciso[0]:.0f}, "
+          f"p=5 -> {preciso[4]:.3g}, p=10 -> {preciso[9]:.3g}, p=20 -> {preciso[19]:.3g}")
     ax2.plot(dd, preciso, "o-", color=VINHO, ms=3)
     ax2.axhline(1e10, color=CINZA, ls=":", lw=1.0)
     ax2.text(1.2, 1.6e10, "$10^{10}$ observações", fontsize=7, color=CINZA)
     ax2.set_yscale("log")
-    ax2.set_xlabel("$d$ (dimensão)")
+    ax2.set_xlabel("$p$ (dimensão)")
     ax2.set_ylabel(f"$n$ para atingir risco {alvo}".replace("0.05", "0,05"))
     ax2.set_title("e o $n$ exigido explode")
     ax2.set_xticks([1, 5, 10, 15, 20])
@@ -535,17 +535,17 @@ def _vizinho_longe():
         medias.append((maisproximo / np.sqrt(d)).mean())
         p05.append(np.quantile(maisproximo / np.sqrt(d), 0.05))
     print(f"     [conferência] distância ao vizinho mais próximo / diâmetro: "
-          f"d=1 -> {medias[0]:.4f}, d=10 -> {medias[4]:.4f}, d=100 -> {medias[-1]:.4f}")
+          f"p=1 -> {medias[0]:.4f}, p=10 -> {medias[4]:.4f}, p=100 -> {medias[-1]:.4f}")
 
     fig, ax = subplots(figsize=(5.0, 3.0))
     ax.plot(dims, medias, "o-", color=VINHO, ms=4, label="média")
     ax.fill_between(dims, p05, medias, color=VINHO, alpha=0.15,
                     label="entre o percentil 5 e a média")
     ax.set_xscale("log")
-    ax.set_xlabel("$d$ (dimensão), escala logarítmica")
+    ax.set_xlabel("$p$ (dimensão), escala logarítmica")
     ax.set_ylabel("distância ao vizinho mais próximo\n(fração do diâmetro do cubo)")
     ax.set_xticks(dims); ax.set_xticklabels(dims)
-    ax.set_title(f"$n={n}$ pontos uniformes em $[0,1]^d$")
+    ax.set_title(f"$n={n}$ pontos uniformes em $[0,1]^p$")
     ax.legend(fontsize=7.5, loc="lower right")
     salvar(fig, "05-vizinho-longe")
 
@@ -678,7 +678,7 @@ def _vazamento():
     ax1.set_xticklabels(["seleção\nfora da dobra", "seleção\ndentro do pipeline"],
                         fontsize=8)
     ax1.set_ylabel("$R^2$ estimado por validação cruzada")
-    ax1.set_title(f"$y$ é ruído puro ($n={n}$, $d={d}$)")
+    ax1.set_title(f"$y$ é ruído puro ($n={n}$, $p={d}$)")
     for xx, vv in zip([0, 1], m[:2]):
         ax1.annotate(f"{vv:+.2f}", xy=(xx, vv), xytext=(0, 6 if vv > 0 else -14),
                      textcoords="offset points", ha="center", fontsize=8.5)
@@ -812,7 +812,7 @@ def _lda_qda():
     ax.set_xscale("log")
     ax.set_xlabel(f"$n$ (tamanho da amostra de treino), escala logarítmica")
     ax.set_ylabel("acurácia em 20 mil observações novas")
-    ax.set_title(f"$d={d}$ covariáveis, covariâncias diferentes por classe")
+    ax.set_title(f"$p={d}$ covariáveis, covariâncias diferentes por classe")
     ax.set_xticks(ns); ax.set_xticklabels(ns)
     ax.legend(loc="lower right", fontsize=8)
     salvar(fig, "08-lda-qda")

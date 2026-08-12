@@ -112,7 +112,7 @@ $X\mid Y=k \sim N(\bm\mu_k,\,\bm\Sigma)$ com prioris $\pi_k$.
         \]
   \item Em que ponto exato do item (a) a hipótese $\bm\Sigma_0=\bm\Sigma_1$ é
         usada? O que sobra se ela for relaxada?
-  \item No caso $d=1$, $\bm\Sigma=\sigma^2$, $\mu_0=-1$, $\mu_1=+1$ e
+  \item No caso $p=1$, $\bm\Sigma=\sigma^2$, $\mu_0=-1$, $\mu_1=+1$ e
         $\pi_0=\pi_1$, recupere o corte do Exercício~1(a) a partir de
         $\delta_1(x)=\delta_0(x)$.
 \end{enumerate}
@@ -122,7 +122,7 @@ $X\mid Y=k \sim N(\bm\mu_k,\,\bm\Sigma)$ com prioris $\pi_k$.
 \textbf{(a)} A densidade gaussiana multivariada dá
 \[
   \ln\big(\pi_k f_k(\x)\big)
-  = \ln\pi_k - \tfrac{d}{2}\ln(2\pi) - \tfrac12\ln\abs{\bm\Sigma}
+  = \ln\pi_k - \tfrac{p}{2}\ln(2\pi) - \tfrac12\ln\abs{\bm\Sigma}
     - \tfrac12(\x-\bm\mu_k)^\top\bm\Sigma^{-1}(\x-\bm\mu_k).
 \]
 Expandindo a forma quadrática:
@@ -133,7 +133,7 @@ Expandindo a forma quadrática:
     + \bm\mu_k^\top\bm\Sigma^{-1}\bm\mu_k .
 \]
 Ao comparar duas classes $k$ e $\ell$, subtraímos as duas expressões. Os termos
-$-\tfrac d2\ln(2\pi)$, $-\tfrac12\ln\abs{\bm\Sigma}$ e
+$-\tfrac p2\ln(2\pi)$, $-\tfrac12\ln\abs{\bm\Sigma}$ e
 $-\tfrac12\x^\top\bm\Sigma^{-1}\x$ são \textbf{idênticos} nas duas e desaparecem
 --- e é justamente o último deles que era quadrático em $\x$.
 
@@ -168,7 +168,7 @@ que é \emph{quadrática} em $\x$ --- é o QDA, e a fronteira vira uma cônica
 linearidade do LDA não vem da gaussianidade, vem da covariância comum}.
 
 \smallskip
-\textbf{(d)} Com $d=1$, $\bm\Sigma^{-1}=1/\sigma^2$ e $\pi_0=\pi_1$ (então
+\textbf{(d)} Com $p=1$, $\bm\Sigma^{-1}=1/\sigma^2$ e $\pi_0=\pi_1$ (então
 $\ln\pi_k$ cancela):
 \[
   \delta_1(x)=\frac{x\cdot 1}{\sigma^2}-\frac{1}{2\sigma^2},
@@ -182,13 +182,13 @@ $\sigma^2$} --- a variância muda o quanto se erra, não onde fica a fronteira.
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[quantos parâmetros cada um estima]
-Considere $K=2$ classes em $\R^d$.
+Considere $K=2$ classes em $\R^p$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Conte os parâmetros livres do LDA e do QDA. Considere: as médias das
         classes, a(s) matriz(es) de covariância --- lembrando que uma matriz
-        simétrica $d\times d$ tem $d(d+1)/2$ entradas livres --- e as prioris.
-  \item Preencha a tabela para $d=2$, $d=10$ e $d=50$.
-  \item Mostre que a diferença QDA menos LDA vale $d(d+1)/2$ e comente a ordem de
+        simétrica $p\times p$ tem $p(p+1)/2$ entradas livres --- e as prioris.
+  \item Preencha a tabela para $p=2$, $p=10$ e $p=50$.
+  \item Mostre que a diferença QDA menos LDA vale $p(p+1)/2$ e comente a ordem de
         grandeza.
   \item A tabela abaixo traz a acurácia medida (média sobre 60 amostras, avaliada
         em 20 mil observações novas) do LDA e do QDA, nas mesmas duas dimensões.
@@ -204,10 +204,10 @@ Considere $K=2$ classes em $\R^d$.
 \toprule
         &     & $n=20$ & $30$ & $50$ & $100$ & $300$ & $1000$ \\
 \midrule
-\multirow{2}{*}{$d=2$}  & LDA & $0{,}8602$ & $0{,}8681$ & $0{,}8724$ & $0{,}8775$ & $0{,}8785$ & $0{,}8793$ \\
+\multirow{2}{*}{$p=2$}  & LDA & $0{,}8602$ & $0{,}8681$ & $0{,}8724$ & $0{,}8775$ & $0{,}8785$ & $0{,}8793$ \\
                         & QDA & $0{,}8508$ & $0{,}8669$ & $0{,}8737$ & $0{,}8806$ & $0{,}8824$ & $0{,}8834$ \\
 \midrule
-\multirow{2}{*}{$d=10$} & LDA & $0{,}7053$ & $0{,}7422$ & $0{,}7773$ & $0{,}8013$ & $0{,}8175$ & $0{,}8241$ \\
+\multirow{2}{*}{$p=10$} & LDA & $0{,}7053$ & $0{,}7422$ & $0{,}7773$ & $0{,}8013$ & $0{,}8175$ & $0{,}8241$ \\
                         & QDA & $0{,}5475$ & $0{,}7030$ & $0{,}7896$ & $0{,}8440$ & $0{,}8792$ & $0{,}8905$ \\
 \bottomrule
 \end{tabular}
@@ -217,17 +217,17 @@ Considere $K=2$ classes em $\R^d$.
 \begin{solucao}
 \textbf{(a)} Com $K=2$:
 \begin{itemize}[leftmargin=1.4cm]
-  \item \textbf{médias}: dois vetores de $\R^d$, logo $2d$ parâmetros, nos dois
+  \item \textbf{médias}: dois vetores de $\R^p$, logo $2p$ parâmetros, nos dois
         métodos;
   \item \textbf{covariância}: o LDA estima \emph{uma} matriz comum,
-        $d(d+1)/2$; o QDA estima \emph{duas}, $2\cdot d(d+1)/2 = d(d+1)$;
+        $p(p+1)/2$; o QDA estima \emph{duas}, $2\cdot p(p+1)/2 = p(p+1)$;
   \item \textbf{prioris}: $\pi_0$ e $\pi_1$ somam 1, então há $K-1=1$ parâmetro
         livre.
 \end{itemize}
 \[
-  \#\text{LDA} = 2d + \tfrac{d(d+1)}{2} + 1,
+  \#\text{LDA} = 2p + \tfrac{p(p+1)}{2} + 1,
   \qquad
-  \#\text{QDA} = 2d + d(d+1) + 1 .
+  \#\text{QDA} = 2p + p(p+1) + 1 .
 \]
 
 \smallskip
@@ -236,7 +236,7 @@ Considere $K=2$ classes em $\R^d$.
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-$d$ & $2$ & $10$ & $50$ \\
+$p$ & $2$ & $10$ & $50$ \\
 \midrule
 LDA & $8$  & $76$  & $1\,376$ \\
 QDA & $11$ & $131$ & $2\,651$ \\
@@ -248,9 +248,9 @@ diferença & $3$ & $55$ & $1\,275$ \\
 
 \smallskip
 \textbf{(c)} A diferença é
-$\big(2d+d(d+1)+1\big)-\big(2d+\tfrac{d(d+1)}{2}+1\big)=\tfrac{d(d+1)}{2}$: a
-segunda matriz de covariância, exatamente. Ela cresce como $d^2/2$, ou seja
-\textbf{quadraticamente}. Em $d=2$ são 3 parâmetros a mais --- nada. Em $d=50$ são
+$\big(2p+p(p+1)+1\big)-\big(2p+\tfrac{p(p+1)}{2}+1\big)=\tfrac{p(p+1)}{2}$: a
+segunda matriz de covariância, exatamente. Ela cresce como $p^2/2$, ou seja
+\textbf{quadraticamente}. Em $p=2$ são 3 parâmetros a mais --- nada. Em $p=50$ são
 $1\,275$ a mais, quase o dobro do modelo inteiro do LDA.
 
 \smallskip
@@ -262,21 +262,21 @@ justamente por isso ele é a parte \emph{menos} informativa da tabela. O que mud
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-                                    & $d=2$ & $d=10$ \\
+                                    & $p=2$ & $p=10$ \\
 \midrule
 LDA $-$ QDA em $n=20$ (antes da virada)   & $+0{,}0094$ & $\mathbf{+0{,}1578}$ \\
 QDA $-$ LDA em $n=1000$ (depois)          & $+0{,}0041$ & $\mathbf{+0{,}0664}$ \\
-custo da matriz extra, $d(d+1)/2$         & $3$ & $55$ \\
+custo da matriz extra, $p(p+1)/2$         & $3$ & $55$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Em $d=2$ os dois métodos são praticamente equivalentes em toda a tabela: a maior
+Em $p=2$ os dois métodos são praticamente equivalentes em toda a tabela: a maior
 diferença é de menos de um ponto percentual. A matriz de covariância extra custa
 $3$ parâmetros, e $3$ parâmetros a mais ou a menos não mudam nada, nem para bem
 nem para mal.
 
-Em $d=10$ os dois erram feio, em direções opostas. Com $n=20$, o QDA precisa
+Em $p=10$ os dois erram feio, em direções opostas. Com $n=20$, o QDA precisa
 estimar $131$ parâmetros a partir de $20$ observações --- as matrizes de
 covariância mal são invertíveis --- e despenca para $0{,}5475$, quase o acaso,
 $16$ pontos abaixo do LDA. Com $n=1000$ ele reproduz a estrutura verdadeira e
@@ -284,10 +284,10 @@ ganha $6{,}6$ pontos.
 
 Portanto a regra ``prefira LDA com poucos dados'' está incompleta em dois
 sentidos. Primeiro, \textbf{o que decide não é $n$ sozinho, e sim $n$ contra
-$d(d+1)/2$}, que é o custo da matriz extra. Segundo, e mais útil na prática:
+$p(p+1)/2$}, que é o custo da matriz extra. Segundo, e mais útil na prática:
 \textbf{em dimensão baixa a escolha quase não importa}; ela só passa a importar
-quando $d$ é grande, e aí importa muito, nos dois sentidos. Gastar validação
-cruzada decidindo entre LDA e QDA em $d=2$ é desperdício; em $d=50$ é obrigatório.
+quando $p$ é grande, e aí importa muito, nos dois sentidos. Gastar validação
+cruzada decidindo entre LDA e QDA em $p=2$ é desperdício; em $p=50$ é obrigatório.
 
 É a mesma lógica do balanço viés--variância da Aula~01: o QDA é o modelo mais
 flexível, e modelos flexíveis só compensam quando há dados para sustentá-los.
@@ -304,7 +304,7 @@ $\sigma_{k1}^2,\dots,\sigma_{kd}^2$.
   \item Mostre que a função discriminante do naive Bayes gaussiano é
         \[
           \delta_k(\x) = \ln\pi_k
-            - \tfrac12\sum_{j=1}^{d}\left[\ln\sigma_{kj}^2
+            - \tfrac12\sum_{j=1}^{p}\left[\ln\sigma_{kj}^2
               + \frac{(x_j-\mu_{kj})^2}{\sigma_{kj}^2}\right],
         \]
         e diga se a fronteira é linear ou quadrática.
@@ -316,38 +316,38 @@ $\sigma_{k1}^2,\dots,\sigma_{kd}^2$.
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} São $2d$ médias, $2d$ variâncias (uma por covariável e por classe) e
-$1$ priori: $\#\text{NB}=4d+1$. Comparando:
+\textbf{(a)} São $2p$ médias, $2p$ variâncias (uma por covariável e por classe) e
+$1$ priori: $\#\text{NB}=4p+1$. Comparando:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-$d$ & $2$ & $10$ & $50$ \\
+$p$ & $2$ & $10$ & $50$ \\
 \midrule
-naive Bayes ($4d+1$) & $9$  & $41$  & $201$ \\
+naive Bayes ($4p+1$) & $9$  & $41$  & $201$ \\
 LDA                  & $8$  & $76$  & $1\,376$ \\
 QDA                  & $11$ & $131$ & $2\,651$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Note a inversão: em $d=2$ o naive Bayes custa \emph{mais} que o LDA (9 contra 8),
+Note a inversão: em $p=2$ o naive Bayes custa \emph{mais} que o LDA (9 contra 8),
 porque estima duas variâncias por covariável em vez de uma covariância comum. Em
-$d=50$ ele custa $201$ contra $1\,376$ --- quase sete vezes menos. O crescimento
-é \textbf{linear} em $d$, contra o quadrático dos outros dois, e é isso que o
+$p=50$ ele custa $201$ contra $1\,376$ --- quase sete vezes menos. O crescimento
+é \textbf{linear} em $p$, contra o quadrático dos outros dois, e é isso que o
 torna viável em dimensão alta (a Aula~E3 o usa com dezenas de milhares de
 colunas).
 
 \smallskip
 \textbf{(b)} Com $\bm\Sigma_k$ diagonal, a densidade conjunta fatora:
-$f_k(\x)=\prod_{j=1}^d f_{kj}(x_j)$, com
+$f_k(\x)=\prod_{j=1}^p f_{kj}(x_j)$, com
 $f_{kj}$ a densidade de $N(\mu_{kj},\sigma_{kj}^2)$. Então
 \[
   \ln\big(\pi_k f_k(\x)\big)
-   = \ln\pi_k + \sum_{j=1}^{d}\left[
+   = \ln\pi_k + \sum_{j=1}^{p}\left[
        -\tfrac12\ln(2\pi) - \tfrac12\ln\sigma_{kj}^2
        - \frac{(x_j-\mu_{kj})^2}{2\sigma_{kj}^2}\right],
 \]
-e descartando $-\tfrac d2\ln(2\pi)$, que é comum a todas as classes, chega-se à
+e descartando $-\tfrac p2\ln(2\pi)$, que é comum a todas as classes, chega-se à
 expressão do enunciado.
 
 A fronteira é \textbf{quadrática}: o termo $(x_j-\mu_{kj})^2/\sigma_{kj}^2$
@@ -361,7 +361,7 @@ LDA diagonal, com fronteira linear.)
 \textbf{(c)} Porque para \emph{classificar} basta acertar qual $\delta_k$ é o
 maior, e não estimar bem as probabilidades. Erros na modelagem da dependência
 tendem a deslocar todos os $\delta_k$ na mesma direção, preservando a ordem entre
-eles. Some-se a isso o argumento de variância do item (a): com $4d+1$ parâmetros
+eles. Some-se a isso o argumento de variância do item (a): com $4p+1$ parâmetros
 em vez de $2\,651$, as estimativas são muito mais estáveis, e o viés introduzido
 pela suposição falsa é compensado pela variância que se economiza.
 
@@ -374,7 +374,7 @@ empatada com a logística ($0{,}776$ contra $0{,}774$) e Brier muito pior
 
 \smallskip
 \textbf{(d)} Quando a informação está na \textbf{correlação}, e não nas médias.
-Um exemplo em $d=2$: suponha que nas duas classes cada covariável tenha média
+Um exemplo em $p=2$: suponha que nas duas classes cada covariável tenha média
 zero e variância um, mas que na classe 0 elas sejam positivamente correlacionadas
 ($\rho=+0{,}9$) e na classe 1, negativamente ($\rho=-0{,}9$). As nuvens são duas
 elipses cruzadas, perfeitamente distinguíveis --- mas as médias e as variâncias

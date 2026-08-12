@@ -49,7 +49,7 @@ perder o essencial?''}
 Suponha as covariáveis \emph{centradas} (média zero). O \textbf{primeiro componente
 principal} é a combinação linear
 \[
-  Z_1 = \phi_{11}X_1+\dots+\phi_{d1}X_d = \bm{\phi}_1^\top\X
+  Z_1 = \phi_{11}X_1+\dots+\phi_{p1}X_p = \bm{\phi}_1^\top\X
 \]
 de \textbf{variância máxima}, sob a restrição $\norm{\bm{\phi}_1}^2=\sum_k\phi_{k1}^2=1$
 (sem ela, bastaria inflar os coeficientes). O $i$-ésimo componente $Z_i$ tem variância
@@ -90,7 +90,7 @@ decrescente de autovalor.
 Empilhando os autovetores (ordenados por autovalor decrescente) nas colunas de
 $\bm{U}$ (a \textbf{matriz de cargas}), os \emph{scores} são
 \[
-  \bm{Z} = \bm{X}\bm{U}\quad (n\times d),
+  \bm{Z} = \bm{X}\bm{U}\quad (n\times p),
 \]
 e a $i$-ésima nova coordenada da observação $\x$ é $z_{i}=\bm{u}_i^\top\x$. Como os
 autovetores são ortogonais, os componentes são \emph{não correlacionados} --- sem
@@ -100,7 +100,7 @@ informação redundante.
 Cada autovalor $\lambda_i$ é a variância capturada pelo $i$-ésimo componente. A
 \textbf{proporção de variância explicada} pelos $p$ primeiros é
 \begin{equation}\label{eq:pve}
-  \text{PVE}(p) = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^d \lambda_i}.
+  \text{PVE}(p) = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^p \lambda_i}.
 \end{equation}
 Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
 ``cotovelo'') ou exigindo PVE acima de um limiar (ex.: 90\%).
@@ -109,7 +109,7 @@ Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
 \section{Interpretação geométrica e compressão}
 %==============================================================================
 \subsection{PCA como escalonamento multidimensional}
-O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $m<d$ dimensões que
+O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $m<p$ dimensões que
 melhor \emph{preserva as distâncias} entre pares,
 \[
   \min_{\bm{Z}}\ \sum_{i,j}\big(\norm{\x_i-\x_j}^2 - \norm{\bm{z}_i-\bm{z}_j}^2\big).

@@ -91,7 +91,7 @@ $\sqrt{8}/\sqrt{2}=2$ --- consistente.
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[quantas componentes guardar]
-Uma matriz de dados com $d=8$ covariáveis tem autovalores da matriz de
+Uma matriz de dados com $p=8$ covariáveis tem autovalores da matriz de
 covariância
 \[
   \lambda = (12{,}5;\ 6{,}2;\ 3{,}1;\ 1{,}4;\ 0{,}9;\ 0{,}5;\ 0{,}3;\ 0{,}1).
@@ -143,13 +143,13 @@ Neste exemplo, \texttt{PCA(n\_components=0.90)} guardaria $4$.
 
 É mais conveniente porque $0{,}90$ é uma quantidade \textbf{interpretável e
 transferível}: significa a mesma coisa em qualquer conjunto de dados, enquanto
-``4 componentes'' depende de $d$ e da estrutura de correlação. Num
+``4 componentes'' depende de $p$ e da estrutura de correlação. Num
 \texttt{Pipeline} com validação cruzada, o número escolhido pode até variar entre
 dobras --- e é isso que se quer, já que o critério é o mesmo.
 
 \smallskip
 \textbf{(d)} A soma dos autovalores é o \textbf{traço} de $\bm S$, isto é, a soma
-das variâncias das $d$ covariáveis originais --- a ``variância total'' dos dados.
+das variâncias das $p$ covariáveis originais --- a ``variância total'' dos dados.
 (Girar os eixos não muda o traço.)
 
 E aí está o problema: essa soma é medida nas \textbf{unidades} das covariáveis.
@@ -235,7 +235,7 @@ função de risco a minimizar. Rodar com dois ou três valores e ver o que
 \textbf{(d)} Por duas razões, e a primeira é decisiva.
 
 \textbf{Não existe \texttt{transform}.} O t-SNE não aprende um mapa
-$\R^d\to\R^2$; ele resolve um problema de otimização cujas variáveis são as
+$\R^p\to\R^2$; ele resolve um problema de otimização cujas variáveis são as
 \emph{posições dos pontos que você lhe deu}. Não há como projetar uma observação
 nova sem refazer o ajuste --- e refazê-lo com o ponto novo muda as posições de
 todos os outros. Um `Pipeline` precisa de um passo que possa ser ajustado no
@@ -257,10 +257,10 @@ treino e a aplica a qualquer ponto novo. É por isso que ela cabe num
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[PCA e SVD são a mesma coisa]
-Seja $\bm X$ a matriz $n\times d$ dos dados \textbf{centrados}, com decomposição
+Seja $\bm X$ a matriz $n\times p$ dos dados \textbf{centrados}, com decomposição
 em valores singulares $\bm X = \bm U\bm D\bm V^\top$, em que $\bm U$ é
 $n\times r$ com colunas ortonormais, $\bm D$ é diagonal $r\times r$ com
-$d_1\ge d_2\ge\dots\ge d_r>0$, e $\bm V$ é $d\times r$ com colunas ortonormais.
+$d_1\ge d_2\ge\dots\ge d_r>0$, e $\bm V$ é $p\times r$ com colunas ortonormais.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Mostre que as colunas de $\bm V$ são autovetores de
         $\bm S=\tfrac1n\bm X^\top\bm X$ e que o autovalor associado a $\bm v_j$
@@ -329,7 +329,7 @@ São duas leituras equivalentes do mesmo objeto:
 \begin{itemize}[leftmargin=1.4cm]
   \item \emph{maximizar} a variância retida nas $k$ direções escolhidas;
   \item \emph{minimizar} o erro quadrático de reconstrução ao voltar de $k$
-        dimensões para $d$.
+        dimensões para $p$.
 \end{itemize}
 E elas são equivalentes pelo mesmo mecanismo do Exercício~4 da Lista Teórica~E1:
 a soma de quadrados total é fixa, então maximizar a parte ``explicada'' é

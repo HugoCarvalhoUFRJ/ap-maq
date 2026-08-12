@@ -154,15 +154,15 @@ e a Prop.~\ref{prop:media} rende pouco quando $\mathrm{Cor}(g_b)$ é alta.
 
 \begin{ideia}
 \textbf{Florestas aleatórias} (Breiman) \emph{descorrelacionam} as árvores: em
-\emph{cada nó}, sorteia-se um subconjunto de apenas $m<d$ covariáveis e a divisão
+\emph{cada nó}, sorteia-se um subconjunto de apenas $m<p$ covariáveis e a divisão
 só pode usar uma delas. Isso impede que a variável dominante apareça sempre,
 diversificando as árvores e reduzindo mais a variância.
 \end{ideia}
 
 \noindent Detalhes:
 \begin{itemize}[leftmargin=1.4cm,nosep]
-  \item $m$ é o \emph{tuning parameter}; regra empírica $m\approx d/3$ em regressão
-        (e $m\approx\sqrt d$ em classificação). $m=d$ recupera o \emph{bagging}.
+  \item $m$ é o \emph{tuning parameter}; regra empírica $m\approx p/3$ em regressão
+        (e $m\approx\sqrt p$ em classificação). $m=p$ recupera o \emph{bagging}.
   \item O risco é \textbf{robusto a $B$}: ele estabiliza e \emph{não há
         superajuste} ao aumentar $B$ --- não vale a pena fazer CV em $B$, basta
         usar $B$ ``grande o bastante''.
@@ -230,7 +230,7 @@ from sklearn.model_selection import GridSearchCV
 # Arvore unica: cuidado com superajuste -> controle a complexidade (alpha de poda)
 arvore = DecisionTreeRegressor(ccp_alpha=0.0)   # ccp_alpha e o nosso alpha
 
-# Floresta aleatoria: B grande, m = max_features (~ d/3 em regressao)
+# Floresta aleatoria: B grande, m = max_features (~ p/3 em regressao)
 rf = RandomForestRegressor(n_estimators=500, max_features=1/3,
                            oob_score=True, random_state=0).fit(X_tr, y_tr)
 print("risco OOB (R2):", rf.oob_score_)
@@ -255,7 +255,7 @@ O notebook \texttt{Aula prática 06} compara árvore, floresta e \emph{boosting}
         correlacionados (Prop.~\ref{prop:media}).
   \item \textbf{Bagging} \eqref{eq:bagging}: árvores profundas em amostras
         bootstrap; OOB ``de graça''; importância por redução de RSS.
-  \item \textbf{Florestas}: \emph{descorrelacionam} sorteando $m\approx d/3$
+  \item \textbf{Florestas}: \emph{descorrelacionam} sorteando $m\approx p/3$
         variáveis por nó; robustas a $B$; adaptam-se à esparsidade.
   \item \textbf{Boosting}: ajuste sequencial dos resíduos; $\lambda$ pequeno, $p$
         raso, $B$ por \emph{early stopping} (cuidado: $B$ grande superajusta).

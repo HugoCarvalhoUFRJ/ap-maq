@@ -50,28 +50,38 @@ e completo e não tem versão para alunos. O `estilo-notas.sty` define a notaç�
 curso (`\x`, `\X`, `\E`, `\rhat`, `\risco`, `\Dados`, ...), os ambientes de teorema
 em português e as três caixas pedagógicas: `emsala`, `ideia` e `atencao`.
 
-### A notação da aula 02, que as outras ainda não seguem
+### A notação
 
-Pedido do Gabriel em 10/08/2026, aplicado por ora **só na aula 02** (as duas
-versões). Vale para material novo; ao mexer em qualquer outra aula, **veja qual
-convenção ela usa antes de escrever**.
+**O número de covariáveis é `p`**, em todo o curso — notas, listas, slides,
+notebooks e figuras. A migração do `d` terminou em 12/08/2026 e são 629 trocas em
+54 arquivos.
+
+Três papéis do `d` **sobreviveram de propósito**, e nenhum deles é dimensão:
+
+- **distância** `d(\x_i,\x_j)`, e a versão ao quadrado `d^2(\x,\X_i)` — aulas 04 e
+  E1. A migração até ajudou aqui: antes `d` era dimensão *e* distância na mesma
+  página da aula 05;
+- **índice**: `d_j` é valor singular na E2, `d_1` é documento na E3, `d^k_{\x}` é a
+  k-ésima distância na 04;
+- **diferencial** `\,d\x`, na aula 08.
+
+Nas **notas da aula 02** vale, além disso, uma convenção de forma que as outras
+aulas não seguem:
 
 - **matriz** — maiúscula, sem negrito, em `\mathbb`: `\mathbb{X}` (delineamento),
   `\mathbb{I}` (identidade). É o que os slides já faziam;
-- **vetor** — **minúscula**, em negrito: `\x`, `\bm{y}`, `\bbeta`, `\bm{\alpha}`.
-  Maiúscula ficou reservada a matriz, então `\X` e `\bm{Y}` saíram da aula 02 —
-  a macro `\X` do estilo continua existindo para as outras 13;
+- **vetor** — **minúscula**, em negrito: `\x`, `\bm{y}`, `\bbeta`, `\bm{\alpha}`;
 - **escalar** — sem negrito: `y_i`, `\beta_j`, `\lambda`, `p`, `n`.
-
-O número de covariáveis é **`p`**, não `d` — nas notas (as duas) e na `Aula
-prática 02`. O resto ainda é `d`, medido em 12/08/2026: 457 ocorrências em 34
-arquivos `.tex`, as figuras `05-taxas` e `05-vizinho-longe`, que rotulam `$d$`, e
-os notebooks das outras aulas. Dentro da própria aula 02 sobraram a `Lista teorica
-02` (quatro `$d>n$`) e a `Lista prática 02`.
 
 O motivo do arranjo não era estética: a macro `\X` é `\bm{X}`, e a matriz de
 delineamento também era escrita `\bm{X}` — vetor e matriz saíam com o mesmo glifo,
 lado a lado na mesma equação da §1.1.
+
+**Ela não foi estendida às outras aulas, e não deve ser.** Nas aulas 04, 05 e 08 a
+maiúscula distingue **vetor aleatório de realização** — `\E[(\rhat(\X)-r(\X))^2]`
+contra `d(\X_i,\x)` —, e "maiúscula só para matriz" apagaria essa distinção, que é
+o que sustenta a teoria da aula 05. A macro `\X` do estilo existe para isso, e é
+usada em 19 arquivos.
 
 Duas colisões que a convenção cria, ambas correntes na literatura e toleradas:
 `p` também aparece como *p*-valor e como densidade `p(\bbeta)`; e `\mathbb` serve

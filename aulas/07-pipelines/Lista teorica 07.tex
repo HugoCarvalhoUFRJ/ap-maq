@@ -79,9 +79,9 @@ A nota traz duas medições. Com $\bm X$ e $y$ gerados \textbf{independentemente
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Explique o mecanismo do primeiro número. Se $y$ é ruído puro, de onde sai
         um $R^2$ positivo?
-  \item Suponha $d$ covariáveis independentes de $y$, e que você fique com as $m$
+  \item Suponha $p$ covariáveis independentes de $y$, e que você fique com as $m$
         de maior correlação amostral com $y$. O que acontece com o $R^2$ inflado
-        quando $d$ cresce, com $n$ e $m$ fixos? Por quê?
+        quando $p$ cresce, com $n$ e $m$ fixos? Por quê?
   \item Explique por que a padronização não consegue produzir o mesmo efeito, por
         mais que ela use o conjunto todo.
   \item Se o efeito da padronização é desprezível, por que ainda assim se
@@ -105,14 +105,14 @@ do Exercício~4 da Lista Teórica~03 (selecionar é otimizar), aqui aplicado a
 covariáveis em vez de hiperparâmetros.
 
 \smallskip
-\textbf{(b)} O $R^2$ inflado \textbf{aumenta} com $d$. Quanto mais covariáveis
-você examina, maior é o máximo das $d$ correlações amostrais --- é o mesmo
+\textbf{(b)} O $R^2$ inflado \textbf{aumenta} com $p$. Quanto mais covariáveis
+você examina, maior é o máximo das $p$ correlações amostrais --- é o mesmo
 argumento do máximo de $M$ variáveis aleatórias do Exercício~4 da Lista~03. Com
-$d=10$ você escolhe as $m$ melhores de dez flutuações; com $d=10\,000$, as $m$
+$p=10$ você escolhe as $m$ melhores de dez flutuações; com $p=10\,000$, as $m$
 melhores de dez mil, que são muito maiores.
 
 Isso é desconfortável, porque a situação em que a seleção de variáveis parece
-mais necessária --- $d$ enorme --- é exatamente aquela em que fazê-la errado
+mais necessária --- $p$ enorme --- é exatamente aquela em que fazê-la errado
 custa mais caro.
 
 \smallskip

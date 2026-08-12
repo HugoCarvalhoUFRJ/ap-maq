@@ -278,16 +278,16 @@ e, pela observação acima, a variância trava em $\rho\,v(\x)$ por mais que $B$
 
 \begin{ideia}
 \textbf{Florestas aleatórias} (Breiman) \emph{descorrelacionam} as árvores: em
-\emph{cada nó}, sorteia-se um subconjunto de apenas $m<d$ covariáveis e a divisão
+\emph{cada nó}, sorteia-se um subconjunto de apenas $m<p$ covariáveis e a divisão
 só pode usar uma delas. Nos nós em que a variável dominante não é sorteada --- uma
-fração $1-m/d$ deles --- a árvore é obrigada a olhar para outra coisa, e descobre
+fração $1-m/p$ deles --- a árvore é obrigada a olhar para outra coisa, e descobre
 estrutura que o \emph{bagging} nunca veria. Menos $\rho$, menos variância.
 \end{ideia}
 
 \noindent Detalhes:
 \begin{itemize}[leftmargin=1.4cm,nosep]
-  \item $m$ é o \emph{tuning parameter}; regra empírica $m\approx d/3$ em regressão
-        (e $m\approx\sqrt d$ em classificação). $m=d$ recupera o \emph{bagging}.
+  \item $m$ é o \emph{tuning parameter}; regra empírica $m\approx p/3$ em regressão
+        (e $m\approx\sqrt p$ em classificação). $m=p$ recupera o \emph{bagging}.
   \item O risco é \textbf{robusto a $B$}: ele estabiliza e \emph{não há
         superajuste} ao aumentar $B$ --- não vale a pena fazer CV em $B$, basta
         usar $B$ ``grande o bastante''.
@@ -345,7 +345,7 @@ excesso de \emph{bagging} é inofensivo, excesso de \emph{boosting} superajusta.
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/06-numero-arvores.pdf}
   \caption{A diferença mais prática entre os dois métodos, medida num problema com
-  $n=150$, $d=8$ e ruído alto. À esquerda, a floresta: o risco cai, estabiliza em
+  $n=150$, $p=8$ e ruído alto. À esquerda, a floresta: o risco cai, estabiliza em
   torno de $3{,}34$ e \emph{fica lá} --- de $B=100$ para $B=500$ ele varia $-0{,}4\%$.
   Você pode exagerar em $B$ à vontade; só perde tempo de máquina. À direita, o
   \emph{boosting} com $\lambda=0{,}05$: o risco atinge $3{,}23$ em $B=32$ e depois
@@ -380,7 +380,7 @@ from sklearn.model_selection import GridSearchCV
 # Arvore unica: cuidado com superajuste -> controle a complexidade (alpha de poda)
 arvore = DecisionTreeRegressor(ccp_alpha=0.0)   # ccp_alpha e o nosso alpha
 
-# Floresta aleatoria: B grande, m = max_features (~ d/3 em regressao)
+# Floresta aleatoria: B grande, m = max_features (~ p/3 em regressao)
 rf = RandomForestRegressor(n_estimators=500, max_features=1/3,
                            oob_score=True, random_state=0).fit(X_tr, y_tr)
 print("risco OOB (R2):", rf.oob_score_)
@@ -419,7 +419,7 @@ O notebook \texttt{Aula prática 06} compara árvore, floresta e \emph{boosting}
   \item \textbf{Bagging} \eqref{eq:bagging}: árvores profundas em amostras
         bootstrap; OOB ``de graça''; importância por redução de RSS (enviesada ---
         use com cuidado).
-  \item \textbf{Florestas}: \emph{descorrelacionam} sorteando $m\approx d/3$
+  \item \textbf{Florestas}: \emph{descorrelacionam} sorteando $m\approx p/3$
         variáveis por nó; robustas a $B$; adaptam-se à esparsidade.
   \item \textbf{Boosting}: ajuste sequencial dos resíduos, partindo do viés máximo;
         $\lambda$ pequeno, $p$ raso, $B$ por \emph{early stopping} --- aqui $B$
