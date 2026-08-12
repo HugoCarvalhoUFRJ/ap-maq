@@ -428,15 +428,15 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
    "Além da linearidade" e a capa de "Regularização"; o argmin do MQO passou a ser
    repetido no segundo membro, que igualava um argmin a uma norma; e o limiar do
    lasso virou $(|\hat\beta| - \lambda/2)_+$.
+5. Em 12/08/2026, as três legendas do deck de k-médias trocaram de número de
+   figura: 10.5, 10.6 e 10.7 viraram **12.7, 12.8 e 12.9**. No ISLP o capítulo de
+   não supervisionado é o 12; o 10 é *Deep Learning*. Os capítulos 2 a 9 não
+   mudaram entre as edições, então as outras sete citações do curso (2.2, 2.9,
+   4.6, 4.9, 5.5, 6.7 e 8.3) seguem válidas.
 
-**Pendente, e não é edição de HTML:** as três citações do deck de k-médias agora
-nomeiam o `[ISLP]` com número de figura da edição antiga. No ISLP o capítulo de
-não supervisionado é o 12 — o 10 é *Deep Learning* —, então as figuras 10.5, 10.6
-e 10.7 correspondem a **12.7, 12.8 e 12.9** (conferido no `recursos/livros/ISLP.pdf`).
-Os capítulos 2 a 9 não mudaram entre as edições, então as outras sete citações
-(2.2, 2.9, 4.6, 4.9, 5.5, 6.7 e 8.3) seguem válidas.
-
-**`aulas/10-svm/10 SVM - slide.pdf` continua creditando "Hugo Carvalho"** em todas
-as páginas, e nomeia a UFRJ na capa. É um PDF compilado (aparentemente Beamer) sem
-fonte no repositório — não dá para corrigir sem o `.tex` de origem. É o único
-material do curso que ainda traz a autoria antiga.
+**Falta o fonte do `aulas/10-svm/10 SVM - slide.pdf`.** Ele credita "Hugo Carvalho"
+nas 31 páginas e nomeia a UFRJ na capa — é o único material do curso que ainda traz
+a autoria antiga —, e não dá para corrigir um PDF compilado. O que pedir ao Hugo: o
+`.tex` de um Beamer de 31 slides, título "SVM", compilado com pdfTeX 1.40.21.
+Quando chegar: trocar autoria e instituição, recompilar, commitar `.tex` e `.pdf`
+juntos.
