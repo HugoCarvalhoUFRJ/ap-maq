@@ -66,7 +66,7 @@ imprime. São commitados sem saída.
 ### Como rodar
 
 No **Google Colab** não é preciso instalar nenhum pacote: todos já vêm no ambiente
-padrão. Quanto aos dados, depende da aula — ver a seção seguinte.
+padrão. Os dados, sim, precisam ser enviados — ver a seção seguinte.
 
 **Localmente**, as dependências estão em [`requirements.txt`](requirements.txt):
 
@@ -84,17 +84,16 @@ necessário para a compressão de imagem da aula E1.
 ### De onde vêm os dados
 
 Os `.csv` ficam em [`recursos/dados/`](recursos/dados), em uma cópia única para o
-curso todo. Duas maneiras de lê-los convivem, e a migração de uma para a outra
-está em andamento:
+curso todo, e **nenhum notebook baixa dados da internet**. Todos procuram o
+arquivo em dois lugares, nesta ordem:
 
-- as **aulas práticas 01 e 02** e a **lista prática 02** (enunciado e gabarito)
-  não baixam nada da rede. Procuram o arquivo na pasta do próprio notebook e, em
-  seguida, em `../../recursos/dados/`, falhando com mensagem clara se não acharem
-  em nenhum dos dois. Funcionam com o repositório clonado e também para quem
-  recebe só o `.ipynb` e o `.csv` lado a lado; no Colab, é preciso subir o `.csv`;
-- os **outros 13 notebooks** ainda usam o padrão antigo, de caminho local com
-  *fallback* para uma URL do GitHub. São os que rodam no Colab sem ajuste
-  nenhum, desde que haja internet.
+1. a pasta do próprio notebook;
+2. `../../recursos/dados/`, que resolve quando o repositório está clonado.
+
+Se não acharem em nenhum dos dois, param com uma mensagem dizendo onde
+procuraram. Assim funciona tanto para quem clonou o repositório quanto para quem
+recebeu só o `.ipynb` e o `.csv` lado a lado. No Colab, é preciso subir o `.csv`
+junto com o notebook.
 
 ## Listas de exercícios
 

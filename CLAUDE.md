@@ -319,7 +319,7 @@ import os
 _nome = "superconductivity.csv"
 
 # procura em dois lugares, sem baixar nada da internet: a pasta deste
-# notebook primeiro e, se o repositorio estiver clonado, recursos/dados/
+# notebook primeiro ou então ../../recursos/dados/
 _lugares = [_nome, os.path.join("..", "..", "recursos", "dados", _nome)]
 _caminho = next((c for c in _lugares if os.path.exists(c)), None)
 
@@ -338,22 +338,10 @@ notebooks; uma cópia por pasta custaria ~230 MB. Por que não só `recursos/dad
 sem o repositório esse caminho nunca resolve, e o aluno teria de editar a primeira
 célula em toda aula. As duas tentativas anteriores foram essas, nessa ordem.
 
-**A migração está pela metade.** Já usam o padrão acima as **aulas práticas 01 e
-02** e a **lista prática 02** (enunciado e gabarito). Os outros **13 notebooks**
-ainda usam o antigo, de caminho local com fallback para a web:
-
-```python
-_local = os.path.join("..", "..", "recursos", "dados", _nome)
-_url = "https://raw.githubusercontent.com/HugoCarvalhoUFRJ/ap-maq/refs/heads/refactoring-baby/recursos/dados/" + _nome
-_fonte = _local if os.path.exists(_local) else _url
-```
-
-Enquanto eles existirem, **a branch na URL importa**: o fallback tem de apontar para
-`refactoring-baby`, porque na `main` os `.csv` seguem em `materiais-didaticos/` e
-não há merge planejado — apontar para `main` dá 404 permanente. Renomear a branch
-quebra o fallback dos 13.
-
-Converter os que faltam é mecânico: é a mesma célula, trocando o nome do arquivo.
+**A migração terminou em 12/08/2026**: os 17 notebooks que carregam `.csv` usam
+essa célula, byte a byte igual a menos do nome do arquivo. Nenhum baixa nada da
+rede, e nenhuma URL do GitHub sobrou no repositório — antes havia um *fallback*
+para `raw.githubusercontent`, que amarrava o material ao nome da branch.
 
 Quem **carrega** o quê, medido em 12/08/2026 (a contagem anterior era por menção
 ao nome do arquivo, e somava dois notebooks que só o citam no texto — a `E2` e a
