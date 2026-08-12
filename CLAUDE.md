@@ -16,14 +16,12 @@ diferentes — não etapas de um refactor:
 - **`main`** — as aulas do **Prof. Hugo Tremonte de Carvalho**, na estrutura
   antiga, com tudo numa única pasta `materiais-didaticos/`;
 - **`refactoring-baby`** — as aulas do **Gabriel Sanfins**, com a reorganização em
-  `aulas/` + `recursos/` e as modificações dele. É onde o trabalho acontece.
+  `aulas/` + `recursos/`. É onde o trabalho acontece, e o nome é enganoso: não é
+  uma branch temporária.
 
-**Não há plano de merge para a `main`**, e a divergência é deliberada. Não proponha
-fundir, rebasear ou "sincronizar com a `main`", nem trate as diferenças entre as
-duas como pendência. O nome `refactoring-baby` é enganoso: não é uma branch
-temporária.
-
-Vale conferir em qual branch se está antes de assumir caminhos.
+**Não há plano de merge**, e a divergência é deliberada. Não proponha fundir,
+rebasear ou "sincronizar com a `main`", nem trate as diferenças entre as duas como
+pendência.
 
 ## Notas de aula (LaTeX)
 
@@ -34,8 +32,7 @@ públicos:
   as perguntas a fazer à turma e o que dizer. Foi o que existia primeiro.
 - `NN Título (alunos).tex` — **versão dos estudantes**: leitura autônoma. Sem
   `emsala`, em tratamento direto ao leitor, com exemplos resolvidos, figuras e as
-  passagens que o docente preencheria no quadro. Roda de 1,3 a 1,7 vez o tamanho da
-  outra.
+  passagens que o docente preencheria no quadro.
 
 Ao editar conteúdo pedagógico, pergunte-se qual das duas o pedido atinge — na
 dúvida, as duas. As `(alunos)` carregam o estilo com a opção `aluno`:
@@ -45,10 +42,8 @@ dúvida, as duas. As `(alunos)` carregam o estilo com a opção `aluno`:
 \usepackage{../../recursos/latex/estilo-notas}          % roteiro do docente
 ```
 
-A opção é retrocompatível: sem ela o `.sty` se comporta exatamente como antes
-(conferido compilando as notas do docente com o `.sty` antigo e com o novo — PDFs
-idênticos). Ela carrega `tikz`/`pgfplots` e troca o cabeçalho para "Notas de Aula
---- versão do aluno".
+A opção carrega `tikz`/`pgfplots` e troca o cabeçalho para "Notas de Aula ---
+versão do aluno"; sem ela o `.sty` se comporta como antes.
 
 A exceção é `aulas/00-planejamento/00 Planejamento.tex`, que tem preâmbulo próprio
 e completo e não tem versão para alunos. O `estilo-notas.sty` define a notação do
@@ -68,9 +63,11 @@ convenção ela usa antes de escrever**.
   a macro `\X` do estilo continua existindo para as outras 13;
 - **escalar** — sem negrito: `y_i`, `\beta_j`, `\lambda`, `p`, `n`.
 
-O número de covariáveis é **`p`**, não `d`. Fora da aula 02 ainda é `d`: ~190
-ocorrências em 22 arquivos `.tex`, mais as figuras `05-taxas` e `05-vizinho-longe`,
-que rotulam `$d$`, e os notebooks.
+O número de covariáveis é **`p`**, não `d` — nas notas (as duas) e na `Aula
+prática 02`. O resto ainda é `d`, medido em 12/08/2026: 457 ocorrências em 34
+arquivos `.tex`, as figuras `05-taxas` e `05-vizinho-longe`, que rotulam `$d$`, e
+os notebooks das outras aulas. Dentro da própria aula 02 sobraram a `Lista teorica
+02` (quatro `$d>n$`) e a `Lista prática 02`.
 
 O motivo do arranjo não era estética: a macro `\X` é `\bm{X}`, e a matriz de
 delineamento também era escrita `\bm{X}` — vetor e matriz saíam com o mesmo glifo,
@@ -82,9 +79,8 @@ tanto para matriz (`\mathbb{X}`) quanto para conjunto ou operador (`\R`, `\E`).
 
 **O limiar do lasso no caso ortonormal é $\lambda/2$**, não $\lambda$. Sai de
 derivar $\|y-\mathbb{X}\beta\|^2 + \lambda\sum_j|\beta_j|$, sem $\frac12$ no RSS —
-a mesma convenção que dá $\hat\beta/(1+\lambda)$ para o Ridge. Notas, slide,
-`Lista teorica 02` e `gerar-figuras.py` já estavam certos; o notebook da aula 02
-foi corrigido em 10/08/2026.
+a mesma convenção que dá $\hat\beta/(1+\lambda)$ para o Ridge. Notas, slide, lista
+teórica, `gerar-figuras.py` e notebook estão todos nela.
 
 **`pgfplots` está em `compat=1.16`** porque é a versão do TeX Live desta máquina;
 valores mais novos fazem o pacote abortar com "compat=1.18 is unknown".
@@ -98,15 +94,13 @@ pdflatex "01 Introducao.tex"
 
 O `00 Planejamento.tex` precisa de **duas passadas** (usa `longtable` + `hyperref`).
 
-Pacotes necessários (Debian/Ubuntu):
+Pacotes necessários (Debian/Ubuntu) — o `-extra` é o que traz `tcolorbox`, das
+caixas pedagógicas:
 
 ```bash
 sudo apt install -y texlive-latex-base texlive-latex-recommended \
   texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
 ```
-
-`texlive-latex-extra` é o que traz `tcolorbox` (as caixas pedagógicas), `enumitem`
-e `multirow`.
 
 O estilo **não** carrega `babel`/`portugues` — os rótulos em português são
 definidos à mão, conforme comentário no `.sty`. Isso é deliberado; não há
@@ -199,18 +193,16 @@ seguido de célula de código vazia, e faziam sentido quando a aula prática era
 passa a **mostrar** em vez de deixar em aberto: cada `Sua vez` vira markdown +
 código + leitura do resultado. Já foram convertidas a **aula prática 01**
 (06/08/2026, quatro blocos) e a **02** (10/08/2026, três); as outras 12 ainda têm
-26 blocos e serão convertidas quando o Gabriel pedir. Não escreva `Sua vez` em
+**33 blocos** e serão convertidas quando o Gabriel pedir. Não escreva `Sua vez` em
 notebook novo.
 
 Ao converter, **meça antes de escrever**: em três dos sete blocos já convertidos o
-resultado contrariou a pergunta que o enunciado fazia, e o texto foi escrito sobre
-o medido. Um deles precisou de repetições e erro-padrão para não afirmar bobagem —
-a diferença que parecia existir entre Ridge e MQO com $n=500$ era menor que a
-incerteza da medida.
+resultado contrariou a pergunta do enunciado, e um deles precisou de repetições e
+erro-padrão para não afirmar bobagem.
 
-As **listas práticas e seus gabaritos** têm outros ~40 blocos `Sua vez`. Ali eles
-talvez façam sentido, já que a lista é o material de exercício — não os converta
-sem perguntar ao Gabriel.
+As **listas práticas e seus gabaritos** têm outros **46 blocos** `Sua vez`, em 28
+notebooks. Ali eles talvez façam sentido, já que a lista é o material de exercício
+— não os converta sem perguntar ao Gabriel.
 
 Cada notebook reproduz as simulações da figura correspondente em
 `recursos/figuras/gerar-figuras.py`, **com os mesmos parâmetros e a mesma semente**,
@@ -236,12 +228,13 @@ padrão desta máquina tem scikit-learn 1.3; o dele é o conda `barennet_env`, c
 ```
 
 Isso já pegou uma quebra real: `LassoCV` e `ElasticNetCV` perderam o parâmetro
-`n_alphas` no scikit-learn 1.7, e a aula prática 02 morria da §8 em diante. Omitir
-o parâmetro usa o padrão de 100 alphas e funciona em qualquer versão. Uma varredura
-dos argumentos de **todas** as chamadas do scikit-learn em **todos** os notebooks
-contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas ela cobre nome
-de parâmetro, não mudança de comportamento padrão, que altera número sem levantar
-erro. O `requirements.txt` registra isso.
+`n_alphas` no scikit-learn 1.7, e a aula prática 02 parava no meio. Omitir o
+parâmetro usa o padrão de 100 alphas e funciona em qualquer versão. Cuidado para
+não "corrigir" demais: o `Lasso.path` é outra função, ainda aceita `n_alphas`, e a
+aula 02 o usa na §5. Uma varredura dos argumentos de **todas** as chamadas do
+scikit-learn em **todos** os notebooks contra as assinaturas da 1.9 não achou outro
+caso (10/08/2026) — mas ela cobre nome de parâmetro, não mudança de comportamento
+padrão, que altera número sem levantar erro. O `requirements.txt` registra isso.
 
 **Armadilha ao abrir um notebook no Jupyter:** salvar grava as saídas e os
 `execution_count`, e ainda **reordena as chaves de cada célula** para a ordem
@@ -260,8 +253,7 @@ for c in nb["cells"]:
 json.dump(nb, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 ```
 
-Isso resolve as saídas; a reordenação fica, e é inofensiva (o JSON é
-equivalente). Hoje 40 notebooks estão na ordem do script e 2 na do Jupyter.
+Isso resolve as saídas; a reordenação fica, e é inofensiva (o JSON é equivalente).
 
 Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
 `EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
@@ -272,13 +264,10 @@ convenções acima. Os quatro `Aula prática` herdados foram aposentados; contin
 ## Listas de exercícios
 
 Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, na
-pasta da própria aula, em duas partes e sempre com gabarito:
-
-- `Lista teorica NN.tex` → `Lista teorica NN.pdf` (3–4 exercícios, fácil a
-  mediano, todos tratados igual — não há exercício marcado como opcional);
-- `Lista teorica NN - gabarito.tex` → o **mesmo conteúdo** com as soluções;
-- `Lista prática NN.ipynb` (lacunas marcadas por `...`) e
-  `Lista prática NN - gabarito.ipynb`.
+pasta da própria aula e sempre com gabarito: `Lista teorica NN.tex` (3–4
+exercícios, nenhum marcado como opcional) e `Lista prática NN.ipynb` (lacunas
+marcadas por `...`), cada uma com seu `- gabarito`. O gabarito teórico é o
+**mesmo conteúdo**, com as soluções ligadas por uma opção.
 
 O estilo é `recursos/latex/estilo-lista.sty`, que **carrega** o
 `estilo-notas.sty` em vez de duplicá-lo — por isso mexer nas listas não obriga a
@@ -301,12 +290,9 @@ Quatro armadilhas, todas já pagas uma vez:
    para o aluno não copiar o número do laboratório. Consequência: todo número do
    gabarito precisa ser **medido**, não previsto.
 4. **Enunciado e gabarito são gerados da mesma fonte** (um script com as lacunas
-   marcadas), **e esse script não está no repositório** — o único `.py` que já
-   existiu aqui, em qualquer commit de qualquer branch, é o `gerar-figuras.py`.
-   Ele está na máquina de quem produziu o material, como os `.qmd` dos slides.
-   Consequência: ao mexer nos dois `.ipynb` à mão, edite-os no mesmo passo e
-   confira que só divergem nas lacunas — foi assim que a lista prática 02 migrou
-   para o padrão de dois lugares em 12/08/2026.
+   marcadas), **e esse script não está no repositório** — como os `.qmd` dos
+   slides, ficou na máquina de quem produziu o material. Mexer nos dois `.ipynb`
+   à mão exige fazê-lo no mesmo passo e conferir que só divergem nas lacunas.
 
 Como compilar, de dentro da pasta da aula:
 
@@ -316,11 +302,9 @@ pdflatex "Lista teorica 03.tex"
 pdflatex "Lista teorica 03 - gabarito.tex"
 ```
 
-**As 8 listas herdadas saíram desta branch** (seguem na `main` e no histórico).
-Elas creditavam o docente anterior, não tinham fonte `.tex` em lugar nenhum e
-estavam numeradas pela ordem antiga dos slides — o que fazia 8 das 10 citações
-`Para praticar` nas notas apontarem para a lista errada. Com uma lista por aula,
-a numeração é 1:1 e essa classe de erro deixa de existir.
+**As 8 listas herdadas saíram desta branch** (seguem na `main` e no histórico):
+creditavam o docente anterior, não tinham fonte `.tex` e estavam numeradas pela
+ordem antiga dos slides. Com uma lista por aula, a numeração é 1:1.
 
 ## Dados
 
@@ -418,37 +402,32 @@ dos dados", é **se ela olha o $Y$**:
   $Y$, e portanto nenhuma consegue fabricar sinal a partir de ruído.
 
 O PCA estava classificado como grave nas notas E2 e 07. A `Aula prática E2` (§7)
-mediu em quatro configurações de $(n,d,k)$ com $y$ de ruído puro: **em nenhuma o
+mediu quatro configurações de $(n,d,k)$ com $y$ de ruído puro e **em nenhuma o
 $R^2$ foi inflado** — ele piorou, porque componentes calculados sobre o conjunto
-todo não são os componentes ótimos de nenhuma dobra de treino. As duas notas foram
-corrigidas em 05/08/2026.
+todo não são os ótimos de nenhuma dobra de treino. As duas notas foram corrigidas
+em 05/08/2026.
 
 A conduta prática não mudou: tudo isso vai para o `Pipeline`, porque corrigir custa
 uma linha. O que mudou é onde gastar vigilância.
 
 ## Histórico de correções relevantes
 
-Estas edições foram feitas **diretamente nos HTMLs** e portanto se perdem se alguém
-recompilar as apresentações a partir dos `.qmd` (que não estão no repositório).
-Quem mantiver os `.qmd` precisa replicar todas:
+Feitas **diretamente nos HTMLs**, e portanto perdidas se alguém recompilar a partir
+dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
 
 1. Os slides das aulas 01 e 03 traziam invertidas as definições de regressão e
-   classificação (diziam "Y qualitativa: problema de regressão"). O correto: $Y$
-   quantitativa → regressão; $Y$ qualitativa → classificação. Provavelmente está
-   uma única vez no fonte, copiado entre as duas apresentações.
-2. Em 05/08/2026, o bloco de autoria dos 10 slides passou de
-   `Hugo Tremonte de Carvalho` / `hugo@dme.ufrj.br` para `Gabriel Sanfins` /
-   `gabrielsanfins@id.uff.br`, com os `id` das duas headings atualizados junto
-   (`gabriel-sanfins` e `gabrielsanfinsid.uff.br` — o Quarto derruba o `@`).
-   Nenhum link apontava para os `id` antigos.
+   classificação. O correto: $Y$ quantitativa → regressão; $Y$ qualitativa →
+   classificação.
+2. Em 05/08/2026, a autoria dos 10 slides passou de `Hugo Tremonte de Carvalho` /
+   `hugo@dme.ufrj.br` para `Gabriel Sanfins` / `gabrielsanfins@id.uff.br`, com os
+   `id` das duas headings atualizados junto (`gabriel-sanfins` e
+   `gabrielsanfinsid.uff.br` — o Quarto derruba o `@`).
 3. Em 10/08/2026, `[ITSL]` virou `[ISLP]` em **14 citações de seis decks** (01, 02,
-   03, 06, 08 e o EXTRA de k-médias). É o mesmo livro: a entrada bibliográfica da
-   aula 01 diz "with Applications in Python". Provavelmente a sigla está uma vez só
-   no fonte de cada apresentação.
-4. Em 10/08/2026, três correções no deck da aula 02: saiu um slide vazio (sem
-   título e sem conteúdo) entre "Além da linearidade" e a capa de "Regularização";
-   o argmin do MQO passou a ser repetido no segundo membro, que igualava um argmin
-   a uma norma; e o limiar do lasso virou $(|\hat\beta| - \lambda/2)_+$.
+   03, 06, 08 e o EXTRA de k-médias). É o mesmo livro.
+4. Em 10/08/2026, três correções no deck da aula 02: saiu um slide vazio entre
+   "Além da linearidade" e a capa de "Regularização"; o argmin do MQO passou a ser
+   repetido no segundo membro, que igualava um argmin a uma norma; e o limiar do
+   lasso virou $(|\hat\beta| - \lambda/2)_+$.
 
 **Pendente, e não é edição de HTML:** as três citações do deck de k-médias agora
 nomeiam o `[ISLP]` com número de figura da edição antiga. No ISLP o capítulo de
