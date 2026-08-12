@@ -582,13 +582,14 @@ famílias na mesma grade, converta.
 O notebook \texttt{Aula prática 02} percorre tudo isso com dados de verdade
 (\texttt{superconductivity.csv}, $p=81$): mede o número de condição, exibe duas
 soluções distintas de MQO com o mesmo RSS quando $p>n$, levanta os caminhos de
-regularização e compara MQO, Ridge, Lasso e Elastic Net.
+regularização e compara MQO, Ridge e Lasso.
 
 \begin{observacao}[quando a regularização \emph{não} ajuda]
 Vale saber de antemão o que você vai encontrar lá: com $n=14\,884$ e $p=81$, o MQO
 vai bem e o Lasso \emph{não} melhora a predição --- as amostras sobram para estimar
-81 parâmetros com precisão. O ganho aparece em outro lugar: o Lasso entrega o mesmo
-desempenho com 66 covariáveis em vez de 81. Já num recorte com $n=40$, os papéis se
+81 parâmetros com precisão. O ganho aparece em outro lugar: o Lasso entrega quase o
+mesmo desempenho (EQM de teste $318{,}8$ contra $307{,}8$) com 66 covariáveis em vez
+de 81. Já num recorte com $n=40$, os papéis se
 invertem e a regularização ganha com folga. Regularizar não é sempre melhor; é melhor
 quando $p$ é grande \emph{em relação a} $n$.
 \end{observacao}
