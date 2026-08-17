@@ -46,7 +46,18 @@ O candidato ingênuo é o \emph{erro quadrático médio no treino} (risco empír
 \end{equation}
 O problema: $g$ foi \emph{escolhida para ajustar exatamente esses pontos}. O
 EQM\eqref{eq:eqm} é um estimador \textbf{otimista} (enviesado para baixo) de
-$\risco(g)$, e o viés cresce com a complexidade do modelo.
+$\risco(g)$, e esse viés --- o \emph{otimismo} --- cresce com a complexidade do
+modelo.
+
+\begin{emsala}
+Cuidado com a palavra, e vale escrever as duas no quadro lado a lado: o viés desta
+frase é o do \emph{EQM como estimador do risco},
+$\E[\mathrm{EQM}(g)]-\risco(g)$, que \emph{cresce} com a complexidade. Não é o viés
+do \emph{modelo} da Aula~01, $\E_\Dados[\rhat(\x_0)]-r(\x_0)$, que \emph{cai} com a
+complexidade. Um é o erro do modelo, o outro é o erro da régua que mede o modelo ---
+e o modelo mais flexível é o que tem viés pequeno \emph{e} régua mais mentirosa.
+Alguém vai perguntar; melhor antecipar.
+\end{emsala}
 
 \begin{atencao}
 Levado ao extremo, minimizar o erro de treino leva ao superajuste perfeito: um
@@ -135,6 +146,19 @@ o lote $L_j$ e avalie nesse lote:
 Cada observação é usada para validação \emph{exatamente uma vez} e para treino
 $k-1$ vezes. Quando $k=n$ recuperamos o LOOCV \eqref{eq:loocv}. Valores típicos:
 $k=5$ ou $k=10$.
+
+\begin{emsala}
+Alguém que tenha lido o [ISLP] vai estranhar: a fórmula (5.3) de lá é
+$\mathrm{CV}_{(k)}=\frac1k\sum_j \mathrm{EQM}_j$, a média dos EQM das dobras. É a
+mesma coisa --- agrupando \eqref{eq:kfold} por dobra sai
+$\sum_j (\abs{L_j}/n)\,\mathrm{EQM}_j$, a mesma média \emph{ponderada pelo tamanho
+das dobras}. Coincidem exatamente quando $k$ divide $n$. A nossa pesa cada
+observação igualmente; a do [ISLP], cada dobra --- e é a do [ISLP] que o
+\texttt{cross\_val\_score} calcula. Quando $k$ não divide $n$, a §6 da
+\texttt{Aula prática 03} mede a diferença: $0{,}9\%$ com $n=50$, $k=7$, e o grau
+escolhido muda em 9 de 300 amostras. Daí a regra prática: com $n$ pequeno, escolha
+um $k$ que divida $n$.
+\end{emsala}
 
 \begin{ideia}
 A validação cruzada estima o risco \emph{de um procedimento} (``ajustar este tipo

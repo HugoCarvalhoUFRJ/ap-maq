@@ -63,7 +63,29 @@ O candidato ingênuo é o \emph{erro quadrático médio no treino} (risco empír
 \end{equation}
 O problema: $g$ foi \emph{escolhida para ajustar exatamente esses pontos}. O
 EQM\eqref{eq:eqm} é um estimador \textbf{otimista} (enviesado para baixo) de
-$\risco(g)$, e o viés cresce com a complexidade do modelo.
+$\risco(g)$, e esse viés --- o \emph{otimismo} --- cresce com a complexidade do
+modelo.
+
+\begin{atencao}[dois ``vieses'' diferentes, e eles andam em sentidos opostos]
+A palavra \emph{viés} acabou de mudar de sentido, e vale parar um instante, porque
+a Aula~01 ensinou o outro:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \textbf{o viés do modelo}, da decomposição viés--variância da Aula~01:
+        $\E_\Dados[\rhat(\x_0)]-r(\x_0)$, o quanto o método erra o alvo $r$. Esse
+        \textbf{cai} com a complexidade --- é a curva que desaba a partir do
+        grau~5 na figura da decomposição;
+  \item \textbf{o viés do EQM de treino como estimador do risco}:
+        $\E[\mathrm{EQM}(g)]-\risco(g)$, o quanto a \emph{régua} mente. Esse
+        \textbf{cresce} com a complexidade, e é dele que a frase acima fala.
+\end{itemize}
+São objetos de níveis diferentes: um é o erro do modelo, o outro é o erro da
+\emph{medida} do erro do modelo --- e não há contradição em o mesmo modelo ter os
+dois. O grau~49 da §3 da \texttt{Aula prática 03} é o caso extremo: erro de treino
+$0{,}3049$, \emph{menor} que o $0{,}3580$ do grau~5, e risco $25{,}5$. Ao subir o
+grau, o viés do modelo desapareceu e o da régua explodiu junto. É por isso que o
+erro de treino não pode arbitrar entre modelos de complexidades diferentes: quanto
+mais flexível o candidato, mais a régua o favorece.
+\end{atencao}
 
 \begin{atencao}
 Levado ao extremo, minimizar o erro de treino leva ao superajuste perfeito: um
@@ -130,19 +152,58 @@ Cada $Y_i$ é predito por um modelo que \emph{não} o viu. LOOCV é
 \emph{aproximadamente não-viesado} para o risco esperado e não tem aleatoriedade de
 divisão.
 
-\begin{observacao}[por que ``aproximadamente não-viesado'']
-A conta é curta e vale ver. Se $\risco(g)$ é o risco esperado do procedimento
-treinado com $n$ observações, então, num conjunto com $n+1$ observações,
+\begin{observacao}[por que ``aproximadamente não-viesado'']\label{obs:loo}
+A conta é curta, e o ``aproximadamente'' tem uma causa precisa --- vale ver as
+duas. Primeiro uma notação: escreva $\risco_m$ para o risco \emph{esperado} do
+procedimento treinado com $m$ observações, isto é, a média de $\risco(g)$ também
+sobre o sorteio do conjunto de treino. Repare na diferença: $\risco(g_{-i})$ é o
+risco \emph{daquele} ajuste, que depende dos dados que caíram nele; $\risco_m$ é a
+média desses ao longo de todos os treinos possíveis de tamanho $m$. É de
+$\risco_n$ que queremos uma estimativa.
+
+Você tem $n$ observações, e $g_{-i}$ é ajustado com as outras $n-1$; chame esse
+conjunto de $\Dados_{-i}$. Todo o argumento está numa observação só:
+$(\X_i,Y_i)$ \textbf{não participou} do ajuste de $g_{-i}$. Dado $\Dados_{-i}$, o
+par é uma observação nova, independente do que treinou o modelo --- e a definição
+de risco dá, literalmente,
 \[
-  \E\!\left[\frac{1}{n+1}\sum_{i=1}^{n+1}\big(Y_i-g_{-i}(\X_i)\big)^2\right]
-  = \frac{1}{n+1}\sum_{i=1}^{n+1}\E\big[(Y_i-g_{-i}(\X_i))^2\big]
-  = \frac{1}{n+1}\sum_{i=1}^{n+1}\risco(g) = \risco(g),
+  \E\big[(Y_i-g_{-i}(\X_i))^2 \,\big|\, \Dados_{-i}\big] = \risco(g_{-i}) .
 \]
-porque cada $g_{-i}$ é treinado com exatamente $n$ observações e tem, portanto, a
-mesma distribuição. O ``aproximadamente'' está no descompasso de uma unidade: o
-LOOCV calculado com $n$ dados é não viesado para o risco do procedimento com $n-1$
-dados, não com $n$.
+Tome agora a esperança sobre $\Dados_{-i}$, que é um treino de tamanho $n-1$:
+$\E[\risco(g_{-i})]=\risco_{n-1}$, e o mesmo valor para todo $i$, porque os $n$
+conjuntos $\Dados_{-i}$ têm todos o mesmo tamanho e a mesma distribuição. Somando
+as $n$ parcelas de \eqref{eq:loocv},
+\[
+  \E\big[\riscohat_{\text{LOO}}\big]
+   = \frac1n\sum_{i=1}^n \E\big[(Y_i-g_{-i}(\X_i))^2\big]
+   = \frac1n\sum_{i=1}^n \risco_{n-1}
+   = \risco_{n-1},
+\]
+\textbf{exatamente} --- sem aproximação nenhuma. E note o que \emph{não} foi
+preciso supor: em momento nenhum os $g_{-i}$ precisaram ser independentes entre si.
+Não são, aliás --- dois deles compartilham $n-2$ observações. Esperança é linear e
+não se importa; a dependência entre as parcelas vai afetar a \emph{variância} do
+estimador, e é exatamente esse o assunto da §\ref{sec:escolhak}.
+
+O ``aproximadamente'', então, não está na conta: está no \textbf{alvo}. O LOOCV é
+não viesado para $\risco_{n-1}$, e você queria $\risco_n$ --- o risco do modelo que
+vai de fato usar, treinado com a amostra inteira. Como treinar com mais dados
+costuma ajudar, $\risco_{n-1}\ge\risco_n$, e o LOOCV tende a ser levemente
+\emph{pessimista}. Levemente mesmo: o descompasso é de uma observação em $n$,
+pequeno demais para a simulação da Figura~\ref{fig:escolhak} separar de zero (lá o
+viés medido na LOOCV é $-0{,}01$, do tamanho do próprio ruído de Monte Carlo). É
+por isso que a LOOCV é a menos enviesada das validações cruzadas.
 \end{observacao}
+
+\begin{atencao}[se você for ler a Observação 1.5 do {[AME]}]
+O livro faz a mesma conta, mas partindo de um conjunto com $n+1$ observações, e
+conclui $\E[\,\cdot\,]=\risco(g)$ na bala. Não é outra conta nem um resultado mais
+forte: é a mesma, reindexada. Ele escolhe o tamanho do banco de modo que cada
+$g_{-i}$ treine com exatamente $n$ pontos, e aí o alvo sai limpo. O preço é que o
+banco da conta tem $n+1$ observações e o seu tem $n$ --- foi para não pagar esse
+preço que fizemos acima com $n$, deixando o descompasso aparecer onde ele de fato
+mora, no alvo.
+\end{atencao}
 
 \noindent O custo aparente é alto ($n$ ajustes), mas nem sempre:
 
@@ -173,6 +234,38 @@ o lote $L_j$ e avalie nesse lote:
 Cada observação é usada para validação \emph{exatamente uma vez} e para treino
 $k-1$ vezes. Quando $k=n$ recuperamos o LOOCV \eqref{eq:loocv}. Valores típicos:
 $k=5$ ou $k=10$.
+
+\begin{atencao}[a mesma fórmula, escrita de dois jeitos]
+Se você abrir o [ISLP] --- e a leitura recomendada pede que abra ---, vai encontrar
+a validação cruzada definida de outro jeito. A fórmula~(5.3) de lá calcula um
+$\mathrm{EQM}_j$ \emph{dentro} de cada dobra e tira a média dos $k$:
+\[
+  \mathrm{CV}_{(k)} = \frac1k\sum_{j=1}^{k}\mathrm{EQM}_j,
+  \qquad
+  \mathrm{EQM}_j = \frac{1}{\abs{L_j}}\sum_{i\in L_j}\big(Y_i-g_{-j}(\X_i)\big)^2 .
+\]
+Não são fórmulas rivais. Agrupe \eqref{eq:kfold} dobra a dobra e ela vira
+\[
+  \riscohat_{k\text{-CV}} = \sum_{j=1}^{k}\frac{\abs{L_j}}{n}\,\mathrm{EQM}_j :
+\]
+a média dos \emph{mesmos} $\mathrm{EQM}_j$, só que \textbf{ponderada pelo tamanho
+das dobras}. Quando $k$ divide $n$ todas têm $\abs{L_j}=n/k$, os pesos são todos
+iguais a $1/k$, e as duas contas dão o mesmo número --- exatamente o mesmo, não
+``aproximadamente''. A diferença de fundo é o que cada uma toma como unidade:
+\eqref{eq:kfold} pesa igualmente cada \emph{observação}, a do [ISLP] pesa
+igualmente cada \emph{dobra}.
+
+Quando $k$ \emph{não} divide $n$ elas divergem, e vale saber que o
+\texttt{scikit-learn} segue a do [ISLP] --- \texttt{cross\_val\_score(\dots).mean()}
+é a média não ponderada. Como as dobras do \texttt{KFold} nunca diferem entre si em
+mais de uma observação, a divergência encolhe como $k/n$: a §6 da
+\texttt{Aula prática 03} mede $0{,}9\%$ com $n=50$ e $k=7$, e nos 21 mil pontos do
+\texttt{superconductivity.csv} seria de $0{,}03\%$. Pequena --- mas não inofensiva
+em amostra pequena: lá mesmo, escolher o grau do polinômio por uma ou por outra dá
+respostas diferentes em 9 de 300 amostras. A moral não é que uma das duas esteja
+certa; é que, com $n$ pequeno, \textbf{convém escolher um $k$ que divida $n$}, e aí
+a pergunta não se coloca.
+\end{atencao}
 
 \begin{figure}[htbp]
   \centering
@@ -242,7 +335,7 @@ certo. Se você quer \emph{reportar} o desempenho, aí sim precisa do valor --- 
 isso usa-se um conjunto de teste separado, ou CV aninhada.
 \end{ideia}
 
-\subsection{Viés, variância e a escolha de $k$}
+\subsection{Viés, variância e a escolha de $k$}\label{sec:escolhak}
 O argumento clássico para a escolha de $k$ é ele mesmo um balanço
 viés--variância \emph{da estimativa do risco}:
 \begin{itemize}[leftmargin=1.4cm]
@@ -256,6 +349,32 @@ viés--variância \emph{da estimativa do risco}:
         não é bem o que você vai usar no final. Em troca, as dobras são mais
         independentes.
 \end{itemize}
+
+\begin{ideia}[de onde vem o viés, e por que ele é sempre pessimista]
+A Observação~\ref{obs:loo} já explica o viés do segundo item, e a explicação vale
+para todo $k$. Com $k$ dobras de tamanho igual, cada $g_{-j}$ treina com $n-n/k$
+observações, e o par $(\X_i,Y_i)$ de uma dobra continua sendo, para o modelo
+ajustado sem ela, uma observação nova. Repetindo o cálculo de lá parcela por
+parcela,
+\[
+  \E\big[\riscohat_{k\text{-CV}}\big] = \risco_{\,n-n/k},
+  \qquad\text{quando você queria } \risco_n .
+\]
+Não há nada de misterioso no viés da validação cruzada: ele é o preço de avaliar um
+procedimento treinado com \emph{menos dados} do que aquele que você vai usar no
+fim. Com $k=10$ são 90\% da amostra e quase não se nota; com $k=2$, metade dela.
+
+Duas consequências que vale guardar. A primeira é o \textbf{sinal}: como menos
+dados costumam piorar o ajuste, $\risco_{\,n-n/k}\ge\risco_n$, e a validação
+cruzada erra \emph{por cima}. Quando houver viés, ele será pessimista --- ao
+contrário do erro de treino, que erra sempre por baixo. (Na tabela da §8 da
+\texttt{Aula prática 03} isso se vê em $k=2$, $5$ e $10$; de $k=25$ em diante o
+viés já é menor que o ruído da própria simulação, e o sinal deixa de ser legível.)
+A segunda é que esse viés
+não diz nada sobre a \emph{variância}: aquela depende de quanto as dobras se
+parecem, que é a outra metade do argumento clássico --- e é a metade que a medição
+abaixo vai contrariar.
+\end{ideia}
 
 A Figura~\ref{fig:escolhak} mede as duas coisas na nossa população.
 
@@ -340,7 +459,7 @@ distribuição amostral de $\widehat\theta$; por exemplo,
 $\widehat{\mathrm{EP}}(\widehat\theta)$ é o desvio-padrão dessas réplicas, e um
 intervalo de confiança de 95\% pode ser dado pelos percentis $2{,}5\%$ e $97{,}5\%$.
 
-\begin{exemplo}[O exemplo do [ISLP]: como dividir um investimento]
+\begin{exemplo}[O exemplo do {[ISLP]}: como dividir um investimento]
 Você quer investir em dois ativos com retornos aleatórios $X$ e $Y$, pondo uma
 fração $\alpha$ em $X$ e $1-\alpha$ em $Y$. Para minimizar o risco da carteira,
 $\Var(\alpha X+(1-\alpha)Y)$, a fração ótima é
