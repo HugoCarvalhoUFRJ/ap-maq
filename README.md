@@ -39,7 +39,8 @@ requirements.txt   pacotes necessários para rodar as aulas práticas
 ```
 
 Cada pasta de aula contém, conforme disponível:
-- o **slide** (`.html` ou `.pdf`);
+- o **slide**: `.html` gerado pelo Quarto em treze aulas, e um Beamer em `.tex` mais
+  `.pdf` na aula 10, com as figuras dele em `slide-figuras/`;
 - as **notas de aula** em duas versões (`.tex` + `.pdf` compilado);
 - a **aula prática** (`Aula prática NN.ipynb`), um laboratório guiado, para
   acompanhar em sala;

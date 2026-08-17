@@ -12,6 +12,11 @@
 *.fls
 *.fdb_latexmk
 
+# Beamer (só o slide de SVM, em aulas/10-svm/)
+*.nav
+*.snm
+*.vrb
+
 # Python / Jupyter
 __pycache__/
 .ipynb_checkpoints/

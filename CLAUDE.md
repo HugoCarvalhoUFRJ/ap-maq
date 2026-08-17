@@ -488,9 +488,44 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
    mudaram entre as edições, então as outras sete citações do curso (2.2, 2.9,
    4.6, 4.9, 5.5, 6.7 e 8.3) seguem válidas.
 
-**Falta o fonte do `aulas/10-svm/10 SVM - slide.pdf`.** Ele credita "Hugo Carvalho"
-nas 31 páginas e nomeia a UFRJ na capa — é o único material do curso que ainda traz
-a autoria antiga —, e não dá para corrigir um PDF compilado. O que pedir ao Hugo: o
-`.tex` de um Beamer de 31 slides, título "SVM", compilado com pdfTeX 1.40.21.
-Quando chegar: trocar autoria e instituição, recompilar, commitar `.tex` e `.pdf`
-juntos.
+## O slide de SVM, o único em Beamer
+
+O fonte chegou em 17/08/2026 e a autoria antiga acabou: **não há mais material do
+curso creditando o Prof. Hugo**. O que veio foi o `main.tex` do curso inteiro dele
+— 137 frames, 3473 linhas, 50 figuras — em que tudo menos SVM estava dentro de dois
+`\begin{comment}`. Daí saíram os 30 frames de SVM e as 10 figuras que eles usam.
+
+```
+aulas/10-svm/
+├── 10 SVM - slide.tex        ← 958 linhas, Beamer tema Madrid
+├── 10 SVM - slide.pdf        ← 31 páginas, mesmo caminho de antes
+└── slide-figuras/            ← as 10 figuras (1,1 MB), via \graphicspath
+```
+
+O `.tex` fica ao lado do `.pdf`, como em todo o resto do repositório; só as figuras
+ganharam subpasta, para dez `.pdf` soltos não se confundirem com notas. **Compile de
+dentro da pasta da aula**, duas passadas, e apague `.nav` e `.snm` junto com os
+outros artefatos (o `.gitignore` já os cobre).
+
+Quatro coisas a saber antes de mexer nele:
+
+1. **Ele não usa o `estilo-notas.sty`.** É Beamer com tema Madrid e o preâmbulo do
+   Hugo, com as macros dele (`\V`, `\Vg`, `\RR`, `\PP`, `\ds`, `\Hcal`). Nada disso
+   conversa com as notas — não tente unificar;
+2. **o rodapé das 31 páginas sai de `\author[...]` e `\title[...]`**, as chaves
+   *curtas*. É por isso que trocar a autoria foi uma linha, não trinta e uma. O
+   título curto também perdeu o "Apredizagem" (faltava o `n`) do original;
+3. **`babel` ficou fora, de propósito**, como no `estilo-notas.sty`: sem o
+   `texlive-lang-portuguese` o `babel` falha em silêncio e as dez legendas voltam
+   para "Figure". Com `\renewcommand{\figurename}{Figura}` compila igual em qualquer
+   máquina;
+4. **dois defeitos do original foram corrigidos** e não devem voltar: os ambientes
+   `withoutheadline`/`withoutbottomline` fechavam cruzados, e `\set\date{SVM}` usava
+   um `\set` inexistente — o LaTeX errava, se recuperava, e o `\date{SVM}` passava
+   por sorte. Hoje compila com `-halt-on-error` e zero erro.
+
+As citações `[ITSL]` viraram `[ISLP]` (9 no deck), fechando a troca que os outros
+seis decks receberam em 10/08/2026.
+
+**O que ficou de fora:** os outros 107 frames do curso do Hugo e 40 figuras. Estão
+só no zip que ele enviou, não no repositório.
