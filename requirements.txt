@@ -71,6 +71,16 @@ ipykernel>=6.0
 #                                           que MUDA o resultado, e o texto foi
 #                                           reescrito sobre o novo número.
 #
+#   TSNE(init=...)              aula E2  -> o padrão passou de "random" para
+#                                           "pca" na 1.2. Não quebra nada: muda
+#                                           silenciosamente o comportamento, e a
+#                                           Lista teorica E2 afirmava que "outra
+#                                           semente dá outro mapa", o que deixou
+#                                           de valer. Os notebooks e os trechos
+#                                           das notas passam o init explícito.
+#                                           É o exemplo de mudança de padrão que
+#                                           a varredura de assinaturas NÃO pega.
+#
 # Em 10/08/2026 os argumentos de todas as chamadas do scikit-learn em todos os
 # notebooks foram conferidos contra as assinaturas da 1.9.0, e não há outro
 # caso. Mas isso cobre apenas o NOME dos parâmetros: mudança de comportamento

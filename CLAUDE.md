@@ -219,6 +219,43 @@ correlacionadas piora o KNN *e* a Ridge; o t-SNE com `init="pca"` é reprodutív
 acrescentar comprimento e dígitos ao filtro de spam melhora a AUC e **piora** a AP.
 Um bloco precisou de repetições e erro-padrão para não afirmar bobagem.
 
+### As medições dos 40 blocos, e o que elas cobraram do resto do material
+
+Em 17/08/2026 as 40 medições foram conferidas contra as notas (as duas versões), as
+listas teóricas e seus gabaritos, as listas práticas e os 11 decks. **Toda medição
+nova é uma afirmação nova sobre o curso, e ela precisa passar por aí** — o notebook
+corrigido ao lado de uma nota que diz outra coisa é pior que os dois errados juntos.
+
+Três colisões saíram dessa varredura e estão corrigidas:
+
+- a `Lista teorica E2` dizia que o t-SNE "nem sequer é determinado de forma única
+  (rodar de novo com outra semente dá outro mapa)". **O `init` padrão do `TSNE`
+  virou `"pca"` na versão 1.2 do scikit-learn**, e os trechos de código das notas
+  omitem o `init` — então recebem `"pca"` e ficam determinísticos. Só com
+  `init="random"` a frase vale, e mesmo aí 92,6% das vizinhanças se preservam. Os
+  `lstlisting` passaram a trazer o `init` explícito;
+- quatro lugares afirmavam que um modelo com $n$ parâmetros para $n$ pontos
+  interpola com resíduo nulo. É verdade em aritmética exata, e a `Lista teorica 03`
+  nomeia justamente o caso que a `Aula prática 03` §3 mede — grau 49 em 50 pontos —
+  onde o medido é $0{,}3049$: a matriz perde posto numérico e o `lstsq` devolve a
+  solução de norma mínima. Só a analogia com o polinômio precisou de ressalva; o RSS
+  zero da árvore com uma observação por folha é exato também no computador;
+- a caixa da aula 07 dividia os métodos em duas categorias e são **três**: LDA, QDA
+  e Bayes ingênuo também são invariantes por reescala, e justamente *porque* estimam
+  a covariância.
+
+E cinco resultados que só existiam no notebook viraram caixa nas notas: a
+profundidade que a miopia gananciosa cobra (06), o expoente empírico depender da
+janela de $n$ (05), o corte por custo não cortar nada em modelo descalibrado (11), a
+silhueta e a compressão discordarem por um fator de dez (E1), e a AP descer enquanto
+a AUC sobe (E3).
+
+**Conferido e correto — não reabra:** o `C` da aula 10 (as notas já trazem a
+convenção de orçamento do [ISLP] e a inversão do scikit-learn em caixas vizinhas), o
+PCA e o KNN na E2 (as notas já dizem que o KNN se adapta sozinho à dimensão
+intrínseca), a variância da CV na 03, o viés de fronteira na 04 e o Gini contra o
+erro na 11. Nesses o errado era só o enunciado antigo do bloco.
+
 As **listas práticas e seus gabaritos** têm outros **46 blocos** `Sua vez`, em 28
 notebooks. Ali eles talvez façam sentido, já que a lista é o material de exercício
 — não os converta sem perguntar ao Gabriel.
