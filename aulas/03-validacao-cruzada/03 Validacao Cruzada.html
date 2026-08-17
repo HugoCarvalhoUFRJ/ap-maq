@@ -1248,6 +1248,7 @@ margin-right: 0; }
 <li class="fragment">Em um mundo ideal, temos <span class="math inline">\(r(\mathbf{x}) = \mathbb{E}[Y | \mathbf{X} = \mathbf{x}]\)</span></li>
 </ul></li>
 <li class="fragment"><p><span class="math inline">\(Y\)</span> quantitativa: problema de <em>regressão</em></p></li>
+<li class="fragment"><p><span class="math inline">\(Y\)</span> qualitativa: problema de <em>classificação</em></p></li>
 </ul>
 </section>
 <section id="formulação-matemática-2" class="slide level2">
@@ -1428,9 +1429,10 @@ margin-right: 0; }
 <section id="como-escolher-o-valor-de-k" class="slide level2">
 <h2>Como escolher o valor de <span class="math inline">\(k\)</span>?</h2>
 <ul>
-<li class="fragment"><span class="math inline">\(k = 1\)</span>: treina no conjunto de treinamento e aceita
+<li class="fragment"><span class="math inline">\(k = 1\)</span>: é o <em>data splitting</em> — uma divisão só, e aceita-se o que ela disser
 <ul>
 <li class="fragment">“Treina no treino e testa no teste”: super-ajuste ao conjunto de teste</li>
+<li class="fragment">Não é um caso de <span class="math inline">\(k\)</span> dobras: com uma dobra só não sobra nada para treinar. O menor <span class="math inline">\(k\)</span> possível é 2, e o <code>KFold</code> recusa <code>n_splits=1</code></li>
 </ul></li>
 <li class="fragment"><span class="math inline">\(k = n\)</span>: <em>Leave One Out Cross Validation</em> (LOOCV)
 <ul>

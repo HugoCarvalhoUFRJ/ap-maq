@@ -144,20 +144,42 @@ os dados}.
 \end{ideia}
 
 \subsection{Viés, variância e a escolha de $k$}
-A escolha de $k$ é ela mesma um balanço viés--variância \emph{da estimativa do
-risco}:
+O \emph{argumento clássico} para escolher $k$ é ele mesmo um balanço
+viés--variância, mas \emph{da estimativa do risco}:
 \begin{itemize}[leftmargin=1.4cm]
   \item \textbf{$k$ grande (LOOCV):} cada $g_{-j}$ treina com $\approx n$ dados
         $\Rightarrow$ \emph{pouco viés}. Mas os $n$ modelos são quase idênticos e
-        suas predições muito correlacionadas $\Rightarrow$ a média tem
-        \emph{variância alta}. E o custo é alto (salvo o atalho da
-        Prop.~\ref{prop:loo}).
+        suas predições muito correlacionadas --- e a média de quantidades
+        correlacionadas não se beneficia da lei dos grandes números como a de
+        quantidades independentes. O argumento conclui: \emph{variância alta}.
+        O custo também é alto (salvo o atalho da Prop.~\ref{prop:loo}).
   \item \textbf{$k$ pequeno (p.ex.\ $5$):} cada $g_{-j}$ treina com menos dados
-        $\Rightarrow$ \emph{mais viés} (otimista quanto à dificuldade), porém as
-        dobras são mais independentes $\Rightarrow$ \emph{menor variância} e custo
-        menor.
+        $\Rightarrow$ \emph{mais viés}, no sentido \emph{pessimista}: o procedimento
+        avaliado não é bem o que você vai usar no final. Em troca, as dobras são
+        mais independentes.
 \end{itemize}
-$k=5$ ou $k=10$ costumam dar o melhor compromisso na prática.
+
+\begin{atencao}[o que a medição mostra --- e o que não mostra]
+A \texttt{Aula prática 03} (§8) mede as duas coisas, em 300 amostras de $n=50$. O
+viés se comporta como previsto: cai de $0{,}43$ em $k=2$ para $0{,}006$ em $k=10$.
+Já o desvio-padrão \textbf{não} cresce com $k$: vai de $2{,}20$ ($k=2$) a $0{,}13$
+(LOOCV), decrescendo o tempo todo --- e com $n=200$ continua a descer
+($0{,}068 \to 0{,}057$), então não é artefato de amostra pequena. O efeito de
+treinar com poucos dados domina de longe o da correlação entre dobras.
+\textbf{Não passe ``LOOCV tem variância alta'' como lei:} é um argumento sobre um
+dos termos, e o outro pode ser maior.
+\end{atencao}
+
+\begin{emsala}
+Vale expor a contradição em vez de escondê-la: apresente o argumento clássico,
+pergunte o que a turma espera do desvio-padrão em função de $k$, e só então mostre
+a medição. É um bom momento para dizer que argumento sobre um termo não é
+conclusão sobre a soma.
+\end{emsala}
+
+\noindent A conclusão prática sobrevive, só que por outro motivo: de $k=5$ em
+diante não há praticamente nada a ganhar em precisão, e o custo continua subindo.
+Daí $k=5$ ou $k=10$.
 
 \begin{atencao}[A regra de ouro contra vazamento]
 \textbf{Toda} etapa que ``aprende'' algo dos dados --- padronização, seleção de
