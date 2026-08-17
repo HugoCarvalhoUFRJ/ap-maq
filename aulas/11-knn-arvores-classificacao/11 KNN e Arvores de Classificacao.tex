@@ -158,6 +158,26 @@ fronteiras de decisão lado a lado. É o melhor jeito de fixar a intuição de
 ``flexível vs.\ rígido'' que percorreu o curso inteiro.
 \end{emsala}
 
+\begin{emsala}[o item ``probabilidades calibradas'' não é preferência]
+A §7 da \texttt{Aula prática 11} refaz a tabela numa base de classe rara ($10\%$ de
+positivos), e vale mostrar as duas medições:
+
+\begin{itemize}[leftmargin=1.2cm,nosep]
+  \item a \textbf{acurácia} varia de $0{,}8989$ a $0{,}9072$ entre os sete métodos, e
+        quatro empatam \emph{exatamente} com quem responde ``não'' para todo mundo,
+        porque nunca preveem positivo. A AP varia de $0{,}119$ a $0{,}453$ na mesma
+        tabela;
+  \item com o corte de custo $1{:}20$ da Aula~09 --- $0{,}0476$ --- a árvore podada e
+        o AdaBoost mandam investigar \textbf{todos os mil por mil}, porque as
+        probabilidades deles quase nunca descem abaixo de $0{,}05$. A logística manda
+        $410$ e acha $82$ dos $101$ positivos; o SVM manda $493$ e acha $89$.
+\end{itemize}
+
+A moral a extrair no quadro: o corte ótimo é ótimo \emph{para probabilidade
+honesta}. Pergunte à turma o que fazer com um modelo que ordena bem e calibra mal
+--- a resposta é da Aula~09, e é calibrar, não trocar de modelo.
+\end{emsala}
+
 %==============================================================================
 \section{Prática em Python}
 %==============================================================================

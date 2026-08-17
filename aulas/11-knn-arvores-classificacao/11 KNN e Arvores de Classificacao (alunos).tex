@@ -227,6 +227,30 @@ E, em qualquer caso, compare os candidatos por validação cruzada com a métric
 adequada ao problema.
 \end{ideia}
 
+\begin{atencao}[o que a tabela acima não mostra: probabilidade não é escore]
+A primeira pergunta da lista --- \emph{``preciso de probabilidades calibradas?''} ---
+parece uma preferência de estilo, e é uma restrição dura. A §7 da \texttt{Aula
+prática 11} compara os sete métodos numa base de classe rara ($10\%$ de positivos) e
+mede duas coisas que valem ser guardadas.
+
+\textbf{A acurácia deixa de distinguir os métodos.} Ela varia de $0{,}8989$ a
+$0{,}9072$ entre os sete --- menos de um ponto --- e \emph{quatro} deles empatam
+exatamente no $0{,}8989$ de quem responde ``não'' para todo mundo, porque nunca
+preveem positivo. A precisão média (AP) varia de $0{,}119$ a $0{,}453$ na mesma
+tabela, por um fator de quase quatro. Com classe rara, a acurácia não erra por
+pouco: ela não mede.
+
+\textbf{E o corte por custo pode não cortar nada.} Aplicando o corte ótimo da
+Aula~09 para um falso negativo que custa vinte falsos positivos --- $0{,}0476$ ---
+a árvore podada e o AdaBoost mandam investigar \textbf{todos os mil por mil}. As
+probabilidades que eles produzem quase nunca descem abaixo de $0{,}05$, então o
+corte não separa ninguém. A logística manda $410$ e encontra $82$ dos $101$
+positivos; o SVM manda $493$ e encontra $89$.
+
+A fórmula $c_{FP}/(c_{FP}+c_{FN})$ é ótima \textbf{para probabilidade honesta}. Antes
+de usá-la, confira a calibração do modelo (Aula~09) --- ou calibre-o, que é barato.
+\end{atencao}
+
 %==============================================================================
 \section{Prática em Python}
 %==============================================================================
