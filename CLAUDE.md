@@ -493,12 +493,13 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
 O fonte chegou em 17/08/2026 e a autoria antiga acabou: **não há mais material do
 curso creditando o Prof. Hugo**. O que veio foi o `main.tex` do curso inteiro dele
 — 137 frames, 3473 linhas, 50 figuras — em que tudo menos SVM estava dentro de dois
-`\begin{comment}`. Daí saíram os 30 frames de SVM e as 10 figuras que eles usam.
+`\begin{comment}`. Daí saíram os 30 frames de SVM e as 10 figuras que eles usam;
+mais dois frames escritos aqui, e o deck tem 32.
 
 ```
 aulas/10-svm/
 ├── 10 SVM - slide.tex        ← 958 linhas, Beamer tema Madrid
-├── 10 SVM - slide.pdf        ← 31 páginas, mesmo caminho de antes
+├── 10 SVM - slide.pdf        ← 33 páginas, mesmo caminho de antes
 └── slide-figuras/            ← as 10 figuras (1,1 MB), via \graphicspath
 ```
 
@@ -512,9 +513,9 @@ Quatro coisas a saber antes de mexer nele:
 1. **Ele não usa o `estilo-notas.sty`.** É Beamer com tema Madrid e o preâmbulo do
    Hugo, com as macros dele (`\V`, `\Vg`, `\RR`, `\PP`, `\ds`, `\Hcal`). Nada disso
    conversa com as notas — não tente unificar;
-2. **o rodapé das 31 páginas sai de `\author[...]` e `\title[...]`**, as chaves
-   *curtas*. É por isso que trocar a autoria foi uma linha, não trinta e uma. O
-   título curto também perdeu o "Apredizagem" (faltava o `n`) do original;
+2. **o rodapé de todas as páginas sai de `\author[...]` e `\title[...]`**, as
+   chaves *curtas*. É por isso que trocar a autoria foi uma linha, não trinta e
+   uma. O título curto também perdeu o "Apredizagem" (faltava o `n`) do original;
 3. **`babel` ficou fora, de propósito**, como no `estilo-notas.sty`: sem o
    `texlive-lang-portuguese` o `babel` falha em silêncio e as dez legendas voltam
    para "Figure". Com `\renewcommand{\figurename}{Figura}` compila igual em qualquer
@@ -525,7 +526,19 @@ Quatro coisas a saber antes de mexer nele:
    por sorte. Hoje compila com `-halt-on-error` e zero erro.
 
 As citações `[ITSL]` viraram `[ISLP]` (9 no deck), fechando a troca que os outros
-seis decks receberam em 10/08/2026.
+seis decks receberam em 10/08/2026. Os oito números de figura que ele cita (9.1 a
+9.12) foram conferidos no `recursos/livros/ISLP.pdf` e estão certos — o capítulo 9
+não mudou entre as edições.
+
+**Os dois frames novos são sobre o `C`, e nasceram de uma inconsistência do
+original.** O deck apresentava $\sum_i \varepsilon_i \le C$ (o orçamento do
+[ISLP]) e, na *mesma* moldura, a forma de Lagrange
+$\frac12\|\beta\|^2 + C\sum_i \varepsilon_i$ — que é a do `scikit-learn`, em que
+o `C` é o peso da penalidade e portanto tudo se inverte. Mesma letra, papéis
+opostos, sem aviso: quem lesse os slides concluiria que $\uparrow C$ dá margem
+larga e mais vetores de suporte, e a §8 da `Aula prática 10` mede o contrário
+($C=0{,}01 \to 92$ vetores; $C=1000 \to 24$). As notas já traziam a inversão numa
+caixa `atencao`; agora o slide também.
 
 **O que ficou de fora:** os outros 107 frames do curso do Hugo e 40 figuras. Estão
 só no zip que ele enviou, não no repositório.

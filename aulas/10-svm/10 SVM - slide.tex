@@ -700,7 +700,67 @@
     
     Equivalente a resolver o problema (multiplicadores de Lagrange):
     $$\min_{\substack{\beta_0, \beta_1, \dots, \beta_p, \\ \varepsilon_1, \dots, \varepsilon_n}} \frac{1}{2}\|(\beta_1, \dots, \beta_p)\|_2^2 + C\sum_{i = 1}^{n} \varepsilon_i, \text{ t.q. } \varepsilon_i \geq 0$$ $$\text{e } y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq 1 - \varepsilon_i, \forall i = 1, \dots, n$$
-    
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Cuidado: o $C$ do slide anterior aparece de duas formas}
+    Repare que a \alert{mesma letra} foi usada para dois papéis \alert{opostos}:
+
+    \pause
+
+    \begin{itemize}
+        \item em $(****)$, $\ds \sum_{i = 1}^{n} \varepsilon_i \leq C$: o $C$ é o \alert{orçamento} de violações. É a convenção do [ISLP] e do [AME] --- a dos slides anteriores;
+
+        \pause
+
+        \item na forma de Lagrange, $\ds \frac{1}{2}\|(\beta_1, \dots, \beta_p)\|_2^2 + C\sum_{i = 1}^{n} \varepsilon_i$: o $C$ é o \alert{peso da penalidade} sobre as violações --- e é esta a convenção do \texttt{scikit-learn}
+    \end{itemize}
+
+    \pause
+
+    \begin{center}
+        $\implies$ Tudo o que dissemos sobre ``$\uparrow C$'' se \alert{inverte} de uma para a outra!
+    \end{center}
+
+    \pause
+
+    No \texttt{scikit-learn}: $\uparrow C \implies$ penaliza mais $\implies$ tolera menos $\implies$ margem \alert{estreita} $\implies$ \alert{menos} vetores suporte.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Cuidado: o $C$ do slide anterior aparece de duas formas}
+    E não é sutileza de notação --- dá para medir. Na Seção 8 da \texttt{Aula prática 10}, ajustando \texttt{SVC} ao \texttt{breast\_cancer} com $\gamma$ e \emph{kernel} fixos:
+
+    \pause
+
+    \begin{center}\small
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{@{}lrrr@{}}
+    \toprule
+     & vetores suporte & \% do treino & AUC no teste \\
+    \midrule
+    \texttt{SVC(C=0.01)} & $92$ & $23{,}1\%$ & $0{,}9921$ \\
+    \texttt{SVC(C=1000)} & $24$ & $6{,}0\%$ & $0{,}9911$ \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \pause
+
+    O $C$ \emph{pequeno} do \texttt{scikit-learn} é que dá \alert{mais} vetores suporte --- quatro vezes mais --- exatamente ao contrário do que os slides anteriores dizem do $C$ deles.
+
+    \pause
+
+    \begin{center}
+        $\implies$ Ao ler qualquer texto sobre SVM, confira \alert{qual} $C$ está em uso antes de interpretar ``$C$ grande''!
+    \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
