@@ -144,6 +144,19 @@ usar só $K$ cores --- uma \textbf{compressão} (quantização de cor). $K$ cont
 qualidade. (É o exemplo do [AME].)
 \end{exemplo}
 
+\begin{emsala}[juntar as duas coisas acima, que discordam por um fator de dez]
+Pergunte: \emph{``qual $K$ a silhueta escolheria para comprimir uma foto?''} A §8 da
+\texttt{Aula prática E1} mede na \texttt{flower.jpg}: a silhueta tem máximo em
+$K=2$ ($+0{,}766$) e cai daí em diante, enquanto o olho só deixa de distinguir o
+resultado do original entre $16$ e $32$ cores.
+
+O ponto a extrair: a silhueta pergunta \emph{``existem grupos bem separados?''}, e a
+nuvem de cores de uma foto é um contínuo --- $K=2$ é a resposta \emph{correta} para
+essa pergunta. Compressão é quantização vetorial, não análise de agrupamento: mesmo
+algoritmo, outro critério de sucesso. Antes de escolher $K$ por uma métrica, saiba
+para que o $K$ serve.
+\end{emsala}
+
 %==============================================================================
 \section{Agrupamento hierárquico}
 %==============================================================================

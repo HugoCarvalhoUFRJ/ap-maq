@@ -198,6 +198,37 @@ Como o problema é desbalanceado (Aula~09):
         $10/11\approx0{,}91$, não $0{,}5$.
 \end{itemize}
 
+\begin{observacao}[a métrica escolhida depois é a métrica errada]
+Escolher a métrica \emph{antes} soa como formalidade, e a §8 da \texttt{Aula prática
+E3} mostra que não é. Ela acrescenta ao saco de palavras duas colunas que ele não
+enxerga --- o comprimento da mensagem e a proporção de dígitos ---, e que separam
+muito: no treino, o \emph{ham} médio tem $70{,}9$ caracteres e $0{,}4\%$ de dígitos,
+contra $138{,}8$ e $11{,}7\%$ do \emph{spam}. O resultado:
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+ & acurácia & AUC & AP \\
+\midrule
+só texto          & $0{,}9821$ & $0{,}9879$ & $\mathbf{0{,}9691}$ \\
+texto $+$ 2 colunas & $0{,}9862$ & $0{,}9950$ & $\mathbf{0{,}9572}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A acurácia sobe, a AUC sobe --- e a \textbf{AP desce}. Não é contradição: são
+perguntas diferentes. A AUC melhora porque as duas colunas arrumam o \emph{grosso}
+do ranking, marcando com mais confiança as mensagens curtas e sem dígitos. A AP olha
+a \emph{cabeça} do ranking, onde o TF--IDF já ia muito bem, e ali acrescentar duas
+colunas densas ao lado de milhares de esparsas mexe nos pesos dos termos mais
+informativos.
+
+Se o filtro vai bloquear as mensagens de maior escore --- que é o caso --- quem
+manda é a AP, e por ela essas duas colunas não pagam o que custam. Se a métrica
+tivesse sido escolhida depois de ver os números, as três linhas justificariam três
+decisões diferentes.
+\end{observacao}
+
 %==============================================================================
 \section{O \emph{pipeline} completo (síntese do curso)}
 %==============================================================================

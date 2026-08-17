@@ -141,6 +141,20 @@ Como o problema é desbalanceado (Aula~09):
         positivo é muito caro, exija probabilidade alta para marcar como \emph{spam}.
 \end{itemize}
 
+\begin{emsala}[fechar o curso com uma métrica que discorda das outras duas]
+A §8 da \texttt{Aula prática E3} acrescenta ao saco de palavras o comprimento da
+mensagem e a proporção de dígitos --- duas colunas que separam muito ($70{,}9$
+contra $138{,}8$ caracteres; $0{,}4\%$ contra $11{,}7\%$ de dígitos). Pergunte à
+turma se o modelo melhora, e depois mostre: acurácia $0{,}9821\to0{,}9862$, AUC
+$0{,}9879\to0{,}9950$ e AP $0{,}9691\to\mathbf{0{,}9572}$.
+
+A AUC sobe porque as duas colunas arrumam o grosso do ranking; a AP olha a cabeça
+dele, onde o TF--IDF já ia bem. Como o filtro bloqueia as mensagens de maior escore,
+quem manda é a AP --- e por ela as colunas não pagam o que custam. É um bom
+encerramento: a métrica tem de ser escolhida \emph{antes}, pela pergunta, ou os
+mesmos três números justificam três decisões diferentes.
+\end{emsala}
+
 %==============================================================================
 \section{O \emph{pipeline} completo (síntese do curso)}
 %==============================================================================

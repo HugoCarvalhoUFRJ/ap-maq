@@ -214,6 +214,33 @@ qualidade. (É o exemplo do [AME]; compare com a compressão por SVD da Aula~E2,
 ataca o mesmo problema por outro caminho.)
 \end{exemplo}
 
+\begin{atencao}[a silhueta não escolhe o $K$ da compressão --- e não deveria]
+Vale juntar as duas coisas acima, porque elas discordam por um fator de dez. A §8 da
+\texttt{Aula prática E1} comprime a \texttt{flower.jpg} e mede os dois critérios nos
+mesmos pixels:
+
+\begin{itemize}[leftmargin=1.2cm,nosep]
+  \item a \textbf{silhueta} tem máximo em $K=2$ ($+0{,}766$) e cai monotonamente daí
+        em diante: $+0{,}71$ em $K=3$, $+0{,}50$ em $K=4$, $+0{,}44$ em $K=6$;
+  \item o \textbf{olho} só deixa de distinguir o resultado do original entre $16$ e
+        $32$ cores --- e $K=32$ ocupa $21\%$ do arquivo original.
+\end{itemize}
+
+Não é a silhueta errando. Ela responde \emph{``existem grupos bem separados?''}, e a
+nuvem de cores de uma fotografia não tem grupos: é um contínuo, com no máximo duas
+regiões densas. A resposta $K=2$ está certa para a pergunta que ela faz.
+
+A compressão faz outra pergunta --- \emph{``quantos representantes bastam para o erro
+de reconstrução ficar imperceptível?''} --- e essa não exige grupo nenhum, só pontos
+bem espalhados pela nuvem. É \emph{quantização vetorial}, não análise de
+agrupamento; o algoritmo é o mesmo e o critério de sucesso não.
+
+A regra que sobra vale além de imagens: \textbf{antes de escolher $K$ por uma
+métrica, saiba para que o $K$ serve.} Silhueta, cotovelo e afins medem separação. Se
+o seu uso é resumir, comprimir ou pré-processar, o critério certo é o erro da tarefa
+que vem depois.
+\end{atencao}
+
 %==============================================================================
 \section{Agrupamento hierárquico}
 %==============================================================================
