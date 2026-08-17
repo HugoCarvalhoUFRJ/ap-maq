@@ -67,6 +67,20 @@ Repete-se recursivamente em cada região-filha, até um critério de parada (ex.
 de 5 observações por folha). Isso gera uma árvore grande $T_0$, que ajusta bem o
 treino mas tende a \textbf{superajustar}.
 
+\begin{emsala}
+Pergunta: \emph{``a árvore gananciosa acha a solução de
+$y=\operatorname{sinal}(x_1x_2x_3)$?''} Oito regiões resolvem exatamente, e caberiam
+em profundidade~3 --- então a resposta intuitiva é sim. A §3 da \texttt{Aula prática
+06} mede: o primeiro corte reduz $0{,}194\%$ do RSS e o segundo, $0{,}350\%$; o $R^2$
+de teste é \textbf{negativo} até a profundidade~5 e só chega a $0{,}87$ com a árvore
+cheia, de 59 folhas. Vale desenhar os octantes no quadro e mostrar que qualquer corte
+deixa os dois lados com média zero.
+
+E o corolário que interessa para a próxima subseção: com
+\texttt{min\_impurity\_decrease=0,005} a árvore fica com \textbf{uma folha}. A parada
+precoce não é uma poda mais barata --- é uma poda que decide antes de ter informação.
+\end{emsala}
+
 \subsection{Etapa 2 --- poda por custo--complexidade}
 Para reduzir a variância, \emph{podamos} $T_0$. A poda por custo--complexidade
 introduz um parâmetro $\alpha\ge 0$ e busca a subárvore $T\subseteq T_0$ que

@@ -163,6 +163,33 @@ de implementação --- é o preço de fugir de um problema NP-difícil. Guarde i
 do ganho dos \emph{ensembles} vem justamente de compensar essa miopia.
 \end{observacao}
 
+\begin{observacao}[o tamanho da miopia, medido]\label{obs:miopia}
+Vale saber quanto isso custa, porque é mais do que parece. Tome
+$y=\operatorname{sinal}(x_1x_2x_3)$ em $[-1,1]^3$: oito regiões resolvem o problema
+\emph{exatamente}, e caberiam numa árvore de profundidade~3. A §3 da \texttt{Aula
+prática 06} mede o que a árvore gananciosa faz com ele:
+
+\begin{itemize}[leftmargin=1.2cm,nosep]
+  \item o primeiro corte reduz $0{,}194\%$ do RSS, e o segundo, $0{,}350\%$ --- a
+        cegueira \textbf{não} é só do primeiro passo, porque os oito octantes
+        continuam se cancelando dois a dois depois de qualquer corte;
+  \item o $R^2$ de teste é \textbf{negativo} até a profundidade~5, isto é, pior que
+        chutar a média; encosta em $0{,}17$ na~6 e só chega a $0{,}87$ com a árvore
+        cheia, de 59 folhas.
+\end{itemize}
+
+Ela precisa gastar cinco níveis de cortes inúteis antes de as regiões ficarem
+pequenas o bastante para o sinal aparecer. A mesma seção do notebook mede o caso de
+duas dimensões, $y=\operatorname{sinal}(x_1x_2)$, em que basta \emph{um} corte às
+cegas: cada dimensão a mais custa um nível inteiro de cegueira.
+
+E há um corolário prático que vale mais que o exemplo. Se você tentar economizar
+cortes com um critério de parada precoce --- \texttt{min\_impurity\_decrease=0,005},
+digamos --- a árvore fica com \textbf{uma folha}: o critério nunca vê meio por cento
+de redução em lugar nenhum, e desiste antes de começar. É por isso que se cresce a
+árvore inteira e \emph{depois} se poda, que é o assunto da próxima subseção.
+\end{observacao}
+
 \subsection{Etapa 2 --- poda por custo--complexidade}
 Para reduzir a variância, \emph{podamos} $T_0$. A poda por custo--complexidade
 introduz um parâmetro $\alpha\ge 0$ e busca a subárvore $T\subseteq T_0$ que
