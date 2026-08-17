@@ -192,6 +192,11 @@ Teórica~01, em que o polinômio de grau $n-1$ interpola os $n$ pontos --- erro 
 treino nulo e nenhuma informação sobre o risco. Uma árvore totalmente crescida é
 um interpolador, e é por isso que existe a poda (e, mais adiante, o
 \emph{bagging}).
+
+Uma diferença entre os dois casos vale ser notada: o zero da árvore é zero
+\emph{de verdade também no computador}, porque a média de um único número é esse
+número. Já o do polinômio é só algébrico --- em ponto flutuante ele não interpola,
+como a §3 da \texttt{Aula prática 03} mede.
 \end{solucao}
 
 %------------------------------------------------------------------------------

@@ -264,8 +264,10 @@ pipe = make_pipeline(StandardScaler(), PCA(n_components=0.90), Ridge())
 pca = PCA().fit(StandardScaler().fit_transform(X))
 print(pca.explained_variance_ratio_.cumsum())
 
-# t-SNE: apenas para visualizar
-Z = TSNE(n_components=2, perplexity=30, random_state=0).fit_transform(X)
+# t-SNE: apenas para visualizar. O init explicito importa -- com "pca" o
+# resultado e reprodutivel; com "random", cada semente da outra figura
+Z = TSNE(n_components=2, perplexity=30, init="pca",
+         random_state=0).fit_transform(X)
 \end{lstlisting}
 O truque do \texttt{n\_components=0.90} é útil: em vez de um número de componentes,
 passa-se a \emph{proporção de variância} desejada, e o \texttt{scikit-learn} escolhe

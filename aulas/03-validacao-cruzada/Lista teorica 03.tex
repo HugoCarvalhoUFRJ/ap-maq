@@ -59,6 +59,16 @@ modelo interpola os $n$ pontos exatamente, com resíduo nulo em todos. Não é s
 de qualidade nenhuma --- é o caso extremo do otimismo, em que o erro de treino
 perde \emph{toda} a informação sobre o risco. Com $n=50$, isso acontece em $p=49$.
 
+E se você tentar reproduzir isso no computador, \textbf{não vai dar zero}. A §3 da
+\texttt{Aula prática 03} ajusta exatamente esse polinômio de grau~49 aos 50 pontos
+e mede erro de treino $0{,}3049$. O motivo é aritmética de ponto flutuante, não
+matemática: com $x\in[-3,3]$, a coluna $x^{49}$ varre umas vinte e quatro ordens
+de grandeza, a matriz de delineamento perde posto \emph{numérico} muito antes de
+perder posto algébrico, e o \texttt{lstsq} por trás do \texttt{LinearRegression}
+devolve a solução de \textbf{norma mínima} em vez da que interpola. A conclusão do
+item sobrevive intacta --- $0{,}3049$ ainda é menor que o erro de treino do grau~5,
+e o ajuste é catastrófico fora da amostra --- mas o zero é um zero de papel.
+
 \smallskip
 \textbf{(d)} Duas razões:
 \begin{enumerate}[label=(\roman*),leftmargin=1.1cm]

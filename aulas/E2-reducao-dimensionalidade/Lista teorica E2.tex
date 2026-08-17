@@ -244,11 +244,20 @@ treino e aplicado à validação, e o t-SNE não oferece isso. (Na API do
 \texttt{transform} correspondente.)
 
 \textbf{E o objetivo é outro.} O t-SNE existe para produzir uma figura que um
-humano olha. As duas coordenadas que ele devolve não são features com significado
---- não são combinações lineares interpretáveis das originais, como as da PCA, e
-nem sequer são determinadas de forma única (rodar de novo com outra semente dá
-outro mapa). Alimentar um classificador com elas é usar como covariável o
-resultado de um algoritmo de visualização.
+humano olha. As duas coordenadas que ele devolve não são features com significado:
+não são combinações lineares interpretáveis das originais, como as da PCA.
+Alimentar um classificador com elas é usar como covariável o resultado de um
+algoritmo de visualização.
+
+Uma ressalva sobre um argumento que se lê muito a respeito do t-SNE: ``rodar de
+novo com outra semente dá outro mapa'' valia quando o padrão era
+\texttt{init="random"}. Desde a versão~1.2 do \texttt{scikit-learn} o padrão é
+\texttt{init="pca"}, e aí o resultado é \emph{reprodutível} --- a \texttt{Aula
+prática E2} mede diferença de coordenada igual a zero entre duas sementes. Com
+\texttt{init="random"} as figuras mudam por completo, e mesmo assim $92{,}6\%$ das
+vizinhanças de dez pontos se preservam: o mapa se embaralha, a vizinhança não.
+Ou seja, a indeterminação \emph{não} é o motivo pelo qual o t-SNE fica fora de um
+\texttt{Pipeline}. O motivo é a ausência de \texttt{transform}, acima.
 
 A PCA, ao contrário, é uma transformação linear fixa: ela aprende uma matriz no
 treino e a aplica a qualquer ponto novo. É por isso que ela cabe num
