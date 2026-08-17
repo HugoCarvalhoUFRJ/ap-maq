@@ -1491,9 +1491,9 @@ margin-right: 0; }
 <li class="fragment">Como escolher o melhor valor de <span class="math inline">\(p\)</span> no ajuste polinomial? <span class="math display">\[g(x) = \beta_0 + \sum_{n = 1}^{p} \beta_n x^n\]</span></li>
 </ul>
 </section>
-<section id="implementando-o-procedimento" class="slide level2 scrollable">
-<h2>Implementando o procedimento</h2>
-<ul>
+<section id="implementando-os-dados-e-as-dobras" class="slide level2 scrollable">
+<h2>Implementando: os dados e as dobras</h2>
+<ul style="max-width: calc(100% - 48px)">
 <li class="fragment"><p>Gerando dados já separados por treinamento e teste</p>
 <div id="b6c5f6a6" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href></a>n_obs_tr <span class="op">=</span> <span class="dv">300</span></span>
@@ -1502,116 +1502,43 @@ margin-right: 0; }
 <span id="cb2-4"><a href></a></span>
 <span id="cb2-5"><a href></a>x_tr, y_tr <span class="op">=</span> generate_data(n_obs <span class="op">=</span> n_obs_tr, err_stdv <span class="op">=</span> np.sqrt(<span class="fl">0.4</span>))</span>
 <span id="cb2-6"><a href></a>x_vl, y_vl <span class="op">=</span> generate_data(n_obs <span class="op">=</span> n_obs_vl, err_stdv <span class="op">=</span> np.sqrt(<span class="fl">0.4</span>))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div></li>
+</div>
+<ul>
+<li class="fragment"><code>generate_data</code> é o modelo da moldura anterior escrito em código: sorteia <span class="math inline">\(x \sim \mathcal{U}[0,2]\)</span> e devolve <span class="math inline">\(y = \sin(\pi x) + \varepsilon\)</span></li>
+<li class="fragment">Cuidado com o <code>np.sqrt(0.4)</code>: em <span class="math inline">\(\varepsilon \sim \mathcal{N}(0, 0.4)\)</span> o <span class="math inline">\(0{,}4\)</span> é a <strong>variância</strong>, e o <code>numpy</code> pede o <strong>desvio-padrão</strong></li>
+<li class="fragment"><code>degs</code> é a classe de candidatos <span class="math inline">\(\mathbb{G}\)</span>: sete graus, de <span class="math inline">\(p = 0\)</span> (só a média) a <span class="math inline">\(p = 20\)</span></li>
+<li class="fragment">As 100 observações <code>x_vl, y_vl</code> são o <strong>conjunto de teste</strong> — o sufixo vem de <em>validation</em>, mas o papel aqui é o de teste: ficam guardadas até o fim e não entram em dobra nenhuma</li>
+</ul></li>
 <li class="fragment"><p>Separando o conjunto de treinamento em <span class="math inline">\(k\)</span> dobras</p>
 <div id="aa3634a5" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href></a>kf <span class="op">=</span> KFold(n_splits <span class="op">=</span> <span class="dv">5</span>, shuffle <span class="op">=</span> <span class="va">True</span>)</span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href></a>kf <span class="op">=</span> KFold(n_splits <span class="op">=</span> <span class="dv">5</span>, shuffle <span class="op">=</span> <span class="va">True</span>, random_state <span class="op">=</span> <span class="dv">0</span>)</span>
 <span id="cb3-2"><a href></a><span class="cf">for</span> i, (train_index, test_index) <span class="kw">in</span> <span class="bu">enumerate</span>(kf.split(x_tr, y_tr)):</span>
-<span id="cb3-3"><a href></a>  <span class="bu">print</span>(<span class="ss">f&quot;Fold </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">:&quot;</span>)</span>
-<span id="cb3-4"><a href></a>  <span class="bu">print</span>(<span class="ss">f&quot;  Train: index=</span><span class="sc">{</span>train_index<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb3-5"><a href></a>  <span class="bu">print</span>(<span class="ss">f&quot;  Test:  index=</span><span class="sc">{</span>test_index<span class="sc">}</span><span class="ss">&quot;</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href></a>  <span class="bu">print</span>(<span class="ss">f&quot;Dobra </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: treino = </span><span class="sc">{</span><span class="bu">len</span>(train_index)<span class="sc">}</span><span class="ss"> obs, teste temporário = </span><span class="sc">{</span><span class="bu">len</span>(test_index)<span class="sc">}</span><span class="ss"> obs&quot;</span>)</span>
+<span id="cb3-4"><a href></a>  <span class="bu">print</span>(<span class="ss">f&quot;  5 primeiros índices do teste temporário: </span><span class="sc">{</span>test_index[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Fold 0:
-  Train: index=[  1   2   4   5   6   7   8   9  12  13  14  16  17  18  20  21  23  24
-  25  26  27  28  29  31  32  34  35  36  37  38  39  40  42  43  46  47
-  48  49  50  51  52  53  54  55  56  59  60  61  62  63  64  66  68  69
-  70  71  72  73  74  75  77  78  79  80  81  82  83  84  85  86  87  88
-  89  90  92  93  94  95  96  99 101 102 103 104 105 107 108 109 110 112
- 113 114 115 116 117 118 119 121 122 125 127 128 129 130 131 132 133 135
- 136 137 138 139 140 141 143 145 146 149 150 151 152 153 154 155 156 157
- 158 159 160 161 162 163 164 166 167 168 169 170 171 173 175 176 178 180
- 181 184 185 186 187 188 189 190 193 194 195 196 197 198 199 201 204 205
- 206 208 210 211 212 213 214 215 216 217 218 219 221 222 223 225 226 227
- 228 229 230 231 232 233 235 236 237 238 239 240 241 242 244 245 247 248
- 250 251 252 253 255 257 258 259 260 261 262 263 265 266 268 269 270 271
- 272 273 274 276 277 278 279 281 282 283 285 286 287 288 289 290 291 292
- 293 294 295 296 298 299]
-  Test:  index=[  0   3  10  11  15  19  22  30  33  41  44  45  57  58  65  67  76  91
-  97  98 100 106 111 120 123 124 126 134 142 144 147 148 165 172 174 177
- 179 182 183 191 192 200 202 203 207 209 220 224 234 243 246 249 254 256
- 264 267 275 280 284 297]
-Fold 1:
-  Train: index=[  0   1   2   3   4   5   6   7   8   9  10  11  12  14  15  17  18  19
-  21  22  23  24  25  27  28  29  30  31  32  33  35  37  38  39  40  41
-  42  43  44  45  46  47  48  50  51  52  53  54  55  56  57  58  59  60
-  61  62  63  65  66  67  71  74  76  77  78  80  81  82  84  85  86  88
-  90  91  94  95  96  97  98  99 100 101 102 103 105 106 107 108 109 110
- 111 113 114 115 117 119 120 121 122 123 124 125 126 127 129 130 131 132
- 133 134 135 136 141 142 143 144 145 146 147 148 149 150 152 153 154 155
- 156 158 159 161 162 163 164 165 166 167 168 169 171 172 174 176 177 178
- 179 180 181 182 183 184 185 186 188 189 190 191 192 193 194 195 196 197
- 198 200 202 203 204 206 207 208 209 211 213 214 216 219 220 222 223 224
- 225 226 227 228 229 230 231 234 235 236 237 238 239 240 242 243 245 246
- 248 249 251 252 253 254 255 256 258 259 260 261 262 264 265 267 268 269
- 270 271 272 273 274 275 277 278 279 280 281 282 283 284 285 286 287 288
- 289 290 292 296 297 298]
-  Test:  index=[ 13  16  20  26  34  36  49  64  68  69  70  72  73  75  79  83  87  89
-  92  93 104 112 116 118 128 137 138 139 140 151 157 160 170 173 175 187
- 199 201 205 210 212 215 217 218 221 232 233 241 244 247 250 257 263 266
- 276 291 293 294 295 299]
-Fold 2:
-  Train: index=[  0   1   2   3   4   6   8  10  11  12  13  14  15  16  17  18  19  20
-  22  23  24  26  27  28  29  30  31  32  33  34  35  36  37  40  41  42
-  43  44  45  47  49  52  53  57  58  59  60  61  62  64  65  66  67  68
-  69  70  72  73  74  75  76  77  79  80  81  82  83  84  85  86  87  88
-  89  90  91  92  93  94  95  97  98  99 100 101 102 103 104 106 108 109
- 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 128
- 129 130 133 134 135 137 138 139 140 141 142 143 144 145 146 147 148 149
- 150 151 152 154 156 157 159 160 161 162 163 165 167 168 169 170 172 173
- 174 175 176 177 178 179 180 182 183 185 187 189 190 191 192 193 194 195
- 198 199 200 201 202 203 204 205 206 207 209 210 211 212 214 215 216 217
- 218 219 220 221 222 223 224 225 228 231 232 233 234 237 238 241 243 244
- 245 246 247 248 249 250 251 252 253 254 255 256 257 258 260 262 263 264
- 265 266 267 269 270 272 274 275 276 279 280 281 282 283 284 286 290 291
- 292 293 294 295 297 299]
-  Test:  index=[  5   7   9  21  25  38  39  46  48  50  51  54  55  56  63  71  78  96
- 105 107 127 131 132 136 153 155 158 164 166 171 181 184 186 188 196 197
- 208 213 226 227 229 230 235 236 239 240 242 259 261 268 271 273 277 278
- 285 287 288 289 296 298]
-Fold 3:
-  Train: index=[  0   2   3   5   7   9  10  11  13  14  15  16  17  18  19  20  21  22
-  23  24  25  26  27  28  29  30  31  32  33  34  36  37  38  39  40  41
-  43  44  45  46  48  49  50  51  54  55  56  57  58  59  63  64  65  66
-  67  68  69  70  71  72  73  74  75  76  77  78  79  82  83  84  85  87
-  89  90  91  92  93  94  96  97  98  99 100 104 105 106 107 108 109 110
- 111 112 113 114 115 116 117 118 119 120 121 123 124 126 127 128 131 132
- 134 136 137 138 139 140 141 142 144 146 147 148 151 152 153 154 155 156
- 157 158 159 160 162 164 165 166 170 171 172 173 174 175 177 179 180 181
- 182 183 184 186 187 188 189 191 192 194 196 197 198 199 200 201 202 203
- 204 205 206 207 208 209 210 212 213 214 215 217 218 219 220 221 223 224
- 226 227 228 229 230 231 232 233 234 235 236 237 239 240 241 242 243 244
- 246 247 249 250 254 256 257 258 259 260 261 262 263 264 265 266 267 268
- 271 273 274 275 276 277 278 280 284 285 286 287 288 289 290 291 292 293
- 294 295 296 297 298 299]
-  Test:  index=[  1   4   6   8  12  35  42  47  52  53  60  61  62  80  81  86  88  95
- 101 102 103 122 125 129 130 133 135 143 145 149 150 161 163 167 168 169
- 176 178 185 190 193 195 211 216 222 225 238 245 248 251 252 253 255 269
- 270 272 279 281 282 283]
-Fold 4:
-  Train: index=[  0   1   3   4   5   6   7   8   9  10  11  12  13  15  16  19  20  21
-  22  25  26  30  33  34  35  36  38  39  41  42  44  45  46  47  48  49
-  50  51  52  53  54  55  56  57  58  60  61  62  63  64  65  67  68  69
-  70  71  72  73  75  76  78  79  80  81  83  86  87  88  89  91  92  93
-  95  96  97  98 100 101 102 103 104 105 106 107 111 112 116 118 120 122
- 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140
- 142 143 144 145 147 148 149 150 151 153 155 157 158 160 161 163 164 165
- 166 167 168 169 170 171 172 173 174 175 176 177 178 179 181 182 183 184
- 185 186 187 188 190 191 192 193 195 196 197 199 200 201 202 203 205 207
- 208 209 210 211 212 213 215 216 217 218 220 221 222 224 225 226 227 229
- 230 232 233 234 235 236 238 239 240 241 242 243 244 245 246 247 248 249
- 250 251 252 253 254 255 256 257 259 261 263 264 266 267 268 269 270 271
- 272 273 275 276 277 278 279 280 281 282 283 284 285 287 288 289 291 293
- 294 295 296 297 298 299]
-  Test:  index=[  2  14  17  18  23  24  27  28  29  31  32  37  40  43  59  66  74  77
-  82  84  85  90  94  99 108 109 110 113 114 115 117 119 121 141 146 152
- 154 156 159 162 180 189 194 198 204 206 214 219 223 228 231 237 258 260
- 262 265 274 286 290 292]</code></pre>
+<pre><code>Dobra 0: treino = 240 obs, teste temporário = 60 obs
+  5 primeiros índices do teste temporário: [ 5  7  8 12 15]
+Dobra 1: treino = 240 obs, teste temporário = 60 obs
+  5 primeiros índices do teste temporário: [18 20 21 27 33]
+Dobra 2: treino = 240 obs, teste temporário = 60 obs
+  5 primeiros índices do teste temporário: [ 2  3  4 10 13]
+Dobra 3: treino = 240 obs, teste temporário = 60 obs
+  5 primeiros índices do teste temporário: [ 0  6 11 23 35]
+Dobra 4: treino = 240 obs, teste temporário = 60 obs
+  5 primeiros índices do teste temporário: [ 1  9 17 25 28]</code></pre>
 </div>
-</div></li>
+</div>
+<ul>
+<li class="fragment"><code>shuffle = True</code> embaralha antes de cortar: sem isso as dobras saem na ordem do arquivo, e um banco ordenado por data ou por classe daria dobras não representativas</li>
+<li class="fragment"><code>random_state = 0</code> fixa a partição. <strong>Sem ele cada chamada a <code>split()</code> sorteia dobras diferentes</strong> — inclusive a do laço da próxima moldura, que não usaria estas</li>
+<li class="fragment">300 observações em 5 dobras: a cada rodada, 240 para treinar e 60 para avaliar</li>
+<li class="fragment">O <code>y_tr</code> em <code>kf.split(x_tr, y_tr)</code> é <em>ignorado</em> pelo <code>KFold</code>: está ali por compatibilidade com o <code>StratifiedKFold</code>, que precisa do <span class="math inline">\(y\)</span> para preservar a proporção das classes</li>
+</ul></li>
 </ul>
 </section>
-<section id="implementando-o-procedimento-1" class="slide level2 scrollable">
-<h2>Implementando o procedimento</h2>
+<section id="implementando-o-laço-das-dobras" class="slide level2 scrollable">
+<h2>Implementando: o laço das dobras</h2>
+<p>Em cada dobra, ajusta os sete candidatos no treino temporário e mede o EQM no lote que ficou de fora</p>
 <div id="78a74bfe" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href></a>mse_deg <span class="op">=</span> {}</span>
 <span id="cb5-2"><a href></a></span>
@@ -1634,9 +1561,16 @@ Fold 4:
 <pre><code>{&#39;0&#39;: [1.0835319737812303, 0.9123508710126779, 0.8515078166111659, 0.8211992644333059, 0.906370276956641], &#39;3&#39;: [0.4685550190713497, 0.4413105599865085, 0.5172188314619182, 0.38201835586616856, 0.3723633515396271], &#39;5&#39;: [0.4463387593756728, 0.43852306378300354, 0.5256267862112263, 0.3826292538478435, 0.36739045422128197], &#39;7&#39;: [0.4597438072888968, 0.43815816190141615, 0.5314811538962878, 0.3994972398238271, 0.3752576591112432], &#39;10&#39;: [0.4586051026196262, 0.44153075197022534, 0.5332320817922022, 0.412506993610928, 0.40613345148146784], &#39;15&#39;: [0.4599156163082655, 0.4551540655533446, 0.5472345688205718, 0.4140035858455774, 0.42128232100939694], &#39;20&#39;: [0.45284758279986315, 0.46718928191951736, 0.586792317822178, 0.6681552868787054, 0.40650534309922826]}</code></pre>
 </div>
 </div>
+<ul>
+<li class="fragment"><code>x_tr[train_index]</code> e <code>x_tr[test_index]</code>: os índices da moldura anterior viram os dados da rodada</li>
+<li class="fragment"><code>fit_poly_models</code> ajusta os <strong>sete</strong> graus <em>dentro</em> da dobra — são <span class="math inline">\(5 \times 7 = 35\)</span> ajustes, e nenhum deles vê o lote em que será avaliado</li>
+<li class="fragment">Ao final <code>mse_deg</code> guarda uma lista de 5 EQMs por grau (o <code>if</code>/<code>else</code> é um <code>setdefault</code>; um <code>defaultdict(list)</code> faria o mesmo)</li>
+<li class="fragment"><strong>Regra de ouro:</strong> tudo o que aprende dos dados fica <em>dentro</em> do laço. Padronizar ou selecionar variáveis antes dele é vazamento (Aula 07)</li>
+</ul>
 </section>
-<section id="implementando-o-procedimento-2" class="slide level2">
-<h2>Implementando o procedimento</h2>
+<section id="implementando-a-média-e-a-escolha" class="slide level2 scrollable">
+<h2>Implementando: a média e a escolha</h2>
+<p>A média das 5 dobras, grau a grau — é o <span class="math inline">\(\mathrm{EQM}_{k-\mathrm{VC}}\)</span></p>
 <div id="5aef6394" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href></a>mse_deg_mean <span class="op">=</span> {}</span>
 <span id="cb7-2"><a href></a><span class="cf">for</span> k, v <span class="kw">in</span> mse_deg.items():</span>
@@ -1653,6 +1587,13 @@ Best fit polynomial degree (OLD):  7
 Best fit polynomial degree (NEW):  5</code></pre>
 </div>
 </div>
+<ul>
+<li class="fragment">O <code>OLD</code> é o grau escolhido no começo da aula, por <strong>uma única</strong> divisão treino/teste: <span class="math inline">\(p = 7\)</span>. O <code>NEW</code> é o que as 5 dobras escolhem: <span class="math inline">\(p = 5\)</span></li>
+<li class="fragment">Mas olhe a dispersão: o desvio-padrão <em>entre as dobras</em> é <span class="math inline">\(\approx 0{,}06\)</span>, e a distância do grau 5 ao grau 7 é <span class="math inline">\(0{,}009\)</span> — sete vezes menor</li>
+<li class="fragment">Pela <strong>regra de um erro-padrão</strong> (<span class="math inline">\(\mathrm{EP} = \mathrm{dp}/\sqrt{5} \approx 0{,}03\)</span>) os graus 3, 5, 7, 10 e 15 são <em>indistinguíveis</em>, e ficaríamos com o mais simples deles: <span class="math inline">\(p = 3\)</span></li>
+<li class="fragment">O que a VC separa com folga é o ruim do razoável: o grau 0 está a <strong>17</strong> erros-padrão do mínimo. E a troca de 7 para 5 é, ela mesma, sinal de que a divisão única era ruído</li>
+<li class="fragment">Falta o último passo: reajustar o grau escolhido em <strong>todo</strong> o conjunto de treinamento e só então medir no conjunto de teste</li>
+</ul>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
