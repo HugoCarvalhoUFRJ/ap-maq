@@ -181,6 +181,36 @@ está onde eles se cruzam, a menos de constantes. É um recurso padrão em anál
 taxas, e você vai reencontrá-lo na próxima subseção com $J$ no lugar de $k$.
 \end{observacao}
 
+\begin{atencao}[o expoente que você mede não é o expoente do teorema]
+A taxa $n^{-2/(2+p)}$ é \textbf{assintótica} e não depende de $\sigma^2$ --- ela sai
+da suavidade de $r$ e da dimensão, e mais nada. Já a inclinação que você obtém
+ajustando uma reta a $\log(\text{risco})$ contra $\log n$ num intervalo finito de
+$n$ depende de $\sigma$, e bastante. A §4 da \texttt{Aula prática 05} mede, com
+$n\in[100,\,10^4]$:
+
+\begin{center}\small
+\begin{tabular}{lrrrr}
+\toprule
+ & $p=1$ & $p=2$ & $p=4$ & $p=8$ \\
+\midrule
+inclinação medida, $\sigma=0{,}3$  & $-0{,}84$ & $-0{,}65$ & $-0{,}44$ & $-0{,}25$ \\
+inclinação medida, $\sigma=0{,}05$ & $-0{,}90$ & $-0{,}90$ & $-0{,}52$ & $-0{,}27$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Reduzir o ruído por seis não muda a taxa assintótica --- muda \emph{onde} nela
+aquele intervalo de $n$ cai. Com $\sigma$ pequeno o termo $\sigma^2/k$ encolhe, o
+risco fica dominado pelo viés, e a curva desce mais rápido no trecho medido.
+
+Duas coisas a levar disso. A primeira é sobre o $k^*$, e confirma a teoria: ele cai
+com $\sigma$ (em $p=2$, de $68$ para $11$), como $K(k/n)^{2/p}+\sigma^2/k$ exige ---
+menos ruído a matar, menos suavização. A segunda é sobre expoentes empíricos em
+geral: eles são propriedades da \emph{janela} em que você mediu, não constantes da
+natureza. Um artigo que reporta $n^{-0{,}9}$ não contradiz necessariamente um
+teorema que promete $n^{-2/3}$.
+\end{atencao}
+
 \subsection{Séries ortogonais e taxa minimax}
 Para séries ortogonais (base de Fourier) com suavidade de Sobolev $m$, um argumento
 análogo (viés do truncamento em $J$ termos $\le K_1 J^{-2m}$; variância $\le K_2 J/n$)

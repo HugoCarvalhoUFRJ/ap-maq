@@ -117,6 +117,20 @@ $(k/n)^{2/p}$ \emph{cresce} com $k$ (viés) e $\sigma^2/k$ \emph{decresce} com $
 maneira prática de encontrá-lo.
 \end{ideia}
 
+\begin{emsala}
+Pergunta: \emph{``se eu medir a inclinação de $\log$(risco) contra $\log n$, vou
+achar $-2/(2+p)$?''} A turma dirá que sim. A §4 da \texttt{Aula prática 05} mede com
+$n\in[100,\,10^4]$ e dá $-0{,}84$, $-0{,}65$, $-0{,}44$ e $-0{,}25$ para
+$p=1,2,4,8$ com $\sigma=0{,}3$; e $-0{,}90$, $-0{,}90$, $-0{,}52$ e $-0{,}27$ com
+$\sigma=0{,}05$.
+
+O ponto a extrair: a taxa do teorema é assintótica e não depende de $\sigma$, mas a
+inclinação medida numa janela finita depende --- com pouco ruído, o trecho fica
+dominado pelo viés e desce mais rápido. \textbf{Expoente empírico é propriedade da
+janela, não da natureza.} Já o $k^*$ se comporta como a fórmula manda: cai com
+$\sigma$ (em $p=2$, de $68$ para $11$).
+\end{emsala}
+
 \subsection{Séries ortogonais e taxa minimax}
 Para séries ortogonais (base de Fourier) com suavidade de Sobolev $m$, um argumento
 análogo (viés do truncamento em $J$ termos $\le K_1 J^{-2m}$; variância $\le K_2 J/n$)
