@@ -214,8 +214,9 @@ laboratório guiado **mostra** em vez de deixar em aberto: cada bloco virou mark
 Foram 40 blocos ao todo, e **meça antes de escrever** não é conselho de estilo: em
 mais de um terço deles o resultado contrariou o que o enunciado sugeria. A árvore
 gananciosa precisa de profundidade 6, não 3, para o `sinal(x1x2x3)`; o desvio-padrão
-da CV continua caindo com $k$ mesmo em $n=200$; ficar com as 5 colunas mais
-correlacionadas piora o KNN *e* a Ridge; o t-SNE com `init="pca"` é reprodutível; e
+da CV continuava caindo com $k$ mesmo em $n=200$ (medição removida do material em
+19/08/2026 — ver adiante); ficar com as 5 colunas mais correlacionadas piora o KNN
+*e* a Ridge; o t-SNE com `init="pca"` é reprodutível; e
 acrescentar comprimento e dígitos ao filtro de spam melhora a AUC e **piora** a AP.
 Um bloco precisou de repetições e erro-padrão para não afirmar bobagem.
 
@@ -237,12 +238,37 @@ Três colisões saíram dessa varredura e estão corrigidas:
 - quatro lugares afirmavam que um modelo com $n$ parâmetros para $n$ pontos
   interpola com resíduo nulo. É verdade em aritmética exata, e a `Lista teorica 03`
   nomeia justamente o caso que a `Aula prática 03` §3 mede — grau 49 em 50 pontos —
-  onde o medido é $0{,}3049$: a matriz perde posto numérico e o `lstsq` devolve a
+  onde o medido é $0{,}1029$: a matriz perde posto numérico e o `lstsq` devolve a
   solução de norma mínima. Só a analogia com o polinômio precisou de ressalva; o RSS
   zero da árvore com uma observação por folha é exato também no computador;
 - a caixa da aula 07 dividia os métodos em duas categorias e são **três**: LDA, QDA
   e Bayes ingênuo também são invariantes por reescala, e justamente *porque* estimam
   a covariância.
+
+**O grau 49 da aula 03 não tem um número, tem uma faixa** (medido em 19/08/2026). Os
+três valores que o §3 afirmava — erro de treino $0{,}3049$, EQM de teste $25{,}5$ e
+mergulho a $-109$ — vieram todos de uma execução coerente, mas em uma instalação que
+truncava o posto em $10^{-6}$ relativo. No ambiente atual (scikit-learn 1.5.1, scipy
+1.13.1) o `lstsq` trunca na precisão da máquina, enxerga posto 39 em vez de 21, e os
+mesmos três números viram $0{,}1029$, $2{,}5\times10^{13}$ e $-1{,}05\times10^{8}$ —
+o do teste, doze ordens de grandeza acima. **Não trate nenhum deles como estável**:
+variando só o corte de posto de $10^{-6}$ à precisão da máquina, o EQM de teste
+percorre de $25$ a $2{,}5\times10^{13}$. O que sobrevive a qualquer corte, e é o que o
+texto deve sustentar, são as três leituras: o erro de treino não é zero, é menor que o
+do grau 5, e o ajuste é catastrófico fora dos pontos. O notebook, as notas do aluno e
+a `Lista teorica 03` já trazem a ressalva.
+
+**A variância da CV contra $k$ saiu do material** (19/08/2026). O deck da aula 03 ---
+que é o que os alunos veem --- ensina o argumento clássico: $k$ grande dá dobras
+muito correlacionadas e portanto estimativa de variância alta. As notas o
+contradiziam com medição (o desvio-padrão caía de $2{,}20$ em $k=2$ a $0{,}13$ na
+LOOCV, e continuava caindo com $n=200$), e a `Aula prática 03` media isso numa seção
+própria. **Decisão do Gabriel: alinhar ao deck.** Saíram a caixa
+`o que a medição mostra` das duas versões das notas, a `emsala` que encenava a
+contradição em aula, a seção do notebook e a curva de desvio-padrão da figura
+`03-escolha-k` --- que hoje mostra só o viés e o custo. O que ficou é o viés, que
+não contradiz nada: $0{,}427$ em $k=2$, $0{,}0064$ em $k=10$. A medição antiga está
+no histórico do git, não no material.
 
 E cinco resultados que só existiam no notebook viraram caixa nas notas: a
 profundidade que a miopia gananciosa cobra (06), o expoente empírico depender da
@@ -253,8 +279,8 @@ a AUC sobe (E3).
 **Conferido e correto — não reabra:** o `C` da aula 10 (as notas já trazem a
 convenção de orçamento do [ISLP] e a inversão do scikit-learn em caixas vizinhas), o
 PCA e o KNN na E2 (as notas já dizem que o KNN se adapta sozinho à dimensão
-intrínseca), a variância da CV na 03, o viés de fronteira na 04 e o Gini contra o
-erro na 11. Nesses o errado era só o enunciado antigo do bloco.
+intrínseca), o viés de fronteira na 04 e o Gini contra o erro na 11. Nesses o
+errado era só o enunciado antigo do bloco.
 
 As **listas práticas e seus gabaritos** têm outros **46 blocos** `Sua vez`, em 28
 notebooks. Ali eles talvez façam sentido, já que a lista é o material de exercício
@@ -437,11 +463,13 @@ duplicá-lo.
   instável, então localize a seção pelo título:
   `pdftotext recursos/livros/ISLP.pdf - | grep -n "Bias-Variance"`.
 - **Meça antes de afirmar.** Várias afirmações herdadas não sobreviveram à
-  verificação — a variância da validação cruzada não cresce com $k$ neste curso, o
-  vazamento por padronização é numericamente irrelevante perto do vazamento por
-  seleção de variáveis, e o viés de fronteira do Nadaraya--Watson só aparece se você
-  medir sobre repetições em vez de uma amostra. Quando a medição contrariar o texto,
-  **registre o que foi medido** em vez de repetir a previsão.
+  verificação — o vazamento por padronização é numericamente irrelevante perto do
+  vazamento por seleção de variáveis, e o viés de fronteira do Nadaraya--Watson só
+  aparece se você medir sobre repetições em vez de uma amostra. Quando a medição
+  contrariar o texto, **registre o que foi medido** em vez de repetir a previsão.
+  Com uma ressalva, registrada na seção das 40 medições: quando o medido contradiz
+  o **deck** — que é o que os alunos veem —, o que fazer é decisão do Gabriel, não
+  consequência automática da medição. Foi assim com a variância da CV na aula 03.
 
 ## A hierarquia de vazamento, e por que o PCA saiu da categoria grave
 

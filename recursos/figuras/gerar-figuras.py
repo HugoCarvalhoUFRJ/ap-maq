@@ -285,7 +285,7 @@ def _cv_vs_risco():
 
 @figura("03-escolha-k", "03")
 def _escolha_k():
-    """Por que k=5 ou 10: o viés cai com k, mas a variância sobe."""
+    """Por que k=5 ou 10: o viés cai depressa com k, e o custo sobe linearmente."""
     grau = 5
     n_rep = 300
     ks = [2, 5, 10, 25, N_TR]           # N_TR dobras = LOOCV
@@ -307,24 +307,19 @@ def _escolha_k():
 
     medias = np.array([np.mean(estimativas[k]) for k in ks])
     vieses = medias - alvo
-    desvios = np.array([np.std(estimativas[k], ddof=1) for k in ks])
     print(f"     [conferência] risco verdadeiro = {alvo:.4f}")
-    print(f"     [conferência] viés  por k: {vieses.round(4)}")
-    print(f"     [conferência] desvio por k: {desvios.round(4)}"
-          f"  <- NÃO cresce com k neste experimento")
+    print(f"     [conferência] viés por k: {vieses.round(4)}")
 
     fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
     rotulos = [str(k) if k < N_TR else f"{N_TR}\n(LOOCV)" for k in ks]
     pos = np.arange(len(ks))
 
-    ax1.plot(pos, np.abs(vieses), "o-", color=AZUL, ms=4, label="|viés|")
-    ax1.plot(pos, desvios, "s-", color=VINHO, ms=4, label="desvio-padrão")
+    ax1.plot(pos, np.abs(vieses), "o-", color=AZUL, ms=4)
     ax1.set_xticks(pos); ax1.set_xticklabels(rotulos)
     ax1.set_xlabel("número de dobras $k$")
-    ax1.set_ylabel("erro da estimativa do risco")
+    ax1.set_ylabel("|viés| da estimativa do risco")
     ax1.set_yscale("log")
-    ax1.set_title("precisão: tudo estabiliza a partir de $k=5$")
-    ax1.legend(loc="upper right", fontsize=8)
+    ax1.set_title("viés: desprezível a partir de $k=5$")
 
     ax2.plot(pos, ks, "^-", color=VERDE, ms=4)
     for p, k in zip(pos, ks):

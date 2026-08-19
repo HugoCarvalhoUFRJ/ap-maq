@@ -81,10 +81,10 @@ a Aula~01 ensinou o outro:
 São objetos de níveis diferentes: um é o erro do modelo, o outro é o erro da
 \emph{medida} do erro do modelo --- e não há contradição em o mesmo modelo ter os
 dois. O grau~49 da §3 da \texttt{Aula prática 03} é o caso extremo: erro de treino
-$0{,}3049$, \emph{menor} que o $0{,}3580$ do grau~5, e risco $25{,}5$. Ao subir o
-grau, o viés do modelo desapareceu e o da régua explodiu junto. É por isso que o
-erro de treino não pode arbitrar entre modelos de complexidades diferentes: quanto
-mais flexível o candidato, mais a régua o favorece.
+$0{,}1029$, \emph{menor} que o $0{,}3580$ do grau~5, e risco $2{,}5\times 10^{13}$.
+Ao subir o grau, o viés do modelo desapareceu e o da régua explodiu junto. É por
+isso que o erro de treino não pode arbitrar entre modelos de complexidades
+diferentes: quanto mais flexível o candidato, mais a régua o favorece.
 \end{atencao}
 
 \begin{atencao}
@@ -105,20 +105,23 @@ preferimos.
 \end{observacao}
 
 %==============================================================================
-\section{Data splitting (conjunto de validação)}
+\section{Data splitting (conjunto de teste)}
 %==============================================================================
-A ideia mais simples: separe os dados \emph{aleatoriamente} em treino (p.ex.\ 70\%)
-e validação (p.ex.\ 30\%):
+A ideia mais simples: separe os dados \emph{aleatoriamente} em treinamento
+(p.ex.\ 70\%) e teste (p.ex.\ 30\%):
 \[
-  \underbrace{(\X_1,Y_1),\dots,(\X_s,Y_s)}_{\text{treino}}\;,\;
-  \underbrace{(\X_{s+1},Y_{s+1}),\dots,(\X_n,Y_n)}_{\text{validação}}.
+  \underbrace{(\X_1,Y_1),\dots,(\X_n,Y_n)}_{\text{treinamento}}\;,\;
+  \underbrace{(\X_{n+1},Y_{n+1}),\dots,(\X_{n+m},Y_{n+m})}_{\text{teste}}.
 \]
-Ajuste $g$ \emph{só} no treino e estime o risco \emph{só} na validação:
+Daqui para a frente $n$ é o tamanho do \emph{treinamento} e $m$ o do teste.
+Ajuste $g$ \emph{só} no treinamento e estime o risco \emph{só} no teste:
 \begin{equation}\label{eq:datasplit}
-  \riscohat(g) = \frac{1}{n-s}\sum_{i=s+1}^{n} \big(Y_i - g(\X_i)\big)^2 .
+  \riscohat(g) = \frac{1}{m}\sum_{i=n+1}^{n+m} \big(Y_i - g(\X_i)\big)^2 .
 \end{equation}
-Como a validação não foi usada para estimar $g$, \eqref{eq:datasplit} é um
-estimador \emph{consistente} de $\risco(g)$ pela lei dos grandes números.
+Como o teste não foi usado para estimar $g$, \eqref{eq:datasplit} é um
+estimador \emph{consistente} de $\risco(g)$ pela lei dos grandes números. A
+proporção também não é arbitrária: treinar um modelo exige mais informação do que
+avaliá-lo, e por isso a fatia maior fica com o treinamento.
 
 \begin{atencao}[o \emph{aleatoriamente} não é decoração]
 Se o banco vier ordenado por alguma variável --- por data, por classe, por quem
@@ -131,12 +134,17 @@ saber por que existe.
 
 \begin{atencao}[Limitações do data splitting]
 \begin{enumerate}[leftmargin=1.5cm,nosep]
-  \item \textbf{Desperdício de dados:} $g$ é treinada com apenas $s<n$ observações;
-        com poucos dados isso prejudica o ajuste.
+  \item \textbf{Desperdício de dados:} $g$ é treinada com apenas $n$ das $n+m$
+        observações que você coletou; com poucos dados isso prejudica o ajuste.
   \item \textbf{Variabilidade:} a estimativa depende da divisão sorteada --- outra
         semente dá outro número. Pode ser instável.
 \end{enumerate}
-A validação cruzada resolve os dois usando \emph{toda} a amostra.
+A validação cruzada resolve os dois usando \emph{todo o conjunto de treinamento}
+--- e é importante ver o que ela \emph{não} substitui. A divisão treino/teste
+continua sendo o primeiro passo, e o teste continua guardado até o fim. O que a
+validação cruzada dispensa é um \emph{segundo} corte, o que separaria uma parte do
+treino para escolher o modelo: esse papel passa a ser feito pelas dobras, girando
+dentro do treino.
 \end{atencao}
 
 %==============================================================================
@@ -224,9 +232,10 @@ a observação $i$ influencia sua própria predição. Pontos de alta alavancage
 justamente aqueles cujo resíduo de treino mais engana.
 
 \subsection{Validação cruzada com $k$ dobras}
-Divida os dados aleatoriamente em $k$ lotes (dobras) disjuntos de tamanho
-$\approx n/k$, com índices $L_1,\dots,L_k$. Para cada $j$, treine $g_{-j}$ \emph{sem}
-o lote $L_j$ e avalie nesse lote:
+Divida \emph{o conjunto de treinamento} aleatoriamente em $k$ lotes (dobras)
+disjuntos de tamanho $\approx n/k$, com índices $L_1,\dots,L_k$. O conjunto de teste
+saiu na divisão anterior e não entra em dobra nenhuma. Para cada $j$, treine
+$g_{-j}$ \emph{sem} o lote $L_j$ e avalie nesse lote:
 \begin{equation}\label{eq:kfold}
   \riscohat_{k\text{-CV}}(g)
    = \frac1n \sum_{j=1}^{k} \sum_{i\in L_j} \big(Y_i - g_{-j}(\X_i)\big)^2 .
@@ -367,38 +376,31 @@ fim. Com $k=10$ são 90\% da amostra e quase não se nota; com $k=2$, metade del
 Duas consequências que vale guardar. A primeira é o \textbf{sinal}: como menos
 dados costumam piorar o ajuste, $\risco_{\,n-n/k}\ge\risco_n$, e a validação
 cruzada erra \emph{por cima}. Quando houver viés, ele será pessimista --- ao
-contrário do erro de treino, que erra sempre por baixo. (Na tabela da §8 da
-\texttt{Aula prática 03} isso se vê em $k=2$, $5$ e $10$; de $k=25$ em diante o
-viés já é menor que o ruído da própria simulação, e o sinal deixa de ser legível.)
-A segunda é que esse viés
+contrário do erro de treino, que erra sempre por baixo. A segunda é que esse viés
 não diz nada sobre a \emph{variância}: aquela depende de quanto as dobras se
-parecem, que é a outra metade do argumento clássico --- e é a metade que a medição
-abaixo vai contrariar.
+parecem entre si, que é a outra metade do argumento clássico.
 \end{ideia}
 
-A Figura~\ref{fig:escolhak} mede as duas coisas na nossa população.
+A Figura~\ref{fig:escolhak} mede o viés e o custo na nossa população.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/03-escolha-k.pdf}
   \caption{Estimativa do risco de um polinômio de grau~5 sobre $n=50$ pontos,
-  repetida em 300 amostras independentes. À esquerda, viés e desvio-padrão da
-  estimativa (escala logarítmica): com $k=2$ os dois são desastrosos --- treinar com
-  25 pontos é coisa muito diferente de treinar com 50 ---, e a partir de $k=5$
-  tudo estabiliza. À direita, o custo, que cresce linearmente: a LOOCV pede
-  \emph{dez vezes} mais ajustes que $k=5$.}
+  repetida em 300 amostras independentes. À esquerda, o viés da estimativa (escala
+  logarítmica): com $k=2$ ele é desastroso --- treinar com 25 pontos é coisa muito
+  diferente de treinar com 50 --- e a partir de $k=5$ já é desprezível. À direita, o
+  custo, que cresce linearmente: a LOOCV pede \emph{dez vezes} mais ajustes que
+  $k=5$.}
   \label{fig:escolhak}
 \end{figure}
 
-\begin{atencao}[o que este experimento mostra --- e o que não mostra]
-O viés se comporta como previsto: cai de $0{,}43$ em $k=2$ para $0{,}006$ em $k=10$.
-Já o desvio-padrão \textbf{não} cresce com $k$ aqui: vai de $2{,}20$ ($k=2$) a
-$0{,}13$ (LOOCV), decrescendo o tempo todo. O efeito de treinar com poucos dados
-domina de longe o efeito da correlação entre dobras. Não tome ``LOOCV tem variância
-alta'' como lei --- é um argumento sobre um dos termos, e o outro pode ser maior.
-A conclusão prática sobrevive intacta, só que por outro motivo: de $k=5$ para
-frente não há praticamente nada a ganhar em precisão, e o custo continua subindo.
-Daí $k=5$ ou $k=10$.
+\begin{atencao}[o que o experimento mostra]
+O viés se comporta como previsto: cai de $0{,}43$ em $k=2$ para $0{,}006$ em $k=10$
+--- treinar com metade dos dados é mesmo coisa muito diferente de treinar com todos,
+e essa diferença some depressa. Some tão depressa que a conclusão prática se lê
+direto do gráfico: de $k=5$ para frente não há praticamente nada a ganhar, e o
+custo continua subindo linearmente. Daí $k=5$ ou $k=10$.
 \end{atencao}
 
 \begin{atencao}[A regra de ouro contra vazamento]
@@ -413,6 +415,21 @@ isso que usamos \emph{pipelines}, Aula~07.)
 O uso central: para cada valor de um hiperparâmetro $\theta$ (p.ex.\ $\lambda$ do
 Lasso), calcule $\riscohat_{k\text{-CV}}(\theta)$ e escolha
 $\widehat\theta=\argmin_\theta \riscohat_{k\text{-CV}}(\theta)$.
+
+\begin{ideia}[o protocolo, em quatro passos]
+Junte as peças e o procedimento inteiro fica assim:
+\begin{enumerate}[leftmargin=1.6cm,nosep]
+  \item \textbf{separe} o conjunto de teste (p.ex.\ 30\%) e guarde-o;
+  \item \textbf{escolha} um ou mais bons candidatos por validação cruzada
+        \emph{dentro do treino};
+  \item \textbf{reajuste} o(s) candidato(s) em \emph{todo} o conjunto de
+        treinamento --- as dobras serviram para escolher, não para entregar o
+        modelo;
+  \item \textbf{meça} o desempenho no conjunto de teste.
+\end{enumerate}
+O passo 3 é o que quase todo mundo esquece, e é ele que faz a CV valer a pena: o
+modelo entregue usa \emph{todas} as observações de treino, não $k-1$ delas.
+\end{ideia}
 
 \begin{atencao}[Regra ``1-EP'']
 Como $\riscohat_{k\text{-CV}}$ tem erro padrão, muitas vezes prefere-se a
@@ -487,37 +504,52 @@ florestas aleatórias (Aula~06), onde as observações OOB dão uma estimativa d
 \section{Prática em Python}
 %==============================================================================
 \begin{lstlisting}
-from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
+from sklearn.model_selection import (train_test_split, cross_val_score, KFold,
+                                     GridSearchCV)
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_squared_error
 
-# 1. CV simples para estimar o risco de UM procedimento (MSE -> negativo no sklearn)
+# 0. O PRIMEIRO passo e separar o teste. Dobra nenhuma vai toca-lo.
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=0)
+
 modelo = make_pipeline(StandardScaler(), Ridge(alpha=1.0))
-scores = cross_val_score(modelo, X, y, cv=KFold(5, shuffle=True, random_state=0),
+dobras = KFold(5, shuffle=True, random_state=0)
+
+# 1. CV DENTRO DO TREINO, para estimar o risco de UM procedimento
+#    (MSE -> negativo no sklearn)
+scores = cross_val_score(modelo, X_tr, y_tr, cv=dobras,
                          scoring="neg_mean_squared_error")
 print("risco estimado:", -scores.mean(), "+/-", scores.std())
 
 # 2. Selecionar o hiperparametro lambda (=alpha) por CV, SEM vazamento
 #    (o StandardScaler e reajustado dentro de cada dobra)
 grade = {"ridge__alpha": [0.01, 0.1, 1, 10, 100]}
-busca = GridSearchCV(modelo, grade, cv=5, scoring="neg_mean_squared_error")
-busca.fit(X, y)
+busca = GridSearchCV(modelo, grade, cv=dobras, scoring="neg_mean_squared_error")
+busca.fit(X_tr, y_tr)                 # o teste continua guardado
 print("melhor alpha:", busca.best_params_)
+
+# 3. O vencedor ja saiu reajustado em TODO o treino (refit=True, o padrao).
+#    So agora o teste e tocado, uma unica vez.
+print("EQM no teste:", mean_squared_error(y_te, busca.predict(X_te)))
 \end{lstlisting}
 
 \begin{atencao}
-Duas armadilhas de \texttt{scikit-learn} nesse trecho. Primeira: as funções de
-\emph{score} seguem a convenção ``maior é melhor'', então o EQM aparece negado
+Três coisas a reparar nesse trecho. Primeira: as funções de \emph{score} seguem a
+convenção ``maior é melhor'', então o EQM aparece negado
 (\texttt{neg\_mean\_squared\_error}) --- daí o sinal de menos ao imprimir. Segunda:
-passar \texttt{cv=5} sem \texttt{shuffle=True} usa as dobras \emph{na ordem do
-arquivo}, com o problema descrito no início da aula. Prefira construir o
-\texttt{KFold} explicitamente.
+o \texttt{KFold} está construído explicitamente, e não passado como
+\texttt{cv=5} --- assim é passado \texttt{shuffle=True}, sem o qual as dobras saem
+\emph{na ordem do arquivo}, com o problema descrito no início da aula. Terceira: o
+\texttt{X\_te} aparece uma única vez no trecho inteiro, na última linha. Se ele
+aparecer antes disso, alguma coisa está errada.
 \end{atencao}
 
 O notebook \texttt{Aula prática 03} refaz tudo isto: implementa as $k$ dobras à mão,
-confere o atalho do LOOCV, mede o que a Figura~\ref{fig:escolhak} mostra e fecha
-escolhendo o $\lambda$ de uma Ridge no \texttt{superconductivity.csv}.
+confere o atalho do LOOCV, roda o protocolo de quatro passos numa população em que
+a resposta é conhecida, e fecha escolhendo o $\lambda$ de uma Ridge no
+\texttt{superconductivity.csv}.
 
 %==============================================================================
 \section*{Resumo}

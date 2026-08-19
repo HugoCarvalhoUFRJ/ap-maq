@@ -77,20 +77,23 @@ preferimos.
 \end{observacao}
 
 %==============================================================================
-\section{Data splitting (conjunto de validação)}
+\section{Data splitting (conjunto de teste)}
 %==============================================================================
-A ideia mais simples: separe os dados \emph{aleatoriamente} em treino (p.ex.\ 70\%)
-e validação (p.ex.\ 30\%):
+A ideia mais simples: separe os dados \emph{aleatoriamente} em treinamento
+(p.ex.\ 70\%) e teste (p.ex.\ 30\%):
 \[
-  \underbrace{(\X_1,Y_1),\dots,(\X_s,Y_s)}_{\text{treino}}\;,\;
-  \underbrace{(\X_{s+1},Y_{s+1}),\dots,(\X_n,Y_n)}_{\text{validação}}.
+  \underbrace{(\X_1,Y_1),\dots,(\X_n,Y_n)}_{\text{treinamento}}\;,\;
+  \underbrace{(\X_{n+1},Y_{n+1}),\dots,(\X_{n+m},Y_{n+m})}_{\text{teste}}.
 \]
-Ajuste $g$ \emph{só} no treino e estime o risco \emph{só} na validação:
+Daqui para a frente $n$ é o tamanho do \emph{treinamento} e $m$ o do teste.
+Ajuste $g$ \emph{só} no treinamento e estime o risco \emph{só} no teste:
 \begin{equation}\label{eq:datasplit}
-  \riscohat(g) = \frac{1}{n-s}\sum_{i=s+1}^{n} \big(Y_i - g(\X_i)\big)^2 .
+  \riscohat(g) = \frac{1}{m}\sum_{i=n+1}^{n+m} \big(Y_i - g(\X_i)\big)^2 .
 \end{equation}
-Como a validação não foi usada para estimar $g$, \eqref{eq:datasplit} é um
-estimador \emph{consistente} de $\risco(g)$ pela lei dos grandes números.
+Como o teste não foi usado para estimar $g$, \eqref{eq:datasplit} é um
+estimador \emph{consistente} de $\risco(g)$ pela lei dos grandes números. A
+proporção também não é arbitrária: treinar um modelo exige mais informação do que
+avaliá-lo, e por isso a fatia maior fica com o treinamento.
 
 \begin{emsala}
 Enfatize o \emph{aleatoriamente}: se o banco vier ordenado por alguma variável
@@ -101,12 +104,17 @@ conjuntos não representativos. Em \texttt{scikit-learn} isso é o
 
 \begin{atencao}[Limitações do data splitting]
 \begin{enumerate}[leftmargin=1.5cm,nosep]
-  \item \textbf{Desperdício de dados:} $g$ é treinada com apenas $s<n$ observações;
-        com poucos dados isso prejudica o ajuste.
+  \item \textbf{Desperdício de dados:} $g$ é treinada com apenas $n$ das $n+m$
+        observações que você coletou; com poucos dados isso prejudica o ajuste.
   \item \textbf{Variabilidade:} a estimativa depende da divisão sorteada --- outra
         semente dá outro número. Pode ser instável.
 \end{enumerate}
-A validação cruzada resolve os dois usando \emph{toda} a amostra.
+A validação cruzada resolve os dois usando \emph{todo o conjunto de treinamento}
+--- e é importante ver o que ela \emph{não} substitui. A divisão treino/teste
+continua sendo o primeiro passo, e o teste continua guardado até o fim. O que a
+validação cruzada dispensa é um \emph{segundo} corte, o que separaria uma parte do
+treino para escolher o modelo: esse papel passa a ser feito pelas dobras, girando
+dentro do treino.
 \end{atencao}
 
 %==============================================================================
@@ -136,9 +144,10 @@ Ou seja, um \emph{único} ajuste basta. Esta é uma das fórmulas mais elegantes
 área: o LOOCV ``de graça''.
 
 \subsection{Validação cruzada com $k$ dobras}
-Divida os dados aleatoriamente em $k$ lotes (dobras) disjuntos de tamanho
-$\approx n/k$, com índices $L_1,\dots,L_k$. Para cada $j$, treine $g_{-j}$ \emph{sem}
-o lote $L_j$ e avalie nesse lote:
+Divida \emph{o conjunto de treinamento} aleatoriamente em $k$ lotes (dobras)
+disjuntos de tamanho $\approx n/k$, com índices $L_1,\dots,L_k$. O conjunto de teste
+saiu na divisão anterior e não entra em dobra nenhuma. Para cada $j$, treine
+$g_{-j}$ \emph{sem} o lote $L_j$ e avalie nesse lote:
 \begin{equation}\label{eq:kfold}
   \riscohat_{k\text{-CV}}(g)
    = \frac1n \sum_{j=1}^{k} \sum_{i\in L_j} \big(Y_i - g_{-j}(\X_i)\big)^2 .
@@ -183,27 +192,16 @@ viés--variância, mas \emph{da estimativa do risco}:
         mais independentes.
 \end{itemize}
 
-\begin{atencao}[o que a medição mostra --- e o que não mostra]
-A \texttt{Aula prática 03} (§8) mede as duas coisas, em 300 amostras de $n=50$. O
-viés se comporta como previsto: cai de $0{,}43$ em $k=2$ para $0{,}006$ em $k=10$.
-Já o desvio-padrão \textbf{não} cresce com $k$: vai de $2{,}20$ ($k=2$) a $0{,}13$
-(LOOCV), decrescendo o tempo todo --- e com $n=200$ continua a descer
-($0{,}068 \to 0{,}057$), então não é artefato de amostra pequena. O efeito de
-treinar com poucos dados domina de longe o da correlação entre dobras.
-\textbf{Não passe ``LOOCV tem variância alta'' como lei:} é um argumento sobre um
-dos termos, e o outro pode ser maior.
-\end{atencao}
-
 \begin{emsala}
-Vale expor a contradição em vez de escondê-la: apresente o argumento clássico,
-pergunte o que a turma espera do desvio-padrão em função de $k$, e só então mostre
-a medição. É um bom momento para dizer que argumento sobre um termo não é
-conclusão sobre a soma.
+Pergunte à turma o que acontece com o viés quando $k$ cresce, antes de responder.
+O caminho é: cada dobra treina com $n-n/k$ observações, então $k$ maior aproxima o
+procedimento avaliado daquele que será usado no fim --- e o viés, que é pessimista,
+encolhe. A simulação da versão do aluno mede: $0{,}43$ em $k=2$ contra $0{,}006$ em
+$k=10$.
 \end{emsala}
 
-\noindent A conclusão prática sobrevive, só que por outro motivo: de $k=5$ em
-diante não há praticamente nada a ganhar em precisão, e o custo continua subindo.
-Daí $k=5$ ou $k=10$.
+\noindent Daí a conclusão prática: de $k=5$ em diante não há praticamente nada a
+ganhar, e o custo continua subindo linearmente. Por isso $k=5$ ou $k=10$.
 
 \begin{atencao}[A regra de ouro contra vazamento]
 \textbf{Toda} etapa que ``aprende'' algo dos dados --- padronização, seleção de
@@ -217,6 +215,21 @@ isso que usamos \emph{pipelines}, Aula~07.)
 O uso central: para cada valor de um hiperparâmetro $\theta$ (p.ex.\ $\lambda$ do
 Lasso), calcule $\riscohat_{k\text{-CV}}(\theta)$ e escolha
 $\widehat\theta=\argmin_\theta \riscohat_{k\text{-CV}}(\theta)$.
+
+\begin{ideia}[o protocolo, em quatro passos]
+Junte as peças e o procedimento inteiro fica assim:
+\begin{enumerate}[leftmargin=1.6cm,nosep]
+  \item \textbf{separe} o conjunto de teste (p.ex.\ 30\%) e guarde-o;
+  \item \textbf{escolha} um ou mais bons candidatos por validação cruzada
+        \emph{dentro do treino};
+  \item \textbf{reajuste} o(s) candidato(s) em \emph{todo} o conjunto de
+        treinamento --- as dobras serviram para escolher, não para entregar o
+        modelo;
+  \item \textbf{meça} o desempenho no conjunto de teste.
+\end{enumerate}
+O passo 3 é o que quase todo mundo esquece, e é ele que faz a CV valer a pena: o
+modelo entregue usa \emph{todas} as observações de treino, não $k-1$ delas.
+\end{ideia}
 
 \begin{atencao}[Regra ``1-EP'']
 Como $\riscohat_{k\text{-CV}}$ tem erro padrão, muitas vezes prefere-se a
@@ -267,29 +280,41 @@ uma estimativa de risco ``de graça''.
 \section{Prática em Python}
 %==============================================================================
 \begin{lstlisting}
-from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
+from sklearn.model_selection import (train_test_split, cross_val_score, KFold,
+                                     GridSearchCV)
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_squared_error
 
-# 1. CV simples para estimar o risco de UM procedimento (MSE -> negativo no sklearn)
+# 0. O PRIMEIRO passo e separar o teste. Dobra nenhuma vai toca-lo.
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=0)
+
 modelo = make_pipeline(StandardScaler(), Ridge(alpha=1.0))
-scores = cross_val_score(modelo, X, y, cv=KFold(5, shuffle=True, random_state=0),
+dobras = KFold(5, shuffle=True, random_state=0)
+
+# 1. CV DENTRO DO TREINO, para estimar o risco de UM procedimento
+#    (MSE -> negativo no sklearn)
+scores = cross_val_score(modelo, X_tr, y_tr, cv=dobras,
                          scoring="neg_mean_squared_error")
 print("risco estimado:", -scores.mean(), "+/-", scores.std())
 
 # 2. Selecionar o hiperparametro lambda (=alpha) por CV, SEM vazamento
 #    (o StandardScaler e reajustado dentro de cada dobra)
 grade = {"ridge__alpha": [0.01, 0.1, 1, 10, 100]}
-busca = GridSearchCV(modelo, grade, cv=5, scoring="neg_mean_squared_error")
-busca.fit(X, y)
+busca = GridSearchCV(modelo, grade, cv=dobras, scoring="neg_mean_squared_error")
+busca.fit(X_tr, y_tr)                 # o teste continua guardado
 print("melhor alpha:", busca.best_params_)
+
+# 3. O vencedor ja saiu reajustado em TODO o treino (refit=True, o padrao).
+#    So agora o teste e tocado, uma unica vez.
+print("EQM no teste:", mean_squared_error(y_te, busca.predict(X_te)))
 \end{lstlisting}
 
 O notebook \texttt{Aula prática 03} implementa as $k$ dobras à mão, confere o atalho
 do LOOCV pela alavancagem, mede o efeito de rodar \texttt{KFold} sem
-\texttt{shuffle} e fecha escolhendo o $\lambda$ de uma Ridge no
-\texttt{superconductivity.csv}.
+\texttt{shuffle}, roda o protocolo de quatro passos contra a resposta conhecida e
+fecha escolhendo o $\lambda$ de uma Ridge no \texttt{superconductivity.csv}.
 
 %==============================================================================
 \section*{Resumo}

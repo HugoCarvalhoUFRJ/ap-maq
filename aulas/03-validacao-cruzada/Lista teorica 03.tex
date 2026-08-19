@@ -61,13 +61,17 @@ perde \emph{toda} a informação sobre o risco. Com $n=50$, isso acontece em $p=
 
 E se você tentar reproduzir isso no computador, \textbf{não vai dar zero}. A §3 da
 \texttt{Aula prática 03} ajusta exatamente esse polinômio de grau~49 aos 50 pontos
-e mede erro de treino $0{,}3049$. O motivo é aritmética de ponto flutuante, não
+e mede erro de treino $0{,}1029$. O motivo é aritmética de ponto flutuante, não
 matemática: com $x\in[-3,3]$, a coluna $x^{49}$ varre umas vinte e quatro ordens
 de grandeza, a matriz de delineamento perde posto \emph{numérico} muito antes de
 perder posto algébrico, e o \texttt{lstsq} por trás do \texttt{LinearRegression}
-devolve a solução de \textbf{norma mínima} em vez da que interpola. A conclusão do
-item sobrevive intacta --- $0{,}3049$ ainda é menor que o erro de treino do grau~5,
-e o ajuste é catastrófico fora da amostra --- mas o zero é um zero de papel.
+devolve a solução de \textbf{norma mínima} em vez da que interpola. Não espere
+reencontrar esse valor exato: \emph{onde} o posto se perde é um corte que a
+biblioteca de álgebra linear escolhe, e ele muda com a versão instalada --- movendo
+só esse corte, o mesmo ajuste vai de $0{,}1029$ a $0{,}3049$ de erro de treino. A
+conclusão do item sobrevive a qualquer um deles --- o erro de treino continua menor
+que o do grau~5, e o ajuste continua catastrófico fora da amostra --- mas o zero é
+um zero de papel.
 
 \smallskip
 \textbf{(d)} Duas razões:
