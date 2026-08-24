@@ -58,9 +58,9 @@ notebooks e figuras. A migração do `d` terminou em 12/08/2026 e são 629 troca
 
 Três papéis do `d` **sobreviveram de propósito**, e nenhum deles é dimensão:
 
-- **distância** `d(\x_i,\x_j)`, e a versão ao quadrado `d^2(\x,\X_i)` — aulas 04 e
-  E1. A migração até ajudou aqui: antes `d` era dimensão *e* distância na mesma
-  página da aula 05;
+- **distância** `d(\X_i,\x)` na aula 04 e `d^2(\x_i,\x_j)` na E1. A migração até
+  ajudou aqui: antes `d` era dimensão *e* distância na mesma página da aula 05. (A
+  versão ao quadrado saiu da 04 em 24/08/2026, junto com a tabela de núcleos.);
 - **índice**: `d_j` é valor singular na E2, `d_1` é documento na E3, `d^k_{\x}` é a
   k-ésima distância na 04;
 - **diferencial** `\,d\x`, na aula 08.
@@ -82,6 +82,19 @@ maiúscula distingue **vetor aleatório de realização** — `\E[(\rhat(\X)-r(\
 contra `d(\X_i,\x)` —, e "maiúscula só para matriz" apagaria essa distinção, que é
 o que sustenta a teoria da aula 05. A macro `\X` do estilo existe para isso, e é
 usada em 19 arquivos.
+
+**A indicadora é `\mathbf{1}`, não `\mathbb{1}`.** A fonte blackboard-bold da AMS
+(`msbm10`) só tem as maiúsculas A–Z: o dígito `1` não existe nela, e o slot
+correspondente guarda o `\nVdash`. Escrever `\mathbb{1}` compila **sem aviso** e
+imprime **⊮**, que não denota indicadora nenhuma. A macro `\1` do estilo carregava
+esse defeito e foi corrigida em 24/08/2026; a troca atingiu 11 arquivos das aulas
+02, 04, 08, 09, 10 e 11.
+
+Duas alternativas foram descartadas por colisão: `\mathbb{I}` é a matriz identidade
+na aula 02, e `I(\cdot)` --- que é justamente o que **AME e ISLP usam** --- colidiria
+com o `I` do número de funções da base, na §2 da aula 04. O 1 vazado de verdade
+(`\mathds{1}` do `dsfont`, `\mathbbm{1}` do `bbm`) exigiria `texlive-fonts-extra`,
+que não está na lista de pacotes desta página --- e nenhum dos dois está instalado.
 
 Duas colisões que a convenção cria, ambas correntes na literatura e toleradas:
 `p` também aparece como *p*-valor e como densidade `p(\bbeta)`; e `\mathbb` serve
@@ -136,6 +149,68 @@ precisar (por exemplo, para testar uma mudança no `.sty`), restaure depois com
 compilações, compare o texto extraído (`pdftotext`) de duas compilações **locais**,
 nunca uma local contra o PDF commitado.
 
+## A aula 04 perdeu Nadaraya--Watson e a regressão polinomial local
+
+Decisão do Gabriel em 24/08/2026. A aula 04 vai de "o que é um método não
+paramétrico" a *splines*, KNN e suavizadores lineares --- e para aí. **Não
+reintroduza o Nadaraya--Watson nem a regressão local**, nem "para completar" uma
+referência do AME que os cite.
+
+O corte não foi só nas notas, porque o assunto estava espalhado:
+
+| onde | o que saiu |
+| --- | --- |
+| notas, as duas versões | §4 (NW, tabela de núcleos, leitura como MQ ponderado) e §5 (polinomial local, viés de fronteira); 5→3 e 7→4 páginas |
+| `Aula prática 04.ipynb` | §5, §6 e §7 --- 26 células; as antigas §8 e §9 viraram §5 e §6 |
+| `Lista teorica 04.tex` | os exercícios 2 e 3; sobraram 2 |
+| `Lista prática 04.ipynb` | reescrita inteira --- ver adiante |
+| `gerar-figuras.py` | `_nucleos`, `_fronteira` e os auxiliares `_nucleo_gauss`, `_nadaraya_watson`, `_linear_local` |
+| `recursos/figuras/` | `04-nucleos.pdf` e `04-fronteira.pdf`, apagadas --- a aula 04 tem **uma** figura, `04-knn-k` |
+
+E em sete lugares fora da aula 04, que citavam o método de passagem ou dependiam
+dele: a `Lista teorica 05` (o item (d) do Ex. 3 mandava literalmente "ligue este
+exercício ao Exercício 3 da Lista Teórica 04"), a `Lista prática 05 - gabarito`, as
+duas versões das notas da 05, a `Aula prática 05`, as notas da E2 e a
+`Aula prática 03`. O `00 Planejamento.tex` teve a ementa da aula 04 reescrita.
+
+**O deck nunca teve o assunto** --- ele vai de KNN direto para a maldição da
+dimensionalidade ---, então lá não havia o que remover. Cuidado com o inverso: um
+slide novo sobre `weights='distance'` chegou a apontar para o Nadaraya--Watson como
+continuação natural, e teve de ser desfeito.
+
+Ao citar o AME, lembre que **§5.2 se chama literalmente "k Vizinhos Mais Próximos e
+Regressão Linear Local"**. As leituras recomendadas passaram a glosar a parte que
+interessa ("o KNN sob redundância") em vez de reescrever o título do livro.
+
+**A citação de Von Neumann sobre o elefante saiu junto**, das duas versões das notas
+e da `Aula prática 04`. De quebra, as notas do docente chamavam de "Figura
+``elefante'' do [AME] (§3.9)" algo que não existe: §3.9 tem a **Figura 3.8**
+(relação entre paramétricos penalizados e não paramétricos), e o elefante é a
+*epígrafe* do Capítulo 4. Corrigido para `Figura~3.8`.
+
+### A `Lista prática 04` reescrita
+
+Três exercícios, cobrindo o que sobrou (§2, §3 e §4 das notas), todo número medido
+na semente 2026:
+
+1. **cada nó compra um grau de liberdade** --- base truncada contra uma cúbica
+   *independente* por pedaço: 7 parâmetros contra 16, saltos de $g$, $g'$ e $g''$
+   nos nós de $10^{-9}$ contra até $160$, e a irrestrita ajusta **melhor o treino**
+   (0,4111 × 0,5444) e é **16× pior contra $r$** (3,5712 × 0,2233);
+2. **o $k$ por validação cruzada** --- o único exercício que sobreviveu ao corte,
+   sem a comparação com o NW. A CV escolhe $k=5$; contra $r$, $0{,}1236$;
+3. **o KNN é um suavizador linear (e o que isso não garante)** --- monta $\bm H$,
+   confere $\operatorname{tr}(\bm H)=n/k$, e mede que **o atalho do LOOCV da Aula 03
+   não vale para o KNN**: erra 27% em $k=2$, e para lados opostos conforme $k$
+   (razão $1{,}274$ em $k=2$, $0{,}989$ em $k=10$), então nem como cota serve. O
+   motivo é que tirar $x_i$ muda *quem são* os $k$ vizinhos --- entra o
+   $(k{+}1)$-ésimo ---, e não só reescala pesos. É o par prático do exercício
+   teórico que sobreviveu na `Lista teorica 04`.
+
+**O script que gera o par enunciado/gabarito não está no repositório**, como o das
+outras listas e os `.qmd` dos slides. Se for mexer nos dois `.ipynb`, faça no mesmo
+passo e confira que só divergem nas lacunas.
+
 ## Figuras (`recursos/figuras/`)
 
 As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
@@ -149,9 +224,10 @@ python3 recursos/figuras/gerar-figuras.py 03 07   # só as aulas 03 e 07
 Três coisas a respeitar:
 
 1. **O script confere os números que as legendas afirmam.** Ele imprime linhas
-   `[conferência]` com o que foi medido (viés na fronteira, ganho do QDA sobre o
-   LDA, superajuste do boosting...). Se você mudar uma simulação, releia a legenda
-   correspondente: vários números estão escritos no `.tex`.
+   `[conferência]` com o que foi medido (a decomposição viés--variância fechando na
+   precisão de máquina, o ganho do QDA sobre o LDA, o superajuste do boosting...).
+   Se você mudar uma simulação, releia a legenda correspondente: vários números
+   estão escritos no `.tex`.
 2. **Não use as macros do curso nos rótulos do matplotlib.** `$\x$` é `\x` do
    `estilo-notas.sty`, e o mathtext do matplotlib não a conhece — quebra com
    `ParseFatalException`. Pelo mesmo motivo, nada de `\%`, `\,` ou `\emph{}` em
@@ -184,7 +260,13 @@ Três armadilhas ao editar esses HTMLs:
    inteiro estoura o limite de contexto, então busque por trecho.
 3. **Os `id` das headings são slugs gerados pelo Quarto** a partir do texto. Ao
    mudar o texto de um título, atualize o `id` junto — mas verifique antes se algum
-   link ou índice aponta para o `id` antigo.
+   link ou índice aponta para o `id` antigo. O menu lateral (`slide-menu`) é montado
+   em tempo de execução a partir do DOM, então um slide novo entra nele sozinho.
+4. **O slide não rola, e o que passa do fim é cortado em silêncio.** Nos decks os
+   slides de tópicos vão até ~450 caracteres de texto visível (o campeão do deck 04
+   tem 453); um slide novo com 525 teve o fim invisível, sem aviso nenhum. O escape
+   do próprio Quarto é `class="slide level2 scrollable"`, que os decks usam nos
+   slides com tabela grande — mas para lista de tópicos, encurtar é melhor que rolar.
 
 ## Notebooks
 
@@ -200,6 +282,10 @@ respeitar em qualquer notebook novo:
 - `rng = np.random.default_rng(semente)` em toda simulação;
 - nomes iguais aos das notas: `X_tr`, `X_te`, `y_tr`, `y_te`, `modelo`;
 - markdown antes de cada célula dizendo **por que** aquilo vem agora;
+- **nada de macro do curso no markdown**: `\x`, `\bm`, `\rhat` e `\1` são do
+  `estilo-notas.sty`, e o MathJax do Jupyter não as conhece --- use `\mathbf{}` e
+  escreva o resto por extenso. É a armadilha do mathtext do matplotlib um andar
+  acima, e ela é silenciosa: o `.tex` compila, o notebook renderiza torto;
 - commitados **sem outputs** e sem `execution_count`;
 - **o notebook explica estatística, não explica as próprias escolhas de estilo** —
   meta-comentário do tipo "seguimos a conduta do [ISLP]" foi explicitamente
@@ -279,12 +365,14 @@ a AUC sobe (E3).
 **Conferido e correto — não reabra:** o `C` da aula 10 (as notas já trazem a
 convenção de orçamento do [ISLP] e a inversão do scikit-learn em caixas vizinhas), o
 PCA e o KNN na E2 (as notas já dizem que o KNN se adapta sozinho à dimensão
-intrínseca), o viés de fronteira na 04 e o Gini contra o erro na 11. Nesses o
-errado era só o enunciado antigo do bloco.
+intrínseca) e o Gini contra o erro na 11. Nesses o errado era só o enunciado antigo
+do bloco. (O viés de fronteira da 04 também estava conferido, mas o assunto saiu do
+curso em 24/08/2026 --- ver a seção da aula 04, adiante.)
 
-As **listas práticas e seus gabaritos** têm outros **46 blocos** `Sua vez`, em 28
-notebooks. Ali eles talvez façam sentido, já que a lista é o material de exercício
-— não os converta sem perguntar ao Gabriel.
+As **listas práticas e seus gabaritos** têm outros **44 blocos** `Sua vez`, em 26
+notebooks (eram 46 em 28 até a `Lista prática 04` ser reescrita, em 24/08/2026).
+Ali eles talvez façam sentido, já que a lista é o material de exercício — não os
+converta sem perguntar ao Gabriel.
 
 Cada notebook reproduz as simulações da figura correspondente em
 `recursos/figuras/gerar-figuras.py`, **com os mesmos parâmetros e a mesma semente**,
@@ -357,8 +445,9 @@ convenções acima. Os quatro `Aula prática` herdados foram aposentados; contin
 
 Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, na
 pasta da própria aula e sempre com gabarito: `Lista teorica NN.tex` (3–4
-exercícios, nenhum marcado como opcional) e `Lista prática NN.ipynb` (lacunas
-marcadas por `...`), cada uma com seu `- gabarito`. O gabarito teórico é o
+exercícios, nenhum marcado como opcional; a 04 é a exceção, com 2 desde
+24/08/2026) e `Lista prática NN.ipynb` (lacunas marcadas por `...`), cada uma com
+seu `- gabarito`. O gabarito teórico é o
 **mesmo conteúdo**, com as soluções ligadas por uma opção.
 
 O estilo é `recursos/latex/estilo-lista.sty`, que **carrega** o
@@ -464,9 +553,10 @@ duplicá-lo.
   `pdftotext recursos/livros/ISLP.pdf - | grep -n "Bias-Variance"`.
 - **Meça antes de afirmar.** Várias afirmações herdadas não sobreviveram à
   verificação — o vazamento por padronização é numericamente irrelevante perto do
-  vazamento por seleção de variáveis, e o viés de fronteira do Nadaraya--Watson só
-  aparece se você medir sobre repetições em vez de uma amostra. Quando a medição
-  contrariar o texto, **registre o que foi medido** em vez de repetir a previsão.
+  vazamento por seleção de variáveis, e o atalho do LOOCV da Aula~03 **não vale para
+  o KNN**, apesar de ele ser um suavizador linear com $h_{ii}$ bem definido (erra 27%
+  em $k=2$; ver a `Lista prática 04`). Quando a medição contrariar o texto,
+  **registre o que foi medido** em vez de repetir a previsão.
   Com uma ressalva, registrada na seção das 40 medições: quando o medido contradiz
   o **deck** — que é o que os alunos veem —, o que fazer é decisão do Gabriel, não
   consequência automática da medição. Foi assim com a variância da CV na aula 03.
@@ -515,6 +605,18 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
    não supervisionado é o 12; o 10 é *Deep Learning*. Os capítulos 2 a 9 não
    mudaram entre as edições, então as outras sete citações do curso (2.2, 2.9,
    4.6, 4.9, 5.5, 6.7 e 8.3) seguem válidas.
+6. Em 21/08/2026, dois slides no deck da aula 04. O que "otimizava outros
+   hiperparâmetros" exibia `KNeighborsRegressor(n_neighbors=17, p=1)` como se o `p`
+   de Minkowski fosse um achado: em **uma** covariável ele não muda a ordem dos
+   vizinhos, as quatro opções empatam em primeiro lugar e o `p=1` impresso é
+   desempate por ordem da grade. Prova disso, a figura do slide era **byte-idêntica**
+   à do slide anterior. Saíram o `p` da grade, o `p=1` da saída e a figura repetida
+   (169 KB); a grade ficou só com `weights`, que é real. E entrou um slide novo antes
+   dele, "KNN - os pesos dos vizinhos", explicando `'uniform'` × `'distance'` ---
+   que o deck usava sem nunca definir, aqui ou depois.
+7. Em 21/08/2026, o agradecimento a Lucas Galdino passou a dizer "da edição de
+   2022/02 **desta** disciplina, **então na UFRJ**". Sem isso, com o rodapé já
+   apontando para a UFF, a atribuição ficava ambígua.
 
 ## O slide de SVM, o único em Beamer
 
