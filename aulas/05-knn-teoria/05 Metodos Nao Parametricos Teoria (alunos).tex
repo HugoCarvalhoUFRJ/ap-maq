@@ -351,7 +351,7 @@ $u\ll p$. Exemplos:
   \item altura, peso e IMC: três variáveis, mas duas determinam a terceira;
   \item imagens: \emph{pixels} adjacentes são quase iguais --- enorme redundância.
 \end{itemize}
-Sob redundância, KNN e regressão local \emph{se adaptam automaticamente} à dimensão
+Sob redundância, o KNN \emph{se adapta automaticamente} à dimensão
 intrínseca: sua taxa passa a ser $n^{-4/(4+u)}$, muito mais rápida que
 $n^{-4/(4+p)}$ quando $u\ll p$. SVR com kernel gaussiano e séries \emph{espectrais}
 (base construída a partir dos dados) também exploram redundância.
@@ -374,9 +374,9 @@ subvariedade, e a redução de dimensionalidade (PCA, aula extra) ajuda ainda ma
 \toprule
 \textbf{Situação} & \textbf{O que ajuda} & \textbf{Métodos} \\
 \midrule
-$p$ pequeno, $r$ suave & nada extra & KNN, NW, regressão local \\
+$p$ pequeno, $r$ suave & nada extra & KNN, séries ortogonais \\
 Poucas covariáveis relevantes & seleção de variáveis & Lasso, florestas, XGBoost, SpAM \\
-Covariáveis redundantes & dimensão intrínseca & KNN/local, SVR, séries espectrais, PCA \\
+Covariáveis redundantes & dimensão intrínseca & KNN, SVR, séries espectrais, PCA \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -417,7 +417,7 @@ razões que eram previsíveis no papel.
 \paragraph{Leitura recomendada.} [AME] §4.13 (as contas de taxa do KNN e das séries
 ortogonais, das quais o Teo.~\ref{teo:knn} desta aula é a versão detalhada) e
 Capítulo~5 inteiro: §5.1 (maldição da dimensionalidade e taxas), §5.1.1
-(esparsidade), §5.1.2 (redundância), §5.2 (KNN e regressão local sob redundância) e
+(esparsidade), §5.1.2 (redundância), §5.2 (o KNN sob redundância) e
 §5.5--5.6 (florestas aleatórias e SpAM).
 
 \paragraph{Para praticar.} \texttt{Lista teorica 05.pdf} (teórica, com gabarito) e \texttt{Lista prática 05.ipynb} (prática, para completar as lacunas), nesta mesma pasta.

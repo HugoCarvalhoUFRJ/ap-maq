@@ -222,7 +222,7 @@ $u\ll p$. Exemplos:
   \item altura, peso e IMC: três variáveis, mas duas determinam a terceira;
   \item imagens: \emph{pixels} adjacentes são quase iguais --- enorme redundância.
 \end{itemize}
-Sob redundância, KNN e regressão local \emph{se adaptam automaticamente} à dimensão
+Sob redundância, o KNN \emph{se adapta automaticamente} à dimensão
 intrínseca: sua taxa passa a ser $n^{-4/(4+u)}$, muito mais rápida que
 $n^{-4/(4+p)}$ quando $u\ll p$. SVR com kernel gaussiano e séries \emph{espectrais}
 (base construída a partir dos dados) também exploram redundância.
@@ -243,9 +243,9 @@ Aula extra de PCA). Métodos diferentes exploram cada uma.
 \toprule
 \textbf{Situação} & \textbf{O que ajuda} & \textbf{Métodos} \\
 \midrule
-$p$ pequeno, $r$ suave & nada extra & KNN, NW, regressão local \\
+$p$ pequeno, $r$ suave & nada extra & KNN, séries ortogonais \\
 Poucas covariáveis relevantes & seleção de variáveis & Lasso, florestas, XGBoost, SpAM \\
-Covariáveis redundantes & dimensão intrínseca & KNN/local, SVR, séries espectrais, PCA \\
+Covariáveis redundantes & dimensão intrínseca & KNN, SVR, séries espectrais, PCA \\
 \bottomrule
 \end{tabular}
 \end{center}
