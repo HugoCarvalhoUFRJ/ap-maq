@@ -419,21 +419,46 @@ O `requirements.txt` registra as duas.
 **Armadilha ao abrir um notebook no Jupyter:** salvar grava as saídas e os
 `execution_count`, e ainda **reordena as chaves de cada célula** para a ordem
 canônica do `nbformat` (`cell_type, execution_count, id, metadata, outputs,
-source`). Os notebooks gerados por script estão em outra ordem (`cell_type, id,
+source`). Os notebooks do repositório estão em outra ordem (`cell_type, id,
 metadata, source, execution_count, outputs`), então uma abertura sem edição
-nenhuma já produz um diff do arquivo inteiro. Antes de commitar, limpe:
+nenhuma já produz um diff do arquivo inteiro. Antes de commitar, limpe **e
+restaure a ordem** --- os catorze laboratórios guiados estão uniformes desde
+24/08/2026, e vale manter:
 
 ```python
 import json
+
+ORDEM_COD = ("cell_type", "id", "metadata", "source", "execution_count", "outputs")
+ORDEM_MD  = ("cell_type", "id", "metadata", "source")
+
 p = "aulas/01-introducao/Aula prática 01.ipynb"
 nb = json.load(open(p, encoding="utf-8"))
+novas = []
 for c in nb["cells"]:
     if c["cell_type"] == "code":
         c["outputs"], c["execution_count"] = [], None
-json.dump(nb, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        chaves = ORDEM_COD
+    else:
+        chaves = ORDEM_MD
+    nova = {k: c[k] for k in chaves if k in c}
+    nova.update({k: v for k, v in c.items() if k not in chaves})   # nada se perde
+    novas.append(nova)
+nb["cells"] = novas
+open(p, "w", encoding="utf-8").write(json.dumps(nb, ensure_ascii=False, indent=1) + "\n")
 ```
 
-Isso resolve as saídas; a reordenação fica, e é inofensiva (o JSON é equivalente).
+A reordenação é semanticamente inócua (o JSON é equivalente), mas desfazê-la é o
+que mantém o diff legível. Confira com `nb == original` antes de gravar: a
+igualdade de dicionários em Python ignora ordem, então ela prova que só a ordem
+mudou.
+
+O Jupyter carimba também `metadata.language_info.version` com a versão do kernel
+que rodou. Como os notebooks são commitados **sem saída**, esse campo não
+registra nada de real --- é só ruído de diff. O valor da casa é o Python desta
+máquina, **3.12.7**, em 42 dos 47 notebooks. As cinco exceções são exatamente os
+cinco herdados de demonstração (adiante), e ficam como estão: três em 3.11.7, um
+em 3.9.15, e o `Exemplo - PCA`, que é do Colab e cujo `language_info` só traz o
+nome da linguagem --- inventar versão ali seria fabricar metadado.
 
 Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
 `EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
