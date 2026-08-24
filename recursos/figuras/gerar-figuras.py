@@ -337,27 +337,6 @@ def _escolha_k():
 # Aula 04 --- Métodos Não Paramétricos (KNN)
 # =========================================================================== #
 
-def _nucleo_gauss(u):
-    return np.exp(-0.5 * u ** 2)
-
-
-def _nadaraya_watson(x_tr, y_tr, grade, h):
-    """Média ponderada por kernel gaussiano (grau 0)."""
-    W = _nucleo_gauss((grade[:, None] - x_tr[None, :]) / h)
-    return (W @ y_tr) / W.sum(axis=1)
-
-
-def _linear_local(x_tr, y_tr, grade, h):
-    """Reta ajustada localmente em cada ponto da grade (grau 1)."""
-    saida = np.empty(len(grade))
-    for j, x0 in enumerate(grade):
-        w = _nucleo_gauss((x_tr - x0) / h)
-        B = np.c_[np.ones_like(x_tr), x_tr - x0]      # centrada em x0
-        M = B.T @ (w[:, None] * B)
-        saida[j] = np.linalg.solve(M, B.T @ (w * y_tr))[0]
-    return saida
-
-
 @figura("04-knn-k", "04")
 def _knn_k():
     """O k do KNN é o mesmo botão de flexibilidade da Aula 01."""
@@ -380,104 +359,6 @@ def _knn_k():
     axes[0].set_ylabel("$y$")
     axes[0].legend(loc="upper left", fontsize=7.5)
     salvar(fig, "04-knn-k")
-
-
-@figura("04-nucleos", "04")
-def _nucleos():
-    """Os quatro kernels da tabela, todos com h = 1."""
-    u = np.linspace(-2.2, 2.2, 800)
-    d = np.abs(u)
-    kernels = [
-        ("uniforme", np.where(d <= 1, 1.0, 0.0), AZUL),
-        ("gaussiano", np.exp(-0.5 * u ** 2), VINHO),
-        ("triangular", np.where(d <= 1, 1 - d, 0.0), VERDE),
-        ("Epanechnikov", np.where(d <= 1, 1 - u ** 2, 0.0), "#B8860B"),
-    ]
-    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.7))
-    for nome, k, cor in kernels:
-        ax1.plot(u, k / k.max(), color=cor, label=nome)
-    # NB: aqui é $x$ mesmo, não a macro \x do estilo-notas -- o mathtext do
-    # matplotlib não conhece as macros do curso e quebra em silêncio (ou não).
-    ax1.set_xlabel(r"distância até $x$, em unidades de $h$")
-    ax1.set_ylabel("peso (reescalado)")
-    ax1.set_title("os núcleos da tabela ($h=1$)")
-    ax1.legend(fontsize=7.5)
-
-    # o que realmente muda o ajuste é h, não o núcleo
-    rng = np.random.default_rng(0)
-    x, y = amostra(N_TR, rng)
-    grade = np.linspace(A, B, 400)
-    ax2.scatter(x, y, s=10, color=CINZA, alpha=0.6)
-    ax2.plot(grade, r(grade), color=VERDE, lw=1.6, label="$r(x)$")
-    for h, estilo in [(0.08, ":"), (0.35, "-"), (1.5, "--")]:
-        ax2.plot(grade, _nadaraya_watson(x, y, grade, h), color=VINHO, ls=estilo,
-                 lw=1.4, label=f"$h={h}$")
-    ax2.set_xlabel("$x$"); ax2.set_ylabel("$y$")
-    ax2.set_title("é a janela $h$ que decide")
-    ax2.set_ylim(-3.0, 3.0)
-    ax2.legend(fontsize=7, loc="upper left", ncol=2)
-    salvar(fig, "04-nucleos")
-
-
-@figura("04-fronteira", "04")
-def _fronteira():
-    """O viés de fronteira de Nadaraya-Watson e o conserto do grau 1."""
-    # Suporte [-2,2] em vez do [-3,3] das outras figuras, de propósito: o viés de
-    # fronteira do NW é proporcional a r'(x) na borda, e r'(±3) ≈ -0,02 (quase
-    # plana) esconderia justamente o efeito que queremos mostrar. Já r'(±2) ≈ -1,2.
-    #
-    # E medimos VIÉS, não o erro de uma realização: a teoria diz que o grau 1
-    # corrige o viés de fronteira, e o erro de uma amostra só mistura viés com
-    # ruído -- na borda o grau 1 tem variância alta e a conta de uma realização
-    # chega a inverter o resultado. Por isso as B repetições abaixo.
-    a, b = -2.0, 2.0
-    n, h, B_rep = 200, 0.35, 300
-    grade = np.linspace(a, b, 300)
-    r0 = r(grade)
-
-    rng = np.random.default_rng(3)
-    est_nw = np.empty((B_rep, len(grade)))
-    est_ll = np.empty((B_rep, len(grade)))
-    for j in range(B_rep):
-        x = rng.uniform(a, b, size=n)
-        y = r(x) + rng.normal(0, SIGMA, size=n)
-        est_nw[j] = _nadaraya_watson(x, y, grade, h)
-        est_ll[j] = _linear_local(x, y, grade, h)
-
-    m_nw, m_ll = est_nw.mean(axis=0), est_ll.mean(axis=0)
-    dp_nw, dp_ll = est_nw.std(axis=0), est_ll.std(axis=0)
-    vies_nw, vies_ll = np.abs(m_nw - r0), np.abs(m_ll - r0)
-    borda = (grade < a + 0.15 * (b - a)) | (grade > b - 0.15 * (b - a))
-
-    print(f"     [conferência] |viés| na fronteira: NW = {vies_nw[borda].mean():.4f}, "
-          f"linear local = {vies_ll[borda].mean():.4f}")
-    print(f"     [conferência] |viés| no miolo:     NW = {vies_nw[~borda].mean():.4f}, "
-          f"linear local = {vies_ll[~borda].mean():.4f}")
-    print(f"     [conferência] desvio na fronteira: NW = {dp_nw[borda].mean():.4f}, "
-          f"linear local = {dp_ll[borda].mean():.4f}  <- o preço do grau 1")
-
-    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 2.9))
-    for ax in (ax1, ax2):
-        ax.axvspan(a, a + 0.15 * (b - a), color=CINZA, alpha=0.12)
-        ax.axvspan(b - 0.15 * (b - a), b, color=CINZA, alpha=0.12)
-
-    ax1.plot(grade, r0, color=VERDE, lw=1.8, zorder=3, label="$r(x)$ verdadeira")
-    ax1.fill_between(grade, m_nw - dp_nw, m_nw + dp_nw, color=VINHO, alpha=0.15)
-    ax1.plot(grade, m_nw, color=VINHO, lw=1.5, zorder=4,
-             label="Nadaraya--Watson (grau 0)")
-    ax1.fill_between(grade, m_ll - dp_ll, m_ll + dp_ll, color=AZUL, alpha=0.15)
-    ax1.plot(grade, m_ll, color=AZUL, lw=1.5, ls="--", zorder=5,
-             label="linear local (grau 1)")
-    ax1.set_xlabel("$x$"); ax1.set_ylabel("estimativa média")
-    ax1.set_title(f"média de {B_rep} ajustes ($\\pm 1$ desvio)")
-    ax1.legend(loc="lower center", fontsize=7, framealpha=0.95)
-
-    ax2.plot(grade, vies_nw, color=VINHO, lw=1.5, label="NW (grau 0)")
-    ax2.plot(grade, vies_ll, color=AZUL, lw=1.5, ls="--", label="linear local (grau 1)")
-    ax2.set_xlabel("$x$"); ax2.set_ylabel(r"$|$viés$|$")
-    ax2.set_title("o viés dispara só nas pontas")
-    ax2.legend(loc="upper center", fontsize=7.5)
-    salvar(fig, "04-fronteira")
 
 
 # =========================================================================== #

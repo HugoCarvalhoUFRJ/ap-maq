@@ -16,10 +16,6 @@ Ao final desta aula o aluno deve ser capaz de:
         para flexibilizar a regressão linear;
   \item definir o estimador de \textbf{$k$ vizinhos mais próximos} (KNN) e o papel
         de $k$ no balanço viés--variância;
-  \item definir o estimador de \textbf{Nadaraya--Watson} e reconhecer os
-        principais \emph{kernels} de suavização e o papel da janela $h$;
-  \item entender a \textbf{regressão polinomial local} como extensão de
-        Nadaraya--Watson e sua vantagem na fronteira;
   \item enxergar todos esses métodos como \emph{médias locais} / \emph{suavizadores
         lineares}.
 \end{itemize}
@@ -27,8 +23,7 @@ Ao final desta aula o aluno deve ser capaz de:
 \begin{emsala}
 Mudança de paradigma em relação às Aulas~01--02: lá fixávamos a forma de $r$
 (linear) e estimávamos poucos parâmetros. Aqui deixamos \emph{os dados ditarem a
-forma}. Frase-guia (von Neumann): \emph{``com quatro parâmetros eu ajusto um
-elefante.''} Pergunta: \emph{``e se eu não quiser supor forma alguma para
+forma}. Pergunta: \emph{``e se eu não quiser supor forma alguma para
 $r(\x)$?''}
 \end{emsala}
 
@@ -45,16 +40,17 @@ suposição é mais fraca --- tipicamente apenas que $r$ é \emph{suave}.
 Em relação aos paramétricos, métodos não paramétricos \textbf{reduzem o viés}
 (capturam relações arbitrárias) ao custo de \textbf{aumentar a variância}.
 Continuamos no mundo da Aula~01: o segredo é controlar a flexibilidade por um
-\emph{tuning parameter} (o $k$ do KNN, a janela $h$ do kernel), escolhido por
+\emph{tuning parameter} (o $k$ do KNN, o número de nós de um \emph{spline}),
+escolhido por
 validação cruzada (Aula~03).
 \end{ideia}
 
 \begin{observacao}
-Há uma ponte importante com a Aula~02: penalizar um modelo muito flexível (Ridge,
-Lasso) e usar um modelo não paramétrico são duas formas de se posicionar no balanço
-viés--variância. A Figura ``elefante'' do [AME] (§3.9) ilustra isso: penalização
-\emph{aproxima} um modelo flexível de um simples; não paramétricos \emph{partem}
-do flexível.
+Há uma ponte importante com a Aula~02: penalizar (Ridge, Lasso) e usar um método não
+paramétrico buscam o mesmo ponto do balanço viés--variância, atacando parcelas
+opostas. A penalização é para o modelo flexível demais para a amostra, e corta
+\textbf{variância}; o não paramétrico é para o modelo rígido demais para a verdade,
+e corta \textbf{viés}. A Figura~3.8 do [AME] (§3.9) desenha a relação entre os dois.
 \end{observacao}
 
 %==============================================================================
@@ -130,118 +126,19 @@ alto, ``vizinhos'' deixam de ser próximos (tema da Aula~05).
 \end{atencao}
 
 %==============================================================================
-\section{Nadaraya--Watson (regressão por kernel)}
-%==============================================================================
-O KNN dá peso $1/k$ aos $k$ vizinhos e $0$ aos demais --- uma transição abrupta.
-Nadaraya--Watson suaviza isso: usa uma \textbf{média ponderada} de \emph{todas} as
-observações, com pesos que decaem com a distância.
-\begin{equation}\label{eq:nw}
-  \widehat{r}(\x) = \sum_{i=1}^n w_i(\x)\,Y_i,
-  \qquad
-  w_i(\x) = \frac{K(\x,\X_i)}{\sum_{j=1}^n K(\x,\X_j)},
-\end{equation}
-onde $K$ é um \textbf{kernel de suavização} que mede a similaridade entre $\x$ e
-$\X_i$. Note $\sum_i w_i(\x)=1$. Escolhas comuns (com janela/largura $h>0$):
-\begin{center}\small
-\renewcommand{\arraystretch}{1.4}
-\begin{tabular}{@{}ll@{}}
-\toprule
-\textbf{Kernel} & \textbf{$K(\x,\X_i)$} \\
-\midrule
-Uniforme       & $\1{d(\x,\X_i)\le h}$ \\
-Gaussiano      & $(2\pi h^2)^{-1/2}\exp\!\big(-d^2(\x,\X_i)/(2h^2)\big)$ \\
-Triangular     & $\big(1-d(\x,\X_i)/h\big)\,\1{d(\x,\X_i)\le h}$ \\
-Epanechnikov   & $\big(1-d^2(\x,\X_i)/h^2\big)\,\1{d(\x,\X_i)\le h}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-O kernel uniforme dá peso igual a todos dentro do raio $h$ (e zero fora); os demais
-ponderam pela proximidade; o gaussiano dá peso positivo a todos. A janela $h$ é o
-\emph{tuning parameter}: $h$ grande $\Rightarrow$ muita suavização (viés alto,
-variância baixa); $h$ pequeno $\Rightarrow$ pouca (variância alta, viés baixo).
-
-\begin{observacao}[Na prática, a janela importa mais que o kernel]
-Empiricamente, a escolha do \emph{kernel} pouco afeta o resultado; o que importa é
-o \emph{tuning parameter} $h$ (ou $k$). Foque a validação cruzada nele.
-\end{observacao}
-
-\subsection{Nadaraya--Watson como mínimos quadrados ponderados locais}
-Há uma leitura iluminadora: $\widehat r(\x)$ em \eqref{eq:nw} é o intercepto
-$\widehat\beta_0$ que resolve
-\begin{equation}\label{eq:nwls}
-  \widehat\beta_0 = \argmin_{\beta_0}\sum_{i=1}^n w_i(\x)\,(Y_i-\beta_0)^2 .
-\end{equation}
-Ou seja: \emph{em cada ponto $\x$}, ajustamos uma \textbf{constante} por mínimos
-quadrados, ponderando as observações pela proximidade a $\x$. É um ajuste linear
-\emph{local}.
-
-\begin{proof}
-Derivando \eqref{eq:nwls} em $\beta_0$ e igualando a zero:
-$-2\sum_i w_i(\x)(Y_i-\beta_0)=0 \Rightarrow \beta_0
-=\frac{\sum_i w_i(\x)Y_i}{\sum_i w_i(\x)}=\sum_i w_i(\x)Y_i$, pois os pesos somam
-$1$. Logo $\widehat\beta_0$ coincide com \eqref{eq:nw}.
-\end{proof}
-
-%==============================================================================
-\section{Regressão polinomial local}
-%==============================================================================
-Se ajustar uma \emph{constante} local já ajuda, por que não ajustar um
-\emph{polinômio} local? A regressão polinomial local (LOESS/LOWESS) substitui o
-intercepto por um polinômio de grau $p$:
-\begin{equation}\label{eq:loess}
-  \widehat\beta_0,\dots,\widehat\beta_p
-   = \argmin_{\beta_0,\dots,\beta_p}\sum_{i=1}^n w_i(\x)
-     \Big(Y_i - \beta_0 - \textstyle\sum_{j=1}^p \beta_j x_i^{\,j}\Big)^2,
-\end{equation}
-e a predição em $\x$ é $\widehat\beta_0$. Em forma matricial, com $\bm{B}$ tendo
-$i$-ésima linha $(1,x_i,\dots,x_i^p)$ e $\bm{\Omega}=\operatorname{diag}(w_i(\x))$:
-\[
-  (\widehat\beta_0,\dots,\widehat\beta_p)^\top
-   = (\bm{B}^\top\bm{\Omega}\bm{B})^{-1}\bm{B}^\top\bm{\Omega}\,\bm{Y}.
-\]
-Para \emph{cada} $\x$ resolve-se um problema diferente (os pesos mudam). Tomando
-$p=0$ recupera-se Nadaraya--Watson.
-
-\begin{ideia}
-A vantagem do grau $p\ge 1$ é \textbf{reduzir o viés na fronteira} do domínio,
-onde a média local (NW) é assimétrica e ``puxa'' a estimativa. O custo é mais
-variância --- escolha o grau (e $h$) com cuidado.
-\end{ideia}
-
-%==============================================================================
 \section{Uma visão unificadora: suavizadores lineares}
 %==============================================================================
-KNN, Nadaraya--Watson, \emph{splines} e regressão local são todos
+KNN, \emph{séries} e \emph{splines} são todos
 \textbf{suavizadores lineares}: a predição é uma combinação linear das respostas,
 \[
   \widehat{r}(\x) = \sum_{i=1}^n \ell_i(\x)\,Y_i,
 \]
 com pesos $\ell_i(\x)$ que dependem só das covariáveis (não de $\bm{Y}$). Para o
-KNN, $\ell_i(\x)=\tfrac1k\1{i\in\mathcal{N}_{\x}}$; para NW, $\ell_i(\x)=w_i(\x)$.
-Essa estrutura comum explica por que todos têm o mesmo dilema (a largura da
-vizinhança $\leftrightarrow$ complexidade) e por que valem atalhos como o do
+KNN, $\ell_i(\x)=\tfrac1k\1{i\in\mathcal{N}_{\x}}$; para uma base, $\ell_i(\x)$ vem
+do ajuste de mínimos quadrados na base.
+Essa estrutura comum explica por que todos têm o mesmo dilema (o botão de
+flexibilidade $\leftrightarrow$ viés--variância) e por que valem atalhos como o do
 LOOCV (Aula~03, Prop.\ do \emph{leverage}).
-
-%==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import GridSearchCV
-
-# KNN com k escolhido por validacao cruzada (padronizando dentro do pipeline!)
-modelo = make_pipeline(StandardScaler(), KNeighborsRegressor())
-grade  = {"kneighborsregressor__n_neighbors": [1, 3, 5, 11, 25, 51]}
-busca  = GridSearchCV(modelo, grade, cv=5, scoring="neg_mean_squared_error")
-busca.fit(X_tr, y_tr)
-print("melhor k:", busca.best_params_)
-\end{lstlisting}
-Para Nadaraya--Watson / regressão local, \texttt{statsmodels}
-(\texttt{lowess}) ou \texttt{KernelReg} de \texttt{statsmodels.nonparametric}. O
-notebook \texttt{Aula prática 04} explora $k$ e $h$ em dados artificiais e no
-\texttt{superconductivity.csv}.
 
 %==============================================================================
 \section*{Resumo}
@@ -253,17 +150,12 @@ notebook \texttt{Aula prática 04} explora $k$ e $h$ em dados artificiais e no
         via número de termos/nós.
   \item \textbf{KNN} \eqref{eq:knn}: média dos $k$ vizinhos; $k$ controla
         viés--variância.
-  \item \textbf{Nadaraya--Watson} \eqref{eq:nw}: média ponderada por kernel; janela
-        $h$ é o que importa; é uma constante ajustada localmente \eqref{eq:nwls}.
-  \item \textbf{Regressão polinomial local}: polinômio local; reduz viés de
-        fronteira.
   \item Todos são \emph{suavizadores lineares}; \emph{padronize} as covariáveis e
         cuidado com a dimensão (Aula~05).
 \end{itemize}
 
-\paragraph{Leitura recomendada.} [AME] §4.1--4.5 (séries, \emph{splines}, KNN,
-Nadaraya--Watson, regressão local); [ISLP] §3.5 (comparação regressão linear
-$\times$ KNN) e Capítulo~7 (\emph{Moving Beyond Linearity}: \emph{splines},
-suavização, regressão local).
+\paragraph{Leitura recomendada.} [AME] §4.1--4.3 (séries, \emph{splines}, KNN);
+[ISLP] §3.5 (comparação regressão linear $\times$ KNN) e Capítulo~7
+(\emph{Moving Beyond Linearity}: \emph{splines}).
 
 \end{document}
