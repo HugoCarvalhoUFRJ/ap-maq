@@ -136,7 +136,10 @@
 \newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
 \newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
 \newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
-\newcommand{\1}[1]{\mathbb{1}\!\left\{#1\right\}}   % função indicadora
+% Indicadora: \mathbf{1}, e NAO \mathbb{1} --- a fonte blackboard-bold da AMS
+% (msbm10) so tem A-Z, e o slot do digito 1 guarda o \nVdash, entao
+% \mathbb{1} sai como um simbolo errado, sem aviso nenhum.
+\newcommand{\1}[1]{\mathbf{1}\!\left\{#1\right\}}   % função indicadora
 
 % ----- Cabeçalho de aula ------------------------------------------------------
 % \cabecalhoaula{número}{título}{leitura}
