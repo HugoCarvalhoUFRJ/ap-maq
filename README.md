@@ -17,13 +17,12 @@ aulas/
 ├── 02-regressao-linear/
 ├── 03-validacao-cruzada/
 ├── 04-knn/
-├── 05-knn-teoria/
-├── 06-arvores-ensembles/
-├── 07-pipelines/
-├── 08-classificadores-gaussianos/   Bloco II — Classificação
-├── 09-metricas-classificacao/
-├── 10-svm/
-├── 11-knn-arvores-classificacao/
+├── 05-arvores-e-ensembles/
+├── 06-pipelines/
+├── 07-classificadores-gaussianos/   Bloco II — Classificação
+├── 08-metricas-classificacao/
+├── 09-svm/
+├── 10-knn-arvores-classificacao/
 ├── E1-k-medias/                  Bloco III — Não supervisionado e aplicações
 ├── E2-reducao-dimensionalidade/
 └── E3-nlp-classificacao/
@@ -40,7 +39,7 @@ requirements.txt   pacotes necessários para rodar as aulas práticas
 
 Cada pasta de aula contém, conforme disponível:
 - o **slide**: `.html` gerado pelo Quarto em treze aulas, e um Beamer em `.tex` mais
-  `.pdf` na aula 10, com as figuras dele em `slide-figuras/`;
+  `.pdf` na aula 09, com as figuras dele em `slide-figuras/`;
 - as **notas de aula** em duas versões (`.tex` + `.pdf` compilado);
 - a **aula prática** (`Aula prática NN.ipynb`), um laboratório guiado, para
   acompanhar em sala;
@@ -50,14 +49,14 @@ Cada pasta de aula contém, conforme disponível:
 
 ## Aulas práticas
 
-Há um notebook `Aula prática NN.ipynb` para cada uma das 14 aulas. Eles seguem a
+Há um notebook `Aula prática NN.ipynb` para cada uma das 13 aulas. Eles seguem a
 conduta dos laboratórios do [ISLP] — narrativa antes de cada bloco de código, API
 orientada a objeto do `matplotlib` — mas sem depender do pacote `ISLP`: bastam
 `numpy`, `pandas`, `matplotlib`, `scikit-learn`, `scipy` e `statsmodels`.
 
 O laboratório guiado **mostra**, não deixa exercício em aberto: quem propõe
 exercício é a lista prática da mesma aula. Onde havia uma pausa `Sua vez` seguida
-de célula vazia, hoje há enunciado, código e leitura do resultado — nas catorze
+de célula vazia, hoje há enunciado, código e leitura do resultado — nas treze
 aulas. Todo número que o texto afirma foi medido executando a célula.
 
 Cada notebook **reproduz as simulações das figuras das notas**, com os mesmos

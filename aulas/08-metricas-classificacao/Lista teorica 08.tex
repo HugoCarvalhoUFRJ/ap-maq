@@ -1,0 +1,335 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 09 --- Métricas para Classificação
+%  O gabarito sai de "Lista teorica 08 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{08}{Métricas para Classificação}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[uma matriz de confusão, cinco métricas]
+Um sistema de detecção de fraude foi aplicado a $10\,000$ transações, das quais
+$500$ eram fraudulentas. O resultado:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll cc@{}}
+\toprule
+ & & \multicolumn{2}{c}{\textbf{previsto}} \\
+ & & fraude & normal \\
+\midrule
+\multirow{2}{*}{\textbf{real}} & fraude & $200$ & $300$ \\
+                               & normal & $100$ & $9\,400$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule acurácia, precisão, \emph{recall} (sensibilidade),
+        especificidade e $F_1$.
+  \item Calcule a acurácia do classificador que responde \emph{sempre}
+        ``normal''. Compare com a do item (a).
+  \item Um relatório afirma: ``o sistema tem 96\% de acurácia''. Reescreva essa
+        frase de modo que ela informe o leitor em vez de enganá-lo.
+  \item Se o banco decidir baixar o corte para capturar mais fraudes, quais das
+        cinco métricas do item (a) necessariamente \emph{sobem}, quais
+        necessariamente \emph{descem}, e quais podem ir para qualquer lado?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $VP=200$, $FN=300$, $FP=100$, $VN=9\,400$:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lll@{}}
+\toprule
+métrica & fórmula & valor \\
+\midrule
+acurácia        & $(VP+VN)/n = 9\,600/10\,000$      & $0{,}9600$ \\
+precisão        & $VP/(VP+FP) = 200/300$            & $0{,}6667$ \\
+\emph{recall}   & $VP/(VP+FN) = 200/500$            & $0{,}4000$ \\
+especificidade  & $VN/(VN+FP) = 9\,400/9\,500$      & $0{,}9895$ \\
+$F_1$           & $2VP/(2VP+FP+FN) = 400/800$       & $0{,}5000$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\smallskip
+\textbf{(b)} Ele acerta todas as $9\,500$ transações normais e erra todas as
+fraudes: acurácia $=9\,500/10\,000=\mathbf{0{,}9500}$.
+
+O sistema de verdade tem $0{,}9600$. \textbf{Um ponto percentual} separa um
+detector que encontra 40\% das fraudes de um programa que não faz nada.
+
+\smallskip
+\textbf{(c)} Uma versão honesta seria: \emph{``o sistema detecta 40\% das fraudes
+(\emph{recall}); dois em cada três alertas que ele emite são fraudes de verdade
+(precisão); e ele marca indevidamente 1\% das transações normais''}.
+
+O que torna a frase original enganosa não é a acurácia estar errada --- ela está
+certa --- e sim ela ser \textbf{quase toda determinada pela prevalência}: dos
+$9\,600$ acertos, $9\,400$ são transações normais classificadas como normais, o
+que qualquer classificador trivial também faria. A informação está nos $600$
+casos restantes, e a acurácia os dilui em dez mil.
+
+\smallskip
+\textbf{(d)} Baixando o corte, mais transações são chamadas de fraude, então
+$VP$ e $FP$ só podem subir e $FN$ e $VN$ só podem descer.
+\begin{itemize}[leftmargin=1.4cm]
+  \item \textbf{Sobe necessariamente:} o \emph{recall} $VP/(VP+FN)$ --- o
+        numerador não desce e o denominador $VP+FN$ é fixo (o total de fraudes).
+  \item \textbf{Desce necessariamente:} a especificidade $VN/(VN+FP)$, pelo mesmo
+        argumento com o total de normais.
+  \item \textbf{Pode ir para qualquer lado:} a precisão (tipicamente desce, mas
+        pode subir se os casos recém-incluídos forem majoritariamente fraudes),
+        a acurácia (troca $FN$ por $FP$, e o saldo depende de quantos de cada) e
+        o $F_1$ (é média harmônica de duas métricas que se movem em direções
+        opostas).
+\end{itemize}
+A moral: \emph{recall} e especificidade sozinhos são triviais de manipular ---
+corte $0$ dá \emph{recall} $1$, corte $1$ dá especificidade $1$. Só faz sentido
+olhá-los \textbf{aos pares}, e é isso que a curva ROC faz.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o corte que minimiza o custo]
+Nem todo erro custa o mesmo. Seja $c_{FP}$ o custo de um falso positivo e
+$c_{FN}$ o de um falso negativo, e suponha que o classificador forneça
+$p(\x) = \Prob(Y=1\mid \X=\x)$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Escreva o custo esperado de decidir $\widehat y=1$ e o de decidir
+        $\widehat y=0$, num ponto $\x$ com probabilidade $p$.
+  \item Conclua que a decisão ótima é $\widehat y=1$ quando
+        $p > \dfrac{c_{FP}}{c_{FP}+c_{FN}}$.
+  \item No sistema do Exercício~1, investigar um alerta custa R\$~10 e uma fraude
+        não detectada custa R\$~500. Qual o corte ótimo?
+  \item O corte padrão do \texttt{scikit-learn} é $0{,}5$. Que razão de custos
+        ele supõe implicitamente? Por que isso é quase sempre errado num problema
+        desbalanceado?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Se decidimos $\widehat y=1$, erramos quando $Y=0$, o que acontece
+com probabilidade $1-p$; o custo esperado é $(1-p)\,c_{FP}$. Se decidimos
+$\widehat y=0$, erramos quando $Y=1$, com probabilidade $p$; o custo esperado é
+$p\,c_{FN}$. (Acertar custa zero.)
+
+\smallskip
+\textbf{(b)} Decidimos $\widehat y=1$ quando o custo esperado dessa decisão é
+menor:
+\[
+  (1-p)\,c_{FP} < p\,c_{FN}
+  \iff c_{FP} < p\,(c_{FP}+c_{FN})
+  \iff p > \frac{c_{FP}}{c_{FP}+c_{FN}} .
+\]
+Note que o corte depende \textbf{apenas da razão} entre os custos: multiplicar os
+dois por uma constante não muda nada, o que é tranquilizador --- a decisão não
+depende da moeda.
+
+\smallskip
+\textbf{(c)} Com $c_{FP}=10$ e $c_{FN}=500$:
+\[
+  p^\ast = \frac{10}{10+500} = \frac{10}{510} \approx \mathbf{0{,}0196}.
+\]
+Ou seja: vale a pena investigar qualquer transação com \textbf{2\% de chance} de
+ser fraude. Faz sentido --- investigar é 50 vezes mais barato que deixar passar.
+
+\smallskip
+\textbf{(d)} O corte $0{,}5$ corresponde a
+$\tfrac{c_{FP}}{c_{FP}+c_{FN}}=\tfrac12$, isto é $\mathbf{c_{FP}=c_{FN}}$: ele
+supõe que os dois erros custam o mesmo.
+
+Isso é quase sempre errado em problema desbalanceado, e por dois motivos que se
+somam. Primeiro, o motivo substantivo: a classe rara costuma ser justamente a que
+importa (fraude, doença, falha de equipamento), e deixá-la passar custa muito mais
+caro que um alarme falso. Segundo, o motivo estatístico: com prevalência de 5\%,
+pouquíssimas observações têm $p(\x)>0{,}5$ --- o modelo pode estar ordenando as
+transações perfeitamente e ainda assim classificar \textbf{todas} como normais, porque
+nenhuma passa do corte.
+
+É por isso que a conduta correta é separar as duas decisões: \textbf{primeiro estime
+$p(\x)$ bem, depois escolha o corte}, e escolha-o pelo custo do problema, não
+pelo padrão da biblioteca.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[AUC na mão]
+A AUC tem uma interpretação probabilística exata:
+\[
+  \mathrm{AUC} = \Prob\big(\text{escore de um positivo} > \text{escore de um negativo}\big),
+\]
+com sorteio independente e uniforme entre positivos e entre negativos. Considere
+cinco observações:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+observação & A & B & C & D & E \\
+escore     & $0{,}9$ & $0{,}8$ & $0{,}6$ & $0{,}4$ & $0{,}1$ \\
+$y$        & $1$ & $0$ & $1$ & $1$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Liste todos os pares (positivo, negativo) e calcule a AUC diretamente
+        pela definição.
+  \item Se você somar $0{,}3$ a todos os escores, a AUC muda? E se você elevar
+        todos ao quadrado? Justifique.
+  \item Qual é a AUC de um classificador que atribui escores completamente ao
+        acaso? E de um que ordena \emph{perfeitamente ao contrário}?
+  \item Nesta amostra, qual é a maior acurácia atingível escolhendo bem o corte?
+        Compare com a AUC e comente.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Positivos: A ($0{,}9$), C ($0{,}6$), D ($0{,}4$). Negativos: B
+($0{,}8$), E ($0{,}1$). São $3\times 2=6$ pares:
+\begin{center}\small
+\begin{tabular}{@{}lcl@{}}
+\toprule
+par & comparação & positivo ganha? \\
+\midrule
+A,B & $0{,}9>0{,}8$ & sim \\
+A,E & $0{,}9>0{,}1$ & sim \\
+C,B & $0{,}6>0{,}8$ & \textbf{não} \\
+C,E & $0{,}6>0{,}1$ & sim \\
+D,B & $0{,}4>0{,}8$ & \textbf{não} \\
+D,E & $0{,}4>0{,}1$ & sim \\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+  \mathrm{AUC} = \frac{4}{6} = \frac23 \approx \mathbf{0{,}6667}.
+\]
+
+\smallskip
+\textbf{(b)} \textbf{Não muda em nenhum dos dois casos.} A AUC depende só das
+comparações ``$>$'' entre escores, e qualquer transformação
+\textbf{estritamente crescente} preserva todas elas. Somar $0{,}3$ é crescente;
+elevar ao quadrado também é, no intervalo $[0,1]$ em que os escores estão.
+
+Essa é a virtude e o defeito da AUC ao mesmo tempo: ela mede \emph{ordenação} e
+é cega a \emph{calibração}. Um modelo cujos escores estão todos entre $0{,}49$ e
+$0{,}51$ pode ter AUC $1{,}0$ --- e nenhuma das probabilidades ser utilizável.
+(Cuidado com o caso não estritamente crescente: elevar ao quadrado escores
+\emph{negativos} inverteria comparações e mudaria a AUC.)
+
+\smallskip
+\textbf{(c)} Ao acaso: $\mathrm{AUC}=\mathbf{0{,}5}$, porque com escores
+independentes dos rótulos a probabilidade de o positivo ganhar é $1/2$ por
+simetria. Perfeitamente ao contrário: $\mathrm{AUC}=\mathbf{0}$.
+
+E note que AUC $0$ é ótimo disfarçado: basta inverter o sinal do escore para obter
+$1$. Um modelo com AUC bem abaixo de $0{,}5$ não é inútil --- é um bug de sinal.
+
+\smallskip
+\textbf{(d)} Percorrendo os cortes possíveis:
+\begin{center}\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+corte acima de & --- & $0{,}1$ & $0{,}4$ & $0{,}6$ & $0{,}8$ \\
+prevê 1 para   & todos & A,B,C,D & A,B,C & A,B & A \\
+acertos        & $3$ & $4$ & $3$ & $2$ & $3$ \\
+acurácia       & $0{,}6$ & $\mathbf{0{,}8}$ & $0{,}6$ & $0{,}4$ & $0{,}6$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+A melhor acurácia é $\mathbf{0{,}8}$, com o corte logo acima de $0{,}1$: os três
+positivos são capturados e o único erro é B, um negativo chamado de positivo.
+
+O contraste com a AUC de $0{,}667$ é o ponto do exercício: as duas medem coisas
+diferentes. A acurácia avalia \textbf{uma} decisão, tomada num corte específico; a
+AUC resume o desempenho \textbf{sobre todos os cortes}, e por isso não depende de
+nenhum. Com cinco observações e classes quase equilibradas as duas ainda são
+comparáveis; com prevalência de 5\%, como no Exercício~1, a acurácia se cola na
+prevalência e a AUC continua informativa.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[mesma AUC, calibrações diferentes]
+Dois modelos produzem, para as mesmas quatro observações
+$y=(0,\,0,\,1,\,1)$, os escores
+\[
+  p = (0{,}40,\ 0{,}45,\ 0{,}55,\ 0{,}60),
+  \qquad
+  q = (0{,}05,\ 0{,}10,\ 0{,}90,\ 0{,}95).
+\]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule a AUC dos dois.
+  \item Calcule o \textbf{escore de Brier}, $\frac1n\sum_i(p_i-y_i)^2$, dos dois.
+  \item Interprete: o que cada uma das duas métricas está medindo, e qual delas
+        você usaria para decidir se pode confiar nas probabilidades?
+  \item A Aula~08 relata a medição: naive Bayes e logística praticamente empatam
+        em AUC ($0{,}776$ contra $0{,}774$), e o Brier os separa ($0{,}1523$
+        contra $0{,}0653$). Explique o que esse par de números diz sobre o naive
+        Bayes, ligando ao Exercício~4 da Lista Teórica~08.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Nos dois casos os dois positivos têm escores maiores que os dois
+negativos, então todos os $2\times2=4$ pares são vencidos pelo positivo:
+\[
+  \mathrm{AUC}(p) = \mathrm{AUC}(q) = \mathbf{1{,}0}.
+\]
+Aliás, $q$ é uma função estritamente crescente de $p$, então o item (b) do
+Exercício~3 já garantia a igualdade.
+
+\smallskip
+\textbf{(b)}
+\[
+  \mathrm{Brier}(p) = \tfrac14\big[0{,}40^2+0{,}45^2+0{,}45^2+0{,}40^2\big]
+   = \tfrac14\big[0{,}16+0{,}2025+0{,}2025+0{,}16\big] = \mathbf{0{,}18125},
+\]
+\[
+  \mathrm{Brier}(q) = \tfrac14\big[0{,}05^2+0{,}10^2+0{,}10^2+0{,}05^2\big]
+   = \tfrac14\big[0{,}0025+0{,}01+0{,}01+0{,}0025\big] = \mathbf{0{,}00625}.
+\]
+O Brier de $p$ é \textbf{29 vezes} o de $q$, com AUC idêntica.
+
+\smallskip
+\textbf{(c)} A \textbf{AUC} mede \emph{ordenação}: com que confiabilidade o modelo
+coloca positivos acima de negativos. É a métrica certa quando a decisão final
+será tomada por um corte que você ainda vai escolher --- e é insensível a
+qualquer reescala monótona dos escores.
+
+O \textbf{Brier} é um erro quadrático entre a probabilidade prevista e o rótulo
+observado, e mede \emph{calibração} além de ordenação: ele pune tanto ordenar mal
+quanto acertar a ordem com probabilidades tímidas ou exageradas. O modelo $p$
+ordena perfeitamente, mas todas as suas probabilidades ficam entre $0{,}40$ e
+$0{,}60$; se alguém tomar $p_i=0{,}55$ ao pé da letra, vai agir como se houvesse
+$45\%$ de chance de erro onde não há nenhuma.
+
+Para decidir se \emph{pode confiar nas probabilidades}, use o \textbf{Brier} (ou
+uma curva de calibração). A AUC não responde a essa pergunta, por construção.
+
+E a distinção não é acadêmica: sempre que a probabilidade entra numa conta ---
+custo esperado (Exercício~2), preço de um seguro, priorização de uma fila de
+espera --- é calibração que importa, não ordenação.
+
+\smallskip
+\textbf{(d)} O par de números diz que \textbf{o naive Bayes ordena tão bem quanto
+a logística e estima probabilidades muito pior}. A AUC praticamente empatada
+($0{,}776$ contra $0{,}774$) mostra que ele coloca os positivos acima dos
+negativos com a mesma eficácia; o Brier $2{,}3$ vezes maior ($0{,}1523$ contra
+$0{,}0653$) mostra que os valores que ele imprime não são probabilidades
+confiáveis.
+
+O mecanismo é o do Exercício~4 da Lista Teórica~08: o naive Bayes multiplica as
+densidades marginais como se as covariáveis fossem independentes. Quando elas são
+correlacionadas --- e são --- ele conta a \emph{mesma} evidência várias vezes, e
+o produto de muitos fatores concordantes empurra a posteriori para $0$ ou $1$. O
+resultado são probabilidades sistematicamente extremas.
+
+Mas o excesso de confiança é \textbf{monótono}: ele exagera na mesma direção em
+que a evidência aponta, então preserva a ordem. Por isso a AUC não sofre. Numa
+frase: \emph{ordenar bem não é estimar bem} --- e escolher a métrica é escolher
+qual das duas coisas você precisa.
+\end{solucao}
+
+
+\end{document}

@@ -1,0 +1,346 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista Teórica 06 --- Árvores de Regressão e Ensembles
+%  O gabarito sai de "Lista teorica 05 - gabarito.tex".
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../../recursos/latex/estilo-lista}
+
+\begin{document}
+\cabecalholista{05}{Árvores de Regressão e \emph{Ensembles}}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[da partição à árvore, e de volta]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item A figura da esquerda mostra um particionamento binário recursivo do
+        espaço $(X_1,X_2)$. Os números dentro de cada retângulo são a média de
+        $Y$ naquela região. \textbf{Desenhe a árvore de regressão
+        correspondente}, com as condições nos nós internos e as médias nas
+        folhas.
+  \item A figura da direita mostra uma árvore de regressão. \textbf{Desenhe o
+        particionamento correspondente} do quadrado $[0,4]\times[0,4]$, com as
+        médias dentro de cada região.
+  \item No item (a), a variável $X_1$ é usada em dois cortes diferentes. Isso é
+        permitido? O que isso permite representar que um único corte por
+        variável não permitiria?
+\end{enumerate}
+
+\vspace{0.6em}
+\begin{center}
+\begin{tikzpicture}[scale=0.78]
+  % ---------------- esquerda: a partição ----------------
+  \begin{scope}
+    \draw[thick] (0,0) rectangle (4,4);
+    \draw[thick,azulufrj] (2,0) -- (2,4);
+    \draw[thick,azulufrj] (0,1) -- (2,1);
+    \draw[thick,azulufrj] (3.5,0) -- (3.5,4);
+    \node at (1,0.5)   {$3$};
+    \node at (1,2.5)   {$7$};
+    \node at (2.75,2)  {$12$};
+    \node at (3.75,2)  {\small $6$};
+    \node[below] at (2,-0.15) {\small $2$};
+    \node[below] at (3.5,-0.15) {\small $3{,}5$};
+    \node[left]  at (-0.15,1) {\small $1$};
+    \node[below] at (2,-0.75) {$X_1$};
+    \node[left,rotate=90] at (-0.75,2.6) {$X_2$};
+  \end{scope}
+
+  % ---------------- direita: a árvore ----------------
+  \begin{scope}[shift={(7.2,0)},
+      every node/.style={font=\small},
+      nivel/.style={sibling distance=#1, level distance=1.15cm}]
+    \node[draw,rounded corners,fill=cinzaclaro] (raiz) at (2,4) {$X_2 < 2$};
+    \node[draw,rounded corners,fill=cinzaclaro] (esq)  at (1,2.5) {$X_1 < 1$};
+    \node (f1) at (0,1) {$4$};
+    \node (f2) at (2,1) {$9$};
+    \node (f3) at (3.6,2.5) {$15$};
+    \draw (raiz) -- node[above left,font=\scriptsize]  {sim} (esq);
+    \draw (raiz) -- node[above right,font=\scriptsize] {não} (f3);
+    \draw (esq)  -- node[above left,font=\scriptsize]  {sim} (f1);
+    \draw (esq)  -- node[above right,font=\scriptsize] {não} (f2);
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} A raiz corta em $X_1<2$, porque é o único corte que atravessa o
+quadrado inteiro --- todo corte posterior só vale dentro de um dos lados.
+\begin{center}
+\begin{tikzpicture}[scale=0.85, every node/.style={font=\small}]
+  \node[draw,rounded corners,fill=cinzaclaro] (r)  at (3,4)   {$X_1 < 2$};
+  \node[draw,rounded corners,fill=cinzaclaro] (e)  at (1.4,2.6) {$X_2 < 1$};
+  \node[draw,rounded corners,fill=cinzaclaro] (d)  at (4.8,2.6) {$X_1 < 3{,}5$};
+  \node (f1) at (0.4,1.2) {$3$};
+  \node (f2) at (2.3,1.2) {$7$};
+  \node (f3) at (3.9,1.2) {$12$};
+  \node (f4) at (5.8,1.2) {$6$};
+  \draw (r) -- node[above left,font=\scriptsize]  {sim} (e);
+  \draw (r) -- node[above right,font=\scriptsize] {não} (d);
+  \draw (e) -- node[above left,font=\scriptsize]  {sim} (f1);
+  \draw (e) -- node[above right,font=\scriptsize] {não} (f2);
+  \draw (d) -- node[above left,font=\scriptsize]  {sim} (f3);
+  \draw (d) -- node[above right,font=\scriptsize] {não} (f4);
+\end{tikzpicture}
+\end{center}
+
+\smallskip
+\textbf{(b)} A raiz corta em $X_2<2$: uma linha \emph{horizontal} atravessando
+todo o quadrado. Acima dela ($X_2\ge2$) fica uma única região com média $15$.
+Abaixo, o corte $X_1<1$ divide a faixa inferior em duas.
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+  \draw[thick] (0,0) rectangle (4,4);
+  \draw[thick,azulufrj] (0,2) -- (4,2);
+  \draw[thick,azulufrj] (1,0) -- (1,2);
+  \node at (0.5,1) {\small $4$};
+  \node at (2.5,1) {$9$};
+  \node at (2,3)   {$15$};
+  \node[below] at (1,-0.15) {\small $1$};
+  \node[left]  at (-0.15,2) {\small $2$};
+  \node[below] at (2,-0.75) {$X_1$};
+  \node[left,rotate=90] at (-0.75,2.6) {$X_2$};
+\end{tikzpicture}
+\end{center}
+Note que o corte $X_1<1$ só existe \emph{abaixo} de $X_2=2$: ele não continua
+para cima. É a diferença entre um particionamento recursivo e uma grade.
+
+\smallskip
+\textbf{(c)} \textbf{É permitido, e é essencial.} Nada impede que a mesma
+variável seja cortada várias vezes, em ramos diferentes ou no mesmo ramo com
+limiares distintos.
+
+O que isso permite representar é uma relação \textbf{não monótona}. Na partição
+do item (a), o valor de $Y$ em função de $X_1$ (para $X_2\ge1$) vai de $7$ para
+$12$ e volta para $6$: sobe e desce. Um único corte em $X_1$ só conseguiria
+``abaixo do limiar vale isso, acima vale aquilo'' --- uma função degrau monótona.
+
+De forma mais geral, é essa liberdade que dá às árvores a capacidade de aproximar
+qualquer função por partes constantes, e é também o que as torna capazes de
+capturar \textbf{interações} sem que ninguém as declare: no item (b), o efeito de
+$X_1$ existe quando $X_2<2$ e simplesmente não existe quando $X_2\ge2$.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[escolhendo o corte]
+Uma árvore de regressão escolhe, em cada nó, o corte que mais reduz a soma de
+quadrados dentro dos filhos:
+\[
+  \text{ganho} \;=\;
+  \underbrace{\sum_{i\in\text{nó}}(y_i-\bar y_{\text{nó}})^2}_{\text{RSS do pai}}
+  \;-\;
+  \Big[\underbrace{\sum_{i\in E}(y_i-\bar y_E)^2}_{\text{RSS à esquerda}}
+     + \underbrace{\sum_{i\in D}(y_i-\bar y_D)^2}_{\text{RSS à direita}}\Big].
+\]
+Considere quatro observações com uma única covariável:
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+$x_i$ & $1$ & $2$ & $3$ & $4$ \\
+$y_i$ & $1$ & $2$ & $9$ & $10$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Calcule o RSS do nó raiz.
+  \item Calcule o ganho dos três cortes possíveis: $x<1{,}5$, $x<2{,}5$ e
+        $x<3{,}5$. Qual é o escolhido?
+  \item Por que só existem três cortes a testar, e não infinitos?
+  \item Suponha que a árvore fosse crescida até cada folha ter uma observação só.
+        Qual seria o RSS final? Relacione com o Exercício~1 da Lista Teórica~01.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} $\bar y=(1+2+9+10)/4=5{,}5$ e
+\[
+  \mathrm{RSS} = (1-5{,}5)^2+(2-5{,}5)^2+(9-5{,}5)^2+(10-5{,}5)^2
+  = 20{,}25+12{,}25+12{,}25+20{,}25 = \mathbf{65}.
+\]
+
+\smallskip
+\textbf{(b)} Corte a corte:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lllrr@{}}
+\toprule
+corte & esquerda & direita & RSS filhos & ganho \\
+\midrule
+$x<1{,}5$ & $\{1\}$, $\bar y=1$, RSS $0$      & $\{2,9,10\}$, $\bar y=7$, RSS $38$   & $38$ & $27$ \\
+$x<2{,}5$ & $\{1,2\}$, $\bar y=1{,}5$, RSS $0{,}5$ & $\{9,10\}$, $\bar y=9{,}5$, RSS $0{,}5$ & $\mathbf{1}$ & $\mathbf{64}$ \\
+$x<3{,}5$ & $\{1,2,9\}$, $\bar y=4$, RSS $38$ & $\{10\}$, $\bar y=10$, RSS $0$       & $38$ & $27$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+O corte escolhido é $\mathbf{x<2{,}5}$, com ganho $64$ de um total de $65$ --- ele
+explica $98{,}5\%$ da variação. Faz todo o sentido olhando os dados: há dois
+grupos claros, $\{1,2\}$ e $\{9,10\}$, e esse corte é exatamente o que os separa.
+
+\smallskip
+\textbf{(c)} Porque o que importa não é o valor exato do limiar, e sim
+\emph{qual partição das observações} ele produz. Qualquer limiar entre $2$ e $3$
+gera a mesma partição $\{1,2\}\mid\{9,10\}$ e portanto o mesmo ganho. Com $n$
+valores distintos de $x$ há exatamente $n-1$ partições possíveis, e por convenção
+testa-se o ponto médio entre valores consecutivos. É isso que torna a busca
+exaustiva viável: são $n-1$ candidatos por variável, não infinitos.
+
+\smallskip
+\textbf{(d)} O RSS final seria \textbf{zero}: cada folha teria uma observação e a
+média dela seria o próprio $y_i$. É o mesmo fenômeno do Exercício~1 da Lista
+Teórica~01, em que o polinômio de grau $n-1$ interpola os $n$ pontos --- erro de
+treino nulo e nenhuma informação sobre o risco. Uma árvore totalmente crescida é
+um interpolador, e é por isso que existe a poda (e, mais adiante, o
+\emph{bagging}).
+
+Uma diferença entre os dois casos vale ser notada: o zero da árvore é zero
+\emph{de verdade também no computador}, porque a média de um único número é esse
+número. Já o do polinômio é só algébrico --- em ponto flutuante ele não interpola,
+como a §3 da \texttt{Aula prática 03} mede.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[$B$ grande estraga? depende do ensemble]
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item No \emph{bagging} e nas florestas aleatórias, cada árvore é ajustada a
+        uma reamostra dos dados, \textbf{sem olhar} para as árvores anteriores.
+        Aumentar $B$ pode piorar o desempenho fora da amostra? Justifique usando
+        a fórmula da variância da média.
+  \item No \emph{boosting}, cada árvore é ajustada aos \textbf{resíduos} do que
+        já foi construído. Aumentar $B$ pode piorar? Justifique.
+  \item A nota de aula relata a medição correspondente: o erro do \emph{boosting}
+        atinge o mínimo em $B=32$ e, em $B=1500$, está $16\%$ acima. Que
+        mecanismo produz essa curva em U, e qual hiperparâmetro do
+        \texttt{scikit-learn} evita o problema sem que você precise adivinhar
+        $B$?
+  \item Cite uma quantidade que o \emph{bagging} fornece de graça e que dispensa
+        validação cruzada para estimar o risco. Por que ela é gratuita?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} \textbf{Não} --- ou, mais precisamente, não de forma sistemática. As
+árvores do \emph{bagging} são identicamente distribuídas e não dependem umas das
+outras, então a média $\bar g=\frac1B\sum_b g_b$ tem
+\[
+  \Var(\bar g(\x)) = \rho\,v(\x) + \frac{1-\rho}{B}\,v(\x),
+\]
+que é \textbf{decrescente em $B$}. O viés, por sua vez, não muda com $B$: a média
+de estimadores de mesma esperança tem essa mesma esperança. Logo nem viés nem
+variância pioram, e $B$ é um parâmetro de \emph{custo computacional}, não de
+complexidade. Na prática, escolhe-se o maior $B$ que o orçamento de tempo
+permite.
+
+\smallskip
+\textbf{(b)} \textbf{Pode, e piora.} No \emph{boosting} as árvores não são
+independentes: a árvore $b+1$ é ajustada ao que sobrou do erro das $b$ primeiras.
+O ensemble é uma soma, não uma média, e cada termo novo \emph{reduz o erro de
+treino}. Com $B$ suficientemente grande o \emph{boosting} passa a ajustar o ruído
+das observações de treino --- exatamente o superajuste da Aula~01, com $B$ no
+papel do grau do polinômio. Aqui $B$ \textbf{é} um parâmetro de complexidade, e
+tem de ser escolhido por validação cruzada.
+
+\smallskip
+\textbf{(c)} O mecanismo é o da curva em U: no começo, cada árvore nova reduz
+viés (o ensemble ainda não capturou a estrutura de $r$); a partir de certo ponto,
+a estrutura já foi capturada e as árvores seguintes só conseguem perseguir o
+ruído, o que aumenta a variância. O mínimo está onde as duas forças se equilibram
+--- aqui, $B=32$.
+
+A ferramenta que evita adivinhar é a \textbf{parada antecipada}:
+\texttt{n\_iter\_no\_change} (com \texttt{validation\_fraction} e \texttt{tol}) faz
+o \texttt{GradientBoostingRegressor} separar uma parte dos dados, acompanhar o
+erro nela a cada iteração e parar quando ele deixa de melhorar. Você põe um $B$
+máximo generoso e o algoritmo escolhe onde parar.
+
+\smallskip
+\textbf{(d)} O erro \textbf{\emph{out-of-bag}} (OOB), disponível em
+\texttt{oob\_score\_}. Ele é gratuito porque cada árvore do \emph{bagging} é
+ajustada a uma amostra bootstrap que deixa de fora, em média, $(1-1/n)^n\to
+e^{-1}\approx 36{,}8\%$ das observações. Cada observação $i$, portanto, é ``de
+fora'' para cerca de um terço das árvores, e a predição feita para ela usando
+\emph{apenas} essas árvores é honesta --- nenhuma delas a viu no treino. Fazendo
+isso para todo $i$, obtém-se uma estimativa de risco sem ajustar nada a mais.
+É essencialmente uma validação cruzada que veio junto com o método.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[o piso da variância]
+Sejam $g_1,\dots,g_B$ estimadores de mesma variância $v(\x)$ e correlação
+$\Cov(g_a(\x),g_b(\x))=\rho\,v(\x)$ para $a\neq b$.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que
+        $\displaystyle \Var\big(\bar g(\x)\big)
+         = \rho\,v(\x) + \frac{1-\rho}{B}\,v(\x)$.
+        \emph{Sugestão:} $\Var(\sum_b g_b)=\sum_b\Var(g_b)+\sum_{a\neq b}\Cov(g_a,g_b)$,
+        e há $B(B-1)$ pares ordenados com $a\neq b$.
+  \item Tome $v(\x)=1$ e $\rho=0{,}6$. Calcule a variância para
+        $B=1,10,100$ e $B\to\infty$. Que \textbf{porcentagem} da redução total
+        possível já se obteve em $B=10$?
+  \item Agora suponha que você consiga baixar $\rho$ de $0{,}6$ para $0{,}3$.
+        Compare esse ganho com o de aumentar $B$ de $10$ para $1000$.
+  \item Como as florestas aleatórias reduzem $\rho$ na prática, e qual é o custo
+        dessa redução?
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Escreva $\bar g=\frac1B\sum_b g_b$. Então
+\[
+  \Var(\bar g) = \frac{1}{B^2}\Var\Big(\sum_{b=1}^B g_b\Big)
+   = \frac{1}{B^2}\Big[\underbrace{\sum_{b}\Var(g_b)}_{B\,v}
+       + \underbrace{\sum_{a\neq b}\Cov(g_a,g_b)}_{B(B-1)\,\rho v}\Big]
+   = \frac{Bv + B(B-1)\rho v}{B^2}.
+\]
+Dividindo por $B$ dentro do colchete,
+\[
+  \Var(\bar g)= \frac{v}{B} + \frac{(B-1)\rho v}{B}
+   = \rho v + \frac{v}{B} - \frac{\rho v}{B}
+   = \rho\,v + \frac{1-\rho}{B}\,v .
+\]
+Quando $\rho=0$ recuperamos $v/B$, que é a Proposição da nota; quando $B\to\infty$
+sobra $\rho v$.
+
+\smallskip
+\textbf{(b)} Com $v=1$ e $\rho=0{,}6$, $\Var=0{,}6+0{,}4/B$:
+\begin{center}\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+$B$ & $1$ & $10$ & $100$ & $\infty$ \\
+\midrule
+$\Var(\bar g)$ & $1{,}0000$ & $0{,}6400$ & $0{,}6040$ & $0{,}6000$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+A redução total possível é $1{,}0-0{,}6=0{,}4$. Em $B=10$ já obtivemos
+$1{,}0-0{,}64=0{,}36$, ou seja \textbf{90\%} dela. As outras $990$ árvores até
+$B=1000$ compram os $10\%$ restantes.
+
+\smallskip
+\textbf{(c)} Baixar $\rho$ de $0{,}6$ para $0{,}3$ leva o piso de $0{,}600$ a
+$0{,}300$: um ganho de $0{,}30$. Aumentar $B$ de $10$ para $1000$ leva a
+variância de $0{,}6400$ a $0{,}6004$: um ganho de $0{,}04$.
+
+O ganho de descorrelacionar é, portanto, \textbf{sete vezes maior} --- e note que
+ele é maior até do que \emph{todo} o efeito possível de $B$ com $\rho=0{,}6$
+fixo, que valia $0{,}40$ no total. É por isso que a floresta aleatória é uma ideia
+melhor do que simplesmente rodar mais árvores.
+
+\smallskip
+\textbf{(d)} A floresta aleatória sorteia, \textbf{em cada nó}, um subconjunto de
+$m<p$ covariáveis candidatas ao corte (tipicamente $m\approx p/3$ em regressão e
+$m\approx\sqrt p$ em classificação). Assim, quando existe uma covariável muito
+forte, ela não aparece na raiz de todas as árvores: nas árvores em que não foi
+sorteada, a estrutura sai completamente diferente. Menos estrutura comum entre as
+árvores é menos $\rho$.
+
+O custo é \textbf{viés}: proibir a árvore de usar a melhor covariável em parte
+dos nós a torna individualmente pior. A aposta da floresta é que essa perda de
+qualidade individual é mais que compensada pela queda de $\rho$ --- e a fórmula
+do item (c) mostra por que a aposta costuma valer a pena. Levada ao extremo
+($m=1$, corte totalmente ao acaso) chega-se às \emph{extremely randomized trees},
+que trocam ainda mais viés por ainda menos correlação.
+\end{solucao}
+
+
+\end{document}

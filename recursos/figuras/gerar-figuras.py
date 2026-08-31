@@ -362,75 +362,10 @@ def _knn_k():
 
 
 # =========================================================================== #
-# Aula 05 --- Métodos Não Paramétricos: Aspectos Teóricos
+# Aula 05 --- Árvores de Regressão e Ensembles
 # =========================================================================== #
 
-@figura("05-taxas", "05")
-def _taxas():
-    """A taxa n^{-2/(2+d)} degrada brutalmente com d."""
-    n = np.logspace(1, 6, 200)
-    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.0, 2.8))
-
-    for d, cor in zip([1, 2, 5, 10, 20], [VERDE, AZUL, "#B8860B", VINHO, "black"]):
-        ax1.plot(n, n ** (-2 / (2 + d)), color=cor, label=f"$p={d}$")
-    ax1.set_xscale("log"); ax1.set_yscale("log")
-    ax1.set_xlabel("$n$"); ax1.set_ylabel(r"risco $\propto n^{-2/(2+d)}$")
-    ax1.set_title("a taxa achata conforme $p$ cresce")
-    ax1.legend(fontsize=7.5)
-
-    # n necessário para um risco alvo fixo
-    alvo = 0.05
-    dd = np.arange(1, 21)
-    preciso = alvo ** (-(2 + dd) / 2)
-    print(f"     [conferência] n para risco {alvo}: p=1 -> {preciso[0]:.0f}, "
-          f"p=5 -> {preciso[4]:.3g}, p=10 -> {preciso[9]:.3g}, p=20 -> {preciso[19]:.3g}")
-    ax2.plot(dd, preciso, "o-", color=VINHO, ms=3)
-    ax2.axhline(1e10, color=CINZA, ls=":", lw=1.0)
-    ax2.text(1.2, 1.6e10, "$10^{10}$ observações", fontsize=7, color=CINZA)
-    ax2.set_yscale("log")
-    ax2.set_xlabel("$p$ (dimensão)")
-    ax2.set_ylabel(f"$n$ para atingir risco {alvo}".replace("0.05", "0,05"))
-    ax2.set_title("e o $n$ exigido explode")
-    ax2.set_xticks([1, 5, 10, 15, 20])
-    salvar(fig, "05-taxas")
-
-
-@figura("05-vizinho-longe", "05")
-def _vizinho_longe():
-    """Em dimensão alta o "vizinho mais próximo" não é próximo de nada."""
-    rng = np.random.default_rng(4)
-    n = 1000
-    dims = [1, 2, 3, 5, 10, 20, 50, 100]
-    medias, p05 = [], []
-    for d in dims:
-        X = rng.uniform(0, 1, size=(n, d))
-        alvo = rng.uniform(0, 1, size=(200, d))
-        dist = np.sqrt(((alvo[:, None, :] - X[None, :, :]) ** 2).sum(axis=2))
-        maisproximo = dist.min(axis=1)
-        # normaliza pelo diâmetro do cubo, sqrt(d): fração do espaço percorrida
-        medias.append((maisproximo / np.sqrt(d)).mean())
-        p05.append(np.quantile(maisproximo / np.sqrt(d), 0.05))
-    print(f"     [conferência] distância ao vizinho mais próximo / diâmetro: "
-          f"p=1 -> {medias[0]:.4f}, p=10 -> {medias[4]:.4f}, p=100 -> {medias[-1]:.4f}")
-
-    fig, ax = subplots(figsize=(5.0, 3.0))
-    ax.plot(dims, medias, "o-", color=VINHO, ms=4, label="média")
-    ax.fill_between(dims, p05, medias, color=VINHO, alpha=0.15,
-                    label="entre o percentil 5 e a média")
-    ax.set_xscale("log")
-    ax.set_xlabel("$p$ (dimensão), escala logarítmica")
-    ax.set_ylabel("distância ao vizinho mais próximo\n(fração do diâmetro do cubo)")
-    ax.set_xticks(dims); ax.set_xticklabels(dims)
-    ax.set_title(f"$n={n}$ pontos uniformes em $[0,1]^p$")
-    ax.legend(fontsize=7.5, loc="lower right")
-    salvar(fig, "05-vizinho-longe")
-
-
-# =========================================================================== #
-# Aula 06 --- Árvores de Regressão e Ensembles
-# =========================================================================== #
-
-@figura("06-numero-arvores", "06")
+@figura("05-numero-arvores", "05")
 def _numero_arvores():
     """B grande é inofensivo na floresta e perigoso no boosting."""
     from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -489,14 +424,14 @@ def _numero_arvores():
     ax2.set_title(r"Boosting ($\lambda=0{,}05$): volta a subir")
     ax2.legend(fontsize=7.5)
     ax1.set_ylim(0, 6.0)
-    salvar(fig, "06-numero-arvores")
+    salvar(fig, "05-numero-arvores")
 
 
 # =========================================================================== #
-# Aula 07 --- Pré-processamento e Pipelines
+# Aula 06 --- Pré-processamento e Pipelines
 # =========================================================================== #
 
-@figura("07-vazamento", "07")
+@figura("06-vazamento", "06")
 def _vazamento():
     """Quanto custa vazar: dois tipos de vazamento, medidos.
 
@@ -571,11 +506,11 @@ def _vazamento():
                      ha="center", fontsize=8.5)
     baixo = min(m[2], m[3])
     ax2.set_ylim(baixo - 0.02, max(m[2], m[3]) + 0.02)
-    salvar(fig, "07-vazamento")
+    salvar(fig, "06-vazamento")
 
 
 # =========================================================================== #
-# Aula 08 --- Classificação e Classificadores Gaussianos
+# Aula 07 --- Classificação e Classificadores Gaussianos
 # =========================================================================== #
 
 def _duas_gaussianas(n, rng, sep=2.2):
@@ -616,7 +551,7 @@ def rng_fixa_Q(d, qual):
     return _CACHE_Q[(d, qual)]
 
 
-@figura("08-fronteiras", "08")
+@figura("07-fronteiras", "07")
 def _fronteiras():
     """Onde cada classificador traça a linha."""
     from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
@@ -645,10 +580,10 @@ def _fronteiras():
         ax.set_title(nome, fontsize=7.5)
         ax.set_xticks([]); ax.set_yticks([])
         ax.grid(False)
-    salvar(fig, "08-fronteiras")
+    salvar(fig, "07-fronteiras")
 
 
-@figura("08-lda-qda", "08")
+@figura("07-lda-qda", "07")
 def _lda_qda():
     """A troca viés-variância entre LDA e QDA, em função de n."""
     from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
@@ -691,11 +626,11 @@ def _lda_qda():
     ax.set_title(f"$p={d}$ covariáveis, covariâncias diferentes por classe")
     ax.set_xticks(ns); ax.set_xticklabels(ns)
     ax.legend(loc="lower right", fontsize=8)
-    salvar(fig, "08-lda-qda")
+    salvar(fig, "07-lda-qda")
 
 
 # =========================================================================== #
-# Aula 09 --- Métricas para Classificação
+# Aula 08 --- Métricas para Classificação
 # =========================================================================== #
 
 def _cenario_desbalanceado(n, rng, prev=0.08, correlacionado=False):
@@ -718,7 +653,7 @@ def _cenario_desbalanceado(n, rng, prev=0.08, correlacionado=False):
     return X, y
 
 
-@figura("09-roc-metricas", "09")
+@figura("08-roc-metricas", "08")
 def _roc_metricas():
     """ROC, AUC e o efeito do corte sobre as métricas."""
     from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve
@@ -780,10 +715,10 @@ def _roc_metricas():
     ax2.set_title("o corte muda tudo")
     ax2.set_ylim(0, 1.02)
     ax2.legend(loc="center right", fontsize=7.5)
-    salvar(fig, "09-roc-metricas")
+    salvar(fig, "08-roc-metricas")
 
 
-@figura("09-calibracao", "09")
+@figura("08-calibracao", "08")
 def _calibracao():
     """Classificar bem não é o mesmo que estimar bem probabilidades."""
     from sklearn.calibration import calibration_curve
@@ -813,14 +748,14 @@ def _calibracao():
     ax.set_ylabel("frequência observada")
     ax.set_title("curva de calibração")
     ax.legend(loc="upper left", fontsize=7)
-    salvar(fig, "09-calibracao")
+    salvar(fig, "08-calibracao")
 
 
 # =========================================================================== #
-# Aula 10 --- Máquinas de Vetores de Suporte
+# Aula 09 --- Máquinas de Vetores de Suporte
 # =========================================================================== #
 
-@figura("10-margem", "10")
+@figura("09-margem", "09")
 def _margem():
     """Margem máxima, vetores de suporte e o efeito de C."""
     from sklearn.svm import SVC
@@ -852,10 +787,10 @@ def _margem():
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] C={C:g}: {len(sv)} vetores de suporte, "
               f"margem {larg:.3f}")
-    salvar(fig, "10-margem")
+    salvar(fig, "09-margem")
 
 
-@figura("10-kernel", "10")
+@figura("09-kernel", "09")
 def _kernel():
     """O que o kernel compra: fronteiras que a reta não alcança."""
     from sklearn.svm import SVC
@@ -883,10 +818,10 @@ def _kernel():
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] kernel {nome}: acurácia de treino "
               f"{m.score(X, y):.3f}")
-    salvar(fig, "10-kernel")
+    salvar(fig, "09-kernel")
 
 
-@figura("10-perdas", "10")
+@figura("09-perdas", "09")
 def _perdas():
     """hinge, logística e 0-1 como funções da margem y*g(x)."""
     u = np.linspace(-2.5, 3.0, 800)
@@ -906,14 +841,14 @@ def _perdas():
     ax.set_ylabel("perda")
     ax.set_ylim(0, 3.0)
     ax.legend(loc="upper right", fontsize=7.5)
-    salvar(fig, "10-perdas")
+    salvar(fig, "09-perdas")
 
 
 # =========================================================================== #
-# Aula 11 --- KNN e Árvores de Classificação
+# Aula 10 --- KNN e Árvores de Classificação
 # =========================================================================== #
 
-@figura("11-fronteiras-knn", "11")
+@figura("10-fronteiras-knn", "10")
 def _fronteiras_knn():
     """O k do KNN em classificação: de rendilhado a quase linear."""
     from sklearn.neighbors import KNeighborsClassifier
@@ -942,10 +877,10 @@ def _fronteiras_knn():
         ax.set_title(f"$k={k}$\ntreino ${tr:.3f}$ | teste ${te:.3f}$", fontsize=7.5)
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] k={k}: acurácia treino {tr:.3f}, teste {te:.3f}")
-    salvar(fig, "11-fronteiras-knn")
+    salvar(fig, "10-fronteiras-knn")
 
 
-@figura("11-impureza", "11")
+@figura("10-impureza", "10")
 def _impureza():
     """Gini, entropia e erro de classificação como medidas de impureza."""
     p = np.linspace(1e-9, 1 - 1e-9, 800)
@@ -966,7 +901,7 @@ def _impureza():
     ax.set_ylabel("impureza")
     ax.set_ylim(0, 1.08)
     ax.legend(loc="lower center", fontsize=7.5)
-    salvar(fig, "11-impureza")
+    salvar(fig, "10-impureza")
 
 
 # =========================================================================== #

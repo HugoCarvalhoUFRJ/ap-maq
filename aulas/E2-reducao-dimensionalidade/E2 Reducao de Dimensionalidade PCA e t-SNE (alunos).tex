@@ -29,7 +29,7 @@ Ao final desta aula você deve ser capaz de:
 \end{itemize}
 
 \noindent
-Esta aula ataca de frente a maldição da dimensionalidade da Aula~05, mas pelo lado
+Esta aula ataca de frente a maldição da dimensionalidade, mas pelo lado
 da \emph{redundância}: se as covariáveis são correlacionadas, os dados ocupam
 apenas uma fatia fina do espaço $\R^p$, e talvez baste descrevê-la. A pergunta:
 
@@ -44,15 +44,15 @@ apenas uma fatia fina do espaço $\R^p$, e talvez baste descrevê-la. A pergunta
   \item \textbf{Visualização}: projetar dados em 2D/3D para enxergar estrutura.
   \item \textbf{Compressão}: armazenar/transmitir com menos espaço (imagens).
   \item \textbf{Pré-processamento}: combater a \emph{maldição da dimensionalidade}
-        (Aula~05) e o ruído antes de um método supervisionado.
+        e o ruído antes de um método supervisionado.
   \item \textbf{Redundância}: muitas covariáveis correlacionadas vivem perto de uma
         subvariedade de dimensão menor --- queremos recuperá-la.
 \end{itemize}
 
 \begin{ideia}
-O último item é o mais importante conceitualmente, e liga esta aula ao Bloco~I. Na
-Aula~05 vimos que o KNN \emph{se adapta sozinho} à dimensão
-intrínseca $u$, mas que métodos que somam todas as coordenadas sofrem com $p$
+O último item é o mais importante conceitualmente, e liga esta aula ao Bloco~I.
+O KNN \emph{se adapta sozinho} à dimensão
+intrínseca $u$, mas métodos que somam todas as coordenadas sofrem com $p$
 grande. O PCA faz esse trabalho \emph{explicitamente}: ele encontra a subvariedade
 --- desde que ela seja aproximadamente um subespaço linear.
 \end{ideia}
@@ -146,7 +146,7 @@ Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
   a mesma base das aulas práticas. O primeiro componente sozinho explica $38{,}9\%$
   da variância, e \textbf{12 componentes} chegam a $90\%$. Em outras palavras: as
   $81$ colunas carregam cerca de uma dúzia de dimensões de informação, e as demais
-  $69$ são, em boa medida, repetição. É a \emph{redundância} da Aula~05, medida.}
+  $69$ são, em boa medida, repetição. É a \emph{redundância}, medida.}
   \label{fig:variancia}
 \end{figure}
 
@@ -186,7 +186,7 @@ $(z_{i,1},\dots,z_{i,p})$ e as $p$ cargas $\bm{u}_1,\dots,\bm{u}_p$ --- uma
 
 \begin{atencao}
 PCA usa variância e produtos internos $\Rightarrow$ é \textbf{sensível à escala}.
-\emph{Padronize} as covariáveis antes (Aula~07), senão variáveis de maior magnitude
+\emph{Padronize} as covariáveis antes (Aula~06), senão variáveis de maior magnitude
 dominam os componentes artificialmente --- trocar metros por milímetros numa coluna
 muda o resultado. E PCA é \emph{não supervisionado}: a direção de maior variância
 \emph{não} é necessariamente a mais útil para prever um $Y$. É perfeitamente
@@ -199,10 +199,10 @@ que você acabou de descartar.
 %==============================================================================
 \subsection{Kernel PCA}
 PCA só captura estrutura \emph{linear}. Como o PCA pode ser escrito em termos de
-produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aulas~04 e~10):
+produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aulas~04 e~09):
 substituem-se os produtos internos por um kernel $K$, fazendo PCA num espaço de
 \emph{features} de alta dimensão. Resultado: componentes \textbf{não lineares}, que
-capturam subvariedades curvas. É literalmente o mesmo truque da Aula~10, aplicado a
+capturam subvariedades curvas. É literalmente o mesmo truque da Aula~09, aplicado a
 outro problema --- e essa recorrência não é coincidência: qualquer método que só
 dependa de produtos internos admite a mesma generalização.
 
@@ -257,7 +257,7 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 
-# PCA como etapa de um pipeline (Aula 07): ajustado SO no treino
+# PCA como etapa de um pipeline (Aula 06): ajustado SO no treino
 pipe = make_pipeline(StandardScaler(), PCA(n_components=0.90), Ridge())
 
 # quanta variancia cada componente explica
@@ -274,21 +274,21 @@ passa-se a \emph{proporção de variância} desejada, e o \texttt{scikit-learn} 
 $p$ sozinho.
 
 \begin{atencao}[qual é, afinal, a gravidade desse vazamento]
-O PCA aprende direções a partir dos dados, então pela regra da Aula~07 ele é etapa
+O PCA aprende direções a partir dos dados, então pela regra da Aula~06 ele é etapa
 do modelo e tem de entrar no \emph{pipeline}. Mas vale ser preciso sobre a
 \emph{gravidade}, porque a intuição engana aqui.
 
-O que torna grave o vazamento por seleção de variáveis (Aula~07) é que a seleção
+O que torna grave o vazamento por seleção de variáveis (Aula~06) é que a seleção
 \textbf{olha o $Y$}: ela escolhe as colunas que, por acaso, se parecem com a
 resposta naquela amostra, e é assim que fabrica $R^2=0{,}40$ a partir de ruído puro.
 O PCA \textbf{não olha o $Y$}. Sem a resposta, não há como escolher direções que
 finjam explicar ruído.
 
-E a medição confirma: o notebook desta aula repete o experimento cruel da Aula~07 --
+E a medição confirma: o notebook desta aula repete o experimento cruel da Aula~06 --
 $y$ de ruído puro -- em quatro configurações de $(n,p,k)$, e em \emph{nenhuma} delas
 calcular o PCA fora da dobra inflou o $R^2$. Ele o \emph{piorou}, porque componentes
 calculados sobre o conjunto todo não são os componentes ótimos de nenhuma dobra de
-treino. Na hierarquia da Aula~07, portanto, o PCA fica na categoria \textbf{leve},
+treino. Na hierarquia da Aula~06, portanto, o PCA fica na categoria \textbf{leve},
 ao lado da padronização --- e a conduta continua a mesma, porque corrigir custa uma
 linha.
 \end{atencao}
@@ -302,7 +302,7 @@ explicada em dados reais.
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
   \item Reduzir dimensão serve para visualizar, comprimir, pré-processar e explorar
-        \emph{redundância} (Aula~05).
+        \emph{redundância}.
   \item \textbf{PCA}: direções ortogonais de variância máxima; são os autovetores de
         $\bm{X}^\top\bm{X}$ em ordem de autovalor (Prop.~\ref{prop:pca}), obtidos de
         uma única decomposição (Fig.~\ref{fig:eixos}).

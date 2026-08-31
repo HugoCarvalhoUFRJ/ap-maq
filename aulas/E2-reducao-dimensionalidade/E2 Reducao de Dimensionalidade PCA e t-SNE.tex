@@ -24,8 +24,8 @@ Ao final desta aula o aluno deve ser capaz de:
 \end{itemize}
 
 \begin{emsala}
-Segunda face do não supervisionado (após o agrupamento, Aula~E1). Conexão direta com
-a Aula~05: a \emph{redundância} das covariáveis (dimensão intrínseca baixa) é
+Segunda face do não supervisionado (após o agrupamento, Aula~E1). A
+\emph{redundância} das covariáveis (dimensão intrínseca baixa) é
 exatamente o que a redução de dimensionalidade explora. Pergunta de abertura:
 \emph{``como resumir centenas de variáveis correlacionadas em duas ou três, sem
 perder o essencial?''}
@@ -38,7 +38,7 @@ perder o essencial?''}
   \item \textbf{Visualização}: projetar dados em 2D/3D para enxergar estrutura.
   \item \textbf{Compressão}: armazenar/transmitir com menos espaço (imagens).
   \item \textbf{Pré-processamento}: combater a \emph{maldição da dimensionalidade}
-        (Aula~05) e o ruído antes de um método supervisionado.
+        e o ruído antes de um método supervisionado.
   \item \textbf{Redundância}: muitas covariáveis correlacionadas vivem perto de uma
         subvariedade de dimensão menor --- queremos recuperá-la.
 \end{itemize}
@@ -128,7 +128,7 @@ cor (R, G, B) como uma matriz.
 
 \begin{atencao}
 PCA usa variância e produtos internos $\Rightarrow$ é \textbf{sensível à escala}.
-\emph{Padronize} as covariáveis antes (Aula~07), senão variáveis de maior magnitude
+\emph{Padronize} as covariáveis antes (Aula~06), senão variáveis de maior magnitude
 dominam os componentes artificialmente. E PCA é \emph{não supervisionado}: a direção
 de maior variância \emph{não} é necessariamente a mais útil para prever um $Y$.
 \end{atencao}
@@ -138,7 +138,7 @@ de maior variância \emph{não} é necessariamente a mais útil para prever um $
 %==============================================================================
 \subsection{Kernel PCA}
 PCA só captura estrutura \emph{linear}. Como o PCA pode ser escrito em termos de
-produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aulas~04 e~10):
+produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aulas~04 e~09):
 substituem-se os produtos internos por um kernel $K$, fazendo PCA num espaço de
 \emph{features} de alta dimensão. Resultado: componentes \textbf{não lineares}, que
 capturam subvariedades curvas.
@@ -199,7 +199,7 @@ t-SNE na mesma base.
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
   \item Reduzir dimensão: visualizar, comprimir, remover ruído, explorar
-        \emph{redundância} (Aula~05).
+        \emph{redundância}.
   \item \textbf{PCA}: componentes $=$ combinações lineares de variância máxima
         $=$ autovetores da covariância (Prop.~\ref{prop:pca}); \emph{scores}
         $\bm{Z}=\bm{X}\bm{U}$, não correlacionados.

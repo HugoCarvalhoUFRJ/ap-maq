@@ -1,5 +1,5 @@
 # Aprendizado de Máquina — UFF — Prof. Gabriel Sanfins
-# Dependências das 14 aulas práticas (aulas/*/Aula prática *.ipynb)
+# Dependências das 13 aulas práticas (aulas/*/Aula prática *.ipynb)
 #
 #     pip install -r requirements.txt
 #
@@ -17,10 +17,10 @@
 # a aula 02 parou de rodar até ser corrigida. Ver "o que já quebrou em versão
 # nova", no fim do arquivo.
 
-# ----- o núcleo, usado nas 14 aulas ------------------------------------------
+# ----- o núcleo, usado nas 13 aulas ------------------------------------------
 numpy>=1.23
 pandas>=1.5
-matplotlib>=3.4          # pcolormesh(shading="auto"), aula 10
+matplotlib>=3.4          # pcolormesh(shading="auto"), aula 09
 scikit-learn>=1.2        # ver a lista de APIs no fim do arquivo
 scipy>=1.7               # aulas 05, 08, E1 e E2
 
@@ -38,15 +38,15 @@ ipykernel>=6.0
 # =============================================================================
 # As APIs abaixo aparecem nos notebooks e fixam esse piso:
 #
-#   LogisticRegression(penalty=None)     aula 08  -> exige >= 1.2
+#   LogisticRegression(penalty=None)     aula 07  -> exige >= 1.2
 #                                        (antes disso era a string "none")
-#   RandomForestRegressor().max_features aula 11  -> vale 1.0 a partir de 1.1
+#   RandomForestRegressor().max_features aula 10  -> vale 1.0 a partir de 1.1
 #                                        (antes era "auto", e a aula comenta o valor)
 #   SplineTransformer                    aula 04  -> >= 1.0
-#   get_feature_names_out                aulas 07 e E3 -> >= 1.0
-#   permutation_importance               aula 06  -> >= 0.22
-#   cost_complexity_pruning_path         aula 06  -> >= 0.22
-#   calibration_curve(strategy=...)      aula 09  -> >= 0.24
+#   get_feature_names_out                aulas 06 e E3 -> >= 1.0
+#   permutation_importance               aula 05  -> >= 0.22
+#   cost_complexity_pruning_path         aula 05  -> >= 0.22
+#   calibration_curve(strategy=...)      aula 08  -> >= 0.24
 #
 # =============================================================================
 # O que já quebrou em versão nova
@@ -61,7 +61,7 @@ ipykernel>=6.0
 #                                           Atenção: Lasso.path é outra função e
 #                                           ainda aceita n_alphas.
 #
-#   QuadraticDiscriminant       aula 08  -> passou a levantar LinAlgError em vez
+#   QuadraticDiscriminant       aula 07  -> passou a levantar LinAlgError em vez
 #   Analysis()                              de avisar quando a covariância de uma
 #                                           classe fica mal condicionada. As 30
 #                                           medidas do breast_cancer são
@@ -91,7 +91,7 @@ ipykernel>=6.0
 # Versões em que tudo foi executado de ponta a ponta (05/08/2026)
 # =============================================================================
 # Se algum notebook der resultado diferente do que o texto afirma, este é o
-# conjunto exato em que as 14 aulas rodaram sem erro:
+# conjunto exato em que as 13 aulas rodaram sem erro:
 #
 #   numpy         1.26.4
 #   pandas        2.2.2
@@ -116,8 +116,8 @@ ipykernel>=6.0
 #
 # Três arquivos .csv ficam em recursos/dados/:
 #
-#   superconductivity.csv    aulas 01 a 06  (23 MB, 10 notebooks)
-#   bank_train_redux.csv     aulas 07 e 09  (96 MB, 4 notebooks)
+#   superconductivity.csv    aulas 01 a 05  (23 MB, 9 notebooks)
+#   bank_train_redux.csv     aulas 06, 08 e 10  (96 MB, 5 notebooks)
 #   spam.csv                 aula E3        (0,5 MB, 3 notebooks)
 #
 # NENHUM notebook baixa .csv da rede. Todos procuram o arquivo em dois lugares,

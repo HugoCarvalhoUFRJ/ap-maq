@@ -22,10 +22,9 @@ Ao final desta aula você deve ser capaz de:
   \item construir a \textbf{matriz documento--termo} (\emph{bag-of-words}) e explicar
         por que ela é esparsa;
   \item definir o \textbf{TF--IDF} e dizer o que ele corrige;
-  \item escolher métodos adequados a alta dimensão esparsa e justificar a escolha
-        pela teoria da Aula~05;
-  \item avaliar um classificador de \emph{spam} com as métricas certas (Aula~09);
-  \item montar o \emph{pipeline} completo, sem vazamento (Aula~07).
+  \item escolher métodos adequados a alta dimensão esparsa e justificar a escolha;
+  \item avaliar um classificador de \emph{spam} com as métricas certas (Aula~08);
+  \item montar o \emph{pipeline} completo, sem vazamento (Aula~06).
 \end{itemize}
 
 \noindent
@@ -44,15 +43,15 @@ dão conta dele. A pergunta:
 Usaremos a base \texttt{spam.csv} (SMS Spam Collection): $5\,572$ mensagens de
 SMS rotuladas como \emph{ham} (legítima, $Y=0$) ou \emph{spam} ($Y=1$), sendo
 $13{,}4\%$ delas \emph{spam}. É um problema de \textbf{classificação binária}
-(Aula~08) cujas covariáveis são \emph{texto bruto} --- e o desafio central é a
+(Aula~07) cujas covariáveis são \emph{texto bruto} --- e o desafio central é a
 \emph{representação}.
 
 \begin{atencao}
-A base é \textbf{desbalanceada}. Como vimos na Aula~09, a acurácia engana aqui: um
+A base é \textbf{desbalanceada}. Como vimos na Aula~08, a acurácia engana aqui: um
 classificador que declarasse tudo \emph{ham} já acertaria $86{,}6\%$. Precisaremos de
 precisão, \emph{recall} e $F_1$. E os custos são assimétricos: bloquear uma mensagem
 legítima (falso positivo) costuma ser bem pior que deixar passar um \emph{spam} ---
-o que, pela Proposição~4.1 da Aula~09, significa exigir um corte \emph{alto} para
+o que, pela Proposição~4.1 da Aula~08, significa exigir um corte \emph{alto} para
 declarar \emph{spam}.
 \end{atencao}
 
@@ -109,13 +108,12 @@ esparsos} (Apêndice~A.3 do [AME]), que armazenam apenas as posições ocupadas.
 por isso que o problema é tratável num laptop.
 \end{ideia}
 
-\begin{atencao}[Eis a Aula~05 em ação]
+\begin{atencao}
 Texto é o exemplo canônico de \textbf{alta dimensão $+$ esparsidade}: milhares de
 palavras, mas a maioria irrelevante para a classe. Por isso métodos que
 \emph{selecionam variáveis} (Lasso, Bayes ingênuo) vão bem, e o KNN vai mal --- ele
 não seleciona, e a distância euclidiana entre duas mensagens é dominada pelas
-milhares de palavras que nenhuma das duas contém. É \emph{literalmente} a pergunta
-da Amazon que abriu a Aula~05, agora com os dados na mão.
+milhares de palavras que nenhuma das duas contém.
 \end{atencao}
 
 \subsection{TF--IDF}
@@ -157,9 +155,9 @@ sinal suficiente para separar as classes, antes de ajustar qualquer modelo.
 Quais métodos usar? Os que prosperam em alta dimensão esparsa:
 \begin{description}[leftmargin=2.8cm,style=nextline]
   \item[Bayes ingênuo (multinomial)] o ``cavalo de batalha'' do texto. A suposição
-        de independência condicional (Aula~08) é grosseira para palavras --- ``prize''
+        de independência condicional (Aula~07) é grosseira para palavras --- ``prize''
         e ``win'' claramente andam juntas --- mas funciona surpreendentemente bem e é
-        rápida. A versão \emph{multinomial} modela contagens. (Lembre da Aula~08:
+        rápida. A versão \emph{multinomial} modela contagens. (Lembre da Aula~07:
         trabalhe em escala logarítmica para evitar \emph{underflow}.)
   \item[Logística penalizada (Lasso/Ridge)] discriminativa, robusta, e o Lasso faz
         \emph{seleção de palavras} --- gerando um modelo interpretável (quais
@@ -176,7 +174,7 @@ probabilidade --- e, para classificar, basta acertar o lado do corte.
 \end{ideia}
 
 \begin{atencao}
-Mas atenção ao que a Aula~09 mediu: o Bayes ingênuo com covariáveis correlacionadas
+Mas atenção ao que a Aula~08 mediu: o Bayes ingênuo com covariáveis correlacionadas
 --- e palavras \emph{são} correlacionadas --- produz probabilidades muito
 descalibradas, mesmo classificando bem. Se você for ajustar o corte por custos
 (como o problema de \emph{spam} pede), estará mexendo justamente nos números em que
@@ -187,7 +185,7 @@ não se pode confiar. Nesse caso, ou use a logística, ou calibre o Bayes ingên
 %==============================================================================
 \section{Avaliação}
 %==============================================================================
-Como o problema é desbalanceado (Aula~09):
+Como o problema é desbalanceado (Aula~08):
 \begin{itemize}[leftmargin=1.4cm,nosep]
   \item reporte a \textbf{matriz de confusão}, \textbf{precisão}, \textbf{\emph{recall}}
         e \textbf{$F_1$} --- não só a acurácia;
@@ -232,7 +230,7 @@ decisões diferentes.
 %==============================================================================
 \section{O \emph{pipeline} completo (síntese do curso)}
 %==============================================================================
-Tudo se encaixa num único \emph{pipeline} (Aula~07): vetorização $\to$ classificador,
+Tudo se encaixa num único \emph{pipeline} (Aula~06): vetorização $\to$ classificador,
 com hiperparâmetros escolhidos por validação cruzada (Aula~03) \emph{sem vazamento}
 --- e o vetorizador deve aprender o vocabulário \textbf{só no treino}.
 
@@ -267,7 +265,7 @@ print(classification_report(y_te, y_hat))        # precisao, recall, F1
 \begin{atencao}[por que o vetorizador \emph{tem} que estar no pipeline]
 Se você vetorizar tudo antes de separar treino e teste, o vocabulário --- e os
 valores de IDF --- serão calculados usando as mensagens de teste. É vazamento da
-categoria \textbf{grave} da Aula~07: uma etapa que \emph{escolhe} quais colunas
+categoria \textbf{grave} da Aula~06: uma etapa que \emph{escolhe} quais colunas
 existem, olhando dados que deveriam ser novos. Dentro do \emph{pipeline}, cada
 dobra reconstrói o vocabulário do zero, e palavras que só aparecem no teste são
 simplesmente ignoradas --- que é exatamente o que aconteceria em produção.
@@ -298,17 +296,16 @@ e a classificação na base \texttt{spam.csv}.
   \item \textbf{TF--IDF} reescala pela raridade, descontando automaticamente as
         palavras comuns demais.
   \item Alta dimensão $+$ esparsidade $\Rightarrow$ Bayes ingênuo e logística
-        penalizada; KNN vai mal, pelo motivo da Aula~05.
+        penalizada; KNN vai mal.
   \item Avalie com precisão/\emph{recall}/$F_1$ e ajuste o corte pelos custos
-        (Aula~09); cuidado com a calibração do Bayes ingênuo.
-  \item Tudo num \emph{pipeline} (Aula~07): o vetorizador aprende o vocabulário
+        (Aula~08); cuidado com a calibração do Bayes ingênuo.
+  \item Tudo num \emph{pipeline} (Aula~06): o vetorizador aprende o vocabulário
         \emph{só} no treino.
 \end{itemize}
 
 \noindent
 E é assim que o curso fecha. Este problema não exigiu nenhuma ideia que você já não
-tivesse: a representação veio da Aula~07, a escolha do método veio da teoria da
-Aula~05, o classificador veio da Aula~08, a avaliação veio da Aula~09 e a montagem
+tivesse: a representação veio da Aula~06, o classificador veio da Aula~07, a avaliação veio da Aula~08 e a montagem
 sem vazamento veio da Aula~03. O arcabouço da Aula~01 --- risco, viés--variância,
 seleção de modelos --- continua sendo o mesmo, quer as covariáveis sejam a
 temperatura crítica de um supercondutor ou as palavras de um SMS.

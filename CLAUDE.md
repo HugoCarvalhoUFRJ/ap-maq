@@ -58,12 +58,11 @@ notebooks e figuras. A migração do `d` terminou em 12/08/2026 e são 629 troca
 
 Três papéis do `d` **sobreviveram de propósito**, e nenhum deles é dimensão:
 
-- **distância** `d(\X_i,\x)` na aula 04 e `d^2(\x_i,\x_j)` na E1. A migração até
-  ajudou aqui: antes `d` era dimensão *e* distância na mesma página da aula 05. (A
+- **distância** `d(\X_i,\x)` na aula 04 e `d^2(\x_i,\x_j)` na E1. (A
   versão ao quadrado saiu da 04 em 24/08/2026, junto com a tabela de núcleos.);
 - **índice**: `d_j` é valor singular na E2, `d_1` é documento na E3, `d^k_{\x}` é a
   k-ésima distância na 04;
-- **diferencial** `\,d\x`, na aula 08.
+- **diferencial** `\,d\x`, na aula 07.
 
 Nas **notas da aula 02** vale, além disso, uma convenção de forma que as outras
 aulas não seguem:
@@ -77,18 +76,17 @@ O motivo do arranjo não era estética: a macro `\X` é `\bm{X}`, e a matriz de
 delineamento também era escrita `\bm{X}` — vetor e matriz saíam com o mesmo glifo,
 lado a lado na mesma equação da §1.1.
 
-**Ela não foi estendida às outras aulas, e não deve ser.** Nas aulas 04, 05 e 08 a
+**Ela não foi estendida às outras aulas, e não deve ser.** Nas aulas 04 e 07 a
 maiúscula distingue **vetor aleatório de realização** — `\E[(\rhat(\X)-r(\X))^2]`
-contra `d(\X_i,\x)` —, e "maiúscula só para matriz" apagaria essa distinção, que é
-o que sustenta a teoria da aula 05. A macro `\X` do estilo existe para isso, e é
-usada em 19 arquivos.
+contra `d(\X_i,\x)` —, e "maiúscula só para matriz" apagaria essa distinção. A macro
+`\X` do estilo existe para isso, e é usada em 25 arquivos.
 
 **A indicadora é `\mathbf{1}`, não `\mathbb{1}`.** A fonte blackboard-bold da AMS
 (`msbm10`) só tem as maiúsculas A–Z: o dígito `1` não existe nela, e o slot
 correspondente guarda o `\nVdash`. Escrever `\mathbb{1}` compila **sem aviso** e
 imprime **⊮**, que não denota indicadora nenhuma. A macro `\1` do estilo carregava
 esse defeito e foi corrigida em 24/08/2026; a troca atingiu 11 arquivos das aulas
-02, 04, 08, 09, 10 e 11.
+02, 04, 07, 08, 09 e 10.
 
 Duas alternativas foram descartadas por colisão: `\mathbb{I}` é a matriz identidade
 na aula 02, e `I(\cdot)` --- que é justamente o que **AME e ISLP usam** --- colidiria
@@ -102,7 +100,7 @@ tanto para matriz (`\mathbb{X}`) quanto para conjunto ou operador (`\R`, `\E`).
 
 **No código dos notebooks, a dimensão continua sendo `d`.** Ali o nome `p` já é
 probabilidade — o que `predict_proba` devolve, o argumento `p=` do `rng.choice`, o
-`gini(p)` da aula 11 —, em 14 dos 26 notebooks que têm uma variável de dimensão.
+`gini(p)` da aula 10 —, em 14 dos 23 notebooks que têm uma variável de dimensão.
 Renomear exigiria mexer em 116 usos de `p` para abrir espaço, e trocaria uma
 colisão por outra. Decisão do Gabriel em 12/08/2026: o markdown diz `p`, a célula
 diz `d`. As exceções são a `Aula prática 02` e a `Aula prática 04`, onde não há
@@ -170,10 +168,8 @@ O corte não foi só nas notas, porque o assunto estava espalhado:
 | `recursos/figuras/` | `04-nucleos.pdf` e `04-fronteira.pdf`, apagadas --- a aula 04 tem **uma** figura, `04-knn-k` |
 
 E em sete lugares fora da aula 04, que citavam o método de passagem ou dependiam
-dele: a `Lista teorica 05` (o item (d) do Ex. 3 mandava literalmente "ligue este
-exercício ao Exercício 3 da Lista Teórica 04"), a `Lista prática 05 - gabarito`, as
-duas versões das notas da 05, a `Aula prática 05`, as notas da E2 e a
-`Aula prática 03`. O `00 Planejamento.tex` teve a ementa da aula 04 reescrita.
+dele: as notas da E2 e a `Aula prática 03` --- os outros quatro estavam na antiga
+aula 05 de aspectos teóricos, que saiu do curso em 31/08/2026. O `00 Planejamento.tex` teve a ementa da aula 04 reescrita.
 
 **O deck nunca teve o assunto** --- ele vai de KNN direto para a maldição da
 dimensionalidade ---, então lá não havia o que remover. Cuidado com o inverso: um
@@ -213,6 +209,32 @@ na semente 2026:
 outras listas e os `.qmd` dos slides. Se for mexer nos dois `.ipynb`, faça no mesmo
 passo e confira que só divergem nas lacunas.
 
+## A aula 05 saiu do curso, e as seguintes desceram uma posição
+
+Decisão do Gabriel em 31/08/2026. A antiga aula 05 --- *Métodos Não Paramétricos:
+Aspectos Teóricos* --- trazia taxas de convergência, maldição da dimensionalidade,
+esparsidade e redundância. São conceitos que ele não quer abordar, e a aula saiu
+**inteira**: as duas versões das notas, o deck, a `Aula prática 05`, a
+`Lista teorica 05`, a `Lista prática 05`, os dois gabaritos, as figuras `05-taxas` e
+`05-vizinho-longe` e as duas funções que as geravam.
+
+**As aulas 06 a 11 viraram 05 a 10.** O curso tem hoje **10 aulas oficiais** mais as
+três extras; as pastas vão de `00-planejamento` a `10-knn-arvores-classificacao`, e
+E1--E3 não mudaram. `Aula 05` significa agora **Árvores de Regressão e Ensembles**.
+
+O caro não foi apagar: foram as **62 referências à aula 05 vindas de outras 12
+aulas**. Delas, 33 eram ponteiro puro e saíram sozinhas; 27 tinham a aula 05 como
+**sujeito da frase** (``**A seguir.** A Aula 05 explica com teoria...'', ``## 6. E o
+KNN? A Aula 05, confirmada'', ``\begin{atencao}[Eis a Aula~05 em ação]''), e nessas
+**apagou-se o mínimo, sem escrever nada novo**; e 2 mandavam à `Lista prática 05` a
+partir da lista prática da SVM.
+
+**As menções ao conceito ficaram, de propósito.** ``Maldição da dimensionalidade'',
+``esparsidade'' e ``redundância'' continuam nomeadas nas aulas 04, 07 e 10 e nas E2 e
+E3 --- saiu o ponteiro, não a afirmação. Hoje são vocabulário sem aula dedicada, como
+a *descida dupla* na aula 01. **Não as remova** achando que são resíduo, e **não
+reintroduza a aula**.
+
 ## Figuras (`recursos/figuras/`)
 
 As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
@@ -220,7 +242,7 @@ copiada dos livros. Uma função por figura, registrada com `@figura("nome", "au
 
 ```bash
 python3 recursos/figuras/gerar-figuras.py         # todas (~5 min)
-python3 recursos/figuras/gerar-figuras.py 03 07   # só as aulas 03 e 07
+python3 recursos/figuras/gerar-figuras.py 03 06   # só as aulas 03 e 06
 ```
 
 Três coisas a respeitar:
@@ -272,7 +294,7 @@ Três armadilhas ao editar esses HTMLs:
 
 ## Notebooks
 
-**Há um laboratório guiado por aula**, `aulas/NN-*/Aula prática NN.ipynb`, das 14
+**Há um laboratório guiado por aula**, `aulas/NN-*/Aula prática NN.ipynb`, das 13
 aulas. Eles seguem a conduta pedagógica dos labs do **[ISLP]** mas *não* usam o
 pacote `ISLP` (que não está instalado e não é dependência do curso). Convenções, a
 respeitar em qualquer notebook novo:
@@ -293,7 +315,7 @@ respeitar em qualquer notebook novo:
   meta-comentário do tipo "seguimos a conduta do [ISLP]" foi explicitamente
   removido pelo Gabriel da versão que ele leu.
 
-**Os blocos `> **Sua vez.**` acabaram nas 14 aulas práticas** (12/08/2026). Eles
+**Os blocos `> **Sua vez.**` acabaram nas aulas práticas** (12/08/2026). Eles
 eram um enunciado seguido de célula de código vazia, e faziam sentido quando a aula
 prática era o único material de exercício. Com uma lista prática por aula, o
 laboratório guiado **mostra** em vez de deixar em aberto: cada bloco virou markdown
@@ -329,7 +351,7 @@ Três colisões saíram dessa varredura e estão corrigidas:
   onde o medido é $0{,}1029$: a matriz perde posto numérico e o `lstsq` devolve a
   solução de norma mínima. Só a analogia com o polinômio precisou de ressalva; o RSS
   zero da árvore com uma observação por folha é exato também no computador;
-- a caixa da aula 07 dividia os métodos em duas categorias e são **três**: LDA, QDA
+- a caixa da aula 06 dividia os métodos em duas categorias e são **três**: LDA, QDA
   e Bayes ingênuo também são invariantes por reescala, e justamente *porque* estimam
   a covariância.
 
@@ -364,15 +386,16 @@ janela de $n$ (05), o corte por custo não cortar nada em modelo descalibrado (1
 silhueta e a compressão discordarem por um fator de dez (E1), e a AP descer enquanto
 a AUC sobe (E3).
 
-**Conferido e correto — não reabra:** o `C` da aula 10 (as notas já trazem a
+**Conferido e correto — não reabra:** o `C` da aula 09 (as notas já trazem a
 convenção de orçamento do [ISLP] e a inversão do scikit-learn em caixas vizinhas), o
 PCA e o KNN na E2 (as notas já dizem que o KNN se adapta sozinho à dimensão
-intrínseca) e o Gini contra o erro na 11. Nesses o errado era só o enunciado antigo
+intrínseca) e o Gini contra o erro na 10. Nesses o errado era só o enunciado antigo
 do bloco. (O viés de fronteira da 04 também estava conferido, mas o assunto saiu do
 curso em 24/08/2026 --- ver a seção da aula 04, adiante.)
 
-As **listas práticas e seus gabaritos** têm outros **44 blocos** `Sua vez`, em 26
-notebooks (eram 46 em 28 até a `Lista prática 04` ser reescrita, em 24/08/2026).
+As **listas práticas e seus gabaritos** têm outros **40 blocos** `Sua vez`, em 24
+notebooks (eram 46 em 28 até a `Lista prática 04` ser reescrita, em 24/08/2026, e
+44 em 26 até a aula 05 sair do curso, em 31/08/2026).
 Ali eles talvez façam sentido, já que a lista é o material de exercício — não os
 converta sem perguntar ao Gabriel.
 
@@ -407,7 +430,7 @@ aula 02 o usa na §5.
 
 E pegou uma segunda, em 12/08/2026: o **`QuadraticDiscriminantAnalysis` levanta
 `LinAlgError`** em vez de avisar quando a covariância de uma classe fica mal
-condicionada, e a `Aula prática 08` morria da §8 em diante — as 30 medidas do
+condicionada, e a `Aula prática 07` morria da §8 em diante — as 30 medidas do
 `breast_cancer` são colineares o bastante. A correção é `QDA(reg_param=1e-4)`, um
 ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empatado
 na frente para terceiro lugar, atrás do LDA. O texto foi reescrito sobre o medido.
@@ -424,7 +447,7 @@ canônica do `nbformat` (`cell_type, execution_count, id, metadata, outputs,
 source`). Os notebooks do repositório estão em outra ordem (`cell_type, id,
 metadata, source, execution_count, outputs`), então uma abertura sem edição
 nenhuma já produz um diff do arquivo inteiro. Antes de commitar, limpe **e
-restaure a ordem** --- os catorze laboratórios guiados estão uniformes desde
+restaure a ordem** --- os treze laboratórios guiados estão uniformes desde
 24/08/2026, e vale manter:
 
 ```python
@@ -457,7 +480,7 @@ mudou.
 O Jupyter carimba também `metadata.language_info.version` com a versão do kernel
 que rodou. Como os notebooks são commitados **sem saída**, esse campo não
 registra nada de real --- é só ruído de diff. O valor da casa é o Python desta
-máquina, **3.12.7**, em 42 dos 47 notebooks. As cinco exceções são exatamente os
+máquina, **3.12.7**, em 39 dos 44 notebooks. As cinco exceções são exatamente os
 cinco herdados de demonstração (adiante), e ficam como estão: três em 3.11.7, um
 em 3.9.15, e o `Exemplo - PCA`, que é do Colab e cujo `language_info` só traz o
 nome da linguagem --- inventar versão ali seria fabricar metadado.
@@ -497,8 +520,8 @@ Quatro armadilhas, todas já pagas uma vez:
 3. **As listas práticas usam semente diferente da aula prática correspondente**,
    para o aluno não copiar o número do laboratório. Consequência: todo número do
    gabarito precisa ser **medido**, não previsto.
-   **Uma exceção, deliberada: o Ex. 3 da `Lista prática 06`**, que usa a semente
-   `12` --- a mesma da figura `06-numero-arvores` e da `Aula prática 06` --- porque o
+   **Uma exceção, deliberada: o Ex. 3 da `Lista prática 05`**, que usa a semente
+   `12` --- a mesma da figura `05-numero-arvores` e da `Aula prática 05` --- porque o
    exercício existe justamente para o aluno reproduzir o número que a legenda da
    nota afirma, e o gabarito diz isso com todas as letras. Os dados saem
    **byte-idênticos** (conferido), e o preço aceito é que a floresta em $B=1$
@@ -560,12 +583,12 @@ para `raw.githubusercontent`, que amarrava o material ao nome da branch.
 
 Quem **carrega** o quê, medido em 12/08/2026 (a contagem anterior era por menção
 ao nome do arquivo, e somava dois notebooks que só o citam no texto — a `E2` e a
-`Aula prática 11`):
+`Aula prática 10`):
 
 | arquivo | tamanho | notebooks |
 | --- | --- | --- |
-| `superconductivity.csv` | 23 MB | 10 — aulas 01 a 06, incluindo as listas 02 e 06 |
-| `bank_train_redux.csv` | 96 MB | 4 — aulas 07 e 09, incluindo a lista 09 |
+| `superconductivity.csv` | 23 MB | 9 — aulas 01 a 05, incluindo as listas 02 e 05 |
+| `bank_train_redux.csv` | 96 MB | 5 — aulas 06, 08 e 10, incluindo a lista 08 |
 | `spam.csv` | 0,5 MB | 3 — aula E3, incluindo a lista |
 
 `bank_train_redux.csv` é um excerto reduzido da base do Kaggle, por limite de
@@ -601,13 +624,13 @@ A regra que separa vazamento **grave** de **leve** não é "quanto a etapa apren
 dos dados", é **se ela olha o $Y$**:
 
 - **grave** — selecionar variáveis, hiperparâmetros ou o modelo olhando a resposta.
-  Mede-se: com $y$ de ruído puro, isso fabrica $R^2 = +0{,}40$ (aula 07 §3);
+  Mede-se: com $y$ de ruído puro, isso fabrica $R^2 = +0{,}40$ (aula 06 §3);
 - **grave** — a mesma unidade nos dois lados da divisão, ou informação do futuro.
-  Nenhum `Pipeline` protege disso; a ferramenta é `GroupKFold` (aula 07 §5);
+  Nenhum `Pipeline` protege disso; a ferramenta é `GroupKFold` (aula 06 §5);
 - **leve** — padronização, imputação pela média e **PCA**. Nenhuma das três vê o
   $Y$, e portanto nenhuma consegue fabricar sinal a partir de ruído.
 
-O PCA estava classificado como grave nas notas E2 e 07. A `Aula prática E2` (§7)
+O PCA estava classificado como grave nas notas E2 e 06. A `Aula prática E2` (§7)
 mediu quatro configurações de $(n,d,k)$ com $y$ de ruído puro e **em nenhuma o
 $R^2$ foi inflado** — ele piorou, porque componentes calculados sobre o conjunto
 todo não são os ótimos de nenhuma dobra de treino. As duas notas foram corrigidas
@@ -629,7 +652,7 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
    `id` das duas headings atualizados junto (`gabriel-sanfins` e
    `gabrielsanfinsid.uff.br` — o Quarto derruba o `@`).
 3. Em 10/08/2026, `[ITSL]` virou `[ISLP]` em **14 citações de seis decks** (01, 02,
-   03, 06, 08 e o EXTRA de k-médias). É o mesmo livro.
+   03, 05, 07 e o EXTRA de k-médias). É o mesmo livro.
 4. Em 10/08/2026, três correções no deck da aula 02: saiu um slide vazio entre
    "Além da linearidade" e a capa de "Regularização"; o argmin do MQO passou a ser
    repetido no segundo membro, que igualava um argmin a uma norma; e o limiar do
@@ -700,7 +723,7 @@ original.** O deck apresentava $\sum_i \varepsilon_i \le C$ (o orçamento do
 $\frac12\|\beta\|^2 + C\sum_i \varepsilon_i$ — que é a do `scikit-learn`, em que
 o `C` é o peso da penalidade e portanto tudo se inverte. Mesma letra, papéis
 opostos, sem aviso: quem lesse os slides concluiria que $\uparrow C$ dá margem
-larga e mais vetores de suporte, e a §8 da `Aula prática 10` mede o contrário
+larga e mais vetores de suporte, e a §8 da `Aula prática 09` mede o contrário
 ($C=0{,}01 \to 92$ vetores; $C=1000 \to 24$). As notas já traziam a inversão numa
 caixa `atencao`; agora o slide também.
 

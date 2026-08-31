@@ -72,11 +72,11 @@ segue o [AME] e os exemplos/laboratórios seguem o [ISLP].
 %==============================================================================
 O curso está organizado em três blocos:
 \begin{enumerate}[label=\textbf{\Roman*.}]
-  \item \textbf{Fundamentos e Regressão} (Aulas 01--07): formalização do problema
+  \item \textbf{Fundamentos e Regressão} (Aulas 01--06): formalização do problema
         de aprendizado, regressão linear e regularização, seleção de modelos por
         validação cruzada, métodos não paramétricos (KNN, árvores, \emph{ensembles})
         e boas práticas de implementação (\emph{pipelines}).
-  \item \textbf{Classificação} (Aulas 08--11): formulação do problema de
+  \item \textbf{Classificação} (Aulas 07--10): formulação do problema de
         classificação, classificadores gaussianos e logístico, métricas, SVM, KNN
         e árvores de classificação.
   \item \textbf{Aprendizado não supervisionado e aplicações} (Aulas Extras):
@@ -84,8 +84,8 @@ O curso está organizado em três blocos:
         aplicação de processamento de linguagem natural (NLP) à classificação.
 \end{enumerate}
 
-\noindent Ao todo: \textbf{11 aulas oficiais} $+$ \textbf{3 aulas extras}
-$=$ \textbf{14 conjuntos de notas de aula}, mais este documento de planejamento.
+\noindent Ao todo: \textbf{10 aulas oficiais} $+$ \textbf{3 aulas extras}
+$=$ \textbf{13 conjuntos de notas de aula}, mais este documento de planejamento.
 
 %==============================================================================
 \section{Mapa das aulas}
@@ -126,39 +126,34 @@ Séries ortogonais e \emph{splines} (panorama); $k$ vizinhos mais próximos;
 suavizadores lineares &
 AME §4.1--4.3; ISLP §3.5, 7.1--7.5 \\
 
-05 & Métodos Não Paramétricos: Aspectos Teóricos &
-Maldição da dimensionalidade; taxas de convergência; esparsidade e redundância;
-um pouco de teoria do KNN e séries ortogonais &
-AME §4.13, cap.~5 \\
-
-06 & Árvores de Regressão e \emph{Ensembles} &
+05 & Árvores de Regressão e \emph{Ensembles} &
 Árvores de regressão (construção e poda); \emph{bagging}; florestas aleatórias;
 importância de atributos; \emph{boosting} &
 AME §4.8--4.10; ISLP cap.~8 \\
 
-07 & Pré-processamento e \emph{Pipelines} &
+06 & Pré-processamento e \emph{Pipelines} &
 Padronização (\texttt{StandardScaler}); vazamento de dados (\emph{data leakage});
 construção de \emph{pipelines}; integração com validação cruzada &
 ISLP labs cap.~5--6; AME §2.1.2 \\[0.6em]
 
 \multicolumn{4}{@{}l}{\textbf{Bloco II --- Classificação}}\\[0.3em]
 
-08 & Classificação e Classificadores Gaussianos &
+07 & Classificação e Classificadores Gaussianos &
 Formulação e função de risco 0--1; classificadores \emph{plug-in}; regressão
 logística; Bayes ingênuo; LDA e QDA &
 AME cap.~7, §8.1; ISLP cap.~4 \\
 
-09 & Métricas para Classificação &
+08 & Métricas para Classificação &
 Matriz de confusão; acurácia, precisão, \emph{recall}, $F_1$; curva ROC e AUC;
 perdas assimétricas; dados desbalanceados; calibração &
 AME §7.4, cap.~9; ISLP §4.4--4.5 \\
 
-10 & Máquinas de Vetores de Suporte (SVM) &
+09 & Máquinas de Vetores de Suporte (SVM) &
 Classificador de margem máxima; \emph{soft margin}; o truque do \emph{kernel};
 SVM com kernels; relação com regressão logística; multiclasse &
 AME §8.2, §4.6; ISLP cap.~9 \\
 
-11 & KNN e Árvores de Classificação &
+10 & KNN e Árvores de Classificação &
 KNN para classificação; árvores de classificação (índice de Gini, entropia);
 \emph{ensembles} para classificação; comparação entre classificadores &
 AME §8.3--8.6; ISLP §4.7.6, cap.~8 \\[0.6em]
@@ -209,7 +204,7 @@ em \texttt{aulas/}, e os materiais transversais em \texttt{recursos/}:
                 \texttt{Lista prática NN - gabarito.ipynb}.
         \end{itemize}
   \item \textbf{Exemplos} em Python, na pasta da aula correspondente: comparação
-        de classificadores paramétricos (aula 08), SVM (10), KNN e árvores (11),
+        de classificadores paramétricos (aula 07), SVM (10), KNN e árvores (11),
         $k$-médias (E1) e PCA (E2).
   \item Duas \textbf{avaliações presenciais} (AP1 e AP2) com gabarito, em
         \texttt{recursos/avaliacoes}.

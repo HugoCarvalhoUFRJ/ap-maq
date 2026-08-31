@@ -1567,7 +1567,7 @@ Dobra 4: treino = 240 obs, teste temporário = 60 obs
 <li class="fragment"><code>x_tr[train_index]</code> e <code>x_tr[test_index]</code>: os índices da moldura anterior viram os dados da rodada</li>
 <li class="fragment"><code>fit_poly_models</code> ajusta os <strong>sete</strong> graus <em>dentro</em> da dobra — são <span class="math inline">\(5 \times 7 = 35\)</span> ajustes, e nenhum deles vê o lote em que será avaliado</li>
 <li class="fragment">Ao final <code>mse_deg</code> guarda uma lista de 5 EQMs por grau (o <code>if</code>/<code>else</code> é um <code>setdefault</code>; um <code>defaultdict(list)</code> faria o mesmo)</li>
-<li class="fragment"><strong>Regra de ouro:</strong> tudo o que aprende dos dados fica <em>dentro</em> do laço. Padronizar ou selecionar variáveis antes dele é vazamento (Aula 07)</li>
+<li class="fragment"><strong>Regra de ouro:</strong> tudo o que aprende dos dados fica <em>dentro</em> do laço. Padronizar ou selecionar variáveis antes dele é vazamento (Aula 06)</li>
 </ul>
 </section>
 <section id="implementando-a-média-e-a-escolha" class="slide level2 scrollable">

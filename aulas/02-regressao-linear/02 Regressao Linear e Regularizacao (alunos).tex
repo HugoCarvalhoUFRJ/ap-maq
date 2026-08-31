@@ -516,7 +516,7 @@ aplicar Ridge/Lasso, caso contrário variáveis em unidades grandes são penaliz
 de menos. Repare que o MQO \emph{não} tem esse problema: trocar metros por
 centímetros só divide o coeficiente por 100 e a predição fica igual. Com penalização
 isso deixa de valer, porque o termo $\lambda\sum\beta_j^2$ enxerga a mudança. Isso
-conecta diretamente com a Aula~07 (\emph{pipelines} e \texttt{StandardScaler}).
+conecta diretamente com a Aula~06 (\emph{pipelines} e \texttt{StandardScaler}).
 \end{atencao}
 
 %==============================================================================
@@ -554,7 +554,7 @@ quais} variáveis importam, e não só predizer, olhe o caminho inteiro e compar
 %==============================================================================
 Em \texttt{scikit-learn}, as três variantes seguem a mesma interface; o
 \texttt{alpha} é o nosso $\lambda$. Note a padronização \emph{dentro} do
-\emph{pipeline} (Aula~07) para evitar vazamento.
+\emph{pipeline} (Aula~06) para evitar vazamento.
 \begin{lstlisting}
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LassoCV
 from sklearn.preprocessing import StandardScaler

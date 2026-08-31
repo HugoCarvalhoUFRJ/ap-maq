@@ -23,9 +23,9 @@ Ao final desta aula o aluno deve ser capaz de:
 
 \begin{emsala}
 Aula de \textbf{síntese}: um problema real (filtrar \emph{spam} de SMS) que costura
-quase todas as aulas --- vetorização de texto, alta dimensão e esparsidade
-(Aula~05), Bayes ingênuo (Aula~08), métricas em dados desbalanceados (Aula~09) e
-\emph{pipelines} (Aula~07). Pergunta de abertura: \emph{``um modelo só entende
+quase todas as aulas --- vetorização de texto, alta dimensão e esparsidade,
+Bayes ingênuo (Aula~07), métricas em dados desbalanceados (Aula~08) e
+\emph{pipelines} (Aula~06). Pergunta de abertura: \emph{``um modelo só entende
 números. Como transformar uma mensagem de texto em algo que ele consiga
 classificar?''}
 \end{emsala}
@@ -35,12 +35,12 @@ classificar?''}
 %==============================================================================
 Usaremos a base \texttt{spam.csv} (SMS Spam Collection): $\sim$5\,574 mensagens de
 SMS rotuladas como \emph{ham} (legítima, $Y=0$) ou \emph{spam} ($Y=1$). É um problema
-de \textbf{classificação binária} (Aula~08) cujas covariáveis são \emph{texto bruto}
+de \textbf{classificação binária} (Aula~07) cujas covariáveis são \emph{texto bruto}
 --- e o desafio central é a \emph{representação}: máquinas só processam números.
 
 \begin{atencao}
 A base é \textbf{desbalanceada} (muito mais \emph{ham} que \emph{spam}). Como vimos
-na Aula~09, a acurácia engana aqui --- precisaremos de precisão, \emph{recall} e
+na Aula~08, a acurácia engana aqui --- precisaremos de precisão, \emph{recall} e
 $F_1$. E os custos são assimétricos: bloquear uma mensagem legítima (falso positivo)
 costuma ser pior que deixar passar um \emph{spam}.
 \end{atencao}
@@ -75,12 +75,11 @@ então $\bm{X}$ é \textbf{esparsa} (quase toda zero). Guarde-a em formato espar
 (Apêndice A.3 do [AME]) para economizar memória.
 \end{ideia}
 
-\begin{atencao}[Eis a Aula~05 em ação]
+\begin{atencao}
 Texto é o exemplo canônico de \textbf{alta dimensão $+$ esparsidade}: milhares de
 palavras, mas a maioria irrelevante para a classe. Por isso métodos que
 \emph{selecionam variáveis} (Lasso, Bayes ingênuo) vão bem, e o KNN vai mal (não
-seleciona; a distância é dominada por palavras irrelevantes) --- exatamente o que a
-teoria da Aula~05 previu.
+seleciona; a distância é dominada por palavras irrelevantes).
 \end{atencao}
 
 \subsection{TF--IDF}
@@ -109,9 +108,9 @@ já sugere que o \emph{bag-of-words} carrega sinal suficiente para separar as cl
 Quais métodos usar? Os que prosperam em alta dimensão esparsa:
 \begin{description}[leftmargin=2.8cm,style=nextline]
   \item[Bayes ingênuo (multinomial)] o ``cavalo de batalha'' do texto. A suposição
-        de independência condicional (Aula~08) é grosseira para palavras, mas
+        de independência condicional (Aula~07) é grosseira para palavras, mas
         funciona surpreendentemente bem e é rápida. A versão \emph{multinomial}
-        modela contagens de palavras. (Lembre da Aula~08: trabalhe em escala
+        modela contagens de palavras. (Lembre da Aula~07: trabalhe em escala
         logarítmica para evitar \emph{underflow}.)
   \item[Logística penalizada (Lasso/Ridge)] discriminativa, robusta, e o Lasso faz
         \emph{seleção de palavras} --- gerando um modelo interpretável (quais
@@ -124,20 +123,20 @@ Quais métodos usar? Os que prosperam em alta dimensão esparsa:
 Por que Bayes ingênuo combina tão bem com texto? Porque o modelo multinomial sobre
 contagens de palavras é natural, há pouquíssimos parâmetros por palavra (baixa
 variância) e a independência condicional, embora falsa, raramente troca a
-\emph{classe} de maior probabilidade --- e, para classificar (Aula~09), basta acertar
+\emph{classe} de maior probabilidade --- e, para classificar (Aula~08), basta acertar
 o lado do corte, não a probabilidade exata.
 \end{ideia}
 
 %==============================================================================
 \section{Avaliação}
 %==============================================================================
-Como o problema é desbalanceado (Aula~09):
+Como o problema é desbalanceado (Aula~08):
 \begin{itemize}[leftmargin=1.4cm,nosep]
   \item reporte a \textbf{matriz de confusão}, \textbf{precisão}, \textbf{\emph{recall}}
         e \textbf{$F_1$} --- não só a acurácia;
   \item para \emph{spam}, a \emph{precisão} sobre a classe ``spam'' é crítica
         (não classificar \emph{ham} como \emph{spam});
-  \item ajuste o \textbf{corte} de decisão conforme os custos (Aula~09): se um falso
+  \item ajuste o \textbf{corte} de decisão conforme os custos (Aula~08): se um falso
         positivo é muito caro, exija probabilidade alta para marcar como \emph{spam}.
 \end{itemize}
 
@@ -158,7 +157,7 @@ mesmos três números justificam três decisões diferentes.
 %==============================================================================
 \section{O \emph{pipeline} completo (síntese do curso)}
 %==============================================================================
-Tudo se encaixa num único \emph{pipeline} (Aula~07): vetorização $\to$ classificador,
+Tudo se encaixa num único \emph{pipeline} (Aula~06): vetorização $\to$ classificador,
 com hiperparâmetros escolhidos por validação cruzada (Aula~03) \emph{sem vazamento}
 --- e o vetorizador deve aprender o vocabulário \textbf{só no treino}.
 
@@ -200,10 +199,10 @@ O notebook \texttt{Aula prática E3} percorre a limpeza, a exploração
         limpeza (minúsculas, pontuação, \emph{stopwords}).
   \item A matriz documento--termo é \textbf{esparsa e de alta dimensão} ---
         terreno do \textbf{Bayes ingênuo} e da \textbf{logística penalizada}
-        (Aulas~05 e~08).
+        (Aula~07).
   \item Avalie com \textbf{precisão/\emph{recall}/$F_1$} e ajuste o \textbf{corte}
-        (dados desbalanceados, Aula~09).
-  \item Tudo num \textbf{\emph{pipeline}} com CV sem vazamento (Aulas~03 e~07).
+        (dados desbalanceados, Aula~08).
+  \item Tudo num \textbf{\emph{pipeline}} com CV sem vazamento (Aulas~03 e~06).
 \end{itemize}
 
 \begin{ideia}[O fio condutor do curso]

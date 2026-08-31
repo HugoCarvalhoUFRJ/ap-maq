@@ -1,0 +1,284 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{../../recursos/latex/estilo-notas}
+
+\begin{document}
+\cabecalhoaula{07}{Classificação e Classificadores Gaussianos}{AME cap.~7 e §8.1; ISLP cap.~4}
+
+%==============================================================================
+\section*{Objetivos da aula}
+%==============================================================================
+Ao final desta aula o aluno deve ser capaz de:
+\begin{itemize}[leftmargin=1.4cm]
+  \item formular o problema de classificação com a \emph{perda 0--1} e derivar o
+        \textbf{classificador de Bayes};
+  \item descrever a estratégia \emph{plug-in}: estimar $\Prob(Y=c\mid\x)$ e
+        classificar pela maior probabilidade;
+  \item ajustar uma \textbf{regressão logística} por máxima verossimilhança e
+        reconhecer sua versão penalizada/multiclasse;
+  \item descrever os \emph{modelos generativos} via Teorema de Bayes: \textbf{Bayes
+        ingênuo}, \textbf{LDA} e \textbf{QDA};
+  \item entender por que LDA tem fronteira \emph{linear} e QDA \emph{quadrática};
+  \item contrastar abordagens \emph{discriminativas} e \emph{generativas}.
+\end{itemize}
+
+\begin{emsala}
+Início do Bloco~II. A boa notícia: \emph{quase tudo} da Parte~I se transfere ---
+risco, viés--variância, validação cruzada. A mudança é que $Y$ agora é
+\emph{qualitativo} e a perda natural não é a quadrática, mas a 0--1. Pergunta de
+abertura: \emph{``qual é o melhor classificador possível, se eu conhecesse a
+distribuição dos dados?''}
+\end{emsala}
+
+%==============================================================================
+\section{O problema de classificação}
+%==============================================================================
+Agora $Y$ assume valores num conjunto finito de \textbf{classes} $\mathcal{C}$ (ex.:
+$\mathcal{C}=\{0,1\}$ no caso binário). Um \textbf{classificador} é uma função
+$g:\R^p\to\mathcal{C}$. A perda natural é a \textbf{perda 0--1},
+$L(y,g(\x))=\1{y\ne g(\x)}$, e o risco é a \emph{probabilidade de erro}:
+\begin{equation}\label{eq:risco01}
+  \risco(g) = \E\big[\1{Y\ne g(\X)}\big] = \Prob\big(Y\ne g(\X)\big).
+\end{equation}
+
+\begin{teorema}[Classificador de Bayes]\label{teo:bayes}
+Sob a perda 0--1, o classificador que minimiza \eqref{eq:risco01} é
+\[
+  g^*(\x) = \argmax_{c\in\mathcal{C}}\ \Prob(Y=c\mid \X=\x).
+\]
+No caso binário $\mathcal{C}=\{0,1\}$: $g^*(\x)=1 \iff \Prob(Y=1\mid\x)\ge \tfrac12$.
+\end{teorema}
+\begin{proof}
+(Caso binário, classes $c_1,c_2$.) Condicionando em $\X$,
+\[
+  \risco(g)=\Prob(Y\ne g(\X))
+  =\int \big[\1{g(\x)=c_2}\Prob(Y=c_1\mid\x)+\1{g(\x)=c_1}\Prob(Y=c_2\mid\x)\big]f(\x)\,d\x.
+\]
+Para \emph{cada} $\x$, o integrando é minimizado escolhendo $g(\x)=c_1$ quando
+$\Prob(Y=c_1\mid\x)\ge\Prob(Y=c_2\mid\x)$ e $g(\x)=c_2$ caso contrário --- isto é,
+a classe de maior probabilidade a posteriori. Como cada $\x$ é otimizado
+pontualmente, o classificador resultante minimiza o risco global.
+\end{proof}
+
+\begin{ideia}
+O classificador de Bayes $g^*$ é o ``oráculo'': nenhum classificador faz melhor. Seu
+risco $R^*$ é o análogo do \emph{erro irredutível} da regressão (Aula~01). Mas
+$g^*$ é \emph{desconhecido}, pois depende de $\Prob(Y=c\mid\x)$. Todo método de
+classificação é uma tentativa de \emph{aproximá-lo}.
+\end{ideia}
+
+\begin{observacao}[O que se transfere da Parte~I]
+A estimação do risco \eqref{eq:risco01} é feita por \emph{data splitting}/validação
+cruzada (Aula~03), agora medindo a \emph{proporção de erros} na validação. O balanço
+viés--variância também vale: $R(g)-R^*$ decompõe-se num termo tipo variância (classe
+$\mathcal{G}$ grande demais) e num termo tipo viés (classe pequena demais). E, como
+em regressão, compare \emph{poucos} modelos no teste --- faça o \emph{tuning} por CV
+dentro do treino (a probabilidade de escolher errado cresce com o número de modelos
+comparados, via Hoeffding $+$ união).
+\end{observacao}
+
+\begin{atencao}
+A acurácia (1 $-$ risco 0--1) pode \textbf{enganar} em dados desbalanceados: com 10
+doentes em 1000, o classificador trivial ``todos saudáveis'' acerta 99\% --- e é
+inútil. Precisaremos de outras métricas (matriz de confusão, sensibilidade,
+precisão) --- tema da Aula~08.
+\end{atencao}
+
+%==============================================================================
+\section{Classificadores \emph{plug-in}}
+%==============================================================================
+O Teorema~\ref{teo:bayes} sugere uma receita direta, dita \textbf{\emph{plug-in}}:
+\begin{enumerate}[leftmargin=1.6cm,nosep]
+  \item estime $\widehat\Prob(Y=c\mid\x)$ para cada classe $c\in\mathcal{C}$;
+  \item classifique $\ghat(\x)=\argmax_{c\in\mathcal{C}}\widehat\Prob(Y=c\mid\x)$.
+\end{enumerate}
+Os métodos diferem em \emph{como} estimam $\Prob(Y=c\mid\x)$. Há duas grandes
+famílias:
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[Discriminativos] modelam $\Prob(Y=c\mid\x)$ \emph{diretamente} (regressão
+        logística; ou regressão sobre indicadores).
+  \item[Generativos] modelam $f(\x\mid Y=c)$ e $\Prob(Y=c)$ e invertem com o
+        Teorema de Bayes (Bayes ingênuo, LDA, QDA).
+\end{description}
+
+\subsection{Via regressão sobre indicadores}
+Como $\Prob(Y=c\mid\x)=\E[\1{Y=c}\mid\x]$, podemos usar \emph{qualquer} método de
+regressão (Parte~I) sobre $Z=\1{Y=c}$. Simples, mas a regressão linear pode dar
+estimativas fora de $[0,1]$ (KNN e árvores, por construção, não). Daí o apelo de um
+modelo que respeite $[0,1]$: a logística.
+
+%==============================================================================
+\section{Regressão logística (discriminativo)}
+%==============================================================================
+No caso binário $\mathcal{C}=\{0,1\}$, a regressão logística modela
+\begin{equation}\label{eq:logit}
+  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+                          {1+e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+  = \sigma\big(\beta_0+\bbeta^\top\x\big),
+\end{equation}
+onde $\sigma(u)=e^u/(1+e^u)$ é a função logística. Equivalentemente, o
+\emph{log-odds} é linear: $\log\frac{\Prob(Y=1\mid\x)}{\Prob(Y=0\mid\x)}
+=\beta_0+\bbeta^\top\x$. Como em regressão, \emph{não} supomos que isso seja
+exatamente verdade --- esperamos que leve a um bom classificador.
+
+\subsection{Estimação por máxima verossimilhança}
+Dada uma amostra i.i.d., a verossimilhança condicional é
+\begin{equation}\label{eq:vero}
+  L(\bbeta) = \prod_{k=1}^n \pi(\x_k)^{Y_k}\big(1-\pi(\x_k)\big)^{1-Y_k},
+  \qquad \pi(\x_k)=\Prob(Y_k=1\mid\x_k,\bbeta).
+\end{equation}
+Maximiza-se o log da verossimilhança \eqref{eq:vero}. Ao contrário do MQO, não há
+solução fechada: usam-se métodos numéricos (Newton--Raphson / IRLS). Como na
+regressão linear, pode-se \textbf{penalizar} ($\ell_1$/$\ell_2$) para reduzir
+variância (\texttt{glmnet}, \texttt{family="binomial"}).
+
+\subsection{Mais de duas classes}
+Para $\abs{\mathcal{C}}>2$: ou ajusta-se uma logística \emph{um-contra-todos} por
+classe (e normaliza-se), ou usa-se a \textbf{regressão logística multinomial}
+(\emph{softmax}), que garante que as probabilidades estimadas somem $1$.
+
+%==============================================================================
+\section{Modelos generativos: Teorema de Bayes}
+%==============================================================================
+Os modelos generativos partem de
+\begin{equation}\label{eq:gen}
+  \Prob(Y=c\mid\x) = \frac{f(\x\mid Y=c)\,\Prob(Y=c)}
+                          {\sum_{s\in\mathcal{C}} f(\x\mid Y=s)\,\Prob(Y=s)}.
+\end{equation}
+Estima-se $\Prob(Y=c)$ pelas \emph{proporções amostrais} e $f(\x\mid Y=c)$ por
+algum modelo. As três escolhas abaixo se distinguem pelo modelo de
+$f(\x\mid Y=c)$.
+
+\subsection{Bayes ingênuo}
+Supõe \textbf{independência condicional} das covariáveis dada a classe:
+\begin{equation}\label{eq:nb}
+  f(\x\mid Y=c) = \prod_{j=1}^p f(x_j\mid Y=c).
+\end{equation}
+A suposição quase nunca é literalmente verdadeira, mas é \emph{conveniente} (reduz
+drasticamente o número de parâmetros) e frequentemente gera bons classificadores.
+Para covariáveis contínuas, modela-se cada
+$X_j\mid Y=c \sim N(\mu_{j,c},\sigma^2_{j,c})$ (parâmetros por classe \emph{e}
+por covariável, estimados por MV); para discretas, usa-se multinomial (ótimo em
+texto --- ponte com a Aula extra de NLP).
+
+\begin{atencao}
+Numericamente, o produto \eqref{eq:nb} de muitos termos pequenos sofre
+\emph{underflow} (vira $0$). Trabalhe sempre em \textbf{escala logarítmica}:
+$\ghat(\x)=\argmax_c\big[\sum_j \log \widehat f(x_j\mid Y=c)+\log\widehat\Prob(Y=c)\big]$.
+\end{atencao}
+
+\subsection{Análise discriminante: LDA e QDA}
+Aqui modela-se o vetor inteiro como \textbf{gaussiano multivariado}:
+$\X\mid Y=c \sim N(\bm{\mu}_c,\bm{\Sigma}_c)$. A distinção:
+\begin{itemize}[leftmargin=1.4cm,nosep]
+  \item \textbf{QDA} (\emph{Quadratic Discriminant Analysis}): cada classe tem sua
+        própria covariância $\bm{\Sigma}_c$.
+  \item \textbf{LDA} (\emph{Linear Discriminant Analysis}): supõe covariância
+        \emph{comum} $\bm{\Sigma}_c=\bm{\Sigma}$ para todas as classes.
+\end{itemize}
+
+\begin{proposicao}[LDA tem fronteira linear]\label{prop:lda}
+Sob $\X\mid Y=c\sim N(\bm{\mu}_c,\bm{\Sigma})$ (covariância comum), o classificador
+de Bayes \eqref{eq:gen} equivale a $\ghat(\x)=\argmax_c \delta_c(\x)$, com a
+\emph{função discriminante linear}
+\[
+  \delta_c(\x) = \x^\top\bm{\Sigma}^{-1}\bm{\mu}_c
+   - \tfrac12\bm{\mu}_c^\top\bm{\Sigma}^{-1}\bm{\mu}_c + \log\Prob(Y=c).
+\]
+As fronteiras entre classes $\{\x:\delta_c(\x)=\delta_{c'}(\x)\}$ são
+\textbf{hiperplanos}.
+\end{proposicao}
+\begin{proof}
+Classificar por $\argmax_c \Prob(Y=c\mid\x)$ equivale a $\argmax_c \log\big(f(\x\mid
+Y=c)\Prob(Y=c)\big)$ (o denominador de \eqref{eq:gen} não depende de $c$). Com a
+densidade gaussiana,
+$\log f(\x\mid Y=c)=-\tfrac12(\x-\bm{\mu}_c)^\top\bm{\Sigma}^{-1}(\x-\bm{\mu}_c)
++\text{const}$. Expandindo o quadrado, o termo $\x^\top\bm{\Sigma}^{-1}\x$ é
+\emph{igual para todas as classes} (pois $\bm{\Sigma}$ é comum) e pode ser
+descartado do $\argmax$. Sobram exatamente os termos lineares em $\x$ de
+$\delta_c(\x)$. A diferença $\delta_c-\delta_{c'}$ é afim em $\x$, logo cada
+fronteira é um hiperplano.
+\end{proof}
+
+\begin{observacao}
+Em QDA, $\bm{\Sigma}_c$ varia com $c$, então o termo
+$\x^\top\bm{\Sigma}_c^{-1}\x$ \emph{não} cancela: as funções discriminantes ficam
+\textbf{quadráticas} em $\x$ e as fronteiras são curvas. Trade-off viés--variância
+(Aula~01): QDA é mais flexível (menos viés) mas estima muito mais parâmetros (uma
+matriz de covariância por classe $\Rightarrow$ mais variância). Prefira LDA com
+poucos dados, QDA com muitos.
+\end{observacao}
+
+%==============================================================================
+\section{Discriminativo $\times$ generativo}
+%==============================================================================
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.2cm}p{5.4cm}p{5.4cm}@{}}
+\toprule
+ & \textbf{Discriminativo (logística)} & \textbf{Generativo (LDA/QDA/NB)} \\
+\midrule
+Modela & $\Prob(Y\mid\x)$ direto & $f(\x\mid Y)$ e $\Prob(Y)$ \\
+Suposições & poucas (forma do \emph{log-odds}) & distribucionais (gaussiana, indep.) \\
+Quando brilha & muitos dados; suposições gaussianas falsas & classes bem separadas; poucos dados; suposições ~corretas \\
+Bônus & --- & gera dados; lida com classes raras \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{ideia}
+Se as suposições gaussianas valem, LDA/QDA são (quase) ótimos e eficientes com
+poucos dados. Se não valem, a logística --- que assume menos --- tende a ser mais
+robusta com bastante dado. Na dúvida: experimente ambos e compare por validação
+cruzada.
+\end{ideia}
+
+%==============================================================================
+\section{Prática em Python}
+%==============================================================================
+\begin{lstlisting}
+from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis as LDA,
+                                           QuadraticDiscriminantAnalysis as QDA)
+from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+# Logistica penalizada (C = 1/lambda); padronizar no pipeline (Aula 06)
+logit = make_pipeline(StandardScaler(),
+                      LogisticRegression(penalty="l2", C=1.0, max_iter=1000))
+
+lda, qda, nb = LDA(), QDA(), GaussianNB()
+for nome, modelo in [("logit", logit), ("LDA", lda), ("QDA", qda), ("NB", nb)]:
+    modelo.fit(X_tr, y_tr)
+    print(nome, "acuracia:", modelo.score(X_te, y_te))
+    # probabilidades plug-in: modelo.predict_proba(X_te)
+\end{lstlisting}
+O notebook \texttt{Comparação entre classificadores paramétricos} confronta esses
+métodos; \texttt{Aula prática 07} calcula o erro de Bayes numa população conhecida
+e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
+
+%==============================================================================
+\section*{Resumo}
+%==============================================================================
+\begin{itemize}[leftmargin=1.4cm]
+  \item Perda 0--1 \eqref{eq:risco01}; o \textbf{classificador de Bayes}
+        $g^*(\x)=\argmax_c\Prob(Y=c\mid\x)$ é ótimo (Teo.~\ref{teo:bayes}) mas
+        desconhecido.
+  \item \emph{Plug-in}: estimar $\Prob(Y=c\mid\x)$ e tomar o $\argmax$.
+  \item \textbf{Logística} \eqref{eq:logit}: discriminativa, MV, penalizável,
+        multinomial; respeita $[0,1]$.
+  \item Generativos via Bayes \eqref{eq:gen}: \textbf{Bayes ingênuo} (indep.\
+        condicional), \textbf{LDA} (covariância comum $\to$ fronteira linear,
+        Prop.~\ref{prop:lda}), \textbf{QDA} (covariância por classe $\to$
+        quadrática).
+  \item Discriminativo (menos suposições, robusto com muito dado) vs.\ generativo
+        (eficiente sob suposições corretas/poucos dados).
+  \item Cuidado com acurácia em dados desbalanceados $\Rightarrow$ Aula~08.
+\end{itemize}
+
+\paragraph{Leitura recomendada.} [AME] Capítulo~7 (risco 0--1, classificador de
+Bayes, Teorema~9) e §8.1 (\emph{plug-in}, logística, Bayes ingênuo, LDA/QDA);
+[ISLP] Capítulo~4 (§4.3 logística, §4.4 modelos generativos).
+
+\end{document}
