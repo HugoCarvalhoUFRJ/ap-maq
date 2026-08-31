@@ -105,8 +105,10 @@ probabilidade — o que `predict_proba` devolve, o argumento `p=` do `rng.choice
 `gini(p)` da aula 11 —, em 14 dos 26 notebooks que têm uma variável de dimensão.
 Renomear exigiria mexer em 116 usos de `p` para abrir espaço, e trocaria uma
 colisão por outra. Decisão do Gabriel em 12/08/2026: o markdown diz `p`, a célula
-diz `d`. A exceção é a `Aula prática 02`, onde não há probabilidade nenhuma e o
-código já usa `p`, igual ao texto.
+diz `d`. As exceções são a `Aula prática 02` e a `Aula prática 04`, onde não há
+probabilidade nenhuma e o código já usa `p`, igual ao texto. (A 04 entrou na lista
+quando foi reescrita, em 24/08/2026: `experimento_dimensao(p, ks, ...)`,
+`size=(n_tr, p)`, `f"p = {p}"`.)
 
 **O limiar do lasso no caso ortonormal é $\lambda/2$**, não $\lambda$. Sai de
 derivar $\|y-\mathbb{X}\beta\|^2 + \lambda\sum_j|\beta_j|$, sem $\frac12$ no RSS —
@@ -495,6 +497,13 @@ Quatro armadilhas, todas já pagas uma vez:
 3. **As listas práticas usam semente diferente da aula prática correspondente**,
    para o aluno não copiar o número do laboratório. Consequência: todo número do
    gabarito precisa ser **medido**, não previsto.
+   **Uma exceção, deliberada: o Ex. 3 da `Lista prática 06`**, que usa a semente
+   `12` --- a mesma da figura `06-numero-arvores` e da `Aula prática 06` --- porque o
+   exercício existe justamente para o aluno reproduzir o número que a legenda da
+   nota afirma, e o gabarito diz isso com todas as letras. Os dados saem
+   **byte-idênticos** (conferido), e o preço aceito é que a floresta em $B=1$
+   ($8{,}0399$) e $B=100$ ($3{,}3510$) é copiável do laboratório. Não "conserte"
+   trocando a semente: quebraria o vínculo com a nota, que é o ponto do exercício.
 4. **Enunciado e gabarito são gerados da mesma fonte** (um script com as lacunas
    marcadas), **e esse script não está no repositório** — como os `.qmd` dos
    slides, ficou na máquina de quem produziu o material. Mexer nos dois `.ipynb`
