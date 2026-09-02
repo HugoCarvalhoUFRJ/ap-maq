@@ -674,6 +674,18 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
 7. Em 21/08/2026, o agradecimento a Lucas Galdino passou a dizer "da edição de
    2022/02 **desta** disciplina, **então na UFRJ**". Sem isso, com o rodapé já
    apontando para a UFF, a atribuição ficava ambígua.
+8. Em 02/09/2026, a definição de florestas aleatórias no slide "Visão de ambos os
+   métodos" do deck da aula 05 --- o primeiro em que os dois métodos aparecem lado
+   a lado. Ela dizia "crescer a árvore com ``mais cuidado''", e aponta para o lado
+   oposto do que o método faz: sortear $m<p$ covariáveis por nó torna **cada árvore
+   individualmente pior**, de propósito (a `Aula prática 05` §6 mede $v$ subindo de
+   $3{,}28$ para $3{,}80$ do *bagging* para a floresta). Além disso "com cuidado"
+   lê-se como poda ou critério de parada, e o slide **seguinte** manda "**não**
+   podar as árvores!". Virou "Crescer a árvore com **menos opções**: em cada nó, só
+   $m<p$ covariáveis sorteadas" --- o mecanismo, sem a motivação, que o deck
+   constrói dois slides adiante no "*Bagging* - atenção!". O slide "Florestas
+   aleatórias", mais ao fim do mesmo deck, já trazia a definição certa: o defeito
+   era só da visão geral.
 
 ## O slide de SVM, o único em Beamer
 

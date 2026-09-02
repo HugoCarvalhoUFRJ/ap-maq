@@ -71,7 +71,7 @@ treino mas tende a \textbf{superajustar}.
 Pergunta: \emph{``a árvore gananciosa acha a solução de
 $y=\operatorname{sinal}(x_1x_2x_3)$?''} Oito regiões resolvem exatamente, e caberiam
 em profundidade~3 --- então a resposta intuitiva é sim. A §3 da \texttt{Aula prática
-06} mede: o primeiro corte reduz $0{,}194\%$ do RSS e o segundo, $0{,}350\%$; o $R^2$
+05} mede: o primeiro corte reduz $0{,}194\%$ do RSS e o segundo, $0{,}350\%$; o $R^2$
 de teste é \textbf{negativo} até a profundidade~5 e só chega a $0{,}87$ com a árvore
 cheia, de 59 folhas. Vale desenhar os octantes no quadro e mostrar que qualquer corte
 deixa os dois lados com média zero.
@@ -232,31 +232,6 @@ A implementação moderna mais popular é o \textbf{XGBoost} (Chen \& Guestrin, 
 faltantes e altíssimo desempenho computacional --- frequentemente o melhor método
 ``pronto'' em dados tabulares.
 \end{observacao}
-
-%==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.model_selection import GridSearchCV
-
-# Arvore unica: cuidado com superajuste -> controle a complexidade (alpha de poda)
-arvore = DecisionTreeRegressor(ccp_alpha=0.0)   # ccp_alpha e o nosso alpha
-
-# Floresta aleatoria: B grande, m = max_features (~ p/3 em regressao)
-rf = RandomForestRegressor(n_estimators=500, max_features=1/3,
-                           oob_score=True, random_state=0).fit(X_tr, y_tr)
-print("risco OOB (R2):", rf.oob_score_)
-print("importancias:", rf.feature_importances_)
-
-# Boosting: lambda pequeno + B por early stopping
-gb = GradientBoostingRegressor(learning_rate=0.01, n_estimators=2000,
-                               max_depth=3, validation_fraction=0.2,
-                               n_iter_no_change=20).fit(X_tr, y_tr)
-\end{lstlisting}
-O notebook \texttt{Aula prática 05} compara árvore, floresta e \emph{boosting} no
-\texttt{superconductivity.csv}, e mede o piso $\rho\,v(\x)$ da variância.
 
 %==============================================================================
 \section*{Resumo}

@@ -1,6 +1,6 @@
 % !TeX program = pdflatex
 %==============================================================================
-%  Lista Teórica 06 --- Árvores de Regressão e Ensembles
+%  Lista Teórica 05 --- Árvores de Regressão e Ensembles
 %  O gabarito sai de "Lista teorica 05 - gabarito.tex".
 %==============================================================================
 \providecommand{\gabaritoopt}{}
@@ -147,8 +147,6 @@ $y_i$ & $1$ & $2$ & $9$ & $10$ \\
   \item Calcule o ganho dos três cortes possíveis: $x<1{,}5$, $x<2{,}5$ e
         $x<3{,}5$. Qual é o escolhido?
   \item Por que só existem três cortes a testar, e não infinitos?
-  \item Suponha que a árvore fosse crescida até cada folha ter uma observação só.
-        Qual seria o RSS final? Relacione com o Exercício~1 da Lista Teórica~01.
 \end{enumerate}
 \end{exercicio}
 
@@ -184,35 +182,15 @@ gera a mesma partição $\{1,2\}\mid\{9,10\}$ e portanto o mesmo ganho. Com $n$
 valores distintos de $x$ há exatamente $n-1$ partições possíveis, e por convenção
 testa-se o ponto médio entre valores consecutivos. É isso que torna a busca
 exaustiva viável: são $n-1$ candidatos por variável, não infinitos.
-
-\smallskip
-\textbf{(d)} O RSS final seria \textbf{zero}: cada folha teria uma observação e a
-média dela seria o próprio $y_i$. É o mesmo fenômeno do Exercício~1 da Lista
-Teórica~01, em que o polinômio de grau $n-1$ interpola os $n$ pontos --- erro de
-treino nulo e nenhuma informação sobre o risco. Uma árvore totalmente crescida é
-um interpolador, e é por isso que existe a poda (e, mais adiante, o
-\emph{bagging}).
-
-Uma diferença entre os dois casos vale ser notada: o zero da árvore é zero
-\emph{de verdade também no computador}, porque a média de um único número é esse
-número. Já o do polinômio é só algébrico --- em ponto flutuante ele não interpola,
-como a §3 da \texttt{Aula prática 03} mede.
 \end{solucao}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[$B$ grande estraga? depende do ensemble]
+\begin{exercicio}[por que $B$ grande não estraga]
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item No \emph{bagging} e nas florestas aleatórias, cada árvore é ajustada a
         uma reamostra dos dados, \textbf{sem olhar} para as árvores anteriores.
         Aumentar $B$ pode piorar o desempenho fora da amostra? Justifique usando
         a fórmula da variância da média.
-  \item No \emph{boosting}, cada árvore é ajustada aos \textbf{resíduos} do que
-        já foi construído. Aumentar $B$ pode piorar? Justifique.
-  \item A nota de aula relata a medição correspondente: o erro do \emph{boosting}
-        atinge o mínimo em $B=32$ e, em $B=1500$, está $16\%$ acima. Que
-        mecanismo produz essa curva em U, e qual hiperparâmetro do
-        \texttt{scikit-learn} evita o problema sem que você precise adivinhar
-        $B$?
   \item Cite uma quantidade que o \emph{bagging} fornece de graça e que dispensa
         validação cruzada para estimar o risco. Por que ela é gratuita?
 \end{enumerate}
@@ -232,29 +210,7 @@ complexidade. Na prática, escolhe-se o maior $B$ que o orçamento de tempo
 permite.
 
 \smallskip
-\textbf{(b)} \textbf{Pode, e piora.} No \emph{boosting} as árvores não são
-independentes: a árvore $b+1$ é ajustada ao que sobrou do erro das $b$ primeiras.
-O ensemble é uma soma, não uma média, e cada termo novo \emph{reduz o erro de
-treino}. Com $B$ suficientemente grande o \emph{boosting} passa a ajustar o ruído
-das observações de treino --- exatamente o superajuste da Aula~01, com $B$ no
-papel do grau do polinômio. Aqui $B$ \textbf{é} um parâmetro de complexidade, e
-tem de ser escolhido por validação cruzada.
-
-\smallskip
-\textbf{(c)} O mecanismo é o da curva em U: no começo, cada árvore nova reduz
-viés (o ensemble ainda não capturou a estrutura de $r$); a partir de certo ponto,
-a estrutura já foi capturada e as árvores seguintes só conseguem perseguir o
-ruído, o que aumenta a variância. O mínimo está onde as duas forças se equilibram
---- aqui, $B=32$.
-
-A ferramenta que evita adivinhar é a \textbf{parada antecipada}:
-\texttt{n\_iter\_no\_change} (com \texttt{validation\_fraction} e \texttt{tol}) faz
-o \texttt{GradientBoostingRegressor} separar uma parte dos dados, acompanhar o
-erro nela a cada iteração e parar quando ele deixa de melhorar. Você põe um $B$
-máximo generoso e o algoritmo escolhe onde parar.
-
-\smallskip
-\textbf{(d)} O erro \textbf{\emph{out-of-bag}} (OOB), disponível em
+\textbf{(b)} O erro \textbf{\emph{out-of-bag}} (OOB), disponível em
 \texttt{oob\_score\_}. Ele é gratuito porque cada árvore do \emph{bagging} é
 ajustada a uma amostra bootstrap que deixa de fora, em média, $(1-1/n)^n\to
 e^{-1}\approx 36{,}8\%$ das observações. Cada observação $i$, portanto, é ``de
@@ -321,10 +277,12 @@ $B=1000$ compram os $10\%$ restantes.
 $0{,}300$: um ganho de $0{,}30$. Aumentar $B$ de $10$ para $1000$ leva a
 variância de $0{,}6400$ a $0{,}6004$: um ganho de $0{,}04$.
 
-O ganho de descorrelacionar é, portanto, \textbf{sete vezes maior} --- e note que
-ele é maior até do que \emph{todo} o efeito possível de $B$ com $\rho=0{,}6$
-fixo, que valia $0{,}40$ no total. É por isso que a floresta aleatória é uma ideia
-melhor do que simplesmente rodar mais árvores.
+O ganho de descorrelacionar é, portanto, \textbf{sete vezes maior} --- e a
+diferença que mais importa não é de tamanho, é de natureza: o efeito de $B$
+\textbf{se esgota} e o de $\rho$ não. Com $\rho=0{,}6$ fixo, nenhum $B$ leva a
+variância abaixo de $0{,}60$, por maior que seja o orçamento; baixar $\rho$ pela
+metade atravessa esse piso, que $B$ sequer encosta. É por isso que a floresta
+aleatória é uma ideia melhor do que simplesmente rodar mais árvores.
 
 \smallskip
 \textbf{(d)} A floresta aleatória sorteia, \textbf{em cada nó}, um subconjunto de
@@ -336,10 +294,14 @@ sorteada, a estrutura sai completamente diferente. Menos estrutura comum entre a
 
 O custo é \textbf{viés}: proibir a árvore de usar a melhor covariável em parte
 dos nós a torna individualmente pior. A aposta da floresta é que essa perda de
-qualidade individual é mais que compensada pela queda de $\rho$ --- e a fórmula
-do item (c) mostra por que a aposta costuma valer a pena. Levada ao extremo
-($m=1$, corte totalmente ao acaso) chega-se às \emph{extremely randomized trees},
-que trocam ainda mais viés por ainda menos correlação.
+qualidade individual é mais que compensada pela queda de $\rho$ --- e a conta
+do item (c) mostra por que a aposta costuma valer a pena.
+
+As \emph{extremely randomized trees} levam a ideia adiante por \emph{outro} eixo:
+além de sortear as covariáveis candidatas, sorteiam o \textbf{limiar} de cada uma
+em vez de procurar o melhor corte --- mais viés ainda, e menos $\rho$ ainda. Os
+dois sorteios são independentes, e é só no extremo em que se juntam ($m=1$ com
+limiar ao acaso) que a árvore fica inteiramente aleatória.
 \end{solucao}
 
 
