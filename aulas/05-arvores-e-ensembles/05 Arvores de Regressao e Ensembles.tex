@@ -16,18 +16,14 @@ Ao final desta aula o aluno deve ser capaz de:
         binárias recursivas e \emph{poda} por custo--complexidade;
   \item justificar, via redução de variância, por que \textbf{agregar} estimadores
         ajuda;
-  \item descrever \textbf{bagging}, a estimativa \emph{out-of-bag} e a medida de
-        importância de variáveis;
-  \item explicar como as \textbf{florestas aleatórias} \emph{descorrelacionam} as
-        árvores e o papel de $m$;
-  \item descrever \textbf{boosting} como ajuste incremental dos resíduos e o papel
-        de $\lambda$, $B$ e da profundidade.
+  \item descrever \textbf{bagging} e explicar como as \textbf{florestas
+        aleatórias} \emph{descorrelacionam} as árvores, e o papel de $m$.
 \end{itemize}
 
 \begin{emsala}
 Árvores são o método mais \emph{interpretável} que veremos --- e, sozinhas, das
 piores em predição. A história da aula é como transformá-las, via agregação, em
-alguns dos métodos \emph{mais poderosos} (florestas, XGBoost). Pergunta de
+um dos métodos \emph{mais poderosos} que existem (as florestas). Pergunta de
 abertura: \emph{``como combinar muitos modelos ruins para obter um ótimo?''}
 \end{emsala}
 
@@ -147,19 +143,6 @@ tamanho $n$) e ajuste nela uma árvore \emph{profunda} (não podada) $g_b$. A pr
   g(\x) = \frac1B\sum_{b=1}^B g_b(\x).
 \end{equation}
 
-\subsection{Estimativa \emph{out-of-bag} (OOB)}
-Cada amostra bootstrap omite, em média, $\approx 37\%$ das observações (as
-\emph{out-of-bag}, Aula~03). Podemos prever cada $\X_i$ usando \emph{só} as árvores
-que não a viram: isso dá uma estimativa de risco \textbf{de graça}, sem CV
-separada.
-
-\subsection{Importância de variáveis}
-\emph{Bagging} sacrifica interpretabilidade, mas recupera parte dela com uma medida
-de \textbf{importância}: para cada variável, soma-se a \emph{redução de RSS} em
-todas as divisões que a usaram, $\mathrm{RSS}_{\text{pai}}
--\mathrm{RSS}_{\text{esq}}-\mathrm{RSS}_{\text{dir}}$, e faz-se a média sobre as
-$B$ árvores. Variáveis que reduzem muito o erro são as mais importantes.
-
 %==============================================================================
 \section{Florestas aleatórias}
 %==============================================================================
@@ -187,54 +170,6 @@ diversificando as árvores e reduzindo mais a variância.
 \end{itemize}
 
 %==============================================================================
-\section{Boosting}
-%==============================================================================
-\emph{Boosting} também agrega árvores, mas de forma \textbf{sequencial e
-adaptativa}: cada nova árvore corrige os \emph{resíduos} da combinação atual. Não
-reamostra; reajusta ao erro corrente.
-
-\begin{tcolorbox}[colback=cinzaclaro,colframe=azulufrj,title={Algoritmo (boosting de árvores para regressão)}]
-\begin{enumerate}[leftmargin=1.4cm,nosep]
-  \item Inicialize $g(\x)\equiv 0$ e resíduos $r_i \leftarrow Y_i$, $\forall i$.
-  \item Para $b=1,\dots,B$:
-    \begin{enumerate}[label=(\alph*),nosep]
-      \item ajuste uma árvore \emph{rasa} (com $p$ folhas) a
-            $(\X_1,r_1),\dots,(\X_n,r_n)$; chame-a $g_b$;
-      \item atualize $g(\x)\leftarrow g(\x)+\lambda\,g_b(\x)$ e
-            $r_i\leftarrow Y_i-g(\X_i)$.
-    \end{enumerate}
-  \item Retorne $g(\x)=\lambda\sum_{b=1}^B g_b(\x)$.
-\end{enumerate}
-\end{tcolorbox}
-
-Começamos com alto viés (zero) e \emph{baixíssima} variância; cada passo
-\emph{reduz o viés} adicionando um ``aprendiz fraco''. Os \emph{tuning parameters}:
-\begin{description}[leftmargin=2.4cm,style=nextline]
-  \item[$\lambda$ (\emph{learning rate})] fator pequeno (ex.: $0{,}01$) que
-        controla o quanto cada árvore contribui. $\lambda$ grande $\Rightarrow$
-        superajuste rápido; pequeno $\Rightarrow$ aprendizado lento (precisa de $B$
-        maior).
-  \item[$p$ (profundidade/folhas)] árvores rasas ($p=2$ a $4$; \emph{stumps} têm
-        uma divisão) controlam a ordem de interações capturadas.
-  \item[$B$ (número de árvores)] escolhido por \emph{early stopping}: pare quando o
-        risco em validação parar de cair.
-\end{description}
-
-\begin{atencao}
-Diferença crucial em relação às florestas: no \emph{boosting}, $B$ \textbf{grande
-demais superajusta} (o modelo continua reduzindo viés até ajustar ruído). Por isso
-o \emph{early stopping} é essencial. Nas florestas, ao contrário, $B$ grande é
-inofensivo.
-\end{atencao}
-
-\begin{observacao}
-A implementação moderna mais popular é o \textbf{XGBoost} (Chen \& Guestrin, 2016):
-\emph{boosting} de árvores com regularização adicional, tratamento de dados
-faltantes e altíssimo desempenho computacional --- frequentemente o melhor método
-``pronto'' em dados tabulares.
-\end{observacao}
-
-%==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
@@ -244,15 +179,12 @@ faltantes e altíssimo desempenho computacional --- frequentemente o melhor mét
   \item Agregar reduz variância se os preditores são não-viesados e pouco
         correlacionados (Prop.~\ref{prop:media}).
   \item \textbf{Bagging} \eqref{eq:bagging}: árvores profundas em amostras
-        bootstrap; OOB ``de graça''; importância por redução de RSS.
+        bootstrap, agregadas pela média.
   \item \textbf{Florestas}: \emph{descorrelacionam} sorteando $m\approx p/3$
         variáveis por nó; robustas a $B$; adaptam-se à esparsidade.
-  \item \textbf{Boosting}: ajuste sequencial dos resíduos; $\lambda$ pequeno, $p$
-        raso, $B$ por \emph{early stopping} (cuidado: $B$ grande superajusta).
-        XGBoost é a implementação de referência.
 \end{itemize}
 
-\paragraph{Leitura recomendada.} [AME] §4.8 (árvores), §4.9 (\emph{bagging} e
-florestas), §4.10 (\emph{boosting}); [ISLP] Capítulo~8 (\emph{Tree-Based Methods}).
+\paragraph{Leitura recomendada.} [AME] §4.8 (árvores) e §4.9 (\emph{bagging} e
+florestas); [ISLP] §8.1 e §8.2 (\emph{Tree-Based Methods}).
 
 \end{document}

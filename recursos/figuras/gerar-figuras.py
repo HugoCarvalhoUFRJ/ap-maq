@@ -367,8 +367,8 @@ def _knn_k():
 
 @figura("05-numero-arvores", "05")
 def _numero_arvores():
-    """B grande é inofensivo na floresta e perigoso no boosting."""
-    from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+    """Na floresta, B grande é inofensivo: o risco estabiliza e fica lá."""
+    from sklearn.ensemble import RandomForestRegressor
 
     rng = np.random.default_rng(12)
     n, d, ruido = 150, 8, 1.5
@@ -389,41 +389,21 @@ def _numero_arvores():
         rf_te.append(np.mean((y_te - m.predict(X_te)) ** 2))
         rf_tr.append(np.mean((y - m.predict(X)) ** 2))
 
-    # lambda=0,05 e árvores de profundidade 3: valores realistas. O superajuste
-    # aparece porque n=150 é pequeno e o ruído é alto -- não porque forçamos.
-    gb = GradientBoostingRegressor(learning_rate=0.05, n_estimators=1500,
-                                   max_depth=3, random_state=0).fit(X, y)
-    gb_te = np.array([np.mean((y_te - p) ** 2)
-                      for p in gb.staged_predict(X_te)])
-    gb_tr = np.array([np.mean((y - p) ** 2) for p in gb.staged_predict(X)])
-    passos = np.arange(1, len(gb_te) + 1)
-    melhor = passos[int(np.argmin(gb_te))]
-    print(f"     [conferência] floresta: risco em B=100 -> {rf_te[9]:.4f}, "
-          f"B=500 -> {rf_te[-1]:.4f} (variação de "
-          f"{100*(rf_te[-1]/rf_te[9]-1):+.1f}%)")
-    print(f"     [conferência] boosting: mínimo em B={melhor} ({gb_te.min():.4f}), "
-          f"em B=1500 -> {gb_te[-1]:.4f} (+{100*(gb_te[-1]/gb_te.min()-1):.0f}%)")
+    print(f"     [conferência] floresta: risco em B=1 -> {rf_te[0]:.4f}, "
+          f"B=100 -> {rf_te[9]:.4f}, B=500 -> {rf_te[-1]:.4f} "
+          f"(de 100 para 500, variação de {100*(rf_te[-1]/rf_te[9]-1):+.1f}%)")
+    print(f"     [conferência] erro de treino em B=500: {rf_tr[-1]:.4f} "
+          f"(estaciona, não desce para zero)")
 
-    fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 2.9), sharey=True)
-    ax1.plot(Bs, rf_te, "o-", color=VINHO, ms=3, label="risco (teste)")
-    ax1.plot(Bs, rf_tr, "s--", color=CINZA, ms=3, label="erro de treino")
-    ax1.set_xscale("log")
-    ax1.set_xlabel("$B$ (número de árvores)")
-    ax1.set_ylabel("erro quadrático médio")
-    ax1.set_title("Floresta aleatória: estabiliza")
-    ax1.legend(fontsize=7.5)
-
-    ax2.plot(passos, gb_te, color=VINHO, label="risco (teste)")
-    ax2.plot(passos, gb_tr, color=CINZA, ls="--", label="erro de treino")
-    ax2.axvline(melhor, color=AZUL, ls=":", lw=1.2)
-    ax2.annotate(f"mínimo em $B={melhor}$", xy=(melhor, gb_te.min()),
-                 xytext=(melhor * 3.2, gb_te.min() + 1.1), fontsize=7.5,
-                 arrowprops=dict(arrowstyle="->", lw=0.8, color=AZUL))
-    ax2.set_xscale("log")
-    ax2.set_xlabel("$B$ (número de árvores)")
-    ax2.set_title(r"Boosting ($\lambda=0{,}05$): volta a subir")
-    ax2.legend(fontsize=7.5)
-    ax1.set_ylim(0, 6.0)
+    fig, ax = subplots(figsize=(4.6, 2.9))
+    ax.plot(Bs, rf_te, "o-", color=VINHO, ms=3, label="risco (teste)")
+    ax.plot(Bs, rf_tr, "s--", color=CINZA, ms=3, label="erro de treino")
+    ax.set_xscale("log")
+    ax.set_xlabel("$B$ (número de árvores)")
+    ax.set_ylabel("erro quadrático médio")
+    ax.set_title("Floresta aleatória: estabiliza")
+    ax.set_ylim(0, 9.0)
+    ax.legend(fontsize=7.5)
     salvar(fig, "05-numero-arvores")
 
 

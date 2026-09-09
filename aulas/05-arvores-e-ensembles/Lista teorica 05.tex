@@ -186,18 +186,14 @@ exaustiva viável: são $n-1$ candidatos por variável, não infinitos.
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[por que $B$ grande não estraga]
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item No \emph{bagging} e nas florestas aleatórias, cada árvore é ajustada a
-        uma reamostra dos dados, \textbf{sem olhar} para as árvores anteriores.
-        Aumentar $B$ pode piorar o desempenho fora da amostra? Justifique usando
-        a fórmula da variância da média.
-  \item Cite uma quantidade que o \emph{bagging} fornece de graça e que dispensa
-        validação cruzada para estimar o risco. Por que ela é gratuita?
-\end{enumerate}
+No \emph{bagging} e nas florestas aleatórias, cada árvore é ajustada a uma
+reamostra dos dados, \textbf{sem olhar} para as árvores anteriores. Aumentar $B$
+pode piorar o desempenho fora da amostra? Justifique usando a fórmula da variância
+da média.
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} \textbf{Não} --- ou, mais precisamente, não de forma sistemática. As
+\textbf{Não} --- ou, mais precisamente, não de forma sistemática. As
 árvores do \emph{bagging} são identicamente distribuídas e não dependem umas das
 outras, então a média $\bar g=\frac1B\sum_b g_b$ tem
 \[
@@ -209,15 +205,6 @@ variância pioram, e $B$ é um parâmetro de \emph{custo computacional}, não de
 complexidade. Na prática, escolhe-se o maior $B$ que o orçamento de tempo
 permite.
 
-\smallskip
-\textbf{(b)} O erro \textbf{\emph{out-of-bag}} (OOB), disponível em
-\texttt{oob\_score\_}. Ele é gratuito porque cada árvore do \emph{bagging} é
-ajustada a uma amostra bootstrap que deixa de fora, em média, $(1-1/n)^n\to
-e^{-1}\approx 36{,}8\%$ das observações. Cada observação $i$, portanto, é ``de
-fora'' para cerca de um terço das árvores, e a predição feita para ela usando
-\emph{apenas} essas árvores é honesta --- nenhuma delas a viu no treino. Fazendo
-isso para todo $i$, obtém-se uma estimativa de risco sem ajustar nada a mais.
-É essencialmente uma validação cruzada que veio junto com o método.
 \end{solucao}
 
 %------------------------------------------------------------------------------
