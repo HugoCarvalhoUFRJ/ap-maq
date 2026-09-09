@@ -235,6 +235,42 @@ E3 --- saiu o ponteiro, não a afirmação. Hoje são vocabulário sem aula dedi
 a *descida dupla* na aula 01. **Não as remova** achando que são resíduo, e **não
 reintroduza a aula**.
 
+## A aula 05 perdeu boosting, OOB e importância de variáveis
+
+Decisão do Gabriel em 09/09/2026, aplicada em quatro passos numa sessão. A aula 05
+--- *Árvores de Regressão e Ensembles* --- vai hoje de árvore a poda, agregação,
+*bagging* e florestas aleatórias, e para aí. **Não reintroduza os três**, nem para
+"fechar" o Capítulo 8 do [ISLP], que cobre os três.
+
+| onde | o que saiu |
+| --- | --- |
+| notas, as duas versões | a seção *Boosting* inteira e as subseções *out-of-bag* e *Importância de variáveis*; 258→190 e 431→337 linhas |
+| `Aula prática 05` | as seções de *boosting* e de importância, a análise de importância do caso real, e a coluna `R^2 OOB` da escolha de $m$ |
+| `Lista prática 05` | o Ex. 4 inteiro e a metade de *boosting* do Ex. 3; 18→13 e 23→16 células |
+| `Lista teorica 05` | o item (b) do Ex. 3, que pedia "uma quantidade que o *bagging* fornece de graça" |
+| deck | um tópico, no slide "Fechando o *bagging*" |
+
+**O deck quase não tinha o assunto, e isso engana.** Uma busca por `oob` acha 156
+ocorrências --- e **todas** estão em JavaScript minificado e em base64 de imagem.
+No texto visível, 10.699 caracteres, não há menção nenhuma a OOB, *boosting* ou
+XGBoost. Ao auditar um deck, filtre `<script>` e `<img>` antes de contar; a busca
+crua mente por duas ordens de grandeza.
+
+**A figura sobreviveu pela metade certa.** A `05-numero-arvores` tinha dois painéis
+--- floresta e *boosting* --- e era citada **dentro da seção de Boosting**, então o
+corte a levaria inteira. Mas o painel da floresta é o que o Ex. 3 da
+`Lista prática 05` reproduz, e esse vínculo é deliberado (ver "Listas de
+exercícios"). A geradora foi reduzida a esse painel, a figura regerada, e a citação
+**movida para a seção *Florestas aleatórias***, que já afirmava "o risco é robusto
+a $B$" sem nada que mostrasse. Os números não se moveram.
+
+**O que ficou, de propósito: a correlação $\rho$ e o piso $\rho\,v$.** Eles saíram
+do laboratório --- a §5 dele passou a medir risco contra $B$, direto --- mas
+continuam nas notas, numa `observacao` da seção "Por que agregar?", e na
+`Lista teorica 05`, cujo Ex. 4 é "o piso da variância". O Ex. 2 da lista prática é
+o par medido desse exercício, e por isso ficou também. Se for cortar o $\rho$ um
+dia, são os três de uma vez.
+
 ## Figuras (`recursos/figuras/`)
 
 As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
@@ -249,9 +285,9 @@ Três coisas a respeitar:
 
 1. **O script confere os números que as legendas afirmam.** Ele imprime linhas
    `[conferência]` com o que foi medido (a decomposição viés--variância fechando na
-   precisão de máquina, o ganho do QDA sobre o LDA, o superajuste do boosting...).
-   Se você mudar uma simulação, releia a legenda correspondente: vários números
-   estão escritos no `.tex`.
+   precisão de máquina, o ganho do QDA sobre o LDA, a floresta estabilizando com
+   $B$...). Se você mudar uma simulação, releia a legenda correspondente: vários
+   números estão escritos no `.tex`.
 2. **Não use as macros do curso nos rótulos do matplotlib.** `$\x$` é `\x` do
    `estilo-notas.sty`, e o mathtext do matplotlib não a conhece — quebra com
    `ParseFatalException`. Pelo mesmo motivo, nada de `\%`, `\,` ou `\emph{}` em
@@ -521,12 +557,13 @@ Quatro armadilhas, todas já pagas uma vez:
    para o aluno não copiar o número do laboratório. Consequência: todo número do
    gabarito precisa ser **medido**, não previsto.
    **Uma exceção, deliberada: o Ex. 3 da `Lista prática 05`**, que usa a semente
-   `12` --- a mesma da figura `05-numero-arvores` e da `Aula prática 05` --- porque o
-   exercício existe justamente para o aluno reproduzir o número que a legenda da
-   nota afirma, e o gabarito diz isso com todas as letras. Os dados saem
-   **byte-idênticos** (conferido), e o preço aceito é que a floresta em $B=1$
-   ($8{,}0399$) e $B=100$ ($3{,}3510$) é copiável do laboratório. Não "conserte"
-   trocando a semente: quebraria o vínculo com a nota, que é o ponto do exercício.
+   `12` --- a mesma da figura `05-numero-arvores` --- porque o exercício existe
+   justamente para o aluno reproduzir os números que a legenda da nota afirma
+   ($8{,}0399$ em $B=1$ e $3{,}3510$ em $B=100$), e o gabarito diz isso com todas as
+   letras. Os dados saem **byte-idênticos** (conferido). Não "conserte" trocando a
+   semente: quebraria o vínculo com a nota, que é o ponto do exercício. (Até
+   09/09/2026 a `Aula prática 05` usava essa mesma população, e o número era
+   copiável de lá; a seção que a usava saiu com o *boosting*.)
 4. **Enunciado e gabarito são gerados da mesma fonte** (um script com as lacunas
    marcadas), **e esse script não está no repositório** — como os `.qmd` dos
    slides, ficou na máquina de quem produziu o material. Mexer nos dois `.ipynb`
@@ -678,14 +715,19 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
    métodos" do deck da aula 05 --- o primeiro em que os dois métodos aparecem lado
    a lado. Ela dizia "crescer a árvore com ``mais cuidado''", e aponta para o lado
    oposto do que o método faz: sortear $m<p$ covariáveis por nó torna **cada árvore
-   individualmente pior**, de propósito (a `Aula prática 05` §6 mede $v$ subindo de
-   $3{,}28$ para $3{,}80$ do *bagging* para a floresta). Além disso "com cuidado"
+   individualmente pior**, de propósito (o Ex. 2 da `Lista prática 05` mede $v$
+   subindo de $3{,}28$ para $3{,}80$ do *bagging* para a floresta --- a medição
+   estava na `Aula prática 05` até o corte de 09/09/2026). Além disso "com cuidado"
    lê-se como poda ou critério de parada, e o slide **seguinte** manda "**não**
    podar as árvores!". Virou "Crescer a árvore com **menos opções**: em cada nó, só
    $m<p$ covariáveis sorteadas" --- o mecanismo, sem a motivação, que o deck
    constrói dois slides adiante no "*Bagging* - atenção!". O slide "Florestas
    aleatórias", mais ao fim do mesmo deck, já trazia a definição certa: o defeito
    era só da visão geral.
+9. Em 09/09/2026, o slide "Fechando o *bagging*" do deck da aula 05 perdeu o tópico
+   "Permite criar uma medida de importância para cada covariável", quando a
+   importância de variáveis saiu da aula. Foi a **única linha** que os três
+   assuntos cortados ocupavam no deck inteiro.
 
 ## O slide de SVM, o único em Beamer
 
