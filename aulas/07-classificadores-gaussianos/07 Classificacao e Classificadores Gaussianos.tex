@@ -246,7 +246,7 @@ from sklearn.preprocessing import StandardScaler
 
 # Logistica penalizada (C = 1/lambda); padronizar no pipeline (Aula 06)
 logit = make_pipeline(StandardScaler(),
-                      LogisticRegression(penalty="l2", C=1.0, max_iter=1000))
+                      LogisticRegression(C=1.0, max_iter=1000))
 
 lda, qda, nb = LDA(), QDA(), GaussianNB()
 for nome, modelo in [("logit", logit), ("LDA", lda), ("QDA", qda), ("NB", nb)]:
