@@ -1,6 +1,6 @@
 % !TeX program = pdflatex
 %==============================================================================
-%  Lista Teórica 07 --- Pré-processamento e Pipelines
+%  Lista Teórica 06 --- Pré-processamento e Pipelines
 %  O gabarito sai de "Lista teorica 06 - gabarito.tex".
 %==============================================================================
 \providecommand{\gabaritoopt}{}
@@ -11,165 +11,112 @@
 \cabecalholista{06}{Pré-processamento e \emph{Pipelines}}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[a pergunta que separa grave de leve]
-O critério da Aula~06 para classificar um vazamento não é ``quanto a etapa
-aprende dos dados'', e sim uma pergunta só: \textbf{a etapa olha o $Y$?}
+\begin{exercicio}[revisando o notebook de um colega]
+Um colega lhe manda o notebook dele na véspera de entregar o relatório e pede uma
+olhada. Ele leu a Aula~06 na diagonal, e o resultado é um pouco de cada coisa: em
+alguns trechos fez exatamente o certo; em outros cometeu um deslize que não muda
+nada; e em pelo menos um está prestes a reportar um número que não existe.
 
-Classifique cada situação abaixo como vazamento \textbf{grave}, \textbf{leve} ou
-\textbf{nenhum}, e justifique em uma linha aplicando esse critério.
+Para separar os três casos você tem uma pergunta só, e ela não é ``quanto essa
+etapa aprendeu dos dados''. É: \textbf{essa etapa olhou o $Y$?}
+
+Diga, para cada trecho, se o vazamento é \textbf{grave}, \textbf{leve}, ou se não
+há vazamento nenhum --- e justifique em uma linha, aplicando a pergunta.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Padronizar todas as covariáveis usando a média e o desvio-padrão
-        calculados no conjunto \emph{completo}, antes de separar treino e teste.
-  \item Selecionar, entre $10\,000$ covariáveis, as $50$ mais correlacionadas com
-        $Y$ usando todos os dados, e só então rodar a validação cruzada com essas
-        $50$.
-  \item Ajustar o PCA no conjunto completo, reduzir a $20$ componentes, e só
-        então separar treino e teste.
-  \item Imputar valores faltantes pela \emph{mediana da coluna}, calculada no
-        conjunto completo.
-  \item Num banco em que cada paciente aparece em várias linhas (uma por
-        consulta), fazer \texttt{KFold} sobre as linhas.
-  \item Padronizar dentro de um \texttt{Pipeline}, com \texttt{GridSearchCV} por
-        fora.
+  \item Ele padronizou as covariáveis com a média e o desvio do banco inteiro, e
+        só depois separou treino e teste.
+  \item De $10\,000$ covariáveis, ficou com as $50$ mais correlacionadas com $Y$
+        --- correlação calculada no banco inteiro --- e rodou a validação cruzada
+        só nessas $50$.
+  \item Ajustou um PCA no banco inteiro, guardou as $20$ primeiras componentes, e
+        aí separou treino e teste.
+  \item Preencheu os faltantes com a mediana da própria coluna, calculada no banco
+        inteiro.
+  \item O banco tem uma linha por consulta, e o mesmo paciente aparece em várias
+        delas. Ele rodou \texttt{KFold} sobre as linhas.
+  \item Pôs o \texttt{StandardScaler} dentro de um \texttt{Pipeline}, e passou o
+        \emph{pipeline} inteiro para o \texttt{GridSearchCV}.
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\begin{center}\small
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}clp{7.4cm}@{}}
-\toprule
- & classificação & por quê \\
-\midrule
-(a) & \textbf{leve}    & O \texttt{StandardScaler} calcula média e desvio das colunas de $\bm X$; nunca vê $Y$. Não há como fabricar sinal a partir de ruído. \\
-(b) & \textbf{grave}   & A seleção é feita \emph{pela correlação com $Y$}. Cada dobra de validação já contribuiu para escolher as covariáveis que serão testadas nela. \\
-(c) & \textbf{leve}    & O PCA aprende direções de \emph{todas} as colunas ao mesmo tempo, o que parece grave --- mas ele só olha $\bm X$. \\
-(d) & \textbf{leve}    & A mediana é calculada na coluna de $\bm X$. Mesmo argumento de (a). \\
-(e) & \textbf{grave}   & Não é sobre pré-processamento: é a \emph{mesma unidade} nos dois lados da divisão. O modelo vê consultas do mesmo paciente no treino e na validação. \\
-(f) & \textbf{nenhum}  & É exatamente a conduta correta: a padronização é reajustada dentro de cada dobra. \\
-\bottomrule
-\end{tabular}
-\end{center}
+Vale agrupar por veredito, porque dentro de cada grupo o argumento é o mesmo:
+\textbf{(a), (c) e (d) são leves}; \textbf{(b) e (e) são graves}; e \textbf{(f)
+não é vazamento} --- é justamente a conduta correta.
 
-Duas observações que a tabela não cabe.
+\medskip
+\textbf{Os três leves.} Todos mexem só em $\bm X$. O \texttt{StandardScaler} de
+(a) calcula duas estatísticas por coluna, a média e o desvio; a imputação de (d)
+calcula uma, a mediana; e o PCA de (c) procura direções de máxima variância. Em
+nenhum dos três o $Y$ entra na conta, e é isso que os salva: sem olhar a resposta,
+não existe caminho por onde fabricar acerto. Trocar o treino pelo banco inteiro
+desloca essas estatísticas por algo da ordem de $1/\sqrt n$, e desloca igual para
+todas as observações, independentemente do $y$ de cada uma.
 
-A primeira é sobre (c): ele é o caso em que a intuição mais engana. Ajustar o PCA
-no conjunto todo \emph{de fato} usa informação do teste --- as componentes são
-outras. Mas ``usar informação'' não é o mesmo que ``inflar o desempenho medido'',
-e sem olhar o $Y$ não há como fabricar acerto. A Aula~E2 mede isso.
+O (c) é o que mais engana, e vale parar nele. Ajustar o PCA no banco todo
+\emph{de fato} usa informação do teste --- as componentes saem outras. Mas ``usar
+informação'' e ``inflar o número que se vai reportar'' são coisas diferentes, e
+sem olhar o $Y$ só a primeira acontece. A Aula~E2 mediu quatro configurações com
+$y$ de ruído puro, e em nenhuma delas o $R^2$ subiu.
 
-A segunda é sobre (e): \textbf{nenhum \texttt{Pipeline} protege desse caso}. O
-\texttt{Pipeline} garante que cada etapa seja ajustada só no treino da dobra, mas
-não tem como saber que duas linhas são o mesmo paciente. A ferramenta é o
-\texttt{GroupKFold}, passando o identificador do paciente em \texttt{groups}. Vale
-guardar o par: \emph{o \texttt{Pipeline} resolve (a), (c) e (d); só o desenho da
-divisão resolve (e)}.
+\medskip
+\textbf{Os dois graves, e por motivos distintos.} No (b), a escolha das $50$
+colunas foi feita \emph{pela correlação com $Y$} --- inclusive com a parte do $Y$
+que está nas dobras de validação. Quando a validação cruzada roda depois, cada
+dobra encontra covariáveis que ela própria ajudou a escolher, e reencontra ali o
+seu próprio ruído. Com $10\,000$ colunas disponíveis, o acaso tem espaço de sobra:
+a Aula~06 mede $R^2 = +0{,}40$ num caso em que a resposta é ruído puro e o valor
+verdadeiro é zero.
+
+Já o (e) não é sobre pré-processamento nenhum. É a \emph{mesma unidade} dos dois
+lados da divisão: consultas do mesmo paciente, umas no treino e outras na
+validação. O modelo não precisa aprender nada sobre medicina --- basta reconhecer
+o paciente, que ele já viu.
+
+\medskip
+\textbf{E o (f)}, que é o que se deve fazer: dentro do \emph{pipeline}, a
+padronização é reajustada em cada dobra, com a média e o desvio de quem está no
+treino \emph{daquela} dobra. Nada vaza, e não custou esforço nenhum.
+
+\medskip
+O par que vale guardar é este: \textbf{o \texttt{Pipeline} resolve (a), (b), (c) e
+(d)} --- basta pôr cada etapa dentro dele, a seleção de variáveis inclusive ---,
+\textbf{mas não faz nada pelo (e)}. Ele controla \emph{quando} cada etapa é
+ajustada, não \emph{como} as linhas são repartidas, e não tem como saber que duas
+delas são o mesmo paciente. Para o (e) a ferramenta é o \texttt{GroupKFold}, com o
+identificador do paciente em \texttt{groups}. São duas perguntas independentes, e
+você precisa das duas na cabeça: \emph{a etapa olha o $Y$?} e \emph{a divisão
+respeita a unidade?}
 \end{solucao}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[por que um custa 0,40 e o outro custa nada]
-A nota traz duas medições. Com $\bm X$ e $y$ gerados \textbf{independentemente}
-(isto é, $y$ é ruído puro, e o $R^2$ verdadeiro de qualquer modelo é $0$):
-\begin{itemize}[leftmargin=1.4cm]
-  \item selecionar as covariáveis mais correlacionadas com $y$ \emph{antes} da
-        validação cruzada produz $R^2 = +0{,}40$;
-  \item padronizar fora da dobra, num problema com sinal de verdade e escalas
-        muito díspares, produz $0{,}8466$ --- contra $0{,}8466$ fazendo certo.
-\end{itemize}
+\begin{exercicio}[a receita inteira, num objeto só]
+Você chega a um banco e recebe a tarefa de sempre: prever inadimplência. O arquivo
+tem seis colunas. Três são numéricas --- \texttt{idade}, \texttt{renda} e
+\texttt{saldo} ---, e a \texttt{renda} vem com buracos, porque nem todo cliente
+informa. Duas são texto, \texttt{estado} e \texttt{profissao}, e essas vieram
+completas. A sexta é a resposta, \texttt{inadimplente}, que vale $0$ ou $1$.
+
+O que você quer fazer com elas é o que a aula descreveu: preencher os faltantes
+das numéricas pela mediana, padronizá-las, transformar as duas categóricas em
+indicadoras, e ajustar uma regressão logística com penalização $\ell_2$,
+escolhendo o $C$ por validação cruzada de cinco dobras. E quer tudo isso sem que o
+número que você vai apresentar no fim saia otimista.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Explique o mecanismo do primeiro número. Se $y$ é ruído puro, de onde sai
-        um $R^2$ positivo?
-  \item Suponha $p$ covariáveis independentes de $y$, e que você fique com as $m$
-        de maior correlação amostral com $y$. O que acontece com o $R^2$ inflado
-        quando $p$ cresce, com $n$ e $m$ fixos? Por quê?
-  \item Explique por que a padronização não consegue produzir o mesmo efeito, por
-        mais que ela use o conjunto todo.
-  \item Se o efeito da padronização é desprezível, por que ainda assim se
-        recomenda pô-la dentro do \texttt{Pipeline}?
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)} Com $y$ de ruído puro, a correlação \emph{populacional} entre
-qualquer covariável e $y$ é zero --- mas a correlação \emph{amostral} não é: ela
-flutua em torno de zero com desvio da ordem de $1/\sqrt n$. Ao ficar com as
-covariáveis de maior correlação amostral, você está escolhendo, entre milhares de
-flutuações, as que por acaso ficaram maiores. Não é um subconjunto qualquer: é o
-subconjunto que melhor se ajusta \emph{a este $y$ específico}, inclusive à parte
-dele que aparece nas dobras de validação.
-
-Quando a validação cruzada roda depois, cada dobra de validação já participou da
-escolha das covariáveis que serão testadas nela. O ruído daquela dobra já está
-codificado na lista de variáveis --- e o modelo o reencontra. É o mesmo mecanismo
-do Exercício~4 da Lista Teórica~03 (selecionar é otimizar), aqui aplicado a
-covariáveis em vez de hiperparâmetros.
-
-\smallskip
-\textbf{(b)} O $R^2$ inflado \textbf{aumenta} com $p$. Quanto mais covariáveis
-você examina, maior é o máximo das $p$ correlações amostrais --- é o mesmo
-argumento do máximo de $M$ variáveis aleatórias do Exercício~4 da Lista~03. Com
-$p=10$ você escolhe as $m$ melhores de dez flutuações; com $p=10\,000$, as $m$
-melhores de dez mil, que são muito maiores.
-
-Isso é desconfortável, porque a situação em que a seleção de variáveis parece
-mais necessária --- $p$ enorme --- é exatamente aquela em que fazê-la errado
-custa mais caro.
-
-\smallskip
-\textbf{(c)} Porque o \texttt{StandardScaler} \textbf{nunca vê o $y$}. Ele
-calcula duas estatísticas por coluna de $\bm X$: a média e o desvio-padrão. Usar
-o conjunto completo em vez de só o treino muda essas duas estatísticas por uma
-quantidade da ordem de $1/\sqrt n$, e o efeito é o mesmo para todas as
-observações, independentemente do valor de $y$ delas.
-
-Dito de outro modo: a etapa não tem nenhum canal por onde a informação sobre a
-resposta possa entrar. Ela pode piorar ou melhorar o condicionamento numérico,
-mas não pode fazer um modelo parecer melhor do que é. Foi essa a medição:
-$0{,}8466$ contra $0{,}8466$.
-
-\smallskip
-\textbf{(d)} Três razões, e nenhuma delas é o vazamento:
-\begin{enumerate}[label=(\roman*),leftmargin=1.1cm]
-  \item \textbf{Custa uma linha.} Se a conduta certa é gratuita, não há motivo
-        para debater se a errada é aceitável neste caso.
-  \item \textbf{A conduta é a mesma para todas as etapas.} Quem se acostuma a
-        padronizar fora do \emph{pipeline} vai, mais cedo ou mais tarde,
-        selecionar variáveis fora dele --- e aí custa $0{,}40$. A disciplina vale
-        mais que o caso isolado.
-  \item \textbf{Reprodutibilidade em produção.} O \texttt{Pipeline} carrega a
-        média e o desvio aprendidos no treino, e os aplica automaticamente a
-        qualquer observação nova. Sem ele, alguém precisa lembrar de guardar e
-        reaplicar esses números --- e é aí que aparecem erros silenciosos.
-\end{enumerate}
-O que a medição muda não é a conduta; é \textbf{onde gastar vigilância}. Numa
-revisão de código, a pergunta cara é ``como as covariáveis foram escolhidas?'' e
-``as dobras respeitam as unidades?'', não ``o \texttt{StandardScaler} está no
-lugar certo?''.
-\end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[escrevendo o pipeline]
-Um banco tem as seguintes colunas:
-\begin{itemize}[leftmargin=1.4cm]
-  \item \texttt{idade}, \texttt{renda}, \texttt{saldo} --- numéricas, com valores
-        faltantes em \texttt{renda};
-  \item \texttt{estado}, \texttt{profissao} --- categóricas, sem faltantes;
-  \item \texttt{inadimplente} --- a resposta, binária.
-\end{itemize}
-A receita desejada é: imputar as numéricas pela mediana, padronizá-las, codificar
-as categóricas em variáveis indicadoras, e ajustar uma regressão logística com
-penalização $\ell_2$, escolhendo o $C$ por validação cruzada de 5 dobras.
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Escreva o código, usando \texttt{ColumnTransformer}, \texttt{Pipeline} e
+  \item Escreva o código, com \texttt{ColumnTransformer}, \texttt{Pipeline} e
         \texttt{GridSearchCV}.
-  \item Na sua solução, quantas vezes a mediana de \texttt{renda} é calculada ao
-        longo de toda a busca, se a grade de $C$ tem $6$ valores? Justifique.
-  \item Por que a ordem imputar $\to$ padronizar importa, e não o contrário?
+  \item Se a grade de $C$ tem seis valores, quantas vezes a mediana da
+        \texttt{renda} acaba sendo calculada ao longo de toda a busca? Justifique,
+        e compare com o que aconteceria se você a imputasse uma vez só, no começo.
+  \item Por que a ordem tem de ser imputar \emph{e depois} padronizar, e não o
+        contrário?
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)}
+\textbf{(a)} As colunas pedem tratamentos diferentes, então o
+\texttt{ColumnTransformer} abre dois ramos --- e o ramo numérico é, ele próprio,
+um \emph{pipeline} de duas etapas:
 \begin{lstlisting}
 import numpy as np
 import sklearn.model_selection as skm
@@ -189,7 +136,7 @@ prep = ColumnTransformer([
 ])
 
 tubo = Pipeline([("prep", prep),
-                 ("modelo", LogisticRegression(penalty="l2", max_iter=2000))])
+                 ("modelo", LogisticRegression(max_iter=2000))])
 
 busca = skm.GridSearchCV(
     tubo,
@@ -198,99 +145,54 @@ busca = skm.GridSearchCV(
     scoring="roc_auc",
 ).fit(X, y)
 \end{lstlisting}
-Dois detalhes que valem nota: \texttt{handle\_unknown="ignore"} evita que o ajuste
-quebre quando uma categoria aparece só na validação, e
-\texttt{StratifiedKFold} mantém a proporção de inadimplentes em cada dobra --- em
-classificação é o padrão do \texttt{GridSearchCV}, mas explicitá-lo deixa o
-\texttt{shuffle} sob controle (Exercício~3 da Lista prática~03).
+
+Três escolhas do código merecem uma palavra. O \texttt{handle\_unknown="ignore"}
+evita que o ajuste quebre quando uma profissão rara aparece só na validação e o
+codificador a vê pela primeira vez --- é o tipo de erro que não acontece no seu
+notebook e acontece em produção, seis meses depois. O \texttt{StratifiedKFold}
+mantém a proporção de inadimplentes em cada dobra: em classificação ele já é o
+padrão do \texttt{GridSearchCV}, mas escrevê-lo deixa o \texttt{shuffle} sob o seu
+controle, e não sob o de quem ordenou o arquivo (Exercício~3 da Lista
+prática~03). E a penalização $\ell_2$ que o enunciado pede \textbf{não precisa ser
+escrita}: é o padrão da \texttt{LogisticRegression}. Escrever
+\texttt{penalty="l2"} não está errado, mas o argumento foi depreciado na versão
+1.8 do \texttt{scikit-learn} e desaparece na 1.10 --- omiti-lo funciona em
+qualquer versão.
 
 \smallskip
-\textbf{(b)} \textbf{30 vezes}: $6$ valores de $C$ $\times$ $5$ dobras. Em cada
-combinação, o \texttt{GridSearchCV} chama \texttt{fit} do \emph{pipeline inteiro}
-usando só as $4/5$ de treino daquela dobra, e o \texttt{SimpleImputer} recalcula a
-mediana ali. (Com \texttt{refit=True}, que é o padrão, há ainda um 31º ajuste no
-conjunto completo ao final, para produzir o \texttt{best\_estimator\_}.)
+\textbf{(b)} \textbf{Trinta vezes}: seis valores de $C$ vezes cinco dobras. Para
+cada combinação, o \texttt{GridSearchCV} chama o \texttt{fit} do \emph{pipeline
+inteiro} usando só os $4/5$ de treino daquela dobra, e ali dentro o
+\texttt{SimpleImputer} recalcula a mediana do zero. (Com \texttt{refit=True}, que
+é o padrão, ainda há um $31^{\text{o}}$ ajuste no conjunto completo ao final, para
+construir o \texttt{best\_estimator\_}.)
 
-Isso é o oposto de imputar uma vez, no começo, no conjunto todo. Redundante? Sim,
-computacionalmente. Mas é o que torna a estimativa honesta --- e note que a
-mediana muda de dobra para dobra, o que é justamente a variabilidade que a
-validação cruzada precisa capturar.
+Comparado com imputar uma vez só no começo, isso é trinta vezes mais trabalho para
+chegar à mesma coluna preenchida --- ou quase a mesma, e é justamente o
+\emph{quase} que interessa. A mediana muda de dobra para dobra, e essa variação faz
+parte do que você está tentando medir: o desempenho não é do modelo sozinho, é do
+\emph{procedimento} que imputa, padroniza e ajusta. Imputar antes tira essa
+variação da conta e usa, em cada dobra, uma mediana que as observações de
+validação ajudaram a calcular.
 
-\smallskip
-\textbf{(c)} Porque a padronização usa média e desvio-padrão, e ambos são afetados
-pelos valores faltantes. Se você padronizar primeiro, o \texttt{StandardScaler}
-encontra \texttt{NaN} na coluna \texttt{renda} e propaga \texttt{NaN} para todas
-as estatísticas --- na melhor das hipóteses o código quebra, na pior ele devolve
-uma coluna inteira de \texttt{NaN}.
-
-Mesmo que não quebrasse, a ordem inversa seria conceitualmente errada: imputar
-depois de padronizar significaria inserir a mediana \emph{da escala padronizada},
-o que muda a média da coluna e desfaz a padronização que acabou de ser feita.
-Imputar primeiro deixa a coluna completa, e aí a padronização vê os dados que
-efetivamente irão para o modelo.
-\end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[a divisão que nenhum pipeline conserta]
-Um laboratório mede a expressão de $20\,000$ genes em $60$ pacientes, três
-amostras por paciente ($180$ linhas), e quer prever se o tumor responde ao
-tratamento. Um analista monta o \texttt{Pipeline} correto --- imputação e
-padronização dentro dele --- e reporta acurácia de $0{,}95$ por validação cruzada
-de 10 dobras sobre as $180$ linhas.
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Qual é o problema, e por que o \texttt{Pipeline} não o resolve?
-  \item Qual é o número aproximado de pacientes que aparecem \emph{ao mesmo
-        tempo} no treino e na validação de uma dobra típica? Justifique.
-  \item Como corrigir? Escreva a chamada.
-  \item O laboratório também quer selecionar os $200$ genes mais associados à
-        resposta. Onde essa etapa tem de ficar?
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)} As três amostras de um mesmo paciente são \textbf{a mesma unidade
-experimental}. Ao dividir por linha, quase todo paciente terá amostras no treino e
-amostras na validação, e o modelo não precisa aprender nada sobre biologia: basta
-reconhecer o perfil de expressão \emph{daquele paciente}, que ele já viu.
-
-O \texttt{Pipeline} não resolve porque ele controla \emph{quando} cada etapa é
-ajustada, não \emph{como} as observações são repartidas. Ele garante que a
-padronização use só o treino da dobra --- e o treino da dobra já está
-contaminado. É a distinção do Exercício~1: o \texttt{Pipeline} resolve os itens
-(a), (c) e (d); este é o item (e).
+Pelo critério do Exercício~1 isso é um vazamento \emph{leve} --- a mediana não olha
+o $Y$ ---, e o efeito numérico seria pequeno. A questão é que corrigi-lo custou
+zero: já estava escrito.
 
 \smallskip
-\textbf{(b)} Praticamente \textbf{todos os 60}. Numa dobra de 10 dobras, cerca de
-$18$ das $180$ linhas vão para a validação. Cada uma pertence a um paciente que
-tem outras duas linhas, e a chance de as outras duas caírem também na mesma
-dobra é pequena --- a probabilidade de um paciente ter as três amostras na mesma
-dobra de $1/10$ é da ordem de $(1/10)^2 = 1\%$. Logo, quase todos os pacientes
-representados na validação também estão no treino, e como são $18$ linhas de até
-$18$ pacientes distintos, o vazamento atinge quase toda a dobra.
+\textbf{(c)} Pelo motivo prosaico primeiro: se você padronizar antes, o
+\texttt{StandardScaler} encontra \texttt{NaN} na coluna \texttt{renda} e a média e
+o desvio saem \texttt{NaN} também, contaminando a coluna inteira. Na melhor das
+hipóteses o código quebra na sua frente; na pior ele segue em silêncio com uma
+coluna de \texttt{NaN}.
 
-\smallskip
-\textbf{(c)} Dividindo por \textbf{grupo}, com o identificador do paciente:
-\begin{lstlisting}
-import sklearn.model_selection as skm
-
-cv = skm.GroupKFold(n_splits=10)
-notas = skm.cross_val_score(tubo, X, y, cv=cv, groups=id_paciente,
-                            scoring="accuracy")
-\end{lstlisting}
-O \texttt{GroupKFold} garante que todas as linhas de um paciente fiquem do mesmo
-lado da divisão. A acurácia vai cair --- e o número menor é o verdadeiro.
-
-\smallskip
-\textbf{(d)} \textbf{Dentro do \texttt{Pipeline}}, como um passo
-(\texttt{SelectKBest}, por exemplo), de modo que seja reajustada em cada dobra.
-Este é o item (b) do Exercício~1, e é o vazamento de $R^2=+0{,}40$ --- agravado
-aqui pela proporção: $20\,000$ genes para $60$ pacientes.
-
-Note que o problema deste exercício exige as \textbf{duas} correções ao mesmo
-tempo, e elas são independentes. Fazer só o \texttt{GroupKFold} deixa a seleção
-de genes vazando; fazer só a seleção dentro do \emph{pipeline} deixa o mesmo
-paciente nos dois lados. É por isso que vale ter as duas perguntas na cabeça
-separadamente: \emph{a etapa olha o $Y$?} e \emph{a divisão respeita a unidade?}
+E há o motivo conceitual, que sobrevive mesmo se a implementação fosse esperta o
+bastante para ignorar os faltantes. Imputar depois de padronizar significa inserir
+a mediana \emph{da escala já padronizada}: você acabou de deixar a coluna com média
+$0$ e desvio $1$, e aí acrescenta um punhado de valores que desloca as duas coisas.
+A padronização que você fez deixa de valer para os dados que efetivamente chegam ao
+modelo. Imputando primeiro, a coluna chega completa ao \texttt{StandardScaler}, e a
+média e o desvio que ele calcula são os dos números que o modelo vai de fato ver.
 \end{solucao}
 
 
