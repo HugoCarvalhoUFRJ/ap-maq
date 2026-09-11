@@ -271,6 +271,80 @@ continuam nas notas, numa `observacao` da seção "Por que agregar?", e na
 o par medido desse exercício, e por isso ficou também. Se for cortar o $\rho$ um
 dia, são os três de uma vez.
 
+## A aula 06 encolheu a lista teórica e trocou de registro
+
+Decisão do Gabriel em 11/09/2026. A `Lista teorica 06` foi de **quatro exercícios
+para dois**, e os dois que ficaram foram reescritos num registro mais próximo do
+leitor --- com uma pessoa e uma situação em cena, no lugar de uma enumeração
+abstrata. A `Aula prática 06` passou pela mesma reescrita.
+
+| onde | o que mudou |
+| --- | --- |
+| `Lista teorica 06.tex` | saíram os Ex. 2 (``por que um custa 0,40 e o outro custa nada'') e 4 (``a divisão que nenhum pipeline conserta''); 297→199 linhas, 2→1 página de enunciado e 5→3 de gabarito |
+| os dois que ficaram | o Ex. 1 virou a revisão do notebook de um colega; o antigo Ex. 3 virou o Ex. 2, e o banco dele ganhou contexto |
+| `Aula prática 06.ipynb` | as 31 células de texto reescritas, as 20 de código **intactas**; markdown de 20 para 23 KB |
+| `Lista prática 06` (os dois) | quatro ponteiros para os exercícios que saíram, redirecionados |
+
+**Os ponteiros são a parte cara**, como sempre. A lista prática citava o Ex. 2(b),
+o Ex. 2(c), o Ex. 3 e o Ex. 4(b) da teórica. Os dois primeiros passaram a apontar
+para os itens *leves* do Ex. 1, que é onde o argumento passou a morar; o terceiro
+virou Ex. 2 pela renumeração; e o quarto --- a conta de probabilidade do vazamento
+por grupo --- ficou sem destino, então a menção saiu e a conta ficou escrita inline
+no próprio notebook.
+
+**A tabela ``O que ficou'' existe nos dois `.ipynb` da lista prática.** Ela não é
+lacuna, e por isso é fácil corrigir num e esquecer no outro --- foi o que
+aconteceu, e o enunciado ficou uma rodada com números que o gabarito já não tinha.
+A conferência que pega isso é comparar as duas fontes célula a célula, descartando
+as de leitura (as que começam com ``Deve imprimir''), e exigir que **só** difiram
+onde há `...`.
+
+### O `GroupKFold` mudou entre versões, e havia número defasado
+
+Achado em 11/09/2026, conferindo o Ex. 3 da `Lista prática 06`. Com grupos de
+tamanho igual, o `GroupKFold` atribui grupos a dobras de um jeito na sklearn 1.3 e
+de outro na 1.9 --- a 1.9 faz o rodízio limpo, a 1.3 embaralhava. Os dados saem
+byte-idênticos; o que muda é a partição, e um $R^2$ perto de zero **troca de
+sinal**:
+
+| | KFold | GroupKFold |
+| --- | --- | --- |
+| o que o gabarito afirmava | $+0{,}6665$ | $+0{,}0341$ |
+| sklearn 1.3 (o `python3` do sistema) | $+0{,}6721$ | $+0{,}0372$ |
+| sklearn 1.9 (o `barennet_env`) | $+0{,}6697$ | $\mathbf{-0{,}0866}$ |
+
+Corrigido para os valores da 1.9, junto com a narrativa (``o valor honesto é
+$-0{,}09$'') e com a afirmação de que as dez dobras mostram ``16 ou 17 pacientes
+nos dois lados'' --- uma delas mostra 13. Os Ex. 1, 2 e 4 da mesma lista
+reproduzem exatamente, e a `Aula prática 06` §5, que também usa `GroupKFold`,
+confere com a 1.9 até a quarta casa. **As outras aulas não foram auditadas.**
+
+### Dois números que o relógio não sustenta
+
+A §8 da `Aula prática 06` afirmava que a busca com `SelectKBest` leva **9,1
+segundos** e que a `RandomizedSearchCV` é **45 vezes** mais rápida. Em quatro
+rodadas na mesma máquina, a busca variou de $7{,}2$ a $10{,}6$ s e a razão, de
+$26\times$ a $48\times$. Viraram ``cerca de dez segundos'' e ``dezenas de vezes'',
+com uma linha avisando que tempo de relógio varia. O resto da seção ---
+$0{,}8592$, $0{,}8736$, $0{,}8620$, os 1,6% e os 0,3% --- é estável e ficou.
+
+### O `penalty` da `LogisticRegression` foi depreciado
+
+Terceiro caso da família do `n_alphas` e do `QDA`/`LinAlgError`: roda sem erro
+hoje e some numa versão futura. O argumento `penalty` foi **depreciado na 1.8 e
+sai na 1.10**. Eram quatro ocorrências, todas corrigidas em 11/09/2026:
+
+- `penalty="l2"` é o padrão, então basta **omitir** --- nas duas versões das notas
+  da 07, e no gabarito do Ex. 2 da `Lista teorica 06`, que agora explica isso ao
+  aluno;
+- `penalty=None` vira **`C=np.inf`**, na §7 da `Aula prática 07`. Os coeficientes
+  saem bit-idênticos (diferença absoluta máxima $0$), e a leitura da seção ---
+  ``$C=1$ encolhe os coeficientes cerca de 10%'' --- continua valendo: $10{,}2\%$.
+
+**Cuidado ao procurar por este:** os notebooks chamam
+`warnings.filterwarnings("ignore")`, então executá-los **não** mostra o aviso. Só
+`python -W error::FutureWarning`, fora do notebook, denuncia.
+
 ## Figuras (`recursos/figuras/`)
 
 As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
@@ -531,9 +605,9 @@ convenções acima. Os quatro `Aula prática` herdados foram aposentados; contin
 
 Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, na
 pasta da própria aula e sempre com gabarito: `Lista teorica NN.tex` (3–4
-exercícios, nenhum marcado como opcional; a 04 é a exceção, com 2 desde
-24/08/2026) e `Lista prática NN.ipynb` (lacunas marcadas por `...`), cada uma com
-seu `- gabarito`. O gabarito teórico é o
+exercícios, nenhum marcado como opcional; **duas exceções, com 2**: a 04 desde
+24/08/2026 e a 06 desde 11/09/2026) e `Lista prática NN.ipynb` (lacunas marcadas
+por `...`), cada uma com seu `- gabarito`. O gabarito teórico é o
 **mesmo conteúdo**, com as soluções ligadas por uma opção.
 
 O estilo é `recursos/latex/estilo-lista.sty`, que **carrega** o
