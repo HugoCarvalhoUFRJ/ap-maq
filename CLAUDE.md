@@ -716,6 +716,106 @@ pdflatex "Lista teorica 03 - gabarito.tex"
 creditavam o docente anterior, não tinham fonte `.tex` e estavam numeradas pela
 ordem antiga dos slides. Com uma lista por aula, a numeração é 1:1.
 
+## Avaliações (`avaliacoes/`, na raiz)
+
+Criada em 14/09/2026, decisão do Gabriel. É **irmã** de `aulas/` e `recursos/`, e
+guarda as avaliações do curso atual. As duas Avaliações Presenciais de 2025-02
+continuam em `recursos/avaliacoes/`: são herdadas do Prof. Hugo e não se misturam
+com estas.
+
+```
+avaliacoes/
+├── Lista de revisao 01-06.tex            13 exercícios, Bloco I
+├── Lista de revisao 01-06 - gabarito.tex invólucro de 3 linhas
+├── Avaliacao teorica 01.tex              3 questões sorteadas
+├── Avaliacao teorica 01 - gabarito.tex   invólucro de 3 linhas
+└── exercicios/
+    └── ex-NN-slug.tex                    o corpo de cada exercício, 13 arquivos
+```
+
+**Os 13 exercícios são inéditos**, e não repetem nenhum dos 20 das
+`Lista teorica 01`--`06`. O critério que os tornou inéditos por construção: boa
+parte deles pede que o aluno **demonstre resultados que as notas enunciam sem
+demonstrar** --- o atalho do LOOCV (aula 03), as fórmulas do lasso no caso
+ortonormal (aula 02), as duas formas da fórmula de $k$ dobras (aula 03, numa
+`atencao`). São 2+3+3+2+2+1 por aula.
+
+**A aula 06 tem só um exercício, de propósito.** Ela não tem teorema, proposição
+nem demonstração, e tem uma única equação numerada --- só sustenta questão
+conceitual, e os dois ângulos bons já são os dois exercícios da
+`Lista teorica 06`.
+
+### O `estilo-avaliacao.sty` duplica o `estilo-lista.sty`, e é de propósito
+
+O `estilo-lista.sty` alcança o `estilo-notas` por
+`\RequirePackage[aluno]{../../recursos/latex/estilo-notas}` --- caminho relativo
+ao **diretório de compilação**, não ao `.sty`. Funciona porque todo documento do
+repositório está exatamente dois níveis abaixo da raiz (`aulas/NN-tema/`). A
+pasta `avaliacoes/` está a **um** nível, e ali aquele `../../` sai do
+repositório.
+
+Por isso o `estilo-avaliacao.sty` carrega o `estilo-notas` com um `..` só e
+**duplica** as ~30 linhas de que precisa: a opção `[gabarito]`, o ambiente
+`exercicio` e o ambiente `solucao`. Se um dia mexerem num dos dois arquivos, o
+outro precisa acompanhar --- está anotado no cabeçalho do `.sty`.
+
+Ele acrescenta `\cabecalhorevisao`, `\cabecalhoprova` (com campos de
+nome/matrícula e caixa de instruções, que somem no gabarito), `\questao` (que
+incrementa o mesmo contador do `exercicio`), `\daaula`, a caixa `criterio`, e o
+par `\ifprova`/`\pts` com o ambiente `itens` --- estes três explicados adiante.
+
+### O sorteio da prova
+
+Reproduzível, com a semente registrada em comentário no topo do
+`Avaliacao teorica 01.tex`:
+
+```python
+rng = np.random.default_rng(20260914)                        # a data, aaaammdd
+aulas = sorted(rng.choice([1,2,3,4,5,6], size=3, replace=False).tolist())
+# -> [2, 3, 6]; depois um exercício dentro de cada aula, na mesma ordem
+```
+
+Resultado: Ex. 5 (aula 02, Ridge bayesiana), Ex. 7 (aula 03, as duas formas da
+CV) e Ex. 13 (aula 06, sensibilidade à escala). A restrição de **uma aula por
+questão** evita o azar de uma prova inteira sobre o mesmo assunto. **O sorteio
+rodou uma vez e vale** --- não foi repetido até dar um resultado bonito.
+
+Pesos: **4,0 por questão**, total 12,0, em 2 horas. A igualdade entre as três não
+é simetria decorativa: a Questão 3 pede oito respostas (seis classificações mais
+dois itens discursivos) e a Questão 1 pede quatro, de modo que pesos iguais já
+corrigem um desequilíbrio que a distribuição anterior tinha.
+
+### Fonte única: por que a prova e a lista não podem divergir
+
+O corpo de cada exercício --- enunciado, itens e solução --- mora em
+`avaliacoes/exercicios/ex-NN-slug.tex`, e **os dois documentos o incluem por
+`\input`**. A lista inclui os treze; a prova, os três sorteados. Nenhum dos dois
+`.tex` de topo contém prosa de exercício: eles têm só cabeçalho, títulos, `\label`
+e (na prova) os critérios de correção.
+
+Isso não é organização, é a garantia pedida: divergir deixou de ser possível,
+porque não há duas cópias. Corrigir um exercício é mexer num arquivo só.
+
+A única coisa que difere entre os dois usos é a **pontuação por item**, que a
+prova mostra e a lista não. Ela vem do comando `\pts` do estilo:
+
+```latex
+\newif\ifprova\provafalse
+\newcommand{\pts}[1]{\ifprova\textbf{(#1)}\ \fi}
+```
+
+Cada arquivo de exercício escreve `\item \pts{1,0} texto...`; a prova declara
+`\provatrue` antes do `\begin{document}` e o marcador aparece, enquanto na lista
+ele some. Os itens usam o ambiente `itens` do estilo, para que a formatação seja
+idêntica nos dois.
+
+**Ao conferir isso, não compare o `pdftotext` dos dois PDFs.** Documentos com
+matemática deslocada serializam somatórios e frações em ordem diferente conforme
+a posição na página, e os números de página caem no meio do fluxo --- a
+comparação acusa diferenças de poucos caracteres que não existem no conteúdo. A
+verificação correta é na fonte: conferir que os `\input` da prova são subconjunto
+dos da lista e que nenhum dos dois `.tex` de topo tem `\begin{solucao}`.
+
 ## Dados
 
 **Os notebooks não baixam dados da rede, e os `.csv` ficam numa cópia única em
@@ -880,9 +980,9 @@ curso creditando o Prof. Hugo**. O que veio foi o `main.tex` do curso inteiro de
 mais dois frames escritos aqui, e o deck tem 32.
 
 ```
-aulas/10-svm/
-├── 10 SVM - slide.tex        ← 958 linhas, Beamer tema Madrid
-├── 10 SVM - slide.pdf        ← 33 páginas, mesmo caminho de antes
+aulas/09-svm/
+├── 09 SVM - slide.tex        ← 958 linhas, Beamer tema Madrid
+├── 09 SVM - slide.pdf        ← 33 páginas, mesmo caminho de antes
 └── slide-figuras/            ← as 10 figuras (1,1 MB), via \graphicspath
 ```
 

@@ -7,8 +7,9 @@ pelo Prof. Gabriel Sanfins.
 ## Organização do repositório
 
 O material está organizado **por aula** em `aulas/` (cada pasta reúne o slide, as
-notas de aula e os notebooks daquele tópico) e por **recursos transversais** em
-`recursos/` (livros, dados, listas e avaliações usados ao longo de todo o curso).
+notas de aula e os notebooks daquele tópico), por **avaliações** em `avaliacoes/`
+e por **recursos transversais** em `recursos/` (livros, dados e estilos usados ao
+longo de todo o curso).
 
 ```
 aulas/
@@ -27,12 +28,17 @@ aulas/
 ├── E2-reducao-dimensionalidade/
 └── E3-nlp-classificacao/
 
+avaliacoes/                       Avaliações do curso, com gabarito
+├── Lista de revisao 01-06.tex    lista de revisão do Bloco I (13 exercícios)
+├── Avaliacao teorica 01.tex      a prova, com 3 questões sorteadas dessa lista
+└── exercicios/                   o corpo de cada exercício, incluído pelos dois
+
 recursos/
 ├── livros/        AME.pdf, ISLP.pdf
 ├── dados/         conjuntos de dados (.csv) usados nas aulas práticas
-├── avaliacoes/    avaliações presenciais (AP1, AP2) com gabarito
+├── avaliacoes/    as Avaliações Presenciais de 2025-02, herdadas
 ├── figuras/       figuras das notas + gerar-figuras.py que as produz
-└── latex/         estilo-notas.sty e estilo-lista.sty (estilos compartilhados)
+└── latex/         estilo-notas.sty, estilo-lista.sty e estilo-avaliacao.sty
 
 requirements.txt   pacotes necessários para rodar as aulas práticas
 ```
@@ -120,6 +126,43 @@ pdflatex "Lista teorica 03 - gabarito.tex"  # com as soluções
 Todo número que aparece nos gabaritos foi **medido**, executando o notebook — e
 em vários casos a medição contrariou o que se esperava. Esses casos estão
 registrados nos próprios gabaritos, com a explicação.
+
+## Avaliações
+
+Ficam em [`avaliacoes/`](avaliacoes), na raiz — separadas das Avaliações
+Presenciais de 2025-02, que são herdadas e continuam em `recursos/avaliacoes/`.
+
+| Arquivo | O que é |
+| --- | --- |
+| `Lista de revisao 01-06.tex` / `.pdf` | 13 exercícios inéditos de nível intermediário, cobrindo o Bloco I |
+| `Lista de revisao 01-06 - gabarito.pdf` | a mesma lista com as soluções |
+| `Avaliacao teorica 01.tex` / `.pdf` | a prova: 3 questões **sorteadas** da lista de revisão, 12,0 pontos, 2 horas |
+| `Avaliacao teorica 01 - gabarito.pdf` | as soluções, com critério de correção por questão |
+
+A lista de revisão não repete nenhum dos exercícios das listas de cada aula: boa
+parte dela pede que o aluno **demonstre** resultados que as notas usaram sem
+demonstrar — o atalho do LOOCV, as fórmulas do lasso no caso ortonormal, as duas
+formas da fórmula de $k$ dobras.
+
+As questões da prova foram sorteadas com semente registrada no cabeçalho do
+`.tex`, com a restrição de que cada uma venha de uma aula diferente. Como nas
+listas, o gabarito sai do mesmo arquivo-fonte do enunciado.
+
+**A prova e a lista compartilham os exercícios, literalmente.** O corpo de cada
+um — enunciado, itens e solução — mora em `avaliacoes/exercicios/`, e os dois
+documentos o incluem por `\input`: a lista inclui os treze, a prova inclui os três
+sorteados. Não há duas cópias, então não há como divergirem; corrigir um exercício
+é mexer num arquivo só. A única diferença entre os dois usos é a pontuação por
+item, que a prova mostra e a lista não — ela vem de um comando do estilo, que some
+quando o documento não é uma prova.
+
+Para compilar, de dentro de `avaliacoes/`:
+
+```bash
+cd avaliacoes
+pdflatex "Lista de revisao 01-06.tex"
+pdflatex "Lista de revisao 01-06 - gabarito.tex"
+```
 
 ## Notas de aula (LaTeX)
 

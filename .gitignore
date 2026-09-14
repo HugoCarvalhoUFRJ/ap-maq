@@ -12,7 +12,7 @@
 *.fls
 *.fdb_latexmk
 
-# Beamer (só o slide de SVM, em aulas/10-svm/)
+# Beamer (só o slide de SVM, em aulas/09-svm/)
 *.nav
 *.snm
 *.vrb
