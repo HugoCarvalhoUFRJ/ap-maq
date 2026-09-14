@@ -169,9 +169,14 @@ na CV --- o \emph{pipeline} previne por construção. É a tradução em código
 das Aulas~02--04.
 \end{ideia}
 
-O notebook \texttt{Aula prática 06} mede os três vazamentos --- seleção de
-variáveis, padronização e observações agrupadas --- e monta o
-\texttt{ColumnTransformer} completo num banco com faltantes e categóricas.
+O notebook \texttt{Aula prática 06} percorre esse caminho em código: mede quais
+métodos são sensíveis à escala, põe um número no custo de padronizar fora da
+dobra, abre o \texttt{Pipeline} para conferir que o scaler aprendeu a média
+\emph{do treino}, e fecha entregando o \emph{pipeline} inteiro ao
+\texttt{GridSearchCV}. A \texttt{Lista prática 06} exercita o mesmo caminho, com
+outras sementes. Os outros dois vazamentos desta seção --- seleção de variáveis e
+observações agrupadas --- ficam por conta destas notas e do Exercício~1 da
+\texttt{Lista teorica 06}, onde entram como caso a classificar.
 
 %==============================================================================
 \section{Outros pré-processamentos comuns}

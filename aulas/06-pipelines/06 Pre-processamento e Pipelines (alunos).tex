@@ -339,9 +339,20 @@ Note que o \texttt{ColumnTransformer} é, ele próprio, uma etapa de um
 aninhado. A estrutura é recursiva de propósito: qualquer análise, por mais
 complicada, cabe num único objeto com um \texttt{fit} e um \texttt{predict}.
 
-O notebook \texttt{Aula prática 06} monta esse fluxo completo, reproduz as duas
-medições da Figura~\ref{fig:vazamento} e acrescenta uma terceira: o vazamento por
-observações agrupadas, que nenhum \emph{pipeline} evita.
+O notebook \texttt{Aula prática 06} segue o fio principal desta aula: mede quais
+métodos são sensíveis à escala, põe um número no custo de padronizar fora da dobra
+(chega a $0{,}8342$ contra $0{,}8341$, com outra semente, e a mesma conclusão do
+painel direito da Figura~\ref{fig:vazamento}), abre o \texttt{Pipeline} para
+conferir que o scaler aprendeu a média \emph{do treino}, e fecha entregando o
+\emph{pipeline} inteiro ao \texttt{GridSearchCV}. A \texttt{Lista prática 06}
+exercita o mesmo caminho, com outras sementes.
+
+O vazamento por seleção de variáveis --- o painel esquerdo da
+Figura~\ref{fig:vazamento} --- e o vazamento por observações agrupadas não têm
+laboratório próprio: ficam por conta destas notas, e do Exercício~1 da
+\texttt{Lista teorica 06}, onde aparecem entre os seis casos a classificar. São os
+dois \textbf{graves} da hierarquia, e vale reler esta seção com cuidado justamente
+porque você não vai medi-los com as mãos.
 
 %==============================================================================
 \section*{Resumo}
