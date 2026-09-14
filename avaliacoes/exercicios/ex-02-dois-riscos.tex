@@ -1,0 +1,100 @@
+% Aula 01 --- risco condicional x risco esperado, e a barra de erro do teste.
+A palavra "risco" aparece na Aula~01 com dois sentidos, e a diferença entre eles
+não é preciosismo: ela decide qual pergunta o seu número está respondendo.
+
+Quando $g$ é tratada como uma função \emph{fixa}, a esperança em
+$\E[(Y-g(\X))^2]$ percorre só a observação nova $(\X,Y)$. Chamamos isso de
+\textbf{risco condicional}. Quando $g=\ghat$ é tratada como aleatória --- e ela é,
+porque foi construída a partir de $\Dados$ ---, a esperança percorre também as
+amostras de treino possíveis, e temos o \textbf{risco esperado}.
+\begin{itens}
+  \item \pts{0,8} Cada um dos dois oferece uma garantia diferente. Descreva as
+        duas, e diga qual interessa a quem já ajustou um modelo e vai colocá-lo em
+        produção, e qual interessa a quem ainda está escolhendo entre dois métodos.
+  \item \pts{0,7} Você separou um conjunto de teste de $m$ observações que não
+        participou de nada, e calculou $\riscohat(\ghat)=\frac1m\sum_{k=1}^m W_k$,
+        com $W_k=(Y_k-\ghat(\X_k))^2$. Qual dos dois riscos esse número estima?
+        Para responder, pergunte-se o que está fixo e o que varia no momento em
+        que você faz a conta.
+  \item \pts{0,5} Um conjunto de teste permite algo que a validação cruzada não
+        permite: uma barra de erro honesta. Explique por que os $W_k$ são i.i.d.\ e
+        escreva o intervalo de confiança aproximado de 95\% que o Teorema Central
+        do Limite fornece.
+  \item \pts{1,0} Num teste com $m=400$ você obteve $\riscohat=2{,}50$ e
+        $\widehat\sigma^2=16{,}0$. Calcule o intervalo. Um colega, no mesmo
+        conjunto, obteve $2{,}20$ com outro método e anuncia que o dele é melhor.
+        Ele pode? Justifique.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} O \textbf{risco condicional} é uma garantia sobre \emph{aquela
+função específica}: se eu usar este $\ghat$, já ajustado, em observações novas, meu
+erro quadrático médio esperado é tanto.
+
+O \textbf{risco esperado} é uma garantia sobre o \emph{procedimento}: se eu
+sortear uma amostra de treino, rodar este método e usar o que sair, meu erro
+esperado é tanto. A esperança percorre também os treinos possíveis.
+
+Quem vai pôr o modelo em produção quer o \textbf{condicional}. O modelo dele é um
+só, já existe, não vai ser reajustado --- saber como se comportam os modelos que
+aquele método \emph{costuma} produzir não paga as contas.
+
+Quem está comparando métodos quer o \textbf{esperado}. A pergunta ali é "qual
+deles tende a produzir bons modelos", e uma rodada de sorte com um método ruim não
+deveria decidir a escolha.
+
+\smallskip
+\textbf{(b)} Estima o \textbf{risco condicional}.
+
+No momento da conta, $\ghat$ já foi ajustado e não muda: é uma função fixa. O que
+varia de uma parcela para outra é apenas o par $(\X_k,Y_k)$ sorteado para o
+teste. A aleatoriedade do treino --- que outra amostra teria dado outro $\ghat$
+--- não entra na conta em momento nenhum, porque o treino aconteceu antes e não é
+repetido.
+
+Dito de outro modo: para estimar o risco \emph{esperado} você teria de repetir o
+processo inteiro, sorteando vários treinos, e não é o que um único conjunto de
+teste faz.
+
+\smallskip
+\textbf{(c)} Condicionalmente a $\ghat$ --- que é a situação, por (b) --- cada
+$W_k=(Y_k-\ghat(\X_k))^2$ é função de um único par $(\X_k,Y_k)$. Esses pares são
+i.i.d.\ entre si e independentes do treino, e a mesma função $\ghat$ é aplicada a
+todos. Logo os $W_k$ são i.i.d., com média $\risco(\ghat)$.
+
+Como $\riscohat$ é média de i.i.d., o Teorema Central do Limite se aplica e dá
+\[
+  \riscohat(\ghat)\;\pm\;2\sqrt{\widehat\sigma^2/m},
+  \qquad
+  \widehat\sigma^2=\frac1m\sum_{k=1}^m(W_k-\overline W)^2 .
+\]
+
+Há uma hipótese fazendo todo o trabalho aqui: o teste não participou de nada. Se ele
+tivesse sido usado para escolher qualquer coisa, os $W_k$ deixariam de ser
+independentes do $\ghat$ e o intervalo perderia o sentido.
+
+\smallskip
+\textbf{(d)} A margem é
+\[
+  2\sqrt{16{,}0/400}=2\sqrt{0{,}04}=2\times 0{,}2=0{,}4,
+\]
+e o intervalo é
+\[
+  2{,}50 \pm 0{,}40 \;=\; [\,2{,}10;\ 2{,}90\,].
+\]
+
+Ele não pode. O valor dele, $2{,}20$, cai \textbf{dentro} do intervalo: a
+diferença de $0{,}30$ é menor que a incerteza da própria medição, e um outro
+conjunto de teste do mesmo tamanho poderia perfeitamente inverter a ordem.
+
+O que se pode afirmar é mais modesto, e a formulação importa: \emph{este
+conjunto de teste não distinguiu os dois métodos}. Isso não é o mesmo que dizer
+que eles são equivalentes --- talvez sejam diferentes e o teste seja pequeno
+demais para perceber.
+
+Daí sai também uma decisão de projeto. A margem encolhe com $\sqrt m$: para
+cortá-la pela metade é preciso quadruplicar o teste. Como estimar risco é uma
+tarefa muito mais barata do que construir um bom preditor, com $n$ grande vale
+reservar bem menos que os 30\% de praxe --- e com $n$ pequeno vale desconfiar de
+qualquer ranking apertado.
+\end{solucao}

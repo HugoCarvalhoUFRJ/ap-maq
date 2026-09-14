@@ -1,0 +1,133 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista de Revisão --- Aulas 01 a 06 (Bloco I)
+%  Material de preparação para a Avaliação Teórica 01.
+%
+%  O gabarito sai de "Lista de revisao 01-06 - gabarito.tex", que apenas liga a
+%  opção [gabarito] e inclui este arquivo --- fonte única, dois PDFs.
+%
+%  O CORPO DE CADA EXERCÍCIO ESTÁ EM exercicios/ex-NN-slug.tex, e é incluído por
+%  \input também pela "Avaliacao teorica 01.tex". Assim é impossível que a prova
+%  e a lista divirjam num exercício sorteado: os dois leem o mesmo arquivo.
+%  A pontuação por item, que só a prova mostra, vem do comando \pts do estilo.
+%
+%  Os treze exercícios são inéditos: nenhum repete os vinte das
+%  Lista teorica 01--06. Vários pedem derivações que as notas enunciam sem
+%  demonstrar (o atalho do LOOCV, as fórmulas do caso ortonormal, as duas formas
+%  da fórmula de k dobras).
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../recursos/latex/estilo-avaliacao}
+
+\begin{document}
+\cabecalhorevisao{01 a 06}{Fundamentos, Regressão, Validação Cruzada, KNN,
+Árvores e \emph{Pipelines}}
+
+\noindent
+Treze exercícios para revisar o Bloco~I antes da avaliação. Eles não repetem os
+das listas de cada aula --- a maior parte pede que você \emph{demonstre}
+resultados que as notas usaram sem demonstrar, ou que ligue duas aulas vistas
+separadamente.
+
+\medskip\noindent
+Não há ordem obrigatória, mas os exercícios de uma mesma aula se apoiam uns nos
+outros, e vários apontam para exercícios das listas anteriores --- quando isso
+acontece, o enunciado avisa.
+
+\medskip\noindent
+Salvo indicação em contrário, $(\X,Y)$ é um par aleatório com distribuição $P$,
+$r(\x)=\E[Y\mid\X=\x]$ é a função de regressão, $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é
+a amostra de treino (i.i.d.), $p$ é o número de covariáveis e a perda é a
+quadrática.
+
+%==============================================================================
+\section*{Aula 01 --- Introdução}
+%==============================================================================
+
+\begin{exercicio}[o melhor preditor de todos, e o que sobra depois dele]
+\label{ex:01-ropt}
+\input{exercicios/ex-01-preditor-otimo}
+\end{exercicio}
+
+\begin{exercicio}[dois riscos com o mesmo nome, e uma barra de erro]
+\label{ex:01-doisriscos}
+\input{exercicios/ex-02-dois-riscos}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 02 --- Regressão Linear e Regularização}
+%==============================================================================
+
+\begin{exercicio}[de onde saem as fórmulas do caso ortonormal]
+\label{ex:02-ortonormal}
+\input{exercicios/ex-03-ortonormal}
+\end{exercicio}
+
+\begin{exercicio}[o que o MQO estima quando a linearidade é falsa]
+\label{ex:02-oraculo}
+\input{exercicios/ex-04-oraculo}
+\end{exercicio}
+
+\begin{exercicio}[a Ridge como moda a posteriori]
+\label{ex:02-bayes}
+\input{exercicios/ex-05-bayes}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 03 --- Seleção de Modelos e Validação Cruzada}
+%==============================================================================
+
+\begin{exercicio}[o atalho do LOOCV, demonstrado]
+\label{ex:03-atalho}
+\input{exercicios/ex-06-atalho-loocv}
+\end{exercicio}
+
+\begin{exercicio}[a mesma validação cruzada, escrita de dois jeitos]
+\label{ex:03-duasformas}
+\input{exercicios/ex-07-duas-formas}
+\end{exercicio}
+
+\begin{exercicio}[de que tamanho é o viés da validação cruzada]
+\label{ex:03-viescv}
+\input{exercicios/ex-08-vies-cv}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 04 --- Métodos Não Paramétricos (KNN)}
+%==============================================================================
+
+\begin{exercicio}[quanto custa cada nó de um spline]
+\label{ex:04-splines}
+\input{exercicios/ex-09-splines}
+\end{exercicio}
+
+\begin{exercicio}[duas doenças, dois remédios]
+\label{ex:04-ponte}
+\input{exercicios/ex-10-ponte}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 05 --- Árvores de Regressão e \emph{Ensembles}}
+%==============================================================================
+
+\begin{exercicio}[podar é outro problema, não o mesmo de crescer]
+\label{ex:05-poda}
+\input{exercicios/ex-11-poda}
+\end{exercicio}
+
+\begin{exercicio}[as duas condições, e o que a floresta faz com elas]
+\label{ex:05-condicoes}
+\input{exercicios/ex-12-condicoes}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 06 --- Pré-processamento e \emph{Pipelines}}
+%==============================================================================
+
+\begin{exercicio}[para quem a régua importa]
+\label{ex:06-escala}
+\input{exercicios/ex-13-escala}
+\end{exercicio}
+
+\end{document}

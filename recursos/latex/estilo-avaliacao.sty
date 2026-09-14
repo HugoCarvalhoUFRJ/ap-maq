@@ -1,0 +1,171 @@
+%==============================================================================
+%  estilo-avaliacao.sty
+%  Estilo das avaliações do curso de Aprendizado de Máquina --- a lista de
+%  revisão e as provas teóricas, que ficam em avaliacoes/, na raiz.
+%
+%      \usepackage{../recursos/latex/estilo-avaliacao}            % enunciado
+%      \usepackage[gabarito]{../recursos/latex/estilo-avaliacao}  % com soluções
+%
+%  POR QUE ESTE ARQUIVO NÃO CARREGA O estilo-lista.sty
+%  ---------------------------------------------------
+%  O estilo-lista.sty carrega o estilo-notas por "../../recursos/latex/", um
+%  caminho relativo ao DIRETÓRIO DE COMPILAÇÃO (não ao .sty). Isso funciona para
+%  as listas porque toda aula está exatamente dois níveis abaixo da raiz
+%  (aulas/NN-tema/). A pasta avaliacoes/ está a UM nível, e ali aquele "../../"
+%  sai do repositório.
+%
+%  Por isso as ~30 linhas de que precisávamos do estilo-lista.sty estão
+%  DUPLICADAS aqui: a opção [gabarito], o ambiente exercicio e o ambiente
+%  solucao. Elas são cópia fiel; se um dia mexerem num dos dois arquivos, o
+%  outro precisa acompanhar.
+%==============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo-avaliacao}[2026/09/14 Estilo das avaliacoes de AM]
+
+% ----- Opções do pacote -------------------------------------------------------
+% [gabarito]: inclui os ambientes "solucao" e "criterio". Sem a opção, eles são
+% descartados pelo comment.sty e nem chegam ao PDF.
+\newif\ifgabarito\gabaritofalse
+\DeclareOption{gabarito}{\gabaritotrue}
+\ProcessOptions\relax
+
+% Um ".." só --- ver o cabeçalho deste arquivo.
+\RequirePackage[aluno]{../recursos/latex/estilo-notas}
+\RequirePackage{comment}
+
+% ----- Cabeçalho e rodapé -----------------------------------------------------
+% Sobrescreve o das notas (estilo-notas já chamou \pagestyle{fancy}). O texto da
+% direita é definido pelo documento, via \cabecalhorevisao ou \cabecalhoprova.
+\fancyhead[L]{\small\itshape Aprendizado de Máquina}
+
+% ----- Cabeçalho da lista de revisão ------------------------------------------
+% \cabecalhorevisao{intervalo de aulas}{descrição do conteúdo}
+\newcommand{\cabecalhorevisao}[2]{%
+  \ifgabarito
+    \fancyhead[R]{\small\itshape Lista de Revisão --- gabarito}%
+  \else
+    \fancyhead[R]{\small\itshape Lista de Revisão}%
+  \fi
+  \begin{center}
+    {\Large\bfseries Lista de Revisão\ifgabarito\ --- Gabarito\fi}\\[0.4em]
+    {\small\itshape Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
+    {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
+    {\small Aulas #1 --- #2}
+  \end{center}
+  \vspace{0.5em}\hrule\vspace{1.2em}}
+
+% ----- Cabeçalho da prova -----------------------------------------------------
+% \cabecalhoprova{número}{intervalo de aulas}{descrição}{duração}{total}
+% Produz o título, os campos de identificação e a caixa de instruções.
+\newcommand{\cabecalhoprova}[5]{%
+  \ifgabarito
+    \fancyhead[R]{\small\itshape Avaliação Teórica #1 --- gabarito}%
+  \else
+    \fancyhead[R]{\small\itshape Avaliação Teórica #1}%
+  \fi
+  \begin{center}
+    {\Large\bfseries Avaliação Teórica #1\ifgabarito\ --- Gabarito\fi}\\[0.3em]
+    {\large Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
+    {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
+    {\small Conteúdo: Aulas #2 --- #3}
+  \end{center}
+  \ifgabarito
+    \vspace{0.4em}
+    \begin{atencao}
+      Documento do professor. As resoluções indicam o \emph{esperado}; argumentos
+      equivalentes e corretos devem ser aceitos integralmente. Os pesos por item
+      somam o valor da questão.
+    \end{atencao}
+  \else
+    \vspace{0.8em}
+    \noindent\textbf{Nome:}~\hrulefill\\[1.2em]
+    \noindent\textbf{Matrícula:}~\underline{\hspace{4.5cm}}\hfill
+    \textbf{Turma:}~\underline{\hspace{3.5cm}}
+    \vspace{0.8em}
+    \begin{tcolorbox}[colback=cinzaclaro,colframe=azulufrj,boxrule=0.6pt,
+                      left=8pt,right=8pt,top=6pt,bottom=6pt]
+    \small
+    \textbf{Instruções.}
+    \begin{itemize}[leftmargin=1.3cm,nosep]
+      \item Duração: \textbf{#4}. Prova individual e sem consulta.
+      \item A prova vale \textbf{#5}; o valor de cada item está indicado ao lado.
+      \item \textbf{Justifique todas as respostas.} Resultado final sem
+            justificativa não recebe pontuação integral.
+      \item Notação: $(\X,Y)$ é um par aleatório com distribuição $P$;
+            $r(\x)=\E[Y\mid\X=\x]$ é a função de regressão;
+            $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d.;
+            $p$ é o número de covariáveis; a perda é a quadrática, salvo
+            indicação em contrário.
+    \end{itemize}
+    \end{tcolorbox}
+  \fi
+  \vspace{0.6em}}
+
+% ----- Fonte única: lista de revisão e prova ----------------------------------
+% O corpo de cada exercício mora em avaliacoes/exercicios/ex-NN-slug.tex e é
+% incluído por \input pelos DOIS documentos. Assim é impossível que a prova e a
+% lista divirjam no enunciado ou na solução de um exercício sorteado.
+%
+% O que difere entre os dois usos é só a pontuação por item, que a prova mostra e
+% a lista não. O arquivo do exercício escreve \pts{1,0} antes do texto do item; o
+% comando some na lista e vira "(1,0)" em negrito na prova.
+\newif\ifprova\provafalse
+\newcommand{\pts}[1]{\ifprova\textbf{(#1)}\ \fi}
+
+% Ambiente dos itens (a), (b), ... --- idêntico nos dois documentos.
+\newenvironment{itens}
+  {\begin{enumerate}[label=\textbf{(\alph*)},leftmargin=1.1cm]}
+  {\end{enumerate}}
+
+% ----- Ambiente de exercício --------------------------------------------------
+% \begin{exercicio}[título curto]  ...  \end{exercicio}
+% Cópia do estilo-lista.sty. Contador contínuo no documento; \refstepcounter
+% deixa \label/\ref funcionarem dentro do ambiente.
+\newcounter{exercicio}
+\NewDocumentEnvironment{exercicio}{o}{%
+  \par\medskip\refstepcounter{exercicio}%
+  \noindent
+  {\bfseries\color{azulufrj}%
+    Exercício~\theexercicio
+    \IfValueT{#1}{ --- #1}%
+  .}\enspace\ignorespaces
+}{\par\medskip}
+
+% ----- Questão de prova -------------------------------------------------------
+% \questao{título}{valor} --- cabeçalho de cada questão da avaliação. Usa o mesmo
+% contador do ambiente exercicio, e o incrementa ele próprio.
+\newcommand{\questao}[2]{%
+  \bigskip\par\refstepcounter{exercicio}\noindent
+  {\large\bfseries\color{azulufrj}Questão~\theexercicio\ --- #1}%
+  \hfill{\bfseries(#2)}\par
+  \nopagebreak\vspace{0.3em}}
+
+% ----- Marcador da aula de origem ---------------------------------------------
+% \daaula{06} --- discreto, à direita, para a lista de revisão.
+\newcommand{\daaula}[1]{%
+  \hfill{\small\itshape\color{gray!75}[Aula #1]}\par\nopagebreak\vspace{0.2em}}
+
+% ----- Ambiente de solução ----------------------------------------------------
+% Cópia do estilo-lista.sty. Só existe com a opção [gabarito]; sem ela, o
+% comment.sty descarta o corpo linha a linha --- por isso \begin{solucao} e
+% \end{solucao} precisam ficar sozinhos na linha.
+\ifgabarito
+  \DeclareTColorBox{solucao}{o}{%
+    enhanced, breakable, colback=verdeesc!5, colframe=verdeesc,
+    coltitle=white, fonttitle=\bfseries, title={Solução\IfValueT{#1}{: #1}}}
+\else
+  \excludecomment{solucao}
+\fi
+
+% ----- Caixa de critério de correção ------------------------------------------
+% Só no gabarito da prova. Mesma regra de linha do solucao.
+\ifgabarito
+  \newtcolorbox{criterio}{enhanced,breakable,colback=azulufrj!5,
+    colframe=azulufrj,coltitle=white,fonttitle=\bfseries\small,
+    title={Critério de correção (sugestão)},fontupper=\small,
+    left=6pt,right=6pt,top=4pt,bottom=4pt}
+\else
+  \excludecomment{criterio}
+\fi
+
+\endinput

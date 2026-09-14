@@ -1,0 +1,139 @@
+% Aula 02 --- derivar as fórmulas do Ridge e do Lasso no caso ortonormal.
+As notas da Aula~02 apresentam duas fórmulas prontas para o caso ortonormal,
+$\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, e não as derivam. São elas que explicam a
+frase "o Ridge encolhe e o Lasso zera", e o exercício é preencher essa lacuna.
+
+Use as definições da aula, \textbf{sem} fator $\tfrac12$ no RSS:
+\[
+  \widehat{\bbeta}^{\,\text{ridge}}
+   = \argmin_{\bbeta}\Big\{\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\sum_j\beta_j^2\Big\},
+  \qquad
+  \widehat{\bbeta}^{\,\text{lasso}}
+   = \argmin_{\bbeta}\Big\{\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\sum_j\abs{\beta_j}\Big\}.
+\]
+\begin{itens}
+  \item \pts{1,0} Comece pelo passo que torna tudo possível. Supondo
+        $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, mostre que o estimador de mínimos
+        quadrados é $\widehat\bbeta=\mathbb{X}^\top\bm y$ e que
+        \[
+          \norm{\bm y-\mathbb{X}\bbeta}^2
+            = \norm{\bm y}^2-\norm{\widehat\bbeta}^2
+              + \sum_{j=1}^{p}\big(\beta_j-\widehat\beta_j\big)^2 .
+        \]
+        Explique por que essa identidade faz o problema \textbf{se separar} em $p$
+        problemas de uma variável --- e por que é justamente isso que falha quando
+        as colunas não são ortonormais.
+  \item \pts{0,6} Com a separação em mãos, derive
+        $\widehat\beta_j^{\,\text{ridge}}=\widehat\beta_j/(1+\lambda)$.
+  \item \pts{1,2} Agora o Lasso. A dificuldade nova é que $\abs{\beta_j}$ não é
+        derivável em zero, então não dá para igualar a derivada a zero e pronto:
+        trate separadamente as regiões $\beta_j>0$, $\beta_j<0$ e o ponto
+        $\beta_j=0$. Derive
+        $\widehat\beta_j^{\,\text{lasso}}
+          =\operatorname{sinal}(\widehat\beta_j)\big(\abs{\widehat\beta_j}-\lambda/2\big)_+$
+        e diga qual é a condição exata que leva um coeficiente a zero.
+  \item \pts{0,7} O limiar deu $\lambda/2$, e não $\lambda$. De onde veio esse
+        $2$? Diga o que mudaria nas duas fórmulas se a aula tivesse definido o RSS
+        com um $\tfrac12$ na frente, e que lição prática isso deixa.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Com $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, as equações normais dão
+diretamente
+$\widehat\bbeta=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm y
+=\mathbb{X}^\top\bm y$.
+
+Agora expanda o RSS, usando essa igualdade e a ortonormalidade:
+\[
+  \norm{\bm y-\mathbb{X}\bbeta}^2
+   = \bm y^\top\bm y - 2\,\bbeta^\top\underbrace{\mathbb{X}^\top\bm y}_{=\;\widehat\bbeta}
+     + \bbeta^\top\underbrace{\mathbb{X}^\top\mathbb{X}}_{=\;\mathbb{I}}\bbeta
+   = \norm{\bm y}^2 - 2\,\bbeta^\top\widehat\bbeta + \norm{\bbeta}^2 .
+\]
+Os dois últimos termos pedem um completar quadrados:
+\[
+  -2\,\bbeta^\top\widehat\bbeta+\norm{\bbeta}^2
+   = \norm{\bbeta-\widehat\bbeta}^2-\norm{\widehat\bbeta}^2 ,
+\]
+o que dá a identidade do enunciado.
+
+O que ela tem de especial: o único termo que depende de $\bbeta$ é
+$\sum_j(\beta_j-\widehat\beta_j)^2$, e nessa soma a $j$-ésima parcela envolve
+\emph{apenas} $\beta_j$. Como as penalidades $\sum_j\beta_j^2$ e
+$\sum_j\abs{\beta_j}$ também são somas coordenada a coordenada, o problema inteiro
+vira $p$ problemas escalares que não conversam entre si --- e problema escalar a
+gente resolve derivando.
+
+Quando as colunas \emph{não} são ortonormais, $\mathbb{X}^\top\mathbb{X}$ tem
+termos fora da diagonal, aparecem produtos $\beta_j\beta_\ell$ com $j\ne\ell$, e a
+separação morre. É exatamente por isso que o Lasso não tem solução fechada no caso
+geral: a ortonormalidade é uma hipótese muito forte, não uma simplificação
+inocente.
+
+\smallskip
+\textbf{(b)} O problema escalar é minimizar
+$h(\beta)=(\beta-\widehat\beta_j)^2+\lambda\beta^2$, que é derivável em toda a
+reta:
+\[
+  h'(\beta)=2(\beta-\widehat\beta_j)+2\lambda\beta=0
+  \;\Longrightarrow\;
+  \beta(1+\lambda)=\widehat\beta_j
+  \;\Longrightarrow\;
+  \beta=\frac{\widehat\beta_j}{1+\lambda}.
+\]
+Como $h''=2(1+\lambda)>0$, é mínimo.
+
+Leia o resultado: o Ridge \textbf{multiplica} por um fator $1/(1+\lambda)<1$. Isso
+encolhe proporcionalmente --- quem era grande perde mais em valor absoluto --- e
+nunca zera, porque o fator só alcança zero no limite $\lambda\to\infty$.
+
+\smallskip
+\textbf{(c)} Agora $h(\beta)=(\beta-\widehat\beta_j)^2+\lambda\abs{\beta}$. Analise
+por regiões.
+
+\emph{Onde $\beta>0$}, temos $\abs{\beta}=\beta$ e
+$h'(\beta)=2(\beta-\widehat\beta_j)+\lambda$, que zera em
+$\beta=\widehat\beta_j-\lambda/2$. Só que essa raiz precisa cair na região em que
+a conta vale, isto é, precisa ser positiva --- o que exige
+$\widehat\beta_j>\lambda/2$.
+
+\emph{Onde $\beta<0$}, temos $\abs{\beta}=-\beta$ e
+$h'(\beta)=2(\beta-\widehat\beta_j)-\lambda$, que zera em
+$\beta=\widehat\beta_j+\lambda/2$, admissível se $\widehat\beta_j<-\lambda/2$.
+
+\emph{E se $\abs{\widehat\beta_j}\le\lambda/2$?} Aí nenhuma das duas raízes cai na
+sua própria região: a candidata positiva sai negativa e vice-versa. Como $h$ é
+convexa e contínua, o mínimo existe, e só pode estar no único ponto que sobrou ---
+$\beta=0$, justamente onde a função não é derivável. (Em linguagem de
+subgradiente: $0$ é mínimo quando $0\in -2\widehat\beta_j+\lambda[-1,1]$, que é
+exatamente a condição $\abs{\widehat\beta_j}\le\lambda/2$.)
+
+Juntando os três casos,
+\[
+  \widehat\beta_j^{\,\text{lasso}}
+   =\operatorname{sinal}(\widehat\beta_j)\big(\abs{\widehat\beta_j}-\lambda/2\big)_+ ,
+\]
+e a condição exata para zerar é $\boxed{\abs{\widehat\beta_j}\le\lambda/2}$.
+
+Compare com (b) e a diferença salta: o Lasso \textbf{subtrai} uma constante em vez
+de multiplicar por um fator. Todo mundo encolhe pela mesma quantidade, $\lambda/2$,
+e quem era menor que isso em módulo não sobrevive ao deslocamento. É o
+\emph{soft thresholding}, e é a razão algébrica de o Lasso fazer seleção de
+variáveis.
+
+\smallskip
+\textbf{(d)} O $2$ vem da derivada do quadrado. Derivando
+$(\beta-\widehat\beta_j)^2$ aparece um fator $2$; derivando $\lambda\abs{\beta}$
+aparece só $\pm\lambda$. Ao isolar $\beta$ dividimos tudo por $2$, e o $\lambda$
+vira $\lambda/2$.
+
+Se o RSS levasse um $\tfrac12$ na frente --- e a penalidade também, como é comum
+em outros textos ---, o fator $2$ sumiria das duas derivadas e o limiar do Lasso
+viraria $\lambda$, com o Ridge continuando em $\widehat\beta_j/(1+\lambda)$.
+
+A lição prática é que \textbf{o limiar depende da convenção}, não da matemática.
+Antes de comparar um $\lambda$ do seu caderno com um $\lambda$ de um artigo ou de
+uma biblioteca, confira qual RSS cada um está minimizando. É o mesmo tipo de
+cuidado que a Aula~02 pede ao lembrar que o \texttt{Ridge} e o \texttt{Lasso} do
+\texttt{scikit-learn} diferem entre si por um fator $n$.
+\end{solucao}

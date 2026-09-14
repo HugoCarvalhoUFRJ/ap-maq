@@ -1,0 +1,89 @@
+% Aula 04 --- a ponte 02<->04: regularizar ataca variância, não paramétrico ataca viés.
+As Aulas~02 e~04 apresentam ferramentas que, à primeira vista, andam em sentidos
+opostos. A regularização \emph{restringe} o modelo; os métodos não paramétricos o
+\emph{soltam}. Parece contradição, e não é: são remédios para doenças diferentes.
+
+Este exercício pede que você organize as duas numa única imagem --- a da Aula~01.
+\begin{itens}
+  \item \pts{0,7} Escreva a decomposição do erro de um estimador $\rhat$ em
+        relação a $r$ nos dois termos da Aula~01, e diga qual dos dois cada
+        família de métodos ataca.
+  \item \pts{0,8} Descreva, em uma frase cada, a situação que motiva cada família:
+        o que está errado com o modelo \emph{antes} de aplicarmos Ridge, e o que
+        está errado \emph{antes} de aplicarmos um spline?
+  \item \pts{1,0} O KNN com $k=1$ e o MQO com $p$ grande erram por motivos que,
+        na decomposição, caem no mesmo lugar. Explique. Em seguida diga qual é o
+        remédio de cada um e por que os dois remédios se parecem.
+  \item \pts{1,0} As duas ideias podem ser combinadas? Dê um exemplo concreto,
+        visto no curso, de método que seja ao mesmo tempo não paramétrico e
+        regularizado, e diga qual botão controla cada coisa nele.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Para um ponto $\x$ fixo,
+\[
+  \E_\Dados\big[(\rhat(\x)-r(\x))^2\big]
+   = \underbrace{\big(\E_\Dados[\rhat(\x)]-r(\x)\big)^2}_{\text{viés}^2}
+   + \underbrace{\Var_\Dados\big(\rhat(\x)\big)}_{\text{variância}} .
+\]
+
+A \textbf{regularização ataca a variância}: ela restringe o espaço de soluções,
+encolhendo os coeficientes, e aceita pagar viés por isso.
+
+Os \textbf{métodos não paramétricos atacam o viés}: eles ampliam a classe de
+funções representáveis para que $r$ caiba nela, e aceitam pagar variância.
+
+\smallskip
+\textbf{(b)} Antes do Ridge, o problema é um modelo \textbf{flexível demais para a
+amostra que se tem}: colunas demais ou colineares, o ajuste persegue o ruído e os
+coeficientes ficam instáveis. Excesso de variância.
+
+Antes do spline, o problema é um modelo \textbf{rígido demais para a verdade}: a
+reta não acompanha uma $r$ curva, e o erro persiste por mais dados que se colete.
+Excesso de viés.
+
+A diferença entre "para a amostra" e "para a verdade" é o coração da distinção:
+uma é falta de dados, a outra é falta de classe.
+
+\smallskip
+\textbf{(c)} Os dois erram por \textbf{variância}.
+
+O KNN com $k=1$ faz cada predição depender de uma única observação, e todo o ruído
+daquele ponto entra na resposta. O ajuste passa exatamente pelos dados de treino,
+com resíduo nulo e nenhuma estabilidade --- troque a amostra e a função muda
+inteira.
+
+O MQO com $p$ grande tem parâmetros demais para os dados disponíveis, e cada
+coeficiente é estimado com pouca informação. No limite $p>n$ a solução nem é
+única.
+
+O remédio do KNN é \textbf{aumentar $k$}, fazendo cada predição ser a média de
+mais observações. O do MQO é \textbf{regularizar}, encolhendo os coeficientes em
+direção a zero. Os dois se parecem porque fazem a mesma coisa no fundo: reduzem a
+\emph{complexidade efetiva} do ajuste, trocando variância por viés. Em ambos há um
+botão contínuo --- $k$ de um lado, $\lambda$ do outro --- e em ambos ele se
+escolhe por validação cruzada, nunca no olho.
+
+Um cuidado que costuma confundir: os botões correm em sentidos opostos. $k$
+\emph{grande} e $\lambda$ \emph{grande} dão modelos mais simples, mas $k$ grande
+significa vizinhança larga e $\lambda$ grande significa coeficientes pequenos. O
+teste seguro, quando a memória falha, é perguntar de que lado está o modelo
+constante.
+
+\smallskip
+\textbf{(d)} Podem, e o exemplo do curso são as \emph{smoothing splines} da
+Aula~04.
+
+Elas põem um nó em \textbf{cada observação} --- portanto são não paramétricas ao
+extremo, com $I=n$ --- e controlam a flexibilidade resultante \textbf{penalizando
+a curvatura}:
+\[
+  \sum_{i=1}^n\big(y_i-g(x_i)\big)^2 + \gamma\int \big(g''(x)\big)^2\,dx .
+\]
+
+Os dois papéis estão separados e visíveis: a base cresce com $n$ (o lado não
+paramétrico) e o $\gamma$ regula quanta daquela liberdade é de fato usada (o lado
+regularizado). E neste método quem manda é o $\gamma$ --- os nós deixaram
+de ser o botão, porque são todos. É uma solução elegante para um problema chato,
+que é ter de escolher onde pôr os nós.
+\end{solucao}

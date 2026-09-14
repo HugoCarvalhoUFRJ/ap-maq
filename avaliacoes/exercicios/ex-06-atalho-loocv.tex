@@ -1,0 +1,118 @@
+% Aula 03 --- demonstrar o atalho do LOOCV para ajustes lineares.
+O LOOCV parece caro: $n$ ajustes, um para cada observação deixada de fora. A
+Aula~03 enuncia que, para ajustes lineares, um único ajuste basta --- e não
+demonstra. É uma das fórmulas mais bonitas da área, e o exercício é prová-la.
+
+Para um ajuste com matriz de projeção
+$\bm H=\mathbb{X}(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top$, vale
+\[
+  \riscohat_{\text{LOO}}
+   = \frac1n\sum_{i=1}^{n}\left(\frac{Y_i-\widehat g(\X_i)}{1-h_{ii}}\right)^{2},
+\]
+com $\widehat g$ ajustado em \emph{todos} os dados.
+
+Escreva $\widehat g(\X_i)=\sum_{\ell} h_{i\ell}Y_\ell$ --- é isso que "ajuste
+linear" quer dizer: a predição é combinação linear das respostas, com pesos que
+dependem só de $\mathbb{X}$. Denote por $\widehat g_{-i}$ o ajuste feito sem a
+$i$-ésima observação.
+\begin{itens}
+  \item \pts{1,0} \emph{O truque.} Imagine o conjunto de dados em que a resposta
+        $Y_i$ foi trocada por $\widetilde Y_i=\widehat g_{-i}(\X_i)$ --- isto é,
+        pelo valor que o ajuste sem ela teria previsto ali --- mantendo as demais.
+        Argumente que o ajuste linear nesse conjunto modificado devolve
+        exatamente a mesma função $\widehat g_{-i}$.
+
+        A ideia é que $\widehat g_{-i}$ já minimiza o RSS nas outras $n-1$
+        observações, e a parcela nova contribui com zero.
+  \item \pts{0,8} Use (a) e a linearidade do ajuste para mostrar que
+        \[
+          \widehat g_{-i}(\X_i)
+           = \widehat g(\X_i) + h_{ii}\big(\widetilde Y_i - Y_i\big).
+        \]
+  \item \pts{0,9} O item (b) é uma equação em que $\widetilde Y_i$ aparece dos dois
+        lados. Resolva-a para o resíduo de validação $Y_i-\widehat g_{-i}(\X_i)$ e
+        conclua a fórmula do enunciado.
+  \item \pts{0,8} Agora leia o que você provou. Por que o fator $1/(1-h_{ii})$ é
+        sempre $\ge 1$, e que afirmação da Aula~03 isso torna exata? O que
+        significa uma observação com $h_{ii}$ próximo de $1$?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} O ajuste linear escolhe a função que minimiza o RSS sobre as
+observações que recebe. No conjunto modificado, a soma a minimizar é
+\[
+  \underbrace{\sum_{\ell\neq i}\big(Y_\ell-g(\X_\ell)\big)^2}_{\text{as } n-1 \text{ de sempre}}
+  \;+\;\underbrace{\big(\widetilde Y_i-g(\X_i)\big)^2}_{\text{a parcela nova}} .
+\]
+Duas observações fecham o argumento. A função $\widehat g_{-i}$ minimiza a
+primeira parcela --- é a definição dela. E ela \emph{zera} a segunda, porque
+$\widetilde Y_i$ foi escolhido como sendo exatamente $\widehat g_{-i}(\X_i)$.
+
+Como nenhuma função pode fazer melhor do que atingir o mínimo da primeira parcela
+e zero na segunda, $\widehat g_{-i}$ minimiza o conjunto modificado. E, sendo a
+solução única (posto cheio), ela é \emph{a} solução.
+
+O truque, em uma frase: trocamos a observação problemática por uma que o ajuste
+sem ela já "concorda", e com isso ela para de puxar o ajuste para lado nenhum.
+
+\smallskip
+\textbf{(b)} Chame de $\widehat g^{\,\text{mod}}$ o ajuste no conjunto modificado;
+por (a), $\widehat g^{\,\text{mod}}=\widehat g_{-i}$.
+
+Como o ajuste é linear nas respostas e os pesos $h_{i\ell}$ dependem só de
+$\mathbb{X}$ --- que não mudou ---, os mesmos pesos valem nos dois conjuntos.
+Avaliando em $\X_i$:
+\[
+  \widehat g^{\,\text{mod}}(\X_i)
+   = \sum_{\ell\neq i} h_{i\ell}Y_\ell + h_{ii}\widetilde Y_i .
+\]
+Some e subtraia $h_{ii}Y_i$ para fazer aparecer o ajuste completo:
+\[
+  = \underbrace{\sum_{\ell} h_{i\ell}Y_\ell}_{=\;\widehat g(\X_i)}
+     - h_{ii}Y_i + h_{ii}\widetilde Y_i
+   = \widehat g(\X_i) + h_{ii}\big(\widetilde Y_i - Y_i\big),
+\]
+que é o pedido, já que o lado esquerdo é $\widehat g_{-i}(\X_i)$.
+
+\smallskip
+\textbf{(c)} Como $\widetilde Y_i=\widehat g_{-i}(\X_i)$, o item (b) diz
+\[
+  \widetilde Y_i = \widehat g(\X_i) + h_{ii}\widetilde Y_i - h_{ii}Y_i
+  \;\Longrightarrow\;
+  \widetilde Y_i(1-h_{ii}) = \widehat g(\X_i) - h_{ii}Y_i .
+\]
+Subtraia $Y_i(1-h_{ii})$ dos dois lados, que é o passo que faz o resíduo aparecer:
+\[
+  (\widetilde Y_i - Y_i)(1-h_{ii})
+   = \widehat g(\X_i) - h_{ii}Y_i - Y_i + h_{ii}Y_i
+   = \widehat g(\X_i) - Y_i .
+\]
+Trocando o sinal dos dois lados e lembrando que
+$Y_i-\widehat g_{-i}(\X_i)=Y_i-\widetilde Y_i$:
+\[
+  Y_i - \widehat g_{-i}(\X_i) \;=\; \frac{Y_i-\widehat g(\X_i)}{1-h_{ii}} .
+\]
+Elevando ao quadrado e tomando a média em $i$, sai a fórmula.
+
+O ganho é esse: os $n$ resíduos de validação saem todos de $\widehat g$, o ajuste
+único feito com todos os dados. O LOOCV de graça.
+
+\smallskip
+\textbf{(d)} Para uma matriz de projeção vale $0\le h_{ii}\le 1$, logo
+$1-h_{ii}\in[0,1]$ e o fator $1/(1-h_{ii})$ é sempre $\ge 1$.
+
+Isso torna exata uma afirmação que a Aula~03 fazia em geral: o resíduo de
+validação é sempre \textbf{maior ou igual} ao de treino, nunca menor. Aqui não é
+uma tendência nem um argumento de plausibilidade --- é uma igualdade, observação
+por observação, com o fator de inflação explícito.
+
+O $h_{ii}$ mede a \textbf{alavancagem}: o quanto a observação $i$ influencia sua
+própria predição. Onde ele é grande, $\widehat g$ foi puxada na direção de $Y_i$,
+o resíduo de treino ficou artificialmente pequeno, e o fator infla bastante para
+corrigir. São exatamente os pontos cujo resíduo de treino mais engana.
+
+No limite $h_{ii}\to 1$ o fator explode. Isso descreve uma observação que
+determina sozinha a predição no seu próprio ponto: tirá-la do ajuste muda tudo
+ali. O LOOCV registra isso com um resíduo enorme --- e está certo, porque não
+existe informação independente para prever naquele lugar.
+\end{solucao}

@@ -1,0 +1,84 @@
+% Aula 05 --- as duas condições da Proposição da média, e o que a floresta faz com elas.
+A Aula~05 justifica a agregação com uma proposição de enunciado curto: se
+$g_1,\dots,g_B$ são não-viesados para $r(\x)$, têm a mesma variância $v(\x)$ e são
+\textbf{não-correlacionados}, então $\bar g=\frac1B\sum_b g_b$ tem variância
+$v(\x)/B$.
+
+Proposições com hipóteses só ficam úteis quando se sabe o que acontece ao violá-las
+--- e, no caso do \emph{bagging}, uma delas é violada o tempo todo.
+\begin{itens}
+  \item \pts{0,9} Identifique as duas condições e explique, para cada uma, o que
+        acontece com a conclusão se ela falhar.
+  \item \pts{0,7} O \emph{bagging} usa árvores \textbf{profundas e não podadas}.
+        Qual das duas condições essa escolha atende? E por que podar as árvores
+        seria contraproducente aqui?
+  \item \pts{0,8} Na prática as árvores do \emph{bagging} são correlacionadas.
+        Explique a razão --- o que elas têm em comum que as faz parecidas --- e
+        por que aumentar $B$ não resolve esse problema específico.
+  \item \pts{1,0} A floresta aleatória sorteia $m<p$ covariáveis candidatas em
+        cada nó. Explique como isso ataca a condição comprometida, qual é o preço
+        pago na outra, e por que o negócio costuma compensar mesmo assim.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} As duas condições são:
+
+\textbf{(i) não-viesados.} Se os $g_b$ tiverem viés, a média o herda
+integralmente: $\E[\bar g]=\E[g_b]\ne r(\x)$. Promediar reduz variância, mas
+\textbf{não corrige viés} --- a média de mil estimadores enviesados é igualmente
+enviesada. A conclusão sobre o risco deixa de valer, porque sobra um termo de
+viés$^2$ que $B$ nenhum elimina.
+
+\textbf{(ii) não-correlacionados.} Se houver correlação $\rho>0$ entre pares, a
+variância da média não é $v/B$, e sim
+\[
+  \Var(\bar g)=\rho\,v+\frac{1-\rho}{B}\,v \;\xrightarrow[B\to\infty]{}\; \rho\,v .
+\]
+A redução \textbf{estaciona num piso} $\rho v$, em vez de ir a zero.
+
+\smallskip
+\textbf{(b)} Atende a condição \textbf{(i)}, a de não-viesamento.
+
+Árvores profundas são muito flexíveis: acompanham $r$ de perto e têm viés baixo,
+ao custo de variância alta. E variância alta é justamente o defeito que a
+agregação sabe consertar --- de graça, pela própria proposição.
+
+Podar seria contraproducente porque a poda \emph{introduz viés de propósito} para
+reduzir variância. Só que a variância já vai ser tratada pela média dos $B$
+ajustes. Podar seria, então, pagar viés por um benefício que se teria sem pagar
+nada.
+
+A regra que fica: deixe cada árvore ser instável, e deixe a média estabilizar.
+
+\smallskip
+\textbf{(c)} As árvores do \emph{bagging} são treinadas em amostras bootstrap do
+\textbf{mesmo} conjunto de dados, e todas enxergam \textbf{todas} as $p$
+covariáveis em todos os nós.
+
+Se houver uma covariável fortemente preditiva, ela tende a ser escolhida no
+primeiro corte por quase todas as árvores. E árvores que começam igual continuam
+parecidas: elas erram juntas, o que é precisamente o que $\rho>0$ significa.
+
+Aumentar $B$ não resolve porque, na fórmula de (a), o termo $\rho v$ \textbf{não
+depende de $B$}. Acrescentar árvores só encolhe o segundo termo; o piso permanece
+onde está. Passado certo ponto, cada árvore nova custa tempo de computação e não
+compra quase nada.
+
+\smallskip
+\textbf{(d)} A floresta ataca diretamente o $\rho$. Ao sortear $m<p$ candidatas
+por nó, ela impede que a covariável dominante seja usada sempre: em cerca de
+$1-m/p$ dos nós ela sequer está disponível, e a árvore é obrigada a olhar para
+outra coisa. As árvores passam a divergir estruturalmente, $\rho$ cai, e com ele o
+piso $\rho v$.
+
+O preço é pago na qualidade individual. Uma árvore proibida de usar a melhor
+covariável em parte dos nós é uma árvore \textbf{pior}, com variância individual
+$v$ maior. O sorteio degrada cada membro para melhorar o conjunto --- o que é
+contraintuitivo, e é o ponto que costuma ser mal explicado.
+
+Compensa porque, com $B$ grande, o que sobra em $\rho v+\frac{1-\rho}{B}v$ é
+$\rho v$, e a queda em $\rho$ costuma ser proporcionalmente maior que a subida em
+$v$. Há um limite, claro: com $m$ pequeno demais as árvores ficam ruins demais e o
+produto $\rho v$ volta a subir. É por isso que $m$ é um hiperparâmetro, e
+$m\approx p/3$ em regressão é um ponto de partida razoável --- não uma verdade.
+\end{solucao}

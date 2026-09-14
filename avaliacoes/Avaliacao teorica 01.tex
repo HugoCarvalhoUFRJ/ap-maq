@@ -1,0 +1,112 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Avaliação Teórica 01 --- Aulas 01 a 06 (Bloco I)
+%
+%  O gabarito sai de "Avaliacao teorica 01 - gabarito.tex", que apenas liga a
+%  opção [gabarito] e inclui este arquivo --- fonte única, dois PDFs.
+%
+%  AS TRÊS QUESTÕES FORAM SORTEADAS da "Lista de revisao 01-06", com cobertura
+%  (uma aula por questão). O sorteio é reproduzível:
+%
+%      import numpy as np
+%      rng = np.random.default_rng(20260914)      # a data, aaaammdd
+%      aulas = sorted(rng.choice([1,2,3,4,5,6], size=3, replace=False).tolist())
+%      # -> [2, 3, 6]; depois um exercício dentro de cada aula, na mesma ordem
+%
+%  Resultado:
+%      Aula 02 -> Exercício  5  "a Ridge como moda a posteriori"
+%      Aula 03 -> Exercício  7  "a mesma validação cruzada, escrita de dois jeitos"
+%      Aula 06 -> Exercício 13  "para quem a régua importa"
+%
+%  NÃO HÁ TEXTO DE EXERCÍCIO NESTE ARQUIVO. Os enunciados e as soluções vêm por
+%  \input dos MESMOS arquivos que a lista de revisão usa, em exercicios/ --- é
+%  isso que garante que os dois documentos nunca divirjam. Aqui ficam só o
+%  cabeçalho da prova, os títulos e pesos das questões, e os critérios de
+%  correção, que são específicos da avaliação.
+%
+%  O \provatrue abaixo liga a pontuação por item: o comando \pts{1,0}, escrito
+%  dentro dos arquivos de exercício, some na lista e aparece aqui.
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../recursos/latex/estilo-avaliacao}
+
+\provatrue
+
+\begin{document}
+\cabecalhoprova{01}{01 a 06}{Fundamentos, Regressão, Validação Cruzada, KNN,
+Árvores e \emph{Pipelines}}{2 horas}{12,0 pontos}
+
+%==============================================================================
+\questao{a Ridge como moda a posteriori}{4,0 pontos}
+\daaula{02}
+%==============================================================================
+\input{exercicios/ex-05-bayes}
+
+\begin{criterio}
+\textbf{(a)} 0,6 pelo produto verossimilhança $\times$ priori; 0,6 por passar ao
+logaritmo e trocar máximo por mínimo corretamente. Ignorar as constantes de
+normalização não desconta, desde que o aluno justifique que não dependem de
+$\bbeta$.
+
+\textbf{(b)} 0,4 por eliminar o fator $1/(2\sigma^2)$ sem alterar o argmin; 0,4
+pelo valor de $\lambda$. Chegar a $\lambda$ invertido
+($\sigma_\beta^2/\sigma^2$) vale 0,2.
+
+\textbf{(c)} 0,4 por extremo. Exige ligar priori e $\lambda$, não apenas
+descrever o comportamento do Ridge. Mencionar o par viés--variância é esperado,
+mas não obrigatório para a nota cheia.
+
+\textbf{(d)} 0,6 por identificar que a esparsidade é propriedade da moda; 0,6 por
+explicar que a posteriori é contínua e a média integra. Aceitar qualquer
+formulação correta do argumento de continuidade.
+\end{criterio}
+
+%==============================================================================
+\questao{a mesma validação cruzada, escrita de dois jeitos}{4,0 pontos}
+\daaula{03}
+%==============================================================================
+\input{exercicios/ex-07-duas-formas}
+
+\begin{criterio}
+\textbf{(a)} 0,6 por reconhecer que
+$\sum_{i\in L_j}(\cdot)^2=\abs{L_j}\mathrm{EQM}_j$; 0,6 pela substituição e pela
+forma final. Observar que os pesos somam $1$ é bônus.
+
+\textbf{(b)} 0,5 pela igualdade dos pesos quando $k$ divide $n$; 0,3 por nomear as
+duas unidades (observação $\times$ dobra). Responder "aproximadamente iguais"
+perde 0,2 --- a igualdade é exata.
+
+\textbf{(c)} 0,2 pela soma; 0,5 pela explicação dos pesos desiguais. Basta o
+argumento; não é preciso calcular os sete pesos.
+
+\textbf{(d)} 0,45 por cada valor correto ($2{,}08$ e $\approx 2{,}286$); 0,4 pela
+justificativa da escolha. Aceitar tanto a defesa da fórmula ponderada quanto a da
+não ponderada, desde que argumentada; \textbf{não} aceitar resposta que ignore a
+existência das duas.
+\end{criterio}
+
+%==============================================================================
+\questao{para quem a régua importa}{4,0 pontos}
+\daaula{06}
+%==============================================================================
+\input{exercicios/ex-13-escala}
+
+\begin{criterio}
+\textbf{(a)} 0,2 pelo veredito e 0,2 pela justificativa, em cada um dos seis
+itens. Veredito certo com justificativa ausente ou errada vale 0,2. Aceitar
+"equivariante" sem demonstração em (i) e (vi).
+
+\textbf{(b)} 0,3 por apontar o KNN; 0,4 pelo argumento do quadrado na distância.
+Responder "Ridge" com bom argumento vale 0,3.
+
+\textbf{(c)} 0,4 por identificar que a coluna reescalada era a de maior efeito;
+0,5 por explicar que o efeito se inverteria numa coluna irrelevante. A observação
+de que foi a unidade de medida que tomou a decisão é o ponto alto da resposta e
+deve ser premiada dentro dos 0,5.
+\end{criterio}
+
+\vfill
+\begin{center}\small\itshape Boa prova!\end{center}
+
+\end{document}

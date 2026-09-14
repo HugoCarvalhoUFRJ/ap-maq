@@ -1,0 +1,101 @@
+% Aula 02 --- o melhor preditor linear (o "oráculo") quando r não é linear.
+Circula por aí a ideia de que a regressão linear "só vale se o modelo estiver
+correto". A Aula~02 mostra que isso é impreciso: o MQO converge para alguma
+coisa bem definida mesmo quando $r$ não é linear coisa nenhuma.
+
+Essa coisa é o \textbf{melhor preditor linear},
+\[
+  \bbeta^\ast = \argmin_{\bbeta} \E\big[(Y-\bbeta^\top\X)^2\big],
+\]
+que existe sempre que $\Sigma=\E[\X\X^\top]$ é bem definida e invertível ---
+\emph{sem} supor nada sobre a forma de $r$.
+\begin{itens}
+  \item \pts{0,8} Derive $\bbeta^\ast=\Sigma^{-1}\bm\alpha$, onde
+        $\bm\alpha=\E[Y\X]$. É o mesmo cálculo das equações normais, com
+        esperanças no lugar de somas.
+  \item \pts{0,8} O estimador de mínimos quadrados pode ser escrito como
+        $\widehat\bbeta=\widehat\Sigma^{-1}\widehat{\bm\alpha}$, com
+        $\widehat\Sigma=\frac1n\sum_i\X_i\X_i^\top$ e
+        $\widehat{\bm\alpha}=\frac1n\sum_i Y_i\X_i$. Olhe para essas duas
+        expressões e diga o que elas são, estatisticamente. Em seguida, explique
+        por que $\widehat\bbeta\to\bbeta^\ast$ em probabilidade sem que se precise
+        supor linearidade em lugar nenhum.
+  \item \pts{0,9} Todo teorema garante uma coisa e deixa de garantir outra.
+        Enuncie as duas, com cuidado. Em particular: o resultado diz que o risco
+        de $\widehat\bbeta$ é pequeno?
+  \item \pts{1,0} Um colega ajusta uma regressão linear a dados em que $r$ é
+        visivelmente curva e conclui: "o coeficiente deu $2{,}3$, logo aumentar
+        $x_1$ em uma unidade aumenta $Y$ em $2{,}3$". Separe o que é leitura
+        legítima de $\bbeta^\ast$ do que não é.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Expanda o objetivo, tratando as esperanças como constantes:
+\[
+  Q(\bbeta)=\E[(Y-\bbeta^\top\X)^2]
+   = \E[Y^2] - 2\,\bbeta^\top\underbrace{\E[Y\X]}_{\bm\alpha}
+     + \bbeta^\top\underbrace{\E[\X\X^\top]}_{\Sigma}\bbeta .
+\]
+O gradiente é $\nabla Q=-2\bm\alpha+2\Sigma\bbeta$, que se anula quando
+$\Sigma\bbeta=\bm\alpha$, ou seja, $\bbeta^\ast=\Sigma^{-1}\bm\alpha$. A Hessiana
+é $2\Sigma$, definida positiva por hipótese: é mínimo, e é único.
+
+A conta é a mesma das equações normais da aula, com $\E[\X\X^\top]$ no
+lugar de $\frac1n\mathbb{X}^\top\mathbb{X}$ e $\E[Y\X]$ no lugar de
+$\frac1n\mathbb{X}^\top\bm y$. É o mesmo problema, escrito na população em vez de
+na amostra.
+
+\smallskip
+\textbf{(b)} Tanto $\widehat\Sigma$ quanto $\widehat{\bm\alpha}$ são
+\textbf{médias amostrais} de variáveis i.i.d.: a primeira das matrizes
+$\X_i\X_i^\top$, a segunda dos vetores $Y_i\X_i$. Essa é a observação que resolve
+o item.
+
+Pela lei dos grandes números, médias amostrais convergem para as esperanças
+correspondentes: $\widehat\Sigma\to\Sigma$ e $\widehat{\bm\alpha}\to\bm\alpha$ em
+probabilidade. Como inverter matriz e multiplicar são operações contínuas onde
+$\Sigma$ é invertível, o teorema de Mann--Wald (continuous mapping) transporta a
+convergência:
+\[
+  \widehat\bbeta=\widehat\Sigma^{-1}\widehat{\bm\alpha}
+  \;\longrightarrow\; \Sigma^{-1}\bm\alpha = \bbeta^\ast .
+\]
+
+Em nenhum passo foi preciso supor $r(\x)=\bbeta^\top\x$. A definição de
+$\bbeta^\ast$ é um problema de minimização que faz sentido para qualquer
+distribuição $P$; o que a linearidade de $r$ acrescentaria seria a coincidência
+$\bbeta^{\ast\top}\x=r(\x)$ --- uma coincidência agradável, mas dispensável para
+a convergência.
+
+\smallskip
+\textbf{(c)} \textbf{Garante:} com $n$ grande, o MQO acerta a melhor aproximação
+linear disponível. Ele não fica vagando nem depende de sorte da amostra; converge
+para um alvo bem definido, e esse alvo é o melhor que a classe das funções
+lineares tem a oferecer.
+
+\textbf{Não garante:} que esse alvo seja bom. Se $r$ for muito curva, o melhor
+preditor linear pode ter risco alto, e o teorema apenas assegura que chegaremos
+perto dele --- perto de uma aproximação ruim continua sendo ruim.
+
+Na linguagem da Aula~01: o teorema controla a \textbf{variância}, porque o erro de
+estimação some com $n$, e não diz absolutamente nada sobre o \textbf{viés de
+aproximação} $\E[(r(\X)-\bbeta^{\ast\top}\X)^2]$, que é o preço fixo de ter
+escolhido uma classe rígida. "Convergir para o alvo certo" e "o alvo certo ser
+bom" são afirmações independentes, e só a primeira foi demonstrada.
+
+\smallskip
+\textbf{(d)} O erro é ler $\bbeta^\ast$ como efeito causal --- ou mesmo como
+descrição local de $r$.
+
+O que se pode dizer é que $2{,}3$ é a inclinação da reta que \emph{melhor aproxima}
+$r$ no sentido de erro quadrático médio, ponderada pela distribuição de $\X$. É um
+resumo global, e nada além disso.
+
+Duas consequências mostram por que a frase do colega não se sustenta. Primeira:
+com $r$ curva, a inclinação verdadeira $\partial r/\partial x_1$ muda de ponto
+para ponto, e $2{,}3$ é uma espécie de média dela --- podendo não coincidir com a
+inclinação em ponto nenhum. Segunda, e mais desconfortável: se ele coletar a mesma
+medida noutra população, com outra faixa de $x_1$, o $\bbeta^\ast$ muda, porque a
+ponderação mudou --- ainda que $r$ seja exatamente a mesma função do mundo. Um
+número que depende de onde você coletou não descreve um mecanismo.
+\end{solucao}

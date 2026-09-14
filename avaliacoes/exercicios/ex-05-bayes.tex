@@ -1,0 +1,109 @@
+% Aula 02 --- a Ridge como moda a posteriori sob priori gaussiana.
+A Aula~02 menciona que o Ridge tem uma leitura bayesiana: ele é a moda a
+posteriori sob uma priori gaussiana. A afirmação é mais do que curiosidade ---
+ela dá um significado concreto ao $\lambda$, que até aqui era só um botão a girar.
+
+Suponha o modelo
+\[
+  \bm y \mid \bbeta \;\sim\; N\big(\mathbb{X}\bbeta,\ \sigma^2\mathbb{I}\big),
+  \qquad
+  \bbeta \;\sim\; N\big(\bm 0,\ \sigma_\beta^2\mathbb{I}\big),
+\]
+com $\sigma^2$ e $\sigma_\beta^2$ conhecidos.
+\begin{itens}
+  \item \pts{1,2} Escreva a densidade a posteriori de $\bbeta$ a menos de
+        constante multiplicativa e mostre que maximizá-la equivale a minimizar
+        \[
+          \frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2
+          + \frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2 .
+        \]
+        O caminho é o de sempre: passar ao logaritmo transforma produto em soma, e
+        maximizar em minimizar.
+  \item \pts{0,8} Compare o que você obteve com a definição do Ridge da aula e
+        identifique $\lambda$ em função de $\sigma^2$ e $\sigma_\beta^2$. Cuidado
+        com o fator que precisa ser eliminado antes da comparação.
+  \item \pts{0,8} Agora a parte interessante: o que a priori está \emph{afirmando}
+        quando $\sigma_\beta^2\to\infty$, e quando $\sigma_\beta^2\to 0$? Ligue
+        cada resposta ao comportamento do Ridge em $\lambda\to 0$ e
+        $\lambda\to\infty$.
+  \item \pts{1,2} Neste modelo a moda e a média a posteriori coincidem. Para o
+        Lasso a priori correspondente é a de Laplace, e essa coincidência
+        \textbf{falha}. Explique por que isso importa na prática --- em
+        particular, por que a média a posteriori do Lasso não produz coeficientes
+        exatamente nulos.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Pelo teorema de Bayes, a posteriori é proporcional ao produto da
+verossimilhança pela priori:
+\[
+  \pi(\bbeta\mid\bm y)\;\propto\; f(\bm y\mid\bbeta)\,\pi(\bbeta)
+   \;\propto\;
+   \exp\Big\{-\frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2\Big\}
+   \cdot
+   \exp\Big\{-\frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2\Big\}.
+\]
+As constantes de normalização das duas gaussianas não dependem de $\bbeta$ e por
+isso podem ser absorvidas no $\propto$.
+
+Maximizar uma função positiva é o mesmo que maximizar seu logaritmo, e o
+logaritmo de um produto de exponenciais é a soma dos expoentes:
+\[
+  \log\pi(\bbeta\mid\bm y)
+   = \text{const} - \frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2
+     - \frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2 .
+\]
+Maximizar isso é minimizar o simétrico dos dois termos que dependem de $\bbeta$,
+que é exatamente o objetivo do enunciado.
+
+\smallskip
+\textbf{(b)} O objetivo de (a) tem um $1/(2\sigma^2)$ na frente do primeiro termo,
+e a definição do Ridge não tem fator nenhum ali. Multiplique tudo por
+$2\sigma^2>0$ --- o que não altera o minimizador, por ser constante positiva:
+\[
+  \norm{\bm y-\mathbb{X}\bbeta}^2 + \frac{\sigma^2}{\sigma_\beta^2}\norm{\bbeta}^2 .
+\]
+Agora a comparação é imediata, e
+\[
+  \boxed{\;\lambda=\frac{\sigma^2}{\sigma_\beta^2}\;}
+\]
+
+\smallskip
+\textbf{(c)} Quando $\sigma_\beta^2\to\infty$, a priori fica \textbf{difusa}: ela
+espalha massa por toda parte e não expressa preferência alguma por coeficientes
+pequenos. Em outras palavras, ela não afirma nada. Correspondentemente
+$\lambda\to 0$ e o Ridge degenera no MQO: os dados decidem sozinhos, com viés
+baixo e variância alta.
+
+Quando $\sigma_\beta^2\to 0$, a priori fica \textbf{concentrada em zero}: ela
+afirma, antes de ver dado nenhum, que os coeficientes são praticamente nulos.
+Correspondentemente $\lambda\to\infty$ e $\widehat\bbeta\to\bm 0$: viés máximo,
+variância mínima.
+
+Entre os dois extremos, a fórmula $\lambda=\sigma^2/\sigma_\beta^2$ diz uma coisa
+bem razoável: regulariza-se mais quando os \emph{dados} são ruidosos
+($\sigma^2$ grande) ou quando a \emph{crença prévia} é firme ($\sigma_\beta^2$
+pequeno). O $\lambda$ é a razão entre duas incertezas, e escolhê-lo por validação
+cruzada é, nessa leitura, deixar os dados escolherem a priori que melhor prediz.
+
+\smallskip
+\textbf{(d)} Importa porque o que torna o Lasso atraente é a
+\textbf{esparsidade} --- coeficientes exatamente nulos, que equivalem a descartar
+covariáveis --- e a esparsidade é propriedade da \emph{moda}, não da média.
+
+Veja por quê. A posteriori do Lasso é uma densidade contínua em $\R^p$, e a massa
+que uma densidade contínua atribui a um ponto isolado é zero: $\Prob(\beta_j=0)=0$
+sob a posteriori. Isso não impede que a \emph{moda} caia exatamente sobre
+$\beta_j=0$ --- a priori de Laplace tem um bico ali, e o ponto de máximo pode
+perfeitamente ser um ponto anguloso. É isso que o algoritmo de otimização encontra.
+
+A \emph{média}, porém, integra sobre toda a densidade. E não há razão para uma
+integral de função contínua dar exatamente zero: ela dá um número pequeno, muito
+pequeno talvez, mas não nulo.
+
+A consequência prática é direta: se você quer seleção de variáveis, tem de
+reportar a moda --- que é o que o \texttt{Lasso} do \texttt{scikit-learn} devolve,
+porque ele resolve um problema de otimização. Quem rodar um amostrador bayesiano e
+tomar a média das amostras vai obter encolhimento, e nenhum zero, e pode concluir
+erradamente que "o Lasso não zerou nada".
+\end{solucao}

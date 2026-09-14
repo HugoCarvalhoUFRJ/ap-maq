@@ -1,0 +1,87 @@
+% Aula 06 --- quem é sensível à escala das covariáveis, e por quê.
+Um colega recebeu um banco em que a coluna \texttt{renda} está em reais e a coluna
+\texttt{altura} em metros, e pergunta se precisa padronizar antes de ajustar. A
+resposta honesta é "depende do método" --- e o critério que decide cabe numa
+pergunta: \textbf{o método soma coisas vindas de colunas diferentes?}
+
+Se soma, as unidades precisam ser comparáveis, e trocar uma delas estraga a
+comparação. Se não soma, a unidade é irrelevante.
+\begin{itens}
+  \item \pts{2,4 --- 0,4 cada} Para cada método abaixo, diga se multiplicar uma
+        única coluna por $1000$ \textbf{muda} ou \textbf{não muda} a predição,
+        justificando em uma linha onde está --- ou onde não está --- a soma sobre
+        colunas.
+        \begin{enumerate}[label=(\roman*),leftmargin=1.0cm,nosep]
+          \item Mínimos quadrados ordinários.
+          \item Regressão Ridge com $\lambda>0$ fixo.
+          \item Árvore de regressão.
+          \item Floresta aleatória.
+          \item KNN com $k$ fixo.
+          \item \emph{Spline} de base truncada, ajustado por mínimos quadrados.
+        \end{enumerate}
+  \item \pts{0,7} Entre os que mudam, qual você espera que seja o mais afetado, e
+        por quê? Compare o \emph{modo} como a escala entra em cada um.
+  \item \pts{0,9} Um colega observa que, ao reescalar uma coluna, o risco do Lasso
+        \emph{melhorou}, e conclui que não padronizar foi uma boa ideia. Explique
+        o erro do raciocínio.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)}
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}clp{8.2cm}@{}}
+\toprule
+ & muda? & onde está (ou não) a soma sobre colunas \\
+\midrule
+(i) & \textbf{não} & O MQO é equivariante: o coeficiente da coluna se divide por
+$1000$ e o produto $\beta_jx_j$ fica igual. Nada na função-objetivo compara
+coeficientes entre si. \\
+(ii) & \textbf{sim} & A penalidade $\lambda\sum_j\beta_j^2$ \emph{soma}
+coeficientes de colunas diferentes; mudar a unidade de uma delas muda quanto ela
+pesa nessa soma. \\
+(iii) & \textbf{não} & A árvore só pergunta "$x_j\le t$?". O corte $t$ é
+multiplicado junto, e a pergunta separa exatamente as mesmas observações. \\
+(iv) & \textbf{não} & É uma média de árvores, e cada uma é indiferente; a
+indiferença atravessa a agregação. \\
+(v) & \textbf{sim} & A distância euclidiana $\sum_j(x_{ij}-x_{\ell j})^2$ é uma
+soma sobre colunas. \\
+(vi) & \textbf{não} & É um MQO sobre uma base fixa de funções de \emph{uma}
+coluna; vale o mesmo argumento de (i). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\smallskip
+\textbf{(b)} O \textbf{KNN}, e a diferença é de ordem, não de grau.
+
+Nos métodos penalizados a escala entra \emph{uma vez}, de forma linear, na
+comparação entre coeficientes. Na distância euclidiana ela entra \textbf{ao
+quadrado}: multiplicar a coluna por $1000$ multiplica as diferenças naquela
+coordenada por $1000$, e a contribuição delas para a distância por $10^6$.
+
+O efeito é que a coluna reescalada passa a decidir sozinha quem é vizinho de quem.
+As demais não são apenas menos importantes --- elas somem da conta, e o método
+deixa de usar a informação que carregavam.
+
+\smallskip
+\textbf{(c)} O erro é confundir um resultado com um argumento.
+
+A melhora aconteceu porque a coluna reescalada era, naquele problema, a de maior
+efeito verdadeiro. Deixá-la $1000$ vezes maior tornou o coeficiente dela $1000$
+vezes menor, e um coeficiente minúsculo quase não pesa em $\sum_j\abs{\beta_j}$ ---
+a coluna ficou praticamente isenta da penalidade. Isentar de penalidade justamente
+a coluna que mais importa calhou de ajudar.
+
+Calhou: é sorte, não método. Aplique a mesma reescala a uma coluna
+\emph{irrelevante} e o efeito se inverte --- ela ganharia liberdade para receber um
+coeficiente grande sem pagar por isso, e o ajuste pioraria.
+
+O ponto de fundo é que, nos dois casos, quem decidiu quanto regularizar cada
+coluna não foi o analista: foi a \textbf{unidade de medida} em que o dado chegou.
+E é por isso que o argumento do colega não se salva nem quando o resultado o
+favorece --- um procedimento cujo desempenho depende de a coluna ter sido anotada
+em metros ou em milímetros está fora de controle, e ter dado certo desta vez não
+muda isso.
+\end{solucao}

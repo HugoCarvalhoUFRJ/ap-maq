@@ -1,0 +1,113 @@
+% Aula 01 --- o preditor ótimo e o erro irredutível.
+% Incluído por "Lista de revisao 01-06.tex" e, se sorteado, pela prova.
+A Aula~01 abriu com uma afirmação forte: de todas as funções que você poderia usar
+para prever $Y$ a partir de $\X$, a melhor é a função de regressão
+$r(\x)=\E[Y\mid\X=\x]$. Não a melhor entre as lineares, nem a melhor entre as que
+o seu método consegue produzir --- a melhor, ponto.
+
+Uma afirmação dessas pede demonstração, e ela é mais curta do que parece. Todo o
+trabalho está num truque que você vai reencontrar várias vezes no curso: somar e
+subtrair a quantidade certa dentro de um quadrado.
+\begin{itens}
+  \item \pts{1,0} Seja $g:\R^p\to\R$ uma função qualquer com
+        $\E[g(\X)^2]<\infty$. Some e subtraia $r(\X)$ dentro do quadrado e mostre
+        que
+        \[
+          \E\big[(Y-g(\X))^2\big]
+            = \E\big[(Y-r(\X))^2\big] + \E\big[(r(\X)-g(\X))^2\big].
+        \]
+        O trabalho está em mostrar que o termo cruzado desaparece; condicione em
+        $\X$ e pergunte-se o que $\E[Y-r(\X)\mid\X]$ vale.
+  \item \pts{0,8} Olhe para a identidade que você acabou de provar e responda: por
+        que ela mostra que $r$ é o minimizador? Em seguida, mostre que o valor
+        mínimo é $\risco(r)=\E[\Var(Y\mid\X)]$.
+  \item \pts{0,7} Esse mínimo tem nome: \textbf{erro irredutível}. O nome sugere
+        que não há como baixá-lo, e é verdade --- mas a razão não é que os métodos
+        atuais sejam ruins. Explique de onde vem essa impossibilidade, e diga o que
+        teria de mudar \emph{no problema} para o número diminuir.
+  \item \pts{1,0} Na Lista Teórica~01 você mostrou que o melhor preditor
+        \emph{constante} tem risco $\Var(Y)$. Use a identidade de (a) para escrever
+        a diferença $\Var(Y)-\risco(r)$ como uma esperança, e interprete: que
+        pergunta prática essa quantidade responde?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Escreva a diferença em duas partes,
+\[
+  Y-g(\X) \;=\; \underbrace{\big(Y-r(\X)\big)}_{\text{o que ninguém prevê}}
+              + \underbrace{\big(r(\X)-g(\X)\big)}_{\text{o quanto } g \text{ erra o alvo}},
+\]
+e eleve ao quadrado:
+\[
+  (Y-g(\X))^2 = (Y-r(\X))^2 + 2\,(Y-r(\X))(r(\X)-g(\X)) + (r(\X)-g(\X))^2 .
+\]
+Tomando esperança, o que precisa ser mostrado é que o termo do meio some.
+
+Condicione em $\X$. Feito isso, $r(\X)-g(\X)$ vira uma constante --- as duas são
+funções de $\X$, e $\X$ está fixo --- e portanto sai de dentro da esperança
+condicional:
+\[
+  \E\big[(Y-r(\X))(r(\X)-g(\X))\big]
+   = \E\Big[\big(r(\X)-g(\X)\big)\;\underbrace{\E[\,Y-r(\X)\mid\X\,]}_{}\Big].
+\]
+E a esperança que sobrou é zero, porque $\E[Y\mid\X]=r(\X)$ é exatamente a
+definição de $r$. Sobram os dois quadrados.
+
+\smallskip
+\textbf{(b)} A identidade separa o risco de $g$ em duas parcelas, e só a segunda
+depende de $g$:
+\[
+  \risco(g) \;=\; \underbrace{\E\big[(Y-r(\X))^2\big]}_{\text{fixo, não depende de } g}
+   \;+\; \underbrace{\E\big[(r(\X)-g(\X))^2\big]}_{\ \ge\ 0}.
+\]
+Como a segunda é uma esperança de algo não negativo, ela nunca ajuda: o melhor que
+$g$ pode fazer é anulá-la, e isso acontece exatamente quando $g(\X)=r(\X)$ com
+probabilidade $1$. Logo $r$ minimiza, e o mínimo é a primeira parcela.
+
+Para identificá-la, olhe para o que está dentro do quadrado: $Y-r(\X)=Y-\E[Y\mid\X]$
+é o desvio de $Y$ em relação à sua própria média condicional. A lei da esperança total dá
+\[
+  \risco(r)=\E\big[(Y-\E[Y\mid\X])^2\big]
+   =\E\Big[\E\big[(Y-\E[Y\mid\X])^2\;\big|\;\X\big]\Big]
+   =\E\big[\Var(Y\mid\X)\big].
+\]
+
+\smallskip
+\textbf{(c)} A expressão $\E[\Var(Y\mid\X)]$ não menciona $g$ nenhuma. Ela é uma
+propriedade da \textbf{distribuição conjunta de $(\X,Y)$} --- do problema, não do
+método.
+
+O que ela mede é isto: fixe um valor $\x$ das covariáveis; entre todos os
+indivíduos que têm exatamente esse $\x$, quanto $Y$ ainda varia? Se dois pacientes
+com idade, peso e exames idênticos ainda assim têm desfechos diferentes, nenhum
+algoritmo pode distinguir um do outro --- ele recebeu a mesma entrada nos dois
+casos. Mesmo conhecendo $r$ exatamente, com $n=\infty$ e zero erro de estimação,
+esse termo permanece.
+
+E é isso que diz o que fazer para baixá-lo: não trocar de modelo, e sim
+\textbf{trocar de $\X$}. Medir uma covariável nova, que explique parte do que hoje
+é indistinguível. Isso muda o problema, e só mudar o problema resolve.
+
+\smallskip
+\textbf{(d)} Aplique a identidade de (a) com $g\equiv\E[Y]$, que é o melhor
+preditor constante:
+\[
+  \underbrace{\risco(\E[Y])}_{=\;\Var(Y)}
+   = \risco(r) + \E\big[(r(\X)-\E[Y])^2\big].
+\]
+A esperança que sobrou é a variância de $r(\X)$, porque $\E[r(\X)]=\E[Y]$ pela lei
+da esperança total. Logo
+\[
+  \Var(Y)-\risco(r) \;=\; \Var\big(r(\X)\big).
+\]
+
+A pergunta que isso responde é: \textbf{vale a pena usar as covariáveis?} O lado
+esquerdo é quanto se ganha ao trocar o preditor constante pelo melhor preditor
+possível. O lado direito diz que esse ganho é exatamente o quanto $r(\X)$ varia,
+isto é, o quanto a resposta esperada muda de um perfil de covariáveis para outro.
+
+Nos dois extremos: se $\Var(r(\X))=0$, a função de regressão é constante, as
+covariáveis não carregam informação nenhuma sobre $Y$, e prever pela média é o
+melhor que existe --- não há modelo a construir. Quanto maior essa variância,
+maior o prêmio por acertar $r$.
+\end{solucao}

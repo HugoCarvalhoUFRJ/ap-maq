@@ -1,0 +1,98 @@
+% Aula 03 --- as duas formas da fórmula de k dobras (aula x ISLP).
+Quem estuda validação cruzada pela Aula~03 e pelo [ISLP] encontra duas fórmulas
+diferentes para a mesma coisa, e é natural desconfiar de que uma delas esteja
+errada. Não está: elas são a mesma conta, escrita com outra unidade.
+
+A Aula~03 define
+\[
+  \riscohat_{k\text{-CV}}
+   = \frac1n\sum_{j=1}^{k}\sum_{i\in L_j}\big(Y_i-g_{-j}(\X_i)\big)^2 ,
+\]
+e o [ISLP] define $\mathrm{CV}_{(k)}=\frac1k\sum_{j=1}^{k}\mathrm{EQM}_j$, com
+$\mathrm{EQM}_j=\frac{1}{\abs{L_j}}\sum_{i\in L_j}(Y_i-g_{-j}(\X_i))^2$.
+\begin{itens}
+  \item \pts{1,2} Reescreva a fórmula da aula de modo a fazer os
+        $\mathrm{EQM}_j$ aparecerem, mostrando que
+        \[
+          \riscohat_{k\text{-CV}}=\sum_{j=1}^{k}\frac{\abs{L_j}}{n}\,\mathrm{EQM}_j .
+        \]
+  \item \pts{0,8} Olhando para os pesos que você obteve, diga em que condição as
+        duas definições coincidem --- e se coincidem exatamente ou apenas
+        aproximadamente. Em seguida, nomeie a unidade que cada fórmula pondera
+        igualmente.
+  \item \pts{0,7} Com $n=50$ e $k=7$, o \texttt{KFold} produz dobras de tamanhos
+        $8,8,7,7,7,7,6$. Confirme que somam $50$ e explique por que, neste caso, os
+        dois números diferem.
+  \item \pts{1,3} Suponha que a dobra de $6$ observações tenha $\mathrm{EQM}=10$ e
+        todas as outras tenham $\mathrm{EQM}=1$. Calcule os dois estimadores, diga
+        qual deles dá mais peso à dobra atípica, e qual você reportaria. Justifique
+        a escolha.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} A chave é reconhecer a soma interna. Pela definição de
+$\mathrm{EQM}_j$, basta multiplicar dos dois lados por $\abs{L_j}$:
+\[
+  \sum_{i\in L_j}\big(Y_i-g_{-j}(\X_i)\big)^2 = \abs{L_j}\,\mathrm{EQM}_j .
+\]
+Substituindo na fórmula da aula,
+\[
+  \riscohat_{k\text{-CV}}
+   = \frac1n\sum_{j=1}^{k}\abs{L_j}\,\mathrm{EQM}_j
+   = \sum_{j=1}^{k}\frac{\abs{L_j}}{n}\,\mathrm{EQM}_j .
+\]
+São os \emph{mesmos} $\mathrm{EQM}_j$ do [ISLP], numa média ponderada. E os pesos
+somam $1$, porque as dobras particionam as $n$ observações:
+$\sum_j\abs{L_j}=n$.
+
+\smallskip
+\textbf{(b)} Se $k$ divide $n$, todas as dobras têm o mesmo tamanho
+$\abs{L_j}=n/k$, e cada peso vale $(n/k)/n=1/k$. A média ponderada vira média
+simples --- que é exatamente a definição do [ISLP].
+
+E coincidem \textbf{exatamente}, não aproximadamente: é a mesma soma dos mesmos
+números com os mesmos pesos.
+
+Quanto à unidade, a diferença é essa: a fórmula da aula pondera igualmente cada
+\textbf{observação}, e a do [ISLP] pondera igualmente cada \textbf{dobra}.
+
+\smallskip
+\textbf{(c)} $8+8+7+7+7+7+6=50$.
+
+Diferem porque os tamanhos não são todos iguais. Os pesos da fórmula da aula valem
+$8/50$, $8/50$, $7/50$ (quatro vezes) e $6/50$, enquanto a do [ISLP] usa $1/7$ para
+todas as sete.
+
+O efeito concreto é sobre as observações individuais: uma que caiu na dobra de $6$
+recebe, na conta do [ISLP], peso maior do que uma que caiu na dobra de $8$ ---
+porque ela divide a responsabilidade da sua dobra com menos gente.
+
+\smallskip
+\textbf{(d)} Pela fórmula da aula, a dobra atípica entra com peso $6/50$ e as
+outras $44$ observações com $44/50$:
+\[
+  \riscohat_{k\text{-CV}}
+   = \frac{6}{50}\times 10 + \frac{44}{50}\times 1
+   = \frac{60+44}{50} = \frac{104}{50} = \mathbf{2{,}08}.
+\]
+Pela do [ISLP], a dobra atípica é uma das sete, e só:
+\[
+  \mathrm{CV}_{(7)} = \frac{1}{7}\big(10 + 6\times 1\big)
+   = \frac{16}{7} \approx \mathbf{2{,}286}.
+\]
+
+A do [ISLP] dá mais peso à dobra atípica --- e é fácil ver por quê: ela é a
+\emph{menor} dobra e ainda assim vale $1/7\approx 0{,}143$ do total, contra
+$6/50=0{,}12$ na outra conta. Justamente por ter menos observações, cada uma delas
+pesa mais.
+
+Qual reportar? Para \emph{estimar o risco}, a fórmula da aula é a mais
+defensável: a unidade amostral é a observação, não a dobra, e não há razão para
+uma observação valer mais por acaso de agrupamento. Na prática, porém, o
+\texttt{scikit-learn} segue o [ISLP] --- \texttt{cross\_val\_score(\dots).mean()}
+é média não ponderada --- então o essencial é \emph{saber qual das duas o seu
+código está calculando} antes de comparar com o de outra pessoa.
+
+E a recomendação da aula encerra a discussão pela raiz: com $n$ pequeno, escolha
+um $k$ que divida $n$. Aí as duas coincidem e a pergunta não se coloca.
+\end{solucao}
