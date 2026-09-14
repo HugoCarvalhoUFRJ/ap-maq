@@ -345,6 +345,67 @@ sai na 1.10**. Eram quatro ocorrências, todas corrigidas em 11/09/2026:
 `warnings.filterwarnings("ignore")`, então executá-los **não** mostra o aviso. Só
 `python -W error::FutureWarning`, fora do notebook, denuncia.
 
+### E depois a `Aula prática 06` encolheu para seguir o deck
+
+Decisão do Gabriel em 14/09/2026, três dias depois da reescrita acima. O
+laboratório passou a cobrir **o que o deck cobre, e só isso**: 52 → **23 células**,
+de nove seções para cinco. (Toda numeração citada até aqui é a de *antes* deste
+corte --- a §5 do `GroupKFold` e a §8 do relógio no laboratório, o Ex. 3 do
+`GroupKFold` na lista prática. A correspondência com a de hoje está nas duas
+tabelas abaixo.)
+
+| § de hoje | o que faz | de onde veio |
+| --- | --- | --- |
+| 1 | pacotes | — |
+| 2 | quem é sensível à escala | a antiga §2, intacta |
+| 3 | $\mu$ e $\sigma$ são aprendidos: o custo de padronizar fora da dobra | a antiga §4, com laço próprio |
+| 4 | o `Pipeline` por dentro | a antiga §6 |
+| 5 | `Pipeline` $+$ `GridSearchCV` | **nova**, é o slide ``Um exemplo'' |
+
+Saíram a §3 (vazamento por seleção), a §5 (agrupamento e a hierarquia), a §7
+(`ColumnTransformer`), a §8 (busca no pré-processamento) e a §9 (o arquivo
+quebrado). **Não as reintroduza no laboratório** --- o deck não tem nenhuma delas.
+
+**A `Lista prática 06` foi atrás, no mesmo dia.** Ela espelhava o laboratório
+antigo, então foi reescrita para espelhar o novo: 20→**14 células** no enunciado e
+25→18 no gabarito, de quatro exercícios para **três**, um por seção do laboratório.
+
+| Ex. de hoje | espelha | mede |
+| --- | --- | --- |
+| 1 --- quem muda quando a régua muda | §2 | cinco métodos, uma coluna $\times 500$: MQO $0{,}2762$ e árvore $0{,}9384$ nos dois; KNN $0{,}8668 \to 1{,}4527$ |
+| 2 --- o custo de padronizar fora da dobra | §3 | $0{,}8594$ contra $0{,}8593$ (o antigo Ex. 2, mantido) |
+| 3 --- o `Pipeline` inteiro, e o `GridSearchCV` | §4 e §5 | o scaler bate com o treino e não com o todo; `lasso__alpha` $=0{,}1$, 9 coeficientes de 60 |
+
+Saíram os exercícios de **seleção**, de **agrupamento** e de `ColumnTransformer`.
+Com isso, **nenhum notebook do curso mede mais esses dois vazamentos** --- eles
+vivem nas notas (texto e Figura~1) e no Ex. 1 da `Lista teorica 06`, onde entram
+como caso a classificar. A geradora da figura, essa sim, continua medindo os dois.
+As duas versões das notas dizem isso ao aluno com todas as letras, em vez de
+mandá-lo a um laboratório que não existe.
+
+**O bloco `Sua vez` foi preservado** (a lista tinha um, no exercício de seleção que
+saiu). O novo mede o contraste que o laboratório só afirma em prosa: reescalar a
+coluna **relevante** faz o Lasso melhorar $3{,}4\%$; reescalar uma **irrelevante**
+faz piorar $3{,}8\%$ --- quem decidiu foi a unidade de medida, não você.
+
+**A armadilha do laço compartilhado.** As antigas §3 e §4 mediam dentro do
+**mesmo `for`**, com o mesmo `default_rng(21)` --- que é o que faz o notebook
+reproduzir os dois painéis da figura. Tirar a §3 muda o que a §4 sorteia: o
+$0{,}8466$ da figura vira $0{,}8436$. Separar os geradores tampouco resolve, porque
+aí muda o painel *esquerdo* também ($+0{,}403$ vira $+0{,}446$, $-0{,}693$ vira
+$-0{,}740$) --- e o $+0{,}40$ é citado em **sete arquivos**, incluindo as notas da
+E2 e este `CLAUDE.md`. Decisão: **a figura e as notas ficam como estão**, e o
+laboratório roda com semente própria (`6`), medindo $0{,}8342$ contra $0{,}8341$.
+São duas amostras do mesmo experimento, não uma contradição, e a nota do aluno diz
+isso com todas as letras.
+
+**A §5 nova reproduz o slide literalmente.** Com `make_regression(n_samples=1000,
+n_features=100, n_informative=10, noise=1.0, random_state=0)`, a busca devolve
+`Lasso(alpha=0.1)` e `ElasticNet(alpha=0.1, l1_ratio=1)` --- exatamente a saída
+impressa no slide ``Um exemplo''. O `l1_ratio=1` colapsa o ElasticNet em Lasso, e os
+dois empatam em EQM de CV ($1{,}1293$) e no teste ($1{,}2110$); o teste é pior que a
+CV porque o `best_score_` é o melhor de 56 estimativas ruidosas.
+
 ## Figuras (`recursos/figuras/`)
 
 As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
@@ -735,9 +796,16 @@ A regra que separa vazamento **grave** de **leve** não é "quanto a etapa apren
 dos dados", é **se ela olha o $Y$**:
 
 - **grave** — selecionar variáveis, hiperparâmetros ou o modelo olhando a resposta.
-  Mede-se: com $y$ de ruído puro, isso fabrica $R^2 = +0{,}40$ (aula 06 §3);
+  Mede-se: com $y$ de ruído puro, isso fabrica $R^2 = +0{,}40$ (notas da aula 06,
+  painel esquerdo da Fig.~1, gerado por `_vazamento()` no `gerar-figuras.py`);
 - **grave** — a mesma unidade nos dois lados da divisão, ou informação do futuro.
-  Nenhum `Pipeline` protege disso; a ferramenta é `GroupKFold` (aula 06 §5);
+  Nenhum `Pipeline` protege disso; a ferramenta é `GroupKFold` (notas da aula 06,
+  caixa da hierarquia);
+
+**Desde 14/09/2026 nenhum notebook mede os dois graves** --- os exercícios que os
+mediam saíram da `Lista prática 06` quando ela foi espelhar o laboratório enxuto.
+Eles vivem no texto das notas, na Fig.~1 e no Ex. 1 da `Lista teorica 06`, que pede
+para classificá-los. A geradora da figura continua medindo.
 - **leve** — padronização, imputação pela média e **PCA**. Nenhuma das três vê o
   $Y$, e portanto nenhuma consegue fabricar sinal a partir de ruído.
 
