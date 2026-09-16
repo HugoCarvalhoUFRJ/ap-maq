@@ -725,25 +725,34 @@ com estas.
 
 ```
 avaliacoes/
-├── Lista de revisao 01-06.tex            13 exercícios, Bloco I
+├── Lista de revisao 01-06.tex            11 exercícios, Bloco I
 ├── Lista de revisao 01-06 - gabarito.tex invólucro de 3 linhas
 ├── Avaliacao teorica 01.tex              3 questões sorteadas
 ├── Avaliacao teorica 01 - gabarito.tex   invólucro de 3 linhas
 └── exercicios/
-    └── ex-NN-slug.tex                    o corpo de cada exercício, 13 arquivos
+    └── ex-NN-slug.tex                    o corpo de cada exercício, 11 arquivos
 ```
 
-**Os 13 exercícios são inéditos**, e não repetem nenhum dos 20 das
+**Os 11 exercícios são inéditos**, e não repetem nenhum dos 20 das
 `Lista teorica 01`--`06`. O critério que os tornou inéditos por construção: boa
 parte deles pede que o aluno **demonstre resultados que as notas enunciam sem
 demonstrar** --- o atalho do LOOCV (aula 03), as fórmulas do lasso no caso
 ortonormal (aula 02), as duas formas da fórmula de $k$ dobras (aula 03, numa
-`atencao`). São 2+3+3+2+2+1 por aula.
+`atencao`). São 2+3+2+1+2+1 por aula.
 
 **A aula 06 tem só um exercício, de propósito.** Ela não tem teorema, proposição
 nem demonstração, e tem uma única equação numerada --- só sustenta questão
 conceitual, e os dois ângulos bons já são os dois exercícios da
 `Lista teorica 06`.
+
+**Dois exercícios saíram em 16/09/2026**, por decisão do Gabriel: o do viés da
+validação cruzada (aula 03) e o dos nós de *splines* (aula 04), que eram os Ex. 8
+e 9. A aula 04 também ficou com um exercício só, e os antigos Ex. 10 a 13 viraram
+8 a 11, com os arquivos renomeados junto (`ex-13-escala.tex` virou
+`ex-11-escala.tex`). **O `NN` no nome dos arquivos de `exercicios/` é o número do
+exercício na lista**, e mantê-lo assim é manual: a numeração impressa é automática,
+a dos arquivos não. Ao tirar ou pôr um exercício, renomeie os seguintes e atualize
+os `\input` da lista **e da prova**.
 
 ### O `estilo-avaliacao.sty` duplica o `estilo-lista.sty`, e é de propósito
 
@@ -759,10 +768,10 @@ Por isso o `estilo-avaliacao.sty` carrega o `estilo-notas` com um `..` só e
 `exercicio` e o ambiente `solucao`. Se um dia mexerem num dos dois arquivos, o
 outro precisa acompanhar --- está anotado no cabeçalho do `.sty`.
 
-Ele acrescenta `\cabecalhorevisao`, `\cabecalhoprova` (com campos de
-nome/matrícula e caixa de instruções, que somem no gabarito), `\questao` (que
-incrementa o mesmo contador do `exercicio`), `\daaula`, a caixa `criterio`, e o
-par `\ifprova`/`\pts` com o ambiente `itens` --- estes três explicados adiante.
+Ele acrescenta `\cabecalhorevisao`, `\cabecalhoprova` (título e caixa de
+instruções, que no gabarito dá lugar a um aviso ao professor), `\questao` (que
+incrementa o mesmo contador do `exercicio` e aceita título vazio), a caixa `criterio`, e o par
+`\ifprova`/`\pts` com o ambiente `itens` --- estes três explicados adiante.
 
 ### O sorteio da prova
 
@@ -776,20 +785,44 @@ aulas = sorted(rng.choice([1,2,3,4,5,6], size=3, replace=False).tolist())
 ```
 
 Resultado: Ex. 5 (aula 02, Ridge bayesiana), Ex. 7 (aula 03, as duas formas da
-CV) e Ex. 13 (aula 06, sensibilidade à escala). A restrição de **uma aula por
-questão** evita o azar de uma prova inteira sobre o mesmo assunto. **O sorteio
-rodou uma vez e vale** --- não foi repetido até dar um resultado bonito.
+CV) e Ex. 13 (aula 06, sensibilidade à escala; hoje Ex. 11). A restrição de **uma
+aula por questão** evita o azar de uma prova inteira sobre o mesmo assunto. **O
+sorteio rodou uma vez e vale** --- não foi repetido até dar um resultado bonito.
+Ele rodou sobre a lista de 13; refeito com a de 11, a mesma semente sorteia os
+mesmos três exercícios (conferido em 16/09/2026).
 
 Pesos: **4,0 por questão**, total 12,0, em 2 horas. A igualdade entre as três não
-é simetria decorativa: a Questão 3 pede oito respostas (seis classificações mais
-dois itens discursivos) e a Questão 1 pede quatro, de modo que pesos iguais já
+é simetria decorativa: a Questão 3 pede sete respostas (cinco classificações mais
+dois itens discursivos) e a Questão 1 pede três, de modo que pesos iguais já
 corrigem um desequilíbrio que a distribuição anterior tinha.
+
+### A prova não diz de que aula vem cada questão
+
+Decisão do Gabriel em 16/09/2026. O sorteio é feito por aula, mas nada que o aluno
+lê na prova revela a aula de origem de uma questão:
+
+- **o título da questão não tem marcador.** O `\daaula`, que imprimia ``[Aula 03]''
+  à direita do título, saiu das três questões e do estilo;
+- **o enunciado não cita aula por número.** O Gabriel reescreveu os Ex. 1 a 5 nessa
+  linha (``já mencionamos'', ``as notas da aula de Regressão Linear''), e o Ex. 7,
+  sorteado, trocou as duas menções à ``Aula~03'' por ``notas de aula'';
+- **o cabeçalho não mostra o conteúdo.** O `\cabecalhoprova` ainda recebe o
+  intervalo de aulas e a descrição (2º e 3º argumentos), mas não os imprime.
+
+**A armadilha é o `\input`.** Em 16/09/2026 nenhum enunciado cita aula por
+número; sobra só a ``Lista Teórica~01'', citada no Ex. 1, que não está na prova. Mas o enunciado entra na prova exatamente como está na
+lista: **ao sortear uma prova nova, confira o texto dos exercícios sorteados**. Nas
+soluções a menção é inofensiva, porque só aparece nos gabaritos.
+
+Na mesma revisão o cabeçalho perdeu os campos de nome, matrícula e turma, e a caixa
+de instruções ficou com a duração, o valor, ``Justifique todas as respostas'' e a
+notação.
 
 ### Fonte única: por que a prova e a lista não podem divergir
 
 O corpo de cada exercício --- enunciado, itens e solução --- mora em
 `avaliacoes/exercicios/ex-NN-slug.tex`, e **os dois documentos o incluem por
-`\input`**. A lista inclui os treze; a prova, os três sorteados. Nenhum dos dois
+`\input`**. A lista inclui os onze; a prova, os três sorteados. Nenhum dos dois
 `.tex` de topo contém prosa de exercício: eles têm só cabeçalho, títulos, `\label`
 e (na prova) os critérios de correção.
 

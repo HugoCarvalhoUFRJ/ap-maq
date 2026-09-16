@@ -29,7 +29,7 @@ aulas/
 └── E3-nlp-classificacao/
 
 avaliacoes/                       Avaliações do curso, com gabarito
-├── Lista de revisao 01-06.tex    lista de revisão do Bloco I (13 exercícios)
+├── Lista de revisao 01-06.tex    lista de revisão do Bloco I (11 exercícios)
 ├── Avaliacao teorica 01.tex      a prova, com 3 questões sorteadas dessa lista
 └── exercicios/                   o corpo de cada exercício, incluído pelos dois
 
@@ -134,7 +134,7 @@ Presenciais de 2025-02, que são herdadas e continuam em `recursos/avaliacoes/`.
 
 | Arquivo | O que é |
 | --- | --- |
-| `Lista de revisao 01-06.tex` / `.pdf` | 13 exercícios inéditos de nível intermediário, cobrindo o Bloco I |
+| `Lista de revisao 01-06.tex` / `.pdf` | 11 exercícios inéditos de nível intermediário, cobrindo o Bloco I |
 | `Lista de revisao 01-06 - gabarito.pdf` | a mesma lista com as soluções |
 | `Avaliacao teorica 01.tex` / `.pdf` | a prova: 3 questões **sorteadas** da lista de revisão, 12,0 pontos, 2 horas |
 | `Avaliacao teorica 01 - gabarito.pdf` | as soluções, com critério de correção por questão |
@@ -150,7 +150,7 @@ listas, o gabarito sai do mesmo arquivo-fonte do enunciado.
 
 **A prova e a lista compartilham os exercícios, literalmente.** O corpo de cada
 um — enunciado, itens e solução — mora em `avaliacoes/exercicios/`, e os dois
-documentos o incluem por `\input`: a lista inclui os treze, a prova inclui os três
+documentos o incluem por `\input`: a lista inclui os onze, a prova inclui os três
 sorteados. Não há duas cópias, então não há como divergirem; corrigir um exercício
 é mexer num arquivo só. A única diferença entre os dois usos é a pontuação por
 item, que a prova mostra e a lista não — ela vem de um comando do estilo, que some
