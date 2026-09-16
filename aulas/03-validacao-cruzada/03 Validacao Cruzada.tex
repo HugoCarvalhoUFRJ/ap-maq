@@ -131,14 +131,18 @@ Cada $Y_i$ é predito por um modelo que \emph{não} o viu. LOOCV é
 divisão. O custo aparente é alto ($n$ ajustes), mas:
 
 \begin{proposicao}[Atalho do LOOCV para modelos lineares]\label{prop:loo}
-Para um ajuste linear (MQO, Ridge, \emph{splines}) com matriz de projeção
-$\bm{H}=\bm{X}(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top$, vale
+No MQO, nos \emph{splines} e no Ridge com $\lambda$ fixo, vale
 \[
   \riscohat_{\text{LOO}}
    = \frac1n \sum_{i=1}^n \left( \frac{Y_i-\widehat{g}(\X_i)}{1-h_{ii}} \right)^2,
 \]
-onde $h_{ii}$ é o $i$-ésimo elemento diagonal de $\bm{H}$ (\emph{leverage}) e
-$\widehat g$ é ajustado com \emph{todos} os dados.
+onde $\widehat g$ é ajustado com \emph{todos} os dados e $h_{ii}$ é o $i$-ésimo
+elemento diagonal (\emph{leverage}) da matriz $\bm{H}$ que leva as respostas
+$Y_1,\dots,Y_n$ aos valores ajustados $\widehat g(\X_1),\dots,\widehat g(\X_n)$. No
+MQO, $\bm{H}=\bm{X}(\bm{X}^\top\bm{X})^{-1}\bm{X}^\top$ é a matriz de projeção, e
+nos \emph{splines} vale o mesmo, com as funções da base nas colunas de $\bm{X}$; no
+Ridge, a inversa do meio é a da solução fechada da Aula~02, e $\bm{H}$ deixa de ser
+uma projeção.
 \end{proposicao}
 Ou seja, um \emph{único} ajuste basta. Esta é uma das fórmulas mais elegantes da
 área: o LOOCV ``de graça''.
