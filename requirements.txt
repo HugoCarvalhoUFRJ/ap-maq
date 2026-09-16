@@ -36,10 +36,12 @@ ipykernel>=6.0
 # =============================================================================
 # Por que scikit-learn >= 1.2
 # =============================================================================
-# As APIs abaixo aparecem nos notebooks e fixam esse piso:
+# As APIs abaixo aparecem nos notebooks. A que fixava o piso em 1.2 era
+# LogisticRegression(penalty=None), da aula 07: ela virou C=np.inf em 11/09/2026,
+# e a aula 07 deixou de usar a logística em 16/09/2026. Nenhuma das que sobraram
+# exige mais que a 1.1, mas o piso fica onde estava, porque baixá-lo exigiria
+# testar o material numa versão mais antiga.
 #
-#   LogisticRegression(penalty=None)     aula 07  -> exige >= 1.2
-#                                        (antes disso era a string "none")
 #   RandomForestRegressor().max_features aula 10  -> vale 1.0 a partir de 1.1
 #                                        (antes era "auto", e a aula comenta o valor)
 #   SplineTransformer                    aula 04  -> >= 1.0
@@ -65,11 +67,16 @@ ipykernel>=6.0
 #   Analysis()                              de avisar quando a covariância de uma
 #                                           classe fica mal condicionada. As 30
 #                                           medidas do breast_cancer são
-#                                           colineares o bastante para isso. O
-#                                           notebook agora usa reg_param=1e-4, um
-#                                           ridge minúsculo na covariância — o
-#                                           que MUDA o resultado, e o texto foi
-#                                           reescrito sobre o novo número.
+#                                           colineares o bastante para isso. A
+#                                           aula prática e a lista prática 07
+#                                           (esta só desde 16/09/2026) agora usam
+#                                           reg_param=1e-4, um ridge minúsculo na
+#                                           covariância — o que MUDA o resultado,
+#                                           e o texto foi reescrito sobre o novo
+#                                           número. Com menos observações numa
+#                                           classe do que covariáveis, nenhum
+#                                           reg_param resolve: o solver "svd"
+#                                           recusa o ajuste.
 #
 #   TSNE(init=...)              aula E2  -> o padrão passou de "random" para
 #                                           "pca" na 1.2. Não quebra nada: muda
