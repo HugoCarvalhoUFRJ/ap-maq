@@ -540,16 +540,16 @@ def _fronteiras():
 
     rng = np.random.default_rng(31)
     X, y = _duas_gaussianas(400, rng)
-    modelos = [("Logística", skl.LogisticRegression()),
+    # na ordem do deck: Bayes ingênuo, depois LDA e QDA
+    modelos = [("Bayes ingênuo", GaussianNB()),
                ("LDA (covariância comum)", LinearDiscriminantAnalysis()),
-               ("QDA (covariância por classe)", QuadraticDiscriminantAnalysis()),
-               ("Bayes ingênuo", GaussianNB())]
+               ("QDA (covariância por classe)", QuadraticDiscriminantAnalysis())]
 
     xx, yy = np.meshgrid(np.linspace(X[:, 0].min() - .8, X[:, 0].max() + .8, 320),
                          np.linspace(X[:, 1].min() - .8, X[:, 1].max() + .8, 320))
     grade = np.c_[xx.ravel(), yy.ravel()]
 
-    fig, axes = subplots(1, 4, figsize=(7.4, 2.1), sharex=True, sharey=True)
+    fig, axes = subplots(1, 3, figsize=(5.8, 2.1), sharex=True, sharey=True)
     for ax, (nome, m) in zip(axes, modelos):
         m.fit(X, y)
         Z = m.predict_proba(grade)[:, 1].reshape(xx.shape)

@@ -1,6 +1,6 @@
 % !TeX program = pdflatex
 %==============================================================================
-%  Lista Teórica 08 --- Classificação e Classificadores Gaussianos
+%  Lista Teórica 07 --- Classificação e Classificadores Gaussianos
 %  O gabarito sai de "Lista teorica 07 - gabarito.tex".
 %==============================================================================
 \providecommand{\gabaritoopt}{}
@@ -77,13 +77,13 @@ usando $\Prob(X>x^\ast\mid Y=0)=1-\Phi(x^\ast+1)=\Phi(-x^\ast-1)$ e
 $\Prob(X<x^\ast\mid Y=1)=\Phi(x^\ast-1)$. Numericamente,
 \[
   \risco^\ast = 0{,}9\times 0{,}0179 + 0{,}1\times 0{,}5393
-   = 0{,}0161 + 0{,}0539 = \mathbf{0{,}0701}.
+   = 0{,}01611 + 0{,}05393 = \mathbf{0{,}0700}.
 \]
 
 \smallskip
 \textbf{(d)} O classificador que responde sempre $Y=0$ erra exatamente
-$\Prob(Y=1)=\mathbf{0{,}10}$. O classificador de Bayes erra $0{,}0701$ --- melhor,
-mas não muito: a diferença é de menos de 3 pontos percentuais.
+$\Prob(Y=1)=\mathbf{0{,}10}$. O classificador de Bayes erra $0{,}0700$ --- melhor,
+mas não muito: a diferença é de 3 pontos percentuais.
 
 E vale olhar de onde vem o erro de Bayes: das duas parcelas, $0{,}0539$ vêm de
 classificar como $0$ observações que eram $1$. Ou seja, o classificador ótimo
@@ -191,11 +191,11 @@ Considere $K=2$ classes em $\R^p$.
   \item Mostre que a diferença QDA menos LDA vale $p(p+1)/2$ e comente a ordem de
         grandeza.
   \item A tabela abaixo traz a acurácia medida (média sobre 60 amostras, avaliada
-        em 20 mil observações novas) do LDA e do QDA, nas mesmas duas dimensões.
-        Em ambas o QDA passa a ganhar a partir de $n=50$ --- mas o que acontece
-        \emph{antes} disso é muito diferente. Use a contagem de (b) para
-        explicar, e diga por que a regra ``prefira LDA com poucos dados'' está
-        incompleta.
+        em 20 mil observações novas) do LDA e do QDA em $p=2$ e $p=10$; o traço
+        marca onde o QDA não pôde ser ajustado. Nas duas dimensões o QDA passa a
+        ganhar a partir de $n=50$ --- mas o que acontece \emph{antes} disso é
+        muito diferente. Use a contagem de (b) para explicar, inclusive o traço, e
+        diga por que a regra ``prefira LDA com poucos dados'' está incompleta.
 \end{enumerate}
 
 \begin{center}\small
@@ -208,7 +208,7 @@ Considere $K=2$ classes em $\R^p$.
                         & QDA & $0{,}8508$ & $0{,}8669$ & $0{,}8737$ & $0{,}8806$ & $0{,}8824$ & $0{,}8834$ \\
 \midrule
 \multirow{2}{*}{$p=10$} & LDA & $0{,}7053$ & $0{,}7422$ & $0{,}7773$ & $0{,}8013$ & $0{,}8175$ & $0{,}8241$ \\
-                        & QDA & $0{,}5475$ & $0{,}7030$ & $0{,}7896$ & $0{,}8440$ & $0{,}8792$ & $0{,}8905$ \\
+                        & QDA & --- & $0{,}7030$ & $0{,}7896$ & $0{,}8440$ & $0{,}8792$ & $0{,}8905$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -251,7 +251,8 @@ diferença & $3$ & $55$ & $1\,275$ \\
 $\big(2p+p(p+1)+1\big)-\big(2p+\tfrac{p(p+1)}{2}+1\big)=\tfrac{p(p+1)}{2}$: a
 segunda matriz de covariância, exatamente. Ela cresce como $p^2/2$, ou seja
 \textbf{quadraticamente}. Em $p=2$ são 3 parâmetros a mais --- nada. Em $p=50$ são
-$1\,275$ a mais, quase o dobro do modelo inteiro do LDA.
+$1\,275$ a mais, quase o tamanho do modelo inteiro do LDA ($1\,376$): o QDA fica
+com quase o dobro dos parâmetros.
 
 \smallskip
 \textbf{(d)} O ponto de virada é o mesmo nas duas dimensões --- $n=50$ --- e
@@ -264,40 +265,44 @@ justamente por isso ele é a parte \emph{menos} informativa da tabela. O que mud
 \toprule
                                     & $p=2$ & $p=10$ \\
 \midrule
-LDA $-$ QDA em $n=20$ (antes da virada)   & $+0{,}0094$ & $\mathbf{+0{,}1578}$ \\
+LDA $-$ QDA em $n=30$ (antes da virada)   & $+0{,}0012$ & $\mathbf{+0{,}0392}$ \\
 QDA $-$ LDA em $n=1000$ (depois)          & $+0{,}0041$ & $\mathbf{+0{,}0664}$ \\
 custo da matriz extra, $p(p+1)/2$         & $3$ & $55$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Em $p=2$ os dois métodos são praticamente equivalentes em toda a tabela: a maior
-diferença é de menos de um ponto percentual. A matriz de covariância extra custa
-$3$ parâmetros, e $3$ parâmetros a mais ou a menos não mudam nada, nem para bem
-nem para mal.
+Em $p=10$ a escolha importa muito, nos dois sentidos. O traço em $n=20$ é a
+contagem de (b) levada ao extremo: são $10$ observações por classe para estimar,
+em cada uma, uma matriz com $55$ parâmetros. A covariância amostral de $10$ pontos
+em $\R^{10}$ tem posto no máximo $9$ --- não é invertível ---, e o QDA simplesmente
+não pode ser ajustado. Com $n=30$ ele já ajusta, mas fica $3{,}9$ pontos atrás do
+LDA. Com $n=1000$ ele reproduz a estrutura verdadeira e ganha $6{,}6$ pontos.
 
-Em $p=10$ os dois erram feio, em direções opostas. Com $n=20$, o QDA precisa
-estimar $131$ parâmetros a partir de $20$ observações --- as matrizes de
-covariância mal são invertíveis --- e despenca para $0{,}5475$, quase o acaso,
-$16$ pontos abaixo do LDA. Com $n=1000$ ele reproduz a estrutura verdadeira e
-ganha $6{,}6$ pontos.
+Em $p=2$ os dois métodos ficam a menos de um ponto percentual um do outro em toda
+a tabela. A matriz extra custa só $3$ parâmetros, então o QDA tem pouco a
+\emph{perder}; e, nesta população, as duas classes têm quase a mesma correlação,
+então ele também tem pouco a \emph{ganhar}. Isso não é uma propriedade de $p=2$:
+numa população em $\R^2$ com correlações de sinais opostos, o QDA ganha do LDA com
+folga desde $n=20$ --- é o que mede a \texttt{Aula prática 07}.
 
 Portanto a regra ``prefira LDA com poucos dados'' está incompleta em dois
 sentidos. Primeiro, \textbf{o que decide não é $n$ sozinho, e sim $n$ contra
-$p(p+1)/2$}, que é o custo da matriz extra. Segundo, e mais útil na prática:
-\textbf{em dimensão baixa a escolha quase não importa}; ela só passa a importar
-quando $p$ é grande, e aí importa muito, nos dois sentidos. Gastar validação
-cruzada decidindo entre LDA e QDA em $p=2$ é desperdício; em $p=50$ é obrigatório.
+$p(p+1)/2$}, que é o custo da matriz extra --- e esse custo só pesa quando $p$ é
+grande. Segundo, a regra fala só do que o QDA tem a perder: \textbf{o que ele tem
+a ganhar depende de quanto as covariâncias das classes diferem}, e isso nenhuma
+contagem de parâmetros informa --- é assunto para a validação cruzada.
 
 É a mesma lógica do balanço viés--variância da Aula~01: o QDA é o modelo mais
-flexível, e modelos flexíveis só compensam quando há dados para sustentá-los.
+flexível, e modelos flexíveis só compensam quando há dados para sustentá-los e
+estrutura para capturar.
 \end{solucao}
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[naive Bayes gaussiano é QDA com as mãos amarradas]
 O \texttt{GaussianNB} supõe que, \emph{dentro de cada classe}, as covariáveis são
 independentes: $\bm\Sigma_k$ é \textbf{diagonal}, com entradas
-$\sigma_{k1}^2,\dots,\sigma_{kd}^2$.
+$\sigma_{k1}^2,\dots,\sigma_{kp}^2$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Quantos parâmetros ele estima, com $K=2$? Acrescente a coluna à tabela
         do Exercício~3.
@@ -334,8 +339,8 @@ Note a inversão: em $p=2$ o naive Bayes custa \emph{mais} que o LDA (9 contra 8
 porque estima duas variâncias por covariável em vez de uma covariância comum. Em
 $p=50$ ele custa $201$ contra $1\,376$ --- quase sete vezes menos. O crescimento
 é \textbf{linear} em $p$, contra o quadrático dos outros dois, e é isso que o
-torna viável em dimensão alta (a Aula~E3 o usa com dezenas de milhares de
-colunas).
+torna viável em dimensão alta (a Aula~E3 usa a versão multinomial com quase nove
+mil colunas).
 
 \smallskip
 \textbf{(b)} Com $\bm\Sigma_k$ diagonal, a densidade conjunta fatora:
@@ -359,10 +364,11 @@ LDA diagonal, com fronteira linear.)
 
 \smallskip
 \textbf{(c)} Porque para \emph{classificar} basta acertar qual $\delta_k$ é o
-maior, e não estimar bem as probabilidades. Erros na modelagem da dependência
-tendem a deslocar todos os $\delta_k$ na mesma direção, preservando a ordem entre
-eles. Some-se a isso o argumento de variância do item (a): com $4p+1$ parâmetros
-em vez de $2\,651$, as estimativas são muito mais estáveis, e o viés introduzido
+maior, e não estimar bem as probabilidades. Com duas classes, a decisão depende só
+do sinal de $\delta_1-\delta_0$; quando covariáveis correlacionadas apontam para a
+mesma classe, contá-las como independentes exagera o \emph{tamanho} dessa diferença
+sem trocar o seu sinal. Some-se a isso o argumento de variância do item (a): com
+$4p+1$ parâmetros em vez de $2\,651$, as estimativas são muito mais estáveis, e o viés introduzido
 pela suposição falsa é compensado pela variância que se economiza.
 
 O preço aparece na \textbf{calibração}: as probabilidades do naive Bayes são
