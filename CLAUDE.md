@@ -876,7 +876,7 @@ A ordem importa: a pasta do notebook vem **primeiro**, então um `.csv` posto ao
 lado vence o do repositório. **Nada de URL para o GitHub** — falhar com mensagem
 clara é preferível a baixar pelas costas do aluno.
 
-Por que não só a pasta da aula: `superconductivity.csv` tem 23 MB e é lido por 10
+Por que não só a pasta da aula: `superconductivity.csv` tem 23 MB e era lido por 10
 notebooks; uma cópia por pasta custaria ~230 MB. Por que não só `recursos/dados/`:
 sem o repositório esse caminho nunca resolve, e o aluno teria de editar a primeira
 célula em toda aula. As duas tentativas anteriores foram essas, nessa ordem.
@@ -886,15 +886,21 @@ essa célula, byte a byte igual a menos do nome do arquivo. Nenhum baixa nada da
 rede, e nenhuma URL do GitHub sobrou no repositório — antes havia um *fallback*
 para `raw.githubusercontent`, que amarrava o material ao nome da branch.
 
-Quem **carrega** o quê, medido em 12/08/2026 (a contagem anterior era por menção
-ao nome do arquivo, e somava dois notebooks que só o citam no texto — a `E2` e a
-`Aula prática 10`):
+Quem **carrega** o quê, medido em 16/09/2026 por leitura no código, não por
+menção ao nome do arquivo — a `Aula prática E2` cita o `superconductivity.csv` só
+no texto, e não entra. A tabela anterior, de 12/08/2026, estava na numeração de
+antes da saída da aula 05 e ainda contava a `Aula prática 06`, que deixou de ler o
+`bank_train_redux.csv` quando encolheu, em 14/09/2026:
 
 | arquivo | tamanho | notebooks |
 | --- | --- | --- |
 | `superconductivity.csv` | 23 MB | 9 — aulas 01 a 05, incluindo as listas 02 e 05 |
-| `bank_train_redux.csv` | 96 MB | 5 — aulas 06, 08 e 10, incluindo a lista 08 |
+| `bank_train_redux.csv` | 96 MB | 4 — aula 08, incluindo a lista, e a `Aula prática 10` |
 | `spam.csv` | 0,5 MB | 3 — aula E3, incluindo a lista |
+
+A `Aula prática 10` é a única que foge do byte a byte: o banco entra ali como
+segundo conjunto, depois do `breast_cancer`, com os nomes sufixados (`_nome_b`,
+`_caminho_b`) e `nrows=20_000`.
 
 `bank_train_redux.csv` é um excerto reduzido da base do Kaggle, por limite de
 espaço do GitHub — atenção ao teto de 100 MiB por arquivo se alguma conversão for
