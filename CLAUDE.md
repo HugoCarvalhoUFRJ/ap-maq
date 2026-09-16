@@ -341,6 +341,9 @@ sai na 1.10**. Eram quatro ocorrências, todas corrigidas em 11/09/2026:
   saem bit-idênticos (diferença absoluta máxima $0$), e a leitura da seção ---
   ``$C=1$ encolhe os coeficientes cerca de 10%'' --- continua valendo: $10{,}2\%$.
 
+As três ocorrências da aula 07 saíram de vez em 16/09/2026, junto com a logística
+--- ver ``A aula 07 segue o deck'', adiante. Sobrou a da `Lista teorica 06`.
+
 **Cuidado ao procurar por este:** os notebooks chamam
 `warnings.filterwarnings("ignore")`, então executá-los **não** mostra o aviso. Só
 `python -W error::FutureWarning`, fora do notebook, denuncia.
@@ -405,6 +408,87 @@ n_features=100, n_informative=10, noise=1.0, random_state=0)`, a busca devolve
 impressa no slide ``Um exemplo''. O `l1_ratio=1` colapsa o ElasticNet em Lasso, e os
 dois empatam em EQM de CV ($1{,}1293$) e no teste ($1{,}2110$); o teste é pior que a
 CV porque o `best_score_` é o melhor de 56 estimativas ruidosas.
+
+## A aula 07 segue o deck
+
+Decisão do Gabriel em 16/09/2026, no espírito da aula 06 e indo além dela: aqui
+**as notas também** foram atrás do deck, não só o laboratório e as listas. O deck
+cobre a formulação com perda 0--1, o classificador de Bayes, o *plug-in*, o Bayes
+ingênuo (contínuo e discreto, com as variantes do `scikit-learn`), a normal
+multivariada, LDA, QDA e a escolha entre os dois. **A regressão logística aparece
+nele só como exemplo de *plug-in***, e é assim que ela ficou nas notas: citada numa
+frase, não desenvolvida. **Não a reintroduza na aula 07.**
+
+| onde | o que saiu | o que entrou |
+| --- | --- | --- |
+| notas, as duas versões | a seção da logística (MV, separação perfeita, multiclasse, a $\sigma$), a regressão sobre indicadores, a seção discriminativo $\times$ generativo e o `C` na prática em Python | a motivação da perda 0--1, o Bayes ingênuo contínuo com qualquer densidade e o discreto com as variantes, a densidade normal multivariada, os estimadores de MV, o discriminante do QDA e a conta de parâmetros com $K$ classes |
+| `Aula prática 07` | a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; a antiga §8 é hoje a **§7**; 40→**34 células** | a explicação do `nan` da §6 |
+| `Lista prática 07` | a logística dos Ex. 2 e 4 | `reg_param` no QDA do Ex. 4, com lacuna; um `Sua vez` sobre a covariância comum no lugar do de AUC, que é aula 08 |
+| `07-fronteiras` | o painel da logística: 4→3 painéis, na ordem do deck | --- |
+| fora da aula | a logística ``da aula 07'' na `Lista prática 09`, nas notas da E3 (docente), no planejamento e no `requirements.txt` | --- |
+
+A `Lista teorica 07` não tinha logística e não perdeu exercício, mas foi corrigida
+junto. **A logística continua sendo usada nas aulas 08, 09, 10, E2 e E3**, notas e
+notebooks, como ferramenta conhecida --- e nenhum deck a desenvolve. Isso é anterior
+ao corte (o deck da 07 nunca a teve) e ficou como estava.
+
+O que ficou nas notas sem estar no deck, de propósito: a caixa de que a acurácia
+engana (a aula 08 abre citando ``o aviso da Aula 07''), a caixa do preço do
+``ingênuo'' (a aula 08 cita o motivo do descalibramento) e a observação do que se
+transfere da Parte I.
+
+### O que a reescrita derrubou
+
+Tudo medido em 16/09/2026, no `barennet_env`:
+
+- **A `Lista prática 07` quebrava na sklearn 1.9.** O Ex. 4 chamava
+  `QuadraticDiscriminantAnalysis()` sem `reg_param` no `breast_cancer`, e os cinco
+  ajustes da CV falhavam --- a quebra que o laboratório corrigiu em 12/08, e da qual a
+  lista tinha escapado. Com `reg_param=1e-4` o QDA dá $0{,}9508$ (o gabarito dizia
+  $0{,}9561$) e segue atrás do LDA. **A `Lista prática 10` tem a mesma chamada, no
+  mesmo banco, e não foi corrigida.**
+- **O QDA da 1.9 recusa classe pequena.** O `fit` compara os autovalores da
+  covariância de cada classe com `tol=1e-4` **absoluto** e levanta `LinAlgError`
+  quando a classe tem no máximo $p$ observações ou colunas quase colineares. Com
+  **menos** observações que covariáveis, nenhum `reg_param` resolve; com
+  exatamente $p$, um `reg_param` de $0{,}1$ resolve e um de $10^{-4}$ não. No §6 do
+  laboratório e no Ex. 3 da lista, o `try` transforma a recusa em `nan` em $n=20$,
+  $p=10$ --- e o gabarito afirmava $0{,}5475$ e ``16 pontos abaixo do LDA'', número da
+  sklearn antiga, repetido na tabela da `Lista teorica 07` 3(d). Hoje os três dizem
+  que ali o QDA não ajusta, e usam $n=30$ ($+0{,}0392$ para o LDA) para a vantagem.
+- **A comparação de escala da antiga §8 do laboratório comparava cada modelo com ele
+  mesmo.** Só a logística estava num `Pipeline` com `StandardScaler`; a coluna ``com
+  scaler'' de LDA, QDA e Bayes ingênuo era o modelo cru. Medindo de verdade, na mesma
+  divisão: o LDA é invariante (o solver `svd` padroniza por dentro), mas o
+  `QDA(reg_param=1e-4)` vai de $0{,}9415$ a $0{,}9532$ com o scaler, e o
+  `GaussianNB` de $0{,}9240$ a $0{,}9123$ --- o `var_smoothing` é proporcional à maior
+  variância, e com `var_smoothing=0` a invariância volta. A caixa das ``três
+  categorias'' das notas da aula 06 citava essa medição: a citação saiu e a caixa
+  ganhou a ressalva de implementação.
+- **Afirmações do laboratório que as próprias células desmentiam:** o Bayes ingênuo
+  ``não é o pior da tabela'' (é, com $0{,}1320$, nas sklearn 1.3 e 1.9); a correlação
+  ``$-0{,}82$'' (a verdadeira é $-0{,}803$, e a própria célula a imprime; $-0{,}83$ é a
+  estimativa do QDA), também no gabarito da lista; ``um centésimo e meio de ponto
+  percentual'' para $+0{,}0015$ (são 0,15 p.p.); e o Bayes ingênuo que ``continua onde
+  estava'' com covariâncias iguais --- o excesso dele dobra, de $+0{,}0355$ para
+  $+0{,}0737$, porque zerar a correlação comum desvia a direção da fronteira em
+  $47{,}8$ graus.
+- **O caso $p=2$ parecia mudar de uma peça para outra.** O laboratório mede o QDA
+  ganhando desde $n=20$; as listas mediam empate. São populações diferentes: a do
+  laboratório (e dos Ex. 1--2 da lista) tem correlações $+0{,}75$ e $-0{,}80$ nas
+  duas classes; a do Ex. 3 da lista, $-0{,}47$ e $-0{,}45$. A conclusão antiga das
+  listas, ``em dimensão baixa a escolha não importa'', era falsa --- o próprio Ex. 2
+  mostra o QDA 4 pontos à frente em $p=2$ ---, e a do laboratório, ``é a razão
+  $n/p^2$ que governa'', generalizava demais. As peças dizem hoje a mesma coisa:
+  $n$ contra $p(p+1)/2$ governa o que o QDA tem a **perder**; o quanto as
+  covariâncias diferem, o que ele tem a **ganhar**.
+- **No breast_cancer, LDA e QDA empatam dentro do ruído.** O laboratório lia a
+  vantagem do LDA no teste ($0{,}0117$, que são **dois** tumores em 171) como ``a conta
+  de parâmetros cobrando''; na CV da mesma tabela o QDA fica à frente
+  ($0{,}9623$ contra $0{,}9598$). O texto passou a dizer isso.
+- **O AME omite o $\tfrac12$ do expoente** nas duas densidades normais da §8.1.4
+  (p. 147 e 149 do livro; conferido com `pdftotext -layout`). As notas do aluno
+  avisam na leitura recomendada.
 
 ## Figuras (`recursos/figuras/`)
 
@@ -524,7 +608,10 @@ Três colisões saíram dessa varredura e estão corrigidas:
   zero da árvore com uma observação por folha é exato também no computador;
 - a caixa da aula 06 dividia os métodos em duas categorias e são **três**: LDA, QDA
   e Bayes ingênuo também são invariantes por reescala, e justamente *porque* estimam
-  a covariância.
+  a covariância. (Em 16/09/2026 descobriu-se que a medição que sustentava isso, na
+  §8 da `Aula prática 07`, comparava cada modelo com ele mesmo. A invariância vale
+  para os estimadores de MV; o `var_smoothing` do `GaussianNB` e o `reg_param` do
+  QDA a quebram --- ver ``A aula 07 segue o deck''.)
 
 **O grau 49 da aula 03 não tem um número, tem uma faixa** (medido em 19/08/2026). Os
 três valores que o §3 afirmava — erro de treino $0{,}3049$, EQM de teste $25{,}5$ e
@@ -604,7 +691,9 @@ E pegou uma segunda, em 12/08/2026: o **`QuadraticDiscriminantAnalysis` levanta
 condicionada, e a `Aula prática 07` morria da §8 em diante — as 30 medidas do
 `breast_cancer` são colineares o bastante. A correção é `QDA(reg_param=1e-4)`, um
 ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empatado
-na frente para terceiro lugar, atrás do LDA. O texto foi reescrito sobre o medido.
+na frente para trás do LDA no teste. O texto foi reescrito sobre o medido. (A §8 é
+hoje a §7; a `Lista prática 07`, com a mesma chamada, só foi corrigida em
+16/09/2026, e a `Lista prática 10` continua sem a correção.)
 
 Uma varredura dos argumentos de **todas** as chamadas do scikit-learn em **todos**
 os notebooks contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas
