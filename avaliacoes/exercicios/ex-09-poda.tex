@@ -3,23 +3,24 @@ Construir uma árvore tem duas etapas, e elas usam objetivos diferentes de
 propósito. O crescimento escolhe cortes que mais reduzem o RSS; a poda escolhe uma
 subárvore $T\subseteq T_0$ minimizando
 \[
-  C_\alpha(T) \;=\; \sum_{m=1}^{\abs{T}}\ \sum_{i:\;\x_i\in R_m}
-    \big(y_i-\widehat c_m\big)^2 \;+\; \alpha\,\abs{T},
+  C_\alpha(T) \;=\; \sum_{k=1}^{\abs{T}}\ \sum_{i:\;\X_i\in R_k}
+    \big(Y_i-\widehat y_{R_k}\big)^2 \;+\; \alpha\,\abs{T},
 \]
-onde $\abs{T}$ é o número de folhas e $\widehat c_m$ a média de $y$ na folha $m$.
-Se a forma lembra a regularização da Aula~02, não é coincidência.
+onde $\abs{T}$ é o número de folhas e $\widehat y_{R_k}$ é a média das respostas na
+folha $R_k$.
+Se a forma lembra a regularização, não é coincidência.
 \begin{itens}
-  \item \pts{0,6} O que se obtém nos dois extremos, $\alpha=0$ e
+  \item \pts{0,8} O que se obtém nos dois extremos, $\alpha=0$ e
         $\alpha\to\infty$? Diga em cada caso quantas folhas tem a subárvore
         vencedora.
-  \item \pts{1,0} Considere uma folha com RSS igual a $S_m$, que pode ser dividida
+  \item \pts{1,3} Considere uma folha com RSS igual a $S$, que pode ser dividida
         em duas com RSS $S_a$ e $S_b$. Escreva a condição sobre
-        $S_m-(S_a+S_b)$ para que a divisão valha a pena segundo $C_\alpha$, e
+        $S-(S_a+S_b)$ para que a divisão valha a pena segundo $C_\alpha$, e
         interprete: em que unidade o $\alpha$ está cobrando?
-  \item \pts{0,6} Uma árvore tem RSS total $120$ com $6$ folhas; podando-a para
+  \item \pts{0,8} Uma árvore tem RSS total $120$ com $6$ folhas; podando-a para
         $4$ folhas, o RSS sobe para $140$. Para quais valores de $\alpha$ a podada
         é preferível?
-  \item \pts{0,8} Por que a poda usa um critério diferente do crescimento, em vez
+  \item \pts{1,1} Por que a poda usa um critério diferente do crescimento, em vez
         de simplesmente parar de crescer quando o ganho fica pequeno? Dê um
         exemplo de estrutura nos dados que um critério de parada perderia e a poda
         recupera.
@@ -32,7 +33,7 @@ no limite, uma observação por folha e RSS zero.
 
 Com $\alpha\to\infty$ o termo $\alpha\abs{T}$ domina, e minimizá-lo exige
 $\abs{T}$ mínimo: a vencedora é a \textbf{raiz sozinha}, uma única folha, cuja
-predição é a média de $y$ no conjunto todo.
+predição é a média de todas as respostas.
 
 Entre os dois extremos, $\alpha$ percorre uma sequência finita de subárvores
 aninhadas --- e é essa sequência que a validação cruzada percorre para escolher o
@@ -40,13 +41,13 @@ $\alpha$.
 
 \smallskip
 \textbf{(b)} Dividir a folha troca $1$ folha por $2$: o número de folhas sobe em
-$1$ e o custo de complexidade sobe em $\alpha$. Em compensação o RSS cai de $S_m$
+$1$ e o custo de complexidade sobe em $\alpha$. Em compensação o RSS cai de $S$
 para $S_a+S_b$. A divisão reduz $C_\alpha$ se, e só se,
 \[
   \big(S_a+S_b\big) + \alpha(\abs{T}+1)
-  \;<\; S_m + \alpha\abs{T}
+  \;<\; S + \alpha\abs{T}
   \quad\Longleftrightarrow\quad
-  S_m-\big(S_a+S_b\big) \;>\; \alpha .
+  S-\big(S_a+S_b\big) \;>\; \alpha .
 \]
 
 Em palavras: \textbf{a divisão precisa reduzir o RSS em mais de $\alpha$}.

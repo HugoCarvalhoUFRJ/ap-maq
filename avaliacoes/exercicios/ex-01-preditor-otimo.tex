@@ -1,6 +1,6 @@
 % Aula 01 --- o preditor ótimo e o erro irredutível.
 % Incluído por "Lista de revisao 01-06.tex" e, se sorteado, pela prova.
-A Aula~01 abriu com uma afirmação forte: de todas as funções que você poderia usar
+No início do curso, vimos uma afirmação forte: de todas as funções que você poderia usar
 para prever $Y$ a partir de $\X$, a melhor é a função de regressão
 $r(\x)=\E[Y\mid\X=\x]$. Não a melhor entre as lineares, nem a melhor entre as que
 o seu método consegue produzir --- a melhor, ponto.
@@ -9,7 +9,7 @@ Uma afirmação dessas pede demonstração, e ela é mais curta do que parece. T
 trabalho está num truque que você vai reencontrar várias vezes no curso: somar e
 subtrair a quantidade certa dentro de um quadrado.
 \begin{itens}
-  \item \pts{1,0} Seja $g:\R^p\to\R$ uma função qualquer com
+  \item \pts{1,2} Seja $g:\R^p\to\R$ uma função qualquer com
         $\E[g(\X)^2]<\infty$. Some e subtraia $r(\X)$ dentro do quadrado e mostre
         que
         \[
@@ -18,14 +18,14 @@ subtrair a quantidade certa dentro de um quadrado.
         \]
         O trabalho está em mostrar que o termo cruzado desaparece; condicione em
         $\X$ e pergunte-se o que $\E[Y-r(\X)\mid\X]$ vale.
-  \item \pts{0,8} Olhe para a identidade que você acabou de provar e responda: por
+  \item \pts{0,9} Olhe para a identidade que você acabou de provar e responda: por
         que ela mostra que $r$ é o minimizador? Em seguida, mostre que o valor
         mínimo é $\risco(r)=\E[\Var(Y\mid\X)]$.
-  \item \pts{0,7} Esse mínimo tem nome: \textbf{erro irredutível}. O nome sugere
+  \item \pts{0,8} Esse mínimo tem nome: \textbf{erro irredutível}. O nome sugere
         que não há como baixá-lo, e é verdade --- mas a razão não é que os métodos
         atuais sejam ruins. Explique de onde vem essa impossibilidade, e diga o que
         teria de mudar \emph{no problema} para o número diminuir.
-  \item \pts{1,0} Na Lista Teórica~01 você mostrou que o melhor preditor
+  \item \pts{1,1} Na Lista Teórica~01, mostramos que o melhor preditor
         \emph{constante} tem risco $\Var(Y)$. Use a identidade de (a) para escrever
         a diferença $\Var(Y)-\risco(r)$ como uma esperança, e interprete: que
         pergunta prática essa quantidade responde?
@@ -48,7 +48,7 @@ funções de $\X$, e $\X$ está fixo --- e portanto sai de dentro da esperança
 condicional:
 \[
   \E\big[(Y-r(\X))(r(\X)-g(\X))\big]
-   = \E\Big[\big(r(\X)-g(\X)\big)\;\underbrace{\E[\,Y-r(\X)\mid\X\,]}_{}\Big].
+   = \E\Big[\big(r(\X)-g(\X)\big)\;\underbrace{\E[\,Y-r(\X)\mid\X\,]}_{=\;0}\Big].
 \]
 E a esperança que sobrou é zero, porque $\E[Y\mid\X]=r(\X)$ é exatamente a
 definição de $r$. Sobram os dois quadrados.

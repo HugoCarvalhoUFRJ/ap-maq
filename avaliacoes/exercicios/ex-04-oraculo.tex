@@ -1,29 +1,29 @@
 % Aula 02 --- o melhor preditor linear (o "oráculo") quando r não é linear.
 Circula por aí a ideia de que a regressão linear "só vale se o modelo estiver
-correto". A Aula~02 mostra que isso é impreciso: o MQO converge para alguma
-coisa bem definida mesmo quando $r$ não é linear coisa nenhuma.
+correto". Vimos durante o curso que isso é impreciso: o MQO converge para uma função
+bem definida mesmo quando $r$ não é linear.
 
-Essa coisa é o \textbf{melhor preditor linear},
+Essa função é o \textbf{melhor preditor linear},
 \[
   \bbeta^\ast = \argmin_{\bbeta} \E\big[(Y-\bbeta^\top\X)^2\big],
 \]
 que existe sempre que $\Sigma=\E[\X\X^\top]$ é bem definida e invertível ---
 \emph{sem} supor nada sobre a forma de $r$.
 \begin{itens}
-  \item \pts{0,8} Derive $\bbeta^\ast=\Sigma^{-1}\bm\alpha$, onde
+  \item \pts{0,9} Derive $\bbeta^\ast=\Sigma^{-1}\bm\alpha$, onde
         $\bm\alpha=\E[Y\X]$. É o mesmo cálculo das equações normais, com
         esperanças no lugar de somas.
-  \item \pts{0,8} O estimador de mínimos quadrados pode ser escrito como
+  \item \pts{1,0} O estimador de mínimos quadrados pode ser escrito como
         $\widehat\bbeta=\widehat\Sigma^{-1}\widehat{\bm\alpha}$, com
         $\widehat\Sigma=\frac1n\sum_i\X_i\X_i^\top$ e
         $\widehat{\bm\alpha}=\frac1n\sum_i Y_i\X_i$. Olhe para essas duas
         expressões e diga o que elas são, estatisticamente. Em seguida, explique
         por que $\widehat\bbeta\to\bbeta^\ast$ em probabilidade sem que se precise
         supor linearidade em lugar nenhum.
-  \item \pts{0,9} Todo teorema garante uma coisa e deixa de garantir outra.
+  \item \pts{1,0} Todo teorema garante uma coisa e deixa de garantir outra.
         Enuncie as duas, com cuidado. Em particular: o resultado diz que o risco
         de $\widehat\bbeta$ é pequeno?
-  \item \pts{1,0} Um colega ajusta uma regressão linear a dados em que $r$ é
+  \item \pts{1,1} Um colega ajusta uma regressão linear a dados em que $r$ é
         visivelmente curva e conclui: "o coeficiente deu $2{,}3$, logo aumentar
         $x_1$ em uma unidade aumenta $Y$ em $2{,}3$". Separe o que é leitura
         legítima de $\bbeta^\ast$ do que não é.

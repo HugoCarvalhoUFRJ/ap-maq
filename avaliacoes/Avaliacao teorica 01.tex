@@ -14,9 +14,13 @@
 %      # -> [2, 3, 6]; depois um exercício dentro de cada aula, na mesma ordem
 %
 %  Resultado:
-%      Aula 02 -> Exercício  5  "a Ridge como moda a posteriori"
-%      Aula 03 -> Exercício  7  "a mesma validação cruzada, escrita de dois jeitos"
-%      Aula 06 -> Exercício 13  "para quem a régua importa"
+%      Aula 02 -> Exercício  5  "A Regressão Ridge como moda a posteriori"
+%      Aula 03 -> Exercício  7  "Duas fórmulas da validação cruzada"
+%      Aula 06 -> Exercício 13  (sensibilidade à escala; hoje sem título)
+%
+%  O sorteio rodou sobre a lista de 13 exercícios, com a numeração acima. Em
+%  16/09/2026 saíram os antigos Ex. 8 e 9, e o da régua passou a ser o Ex. 11.
+%  Refeito com a lista de 11, a mesma semente sorteia os mesmos três exercícios.
 %
 %  NÃO HÁ TEXTO DE EXERCÍCIO NESTE ARQUIVO. Os enunciados e as soluções vêm por
 %  \input dos MESMOS arquivos que a lista de revisão usa, em exercicios/ --- é
@@ -26,6 +30,10 @@
 %
 %  O \provatrue abaixo liga a pontuação por item: o comando \pts{1,0}, escrito
 %  dentro dos arquivos de exercício, some na lista e aparece aqui.
+%
+%  A PROVA NÃO REVELA DE QUE AULA VEM CADA QUESTÃO: o \questao não leva marcador
+%  de aula, e o enunciado de um exercício sorteado não pode citar aula por
+%  número --- como ele entra por \input, uma "Aula~NN" no texto aparece aqui.
 %==============================================================================
 \providecommand{\gabaritoopt}{}
 \documentclass[11pt,a4paper]{article}
@@ -38,33 +46,27 @@
 Árvores e \emph{Pipelines}}{2 horas}{12,0 pontos}
 
 %==============================================================================
-\questao{a Ridge como moda a posteriori}{4,0 pontos}
-\daaula{02}
+\questao{A Regressão Ridge como moda a posteriori}{4,0 pontos}
 %==============================================================================
 \input{exercicios/ex-05-bayes}
 
 \begin{criterio}
-\textbf{(a)} 0,6 pelo produto verossimilhança $\times$ priori; 0,6 por passar ao
+\textbf{(a)} 0,8 pelo produto verossimilhança $\times$ priori; 0,8 por passar ao
 logaritmo e trocar máximo por mínimo corretamente. Ignorar as constantes de
 normalização não desconta, desde que o aluno justifique que não dependem de
 $\bbeta$.
 
-\textbf{(b)} 0,4 por eliminar o fator $1/(2\sigma^2)$ sem alterar o argmin; 0,4
+\textbf{(b)} 0,4 por eliminar o fator $1/(2\sigma^2)$ sem alterar o argmin; 0,6
 pelo valor de $\lambda$. Chegar a $\lambda$ invertido
-($\sigma_\beta^2/\sigma^2$) vale 0,2.
+($\sigma_\beta^2/\sigma^2$) vale 0,3 dos 0,6.
 
-\textbf{(c)} 0,4 por extremo. Exige ligar priori e $\lambda$, não apenas
+\textbf{(c)} 0,7 por extremo. Exige ligar priori e $\lambda$, não apenas
 descrever o comportamento do Ridge. Mencionar o par viés--variância é esperado,
 mas não obrigatório para a nota cheia.
-
-\textbf{(d)} 0,6 por identificar que a esparsidade é propriedade da moda; 0,6 por
-explicar que a posteriori é contínua e a média integra. Aceitar qualquer
-formulação correta do argumento de continuidade.
 \end{criterio}
 
 %==============================================================================
-\questao{a mesma validação cruzada, escrita de dois jeitos}{4,0 pontos}
-\daaula{03}
+\questao{Duas fórmulas da validação cruzada}{4,0 pontos}
 %==============================================================================
 \input{exercicios/ex-07-duas-formas}
 
@@ -80,30 +82,36 @@ perde 0,2 --- a igualdade é exata.
 \textbf{(c)} 0,2 pela soma; 0,5 pela explicação dos pesos desiguais. Basta o
 argumento; não é preciso calcular os sete pesos.
 
-\textbf{(d)} 0,45 por cada valor correto ($2{,}08$ e $\approx 2{,}286$); 0,4 pela
-justificativa da escolha. Aceitar tanto a defesa da fórmula ponderada quanto a da
+\textbf{(d)} 0,45 por cada valor correto ($2{,}08$ e $\approx 2{,}286$); 0,1 por
+dizer que a do ISLP dá mais peso à dobra atípica; 0,3 pela justificativa da
+escolha. Aceitar tanto a defesa da fórmula ponderada quanto a da
 não ponderada, desde que argumentada; \textbf{não} aceitar resposta que ignore a
 existência das duas.
 \end{criterio}
 
 %==============================================================================
-\questao{para quem a régua importa}{4,0 pontos}
-\daaula{06}
+\questao{}{4,0 pontos}
 %==============================================================================
-\input{exercicios/ex-13-escala}
+\input{exercicios/ex-11-escala}
 
 \begin{criterio}
-\textbf{(a)} 0,2 pelo veredito e 0,2 pela justificativa, em cada um dos seis
+\textbf{(a)} 0,2 pelo veredito e 0,2 pela justificativa, em cada um dos cinco
 itens. Veredito certo com justificativa ausente ou errada vale 0,2. Aceitar
-"equivariante" sem demonstração em (i) e (vi).
+"equivariante" sem demonstração em (i).
 
-\textbf{(b)} 0,3 por apontar o KNN; 0,4 pelo argumento do quadrado na distância.
-Responder "Ridge" com bom argumento vale 0,3.
+\textbf{(b)} 0,3 por apontar o KNN; 0,6 por comparar o que a escala controla em
+cada um: no Ridge, quanto um coeficiente é penalizado; no KNN, quem são os
+vizinhos, com as outras colunas saindo da conta. Dizer apenas que a escala entra ao
+quadrado na distância vale 0,2 desses 0,6, porque ela também entra ao quadrado na
+penalidade do Ridge. Responder "Ridge" com bom argumento vale 0,4.
 
-\textbf{(c)} 0,4 por identificar que a coluna reescalada era a de maior efeito;
-0,5 por explicar que o efeito se inverteria numa coluna irrelevante. A observação
-de que foi a unidade de medida que tomou a decisão é o ponto alto da resposta e
-deve ser premiada dentro dos 0,5.
+\textbf{(c)} 0,5 pelo mecanismo: o coeficiente da coluna reescalada fica 1000
+vezes menor e escapa quase inteiramente da penalidade, de modo que a coluna mais
+importante deixa de ser encolhida. 0,6 por explicar por que a conclusão não se
+sustenta: numa coluna irrelevante o efeito tende a se inverter. A observação de que
+foi a unidade de medida que tomou a decisão é o ponto alto da resposta e deve ser
+premiada dentro dos 0,6; aceitar também, como parte deles, o argumento de que um
+resultado favorável isolado não valida o procedimento.
 \end{criterio}
 
 \vfill

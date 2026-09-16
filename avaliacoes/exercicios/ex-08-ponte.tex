@@ -1,0 +1,133 @@
+% Aula 04 --- a ponte 02<->04: regularizar ataca variância, não paramétrico ataca viés.
+Durante o curso, apresentamos ferramentas que, à primeira vista, andam em sentidos
+opostos. A regularização \emph{restringe} o modelo: o Ridge, por exemplo, soma ao
+RSS do MQO uma penalidade sobre o tamanho dos coeficientes,
+\[
+  \widehat{\bbeta}^{\,\text{ridge}}
+   = \argmin_{\bbeta}\Big\{\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\sum_{j=1}^{p}\beta_j^2\Big\}.
+\]
+Os métodos não paramétricos o \emph{soltam}: o KNN, por exemplo, não supõe forma
+nenhuma para $r$ e prevê pela média das respostas dos $k$ vizinhos mais próximos de
+$\x$, cujos índices formam o conjunto $\mathcal N_{\x}$,
+\[
+  \rhat(\x)=\frac1k\sum_{i\in\mathcal N_{\x}} Y_i .
+\]
+Parece contradição, e não é: são ferramentas para serem usadas em dois contextos
+diferentes.
+
+Para ver quais, a referência é a decomposição do erro de previsão num ponto fixo
+$\x_0$. Para um estimador $\rhat$ construído com a amostra $\Dados$,
+\[
+  \E_{\Dados}\!\big[(Y_0-\rhat(\x_0))^2\big]
+  = \underbrace{\big(\E_{\Dados}[\rhat(\x_0)]-r(\x_0)\big)^2}_{\text{viés}^2}
+  + \underbrace{\Var_{\Dados}\!\big(\rhat(\x_0)\big)}_{\text{variância}}
+  + \underbrace{\sigma^2(\x_0)}_{\text{irredutível}},
+\]
+em que $Y_0$ é uma resposta nova em $\x_0$, $\sigma^2(\x_0)=\Var(Y\mid\X=\x_0)$, e
+$\E_{\Dados}$ e $\Var_{\Dados}$ percorrem as amostras de treino possíveis. O último
+termo não depende do método; a disputa é entre os dois primeiros.
+
+\begin{itens}
+  \item \pts{0,8} Explique, em palavras, o que o viés e a variância medem. Depois
+        diga qual dos dois termos a regularização ataca e qual os métodos não
+        paramétricos atacam, e o que cada família aceita pagar no outro.
+  \item \pts{0,8} Descreva, em uma frase cada, a situação que motiva cada família:
+        o que está errado com o modelo \emph{antes} de aplicarmos Ridge, e o que
+        está errado \emph{antes} de aplicarmos um spline?
+  \item \pts{1,3} O KNN com $k=1$ e o MQO com $p$ grande erram por motivos que,
+        na decomposição, caem no mesmo lugar. Explique. Em seguida diga qual é o
+        remédio de cada um e por que os dois remédios se parecem.
+
+        Dica para o KNN: trate as covariáveis da amostra como fixas --- assim os
+        vizinhos de $\x_0$ também ficam fixos --- e suponha que $Y$ tenha variância
+        constante $\sigma^2$ em torno de $r$. Nesse caso a decomposição fica
+        \[
+          \E\big[(Y_0-\rhat(\x_0))^2\big]
+          = \Big(\frac1k\sum_{i\in\mathcal N_{\x_0}} r(\X_i)-r(\x_0)\Big)^2
+          + \frac{\sigma^2}{k} + \sigma^2 .
+        \]
+        O que acontece com cada termo quando $k$ cresce?
+  \item \pts{1,1} As duas ideias podem ser combinadas? Dê um exemplo concreto,
+        visto no curso, de método que seja ao mesmo tempo não paramétrico e
+        regularizado, e diga qual botão controla cada coisa nele.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} O \textbf{viés} compara a média de $\rhat(\x_0)$ sobre todas as
+amostras de treino possíveis com o alvo $r(\x_0)$. É o erro sistemático, o que
+sobra depois que o acaso da amostra se cancela na média --- e, quando o modelo não
+consegue representar $r$, ele não diminui com mais dados. A \textbf{variância} mede
+a instabilidade: o quanto $\rhat(\x_0)$ mudaria se a amostra de treino fosse outra,
+do mesmo tamanho.
+
+A \textbf{regularização ataca a variância}: ela restringe o espaço de soluções,
+encolhendo os coeficientes, e aceita pagar viés por isso.
+
+Os \textbf{métodos não paramétricos atacam o viés}: eles ampliam a classe de
+funções representáveis para que $r$ caiba nela, e aceitam pagar variância.
+
+O termo irredutível fica fora da disputa: nenhuma das duas famílias mexe nele.
+
+\smallskip
+\textbf{(b)} Antes do Ridge, o problema é um modelo \textbf{flexível demais para a
+amostra que se tem}: colunas demais ou colineares, o ajuste persegue o ruído e os
+coeficientes ficam instáveis. Excesso de variância.
+
+Antes do spline, o problema é um modelo \textbf{rígido demais para a verdade}: a
+reta não acompanha uma $r$ curva, e o erro persiste por mais dados que se colete.
+Excesso de viés.
+
+A diferença entre "para a amostra" e "para a verdade" é o coração da distinção:
+uma é falta de dados, a outra é falta de classe.
+
+\smallskip
+\textbf{(c)} Os dois erram por \textbf{variância}.
+
+O KNN com $k=1$ faz cada predição depender de uma única observação, e todo o ruído
+daquele ponto entra na resposta. A fórmula da dica mostra o tamanho disso: com
+$k=1$ o termo de variância vale $\sigma^2$, tanto quanto o próprio ruído, enquanto o
+viés costuma ser pequeno, porque o vizinho mais próximo está perto de $\x_0$. O
+ajuste passa exatamente pelos dados de treino,
+com resíduo nulo e nenhuma estabilidade --- troque a amostra e a função muda
+inteira.
+
+O MQO com $p$ grande tem parâmetros demais para os dados disponíveis, e cada
+coeficiente é estimado com pouca informação. No limite $p>n$ a solução nem é
+única.
+
+O remédio do KNN é \textbf{aumentar $k$}. Pela dica, a variância cai como
+$\sigma^2/k$, e o preço aparece no primeiro termo: vizinhos mais distantes entram
+na média, e $\frac1k\sum r(\X_i)$ se afasta de $r(\x_0)$. O do MQO é
+\textbf{regularizar}, encolhendo os coeficientes em direção a zero. No caso
+ortonormal a troca é igualmente explícita: o Ridge multiplica cada coeficiente por
+$1/(1+\lambda)$, o que divide a variância por $(1+\lambda)^2$ e cria um viés de
+$-\lambda\beta_j/(1+\lambda)$.
+
+Os dois se parecem porque fazem a mesma coisa no fundo: reduzem a
+\emph{complexidade efetiva} do ajuste, trocando variância por viés. Em ambos há um
+botão contínuo --- $k$ de um lado, $\lambda$ do outro --- e em ambos ele se
+escolhe por validação cruzada, nunca no olho.
+
+Um cuidado que costuma confundir: os botões correm em sentidos opostos. $k$
+\emph{grande} e $\lambda$ \emph{grande} dão modelos mais simples, mas $k$ grande
+significa vizinhança larga e $\lambda$ grande significa coeficientes pequenos. O
+teste seguro, quando a memória falha, é perguntar de que lado está o modelo
+constante.
+
+\smallskip
+\textbf{(d)} Podem, e o exemplo do curso são as \emph{smoothing splines} da
+Aula~04.
+
+Elas põem um nó em \textbf{cada observação} --- portanto são não paramétricas ao
+extremo, com $I=n$ --- e controlam a flexibilidade resultante \textbf{penalizando
+a curvatura}:
+\[
+  \sum_{i=1}^n\big(y_i-g(x_i)\big)^2 + \gamma\int \big(g''(x)\big)^2\,dx .
+\]
+
+Os dois papéis estão separados e visíveis: a base cresce com $n$ (o lado não
+paramétrico) e o $\gamma$ regula quanta daquela liberdade é de fato usada (o lado
+regularizado). E neste método quem manda é o $\gamma$ --- os nós deixaram
+de ser o botão, porque são todos. É uma solução elegante para um problema chato,
+que é ter de escolher onde pôr os nós.
+\end{solucao}

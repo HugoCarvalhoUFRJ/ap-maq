@@ -56,7 +56,9 @@
 
 % ----- Cabeçalho da prova -----------------------------------------------------
 % \cabecalhoprova{número}{intervalo de aulas}{descrição}{duração}{total}
-% Produz o título, os campos de identificação e a caixa de instruções.
+% Produz o título e a caixa de instruções; no gabarito, a caixa dá lugar a um
+% aviso ao professor. Não há campos de identificação, e o 2º e o 3º argumentos
+% não são impressos --- a prova não mostra as aulas nem o conteúdo.
 \newcommand{\cabecalhoprova}[5]{%
   \ifgabarito
     \fancyhead[R]{\small\itshape Avaliação Teórica #1 --- gabarito}%
@@ -67,7 +69,6 @@
     {\Large\bfseries Avaliação Teórica #1\ifgabarito\ --- Gabarito\fi}\\[0.3em]
     {\large Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
     {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
-    {\small Conteúdo: Aulas #2 --- #3}
   \end{center}
   \ifgabarito
     \vspace{0.4em}
@@ -77,11 +78,6 @@
       somam o valor da questão.
     \end{atencao}
   \else
-    \vspace{0.8em}
-    \noindent\textbf{Nome:}~\hrulefill\\[1.2em]
-    \noindent\textbf{Matrícula:}~\underline{\hspace{4.5cm}}\hfill
-    \textbf{Turma:}~\underline{\hspace{3.5cm}}
-    \vspace{0.8em}
     \begin{tcolorbox}[colback=cinzaclaro,colframe=azulufrj,boxrule=0.6pt,
                       left=8pt,right=8pt,top=6pt,bottom=6pt]
     \small
@@ -89,9 +85,8 @@
     \begin{itemize}[leftmargin=1.3cm,nosep]
       \item Duração: \textbf{#4}. Prova individual e sem consulta.
       \item A prova vale \textbf{#5}; o valor de cada item está indicado ao lado.
-      \item \textbf{Justifique todas as respostas.} Resultado final sem
-            justificativa não recebe pontuação integral.
-      \item Notação: $(\X,Y)$ é um par aleatório com distribuição $P$;
+      \item \textbf{Justifique todas as respostas.}
+      \item Notação: $(\X,Y)$ é um vetor aleatório com distribuição $P$;
             $r(\x)=\E[Y\mid\X=\x]$ é a função de regressão;
             $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d.;
             $p$ é o número de covariáveis; a perda é a quadrática, salvo
@@ -134,16 +129,17 @@
 % ----- Questão de prova -------------------------------------------------------
 % \questao{título}{valor} --- cabeçalho de cada questão da avaliação. Usa o mesmo
 % contador do ambiente exercicio, e o incrementa ele próprio.
+% O título pode ficar vazio, \questao{}{4,0 pontos}, para espelhar um exercício
+% sem título na lista; aí o travessão também some.
+% Não há marcador da aula de origem, de propósito: a prova não revela de que aula
+% vem cada questão.
 \newcommand{\questao}[2]{%
   \bigskip\par\refstepcounter{exercicio}\noindent
-  {\large\bfseries\color{azulufrj}Questão~\theexercicio\ --- #1}%
+  \def\questao@titulo{#1}%
+  {\large\bfseries\color{azulufrj}Questão~\theexercicio
+    \ifx\questao@titulo\@empty\else\ --- #1\fi}%
   \hfill{\bfseries(#2)}\par
   \nopagebreak\vspace{0.3em}}
-
-% ----- Marcador da aula de origem ---------------------------------------------
-% \daaula{06} --- discreto, à direita, para a lista de revisão.
-\newcommand{\daaula}[1]{%
-  \hfill{\small\itshape\color{gray!75}[Aula #1]}\par\nopagebreak\vspace{0.2em}}
 
 % ----- Ambiente de solução ----------------------------------------------------
 % Cópia do estilo-lista.sty. Só existe com a opção [gabarito]; sem ela, o

@@ -1,0 +1,90 @@
+% Aula 06 --- quem é sensível à escala das covariáveis, e por quê.
+Um colega recebeu um banco de dados em que a coluna \texttt{renda} está em reais e a coluna
+\texttt{altura} em metros, e pergunta se precisa padronizar antes de ajustar. A
+resposta honesta é "depende do método" --- e o critério que decide cabe numa
+pergunta: \textbf{o método soma coisas vindas de colunas diferentes?}
+
+Se soma, as unidades precisam ser comparáveis, e trocar uma delas estraga a
+comparação. Se não soma, a unidade é irrelevante.
+\begin{itens}
+  \item \pts{2,0 --- 0,4 cada} Para cada método abaixo, diga se multiplicar uma
+        única coluna por $1000$ \textbf{muda} ou \textbf{não muda} a predição,
+        justificando em uma linha onde está --- ou onde não está --- a soma sobre
+        colunas.
+        \begin{enumerate}[label=(\roman*),leftmargin=1.0cm,nosep]
+          \item Mínimos quadrados ordinários.
+          \item Regressão Ridge com $\lambda>0$ fixo.
+          \item Árvore de regressão.
+          \item Floresta aleatória.
+          \item KNN com $k$ fixo.
+        \end{enumerate}
+  \item \pts{0,9} Entre os que mudam, qual você espera que seja o mais afetado, e
+        por quê? Compare o \emph{modo} como a escala entra em cada um.
+  \item \pts{1,1} Outro colega ajustou o Lasso a dados padronizados, com $\lambda$
+        escolhido por validação cruzada. Em seguida multiplicou por $1000$ a coluna
+        de maior efeito sobre $Y$, reajustou com o \emph{mesmo} $\lambda$, e o erro
+        quadrático médio no conjunto de teste \emph{diminuiu}. Ele conclui que é
+        melhor não padronizar. Explique por que a reescala pode ter ajudado e por
+        que a conclusão não se sustenta.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Só dois mudam, o Ridge e o KNN: os dois que somam coisas vindas de
+colunas diferentes.
+\begin{enumerate}[label=(\roman*),leftmargin=1.0cm,nosep]
+  \item \textbf{Não muda.} O MQO é equivariante: o coeficiente da coluna se divide
+        por $1000$ e o produto $\beta_jx_j$ fica igual. Nada na função-objetivo
+        compara coeficientes entre si.
+  \item \textbf{Muda.} A penalidade $\lambda\sum_j\beta_j^2$ \emph{soma}
+        coeficientes de colunas diferentes; mudar a unidade de uma delas muda
+        quanto ela pesa nessa soma.
+  \item \textbf{Não muda.} A árvore só pergunta "$x_j\le t$?". O corte $t$ é
+        multiplicado junto, e a pergunta separa exatamente as mesmas observações.
+  \item \textbf{Não muda.} É uma média de árvores, e cada uma é indiferente; a
+        indiferença atravessa a agregação.
+  \item \textbf{Muda.} A distância euclidiana $\sum_j(x_{ij}-x_{\ell j})^2$ é uma
+        soma sobre colunas.
+\end{enumerate}
+
+\smallskip
+\textbf{(b)} O \textbf{KNN}. A diferença não está no tamanho do fator --- nos
+dois métodos ele chega a $10^6$ ---, e sim no que a escala controla em cada um.
+
+No Ridge, a escala mexe só no \emph{quanto} um coeficiente é penalizado. O
+coeficiente que produz o mesmo ajuste fica $1000$ vezes menor, e o termo dele na
+penalidade $\lambda\sum_j\beta_j^2$, $10^6$ vezes menor: a coluna fica praticamente
+livre do encolhimento. Mas o ajuste continua usando todas as colunas, e o pior que
+pode acontecer é aquele coeficiente deixar de ser encolhido --- uma mudança
+limitada, que desaparece quando $\lambda\to 0$, porque aí o Ridge vira o MQO, que
+não muda.
+
+No KNN, a escala mexe em \emph{quem} entra na média. As diferenças na coluna
+reescalada são multiplicadas por $1000$, e a contribuição delas para
+$\sum_j(x_{ij}-x_{\ell j})^2$, por $10^6$. A coluna passa a decidir sozinha quem é
+vizinho de quem, e as demais não ficam apenas menos importantes --- somem da conta,
+e o método deixa de usar a informação que carregavam.
+
+\smallskip
+\textbf{(c)} Primeiro, por que a reescala pode ter ajudado. Multiplicar a coluna
+por $1000$ faz o coeficiente que produz o mesmo ajuste ficar $1000$ vezes menor, e
+um coeficiente minúsculo quase não pesa em $\lambda\sum_j\abs{\beta_j}$: a coluna
+ficou praticamente isenta da penalidade. Como era a de maior efeito, o Lasso deixou
+de encolher justamente o coeficiente que mais importa.
+
+E encolher um coeficiente grande é quase só viés. No caso ortonormal, o Lasso
+subtrai $\lambda/2$ de todo coeficiente que sobrevive, um deslocamento que não
+reduz variância nenhuma. Tirar esse viés pode baixar o erro de teste --- pode, não
+precisa: nem nesse caso favorável a melhora é garantida.
+
+A conclusão, porém, não se sustenta, porque o resultado dependeu de \emph{qual}
+coluna foi reescalada. Aplique a mesma reescala a uma coluna \emph{irrelevante} e o
+efeito tende a se inverter: ela ganha liberdade para receber um coeficiente grande
+sem pagar por isso, e o ajuste passa a acompanhar ruído.
+
+O ponto de fundo é que, nos dois casos, quem decidiu quanto regularizar cada
+coluna não foi o analista: foi a \textbf{unidade de medida} em que o dado chegou.
+E é por isso que o argumento do colega não se salva nem quando o resultado o
+favorece --- um procedimento cujo desempenho depende de a coluna ter sido anotada
+em metros ou em milímetros está fora de controle, e ter dado certo desta vez não
+muda isso.
+\end{solucao}

@@ -1,5 +1,5 @@
 % Aula 01 --- risco condicional x risco esperado, e a barra de erro do teste.
-A palavra "risco" aparece na Aula~01 com dois sentidos, e a diferença entre eles
+A palavra "risco" apareceu durante o nosso curso com dois sentidos, e a diferença entre eles
 não é preciosismo: ela decide qual pergunta o seu número está respondendo.
 
 Quando $g$ é tratada como uma função \emph{fixa}, a esperança em
@@ -8,22 +8,18 @@ $\E[(Y-g(\X))^2]$ percorre só a observação nova $(\X,Y)$. Chamamos isso de
 porque foi construída a partir de $\Dados$ ---, a esperança percorre também as
 amostras de treino possíveis, e temos o \textbf{risco esperado}.
 \begin{itens}
-  \item \pts{0,8} Cada um dos dois oferece uma garantia diferente. Descreva as
+  \item \pts{1,3} Cada um dos dois oferece uma garantia diferente. Descreva as
         duas, e diga qual interessa a quem já ajustou um modelo e vai colocá-lo em
-        produção, e qual interessa a quem ainda está escolhendo entre dois métodos.
-  \item \pts{0,7} Você separou um conjunto de teste de $m$ observações que não
-        participou de nada, e calculou $\riscohat(\ghat)=\frac1m\sum_{k=1}^m W_k$,
+        produção, e qual interessa a quem ainda está escolhendo entre diversos métodos.
+  \item \pts{1,2} Você separou um conjunto de teste de $m$ observações que não
+        participou de nenhum treinamento, e calculou $\riscohat(\ghat)=\frac1m\sum_{k=1}^m W_k$,
         com $W_k=(Y_k-\ghat(\X_k))^2$. Qual dos dois riscos esse número estima?
         Para responder, pergunte-se o que está fixo e o que varia no momento em
         que você faz a conta.
-  \item \pts{0,5} Um conjunto de teste permite algo que a validação cruzada não
+  \item \pts{1,5} Um conjunto de teste permite algo que a validação cruzada não
         permite: uma barra de erro honesta. Explique por que os $W_k$ são i.i.d.\ e
         escreva o intervalo de confiança aproximado de 95\% que o Teorema Central
         do Limite fornece.
-  \item \pts{1,0} Num teste com $m=400$ você obteve $\riscohat=2{,}50$ e
-        $\widehat\sigma^2=16{,}0$. Calcule o intervalo. Um colega, no mesmo
-        conjunto, obteve $2{,}20$ com outro método e anuncia que o dele é melhor.
-        Ele pode? Justifique.
 \end{itens}
 
 \begin{solucao}
@@ -72,29 +68,4 @@ Como $\riscohat$ é média de i.i.d., o Teorema Central do Limite se aplica e d�
 Há uma hipótese fazendo todo o trabalho aqui: o teste não participou de nada. Se ele
 tivesse sido usado para escolher qualquer coisa, os $W_k$ deixariam de ser
 independentes do $\ghat$ e o intervalo perderia o sentido.
-
-\smallskip
-\textbf{(d)} A margem é
-\[
-  2\sqrt{16{,}0/400}=2\sqrt{0{,}04}=2\times 0{,}2=0{,}4,
-\]
-e o intervalo é
-\[
-  2{,}50 \pm 0{,}40 \;=\; [\,2{,}10;\ 2{,}90\,].
-\]
-
-Ele não pode. O valor dele, $2{,}20$, cai \textbf{dentro} do intervalo: a
-diferença de $0{,}30$ é menor que a incerteza da própria medição, e um outro
-conjunto de teste do mesmo tamanho poderia perfeitamente inverter a ordem.
-
-O que se pode afirmar é mais modesto, e a formulação importa: \emph{este
-conjunto de teste não distinguiu os dois métodos}. Isso não é o mesmo que dizer
-que eles são equivalentes --- talvez sejam diferentes e o teste seja pequeno
-demais para perceber.
-
-Daí sai também uma decisão de projeto. A margem encolhe com $\sqrt m$: para
-cortá-la pela metade é preciso quadruplicar o teste. Como estimar risco é uma
-tarefa muito mais barata do que construir um bom preditor, com $n$ grande vale
-reservar bem menos que os 30\% de praxe --- e com $n$ pequeno vale desconfiar de
-qualquer ranking apertado.
 \end{solucao}

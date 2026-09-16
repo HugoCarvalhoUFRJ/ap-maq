@@ -1,5 +1,5 @@
 % Aula 02 --- derivar as fórmulas do Ridge e do Lasso no caso ortonormal.
-As notas da Aula~02 apresentam duas fórmulas prontas para o caso ortonormal,
+As notas da aula de Regressão Linear apresentam duas fórmulas prontas para o caso ortonormal,
 $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, e não as derivam. São elas que explicam a
 frase "o Ridge encolhe e o Lasso zera", e o exercício é preencher essa lacuna.
 
@@ -12,7 +12,7 @@ Use as definições da aula, \textbf{sem} fator $\tfrac12$ no RSS:
    = \argmin_{\bbeta}\Big\{\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\sum_j\abs{\beta_j}\Big\}.
 \]
 \begin{itens}
-  \item \pts{1,0} Comece pelo passo que torna tudo possível. Supondo
+  \item \pts{1,1} Comece pelo passo que torna tudo possível. Supondo
         $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, mostre que o estimador de mínimos
         quadrados é $\widehat\bbeta=\mathbb{X}^\top\bm y$ e que
         \[
@@ -23,16 +23,16 @@ Use as definições da aula, \textbf{sem} fator $\tfrac12$ no RSS:
         Explique por que essa identidade faz o problema \textbf{se separar} em $p$
         problemas de uma variável --- e por que é justamente isso que falha quando
         as colunas não são ortonormais.
-  \item \pts{0,6} Com a separação em mãos, derive
+  \item \pts{0,7} Com a separação em mãos, derive
         $\widehat\beta_j^{\,\text{ridge}}=\widehat\beta_j/(1+\lambda)$.
-  \item \pts{1,2} Agora o Lasso. A dificuldade nova é que $\abs{\beta_j}$ não é
+  \item \pts{1,4} Agora o Lasso. A dificuldade nova é que $\abs{\beta_j}$ não é
         derivável em zero, então não dá para igualar a derivada a zero e pronto:
         trate separadamente as regiões $\beta_j>0$, $\beta_j<0$ e o ponto
         $\beta_j=0$. Derive
         $\widehat\beta_j^{\,\text{lasso}}
           =\operatorname{sinal}(\widehat\beta_j)\big(\abs{\widehat\beta_j}-\lambda/2\big)_+$
         e diga qual é a condição exata que leva um coeficiente a zero.
-  \item \pts{0,7} O limiar deu $\lambda/2$, e não $\lambda$. De onde veio esse
+  \item \pts{0,8} O limiar deu $\lambda/2$, e não $\lambda$. De onde veio esse
         $2$? Diga o que mudaria nas duas fórmulas se a aula tivesse definido o RSS
         com um $\tfrac12$ na frente, e que lição prática isso deixa.
 \end{itens}
@@ -127,13 +127,23 @@ $(\beta-\widehat\beta_j)^2$ aparece um fator $2$; derivando $\lambda\abs{\beta}$
 aparece só $\pm\lambda$. Ao isolar $\beta$ dividimos tudo por $2$, e o $\lambda$
 vira $\lambda/2$.
 
-Se o RSS levasse um $\tfrac12$ na frente --- e a penalidade também, como é comum
-em outros textos ---, o fator $2$ sumiria das duas derivadas e o limiar do Lasso
-viraria $\lambda$, com o Ridge continuando em $\widehat\beta_j/(1+\lambda)$.
+Com um $\tfrac12$ na frente do RSS, e só dele, o fator $2$ some da derivada do
+quadrado, e a da penalidade não muda. Refazendo as contas, o Lasso fica com
+$(\beta-\widehat\beta_j)\pm\lambda=0$, e o limiar vira $\lambda$; o Ridge fica com
+$(\beta-\widehat\beta_j)+2\lambda\beta=0$, e a fórmula vira
+$\widehat\beta_j/(1+2\lambda)$.
+
+As duas mudanças são, na verdade, uma só. Multiplicar o objetivo inteiro por $2$
+não altera o minimizador, e transforma o problema novo no da aula com $2\lambda$ no
+lugar de $\lambda$: basta fazer essa troca nas duas fórmulas. Repare que pôr o
+$\tfrac12$ também na penalidade não mudaria nada --- seria multiplicar o objetivo
+todo por uma constante.
 
 A lição prática é que \textbf{o limiar depende da convenção}, não da matemática.
 Antes de comparar um $\lambda$ do seu caderno com um $\lambda$ de um artigo ou de
-uma biblioteca, confira qual RSS cada um está minimizando. É o mesmo tipo de
-cuidado que a Aula~02 pede ao lembrar que o \texttt{Ridge} e o \texttt{Lasso} do
-\texttt{scikit-learn} diferem entre si por um fator $n$.
+uma biblioteca, confira qual objetivo cada um está minimizando. O \texttt{Lasso} do
+\texttt{scikit-learn} é um bom exemplo: ele minimiza
+$\tfrac{1}{2n}\norm{\bm y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$, e o seu
+$\alpha$ corresponde a $\lambda=2n\alpha$ na convenção da aula --- o $n$ vem da
+média, e o $2$ é exatamente o deste item.
 \end{solucao}

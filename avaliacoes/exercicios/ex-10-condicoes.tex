@@ -1,23 +1,24 @@
 % Aula 05 --- as duas condições da Proposição da média, e o que a floresta faz com elas.
-A Aula~05 justifica a agregação com uma proposição de enunciado curto: se
+Justificamos o \emph{bagging} com uma proposição de enunciado curto: se
 $g_1,\dots,g_B$ são não-viesados para $r(\x)$, têm a mesma variância $v(\x)$ e são
-\textbf{não-correlacionados}, então $\bar g=\frac1B\sum_b g_b$ tem variância
-$v(\x)/B$.
+\textbf{não-correlacionados}, então a média $\bar g=\frac1B\sum_b g_b$ tem risco
+$\Var(Y\mid\x)+v(\x)/B$, que nunca passa do risco $\Var(Y\mid\x)+v(\x)$ de cada
+$g_b$.
 
 Proposições com hipóteses só ficam úteis quando se sabe o que acontece ao violá-las
 --- e, no caso do \emph{bagging}, uma delas é violada o tempo todo.
 \begin{itens}
-  \item \pts{0,9} Identifique as duas condições e explique, para cada uma, o que
+  \item \pts{1,1} Identifique as duas condições e explique, para cada uma, o que
         acontece com a conclusão se ela falhar.
-  \item \pts{0,7} O \emph{bagging} usa árvores \textbf{profundas e não podadas}.
+  \item \pts{0,8} O \emph{bagging} usa árvores \textbf{profundas e não podadas}.
         Qual das duas condições essa escolha atende? E por que podar as árvores
         seria contraproducente aqui?
-  \item \pts{0,8} Na prática as árvores do \emph{bagging} são correlacionadas.
+  \item \pts{0,9} Na prática as árvores do \emph{bagging} são correlacionadas.
         Explique a razão --- o que elas têm em comum que as faz parecidas --- e
         por que aumentar $B$ não resolve esse problema específico.
-  \item \pts{1,0} A floresta aleatória sorteia $m<p$ covariáveis candidatas em
+  \item \pts{1,2} A floresta aleatória sorteia $m<p$ covariáveis candidatas em
         cada nó. Explique como isso ataca a condição comprometida, qual é o preço
-        pago na outra, e por que o negócio costuma compensar mesmo assim.
+        pago na outra, e por que essa troca costuma compensar.
 \end{itens}
 
 \begin{solucao}
