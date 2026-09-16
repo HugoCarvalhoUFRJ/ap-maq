@@ -1,5 +1,5 @@
 % Aula 03 --- as duas formas da fórmula de k dobras (aula x ISLP).
-Quem estuda validação cruzada pelas notas de aula e pelo ISLP encontra duas fórmulas
+Quem estuda validação cruzada pelas notas de aula e pelo livro encontra duas fórmulas
 diferentes para a mesma quantia, e é natural desconfiar de que uma delas esteja
 errada. Não está: elas só diferem na unidade que cada uma pondera igualmente.
 
@@ -8,7 +8,7 @@ As notas de aula definem
   \riscohat_{k\text{-CV}}
    = \frac1n\sum_{j=1}^{k}\sum_{i\in L_j}\big(Y_i-g_{-j}(\X_i)\big)^2 ,
 \]
-e o ISLP define $\mathrm{CV}_{(k)}=\frac1k\sum_{j=1}^{k}\mathrm{EQM}_j$, com
+e o livro define $\mathrm{CV}_{(k)}=\frac1k\sum_{j=1}^{k}\mathrm{EQM}_j$, com
 $\mathrm{EQM}_j=\frac{1}{\abs{L_j}}\sum_{i\in L_j}(Y_i-g_{-j}(\X_i))^2$.
 \begin{itens}
   \item \pts{1,2} Reescreva a fórmula da aula de modo a fazer os
@@ -41,30 +41,30 @@ Substituindo na fórmula da aula,
    = \frac1n\sum_{j=1}^{k}\abs{L_j}\,\mathrm{EQM}_j
    = \sum_{j=1}^{k}\frac{\abs{L_j}}{n}\,\mathrm{EQM}_j .
 \]
-São os \emph{mesmos} $\mathrm{EQM}_j$ do ISLP, numa média ponderada. E os pesos
+São os \emph{mesmos} $\mathrm{EQM}_j$ do livro, numa média ponderada. E os pesos
 somam $1$, porque as dobras particionam as $n$ observações:
 $\sum_j\abs{L_j}=n$.
 
 \smallskip
 \textbf{(b)} Se $k$ divide $n$, todas as dobras têm o mesmo tamanho
 $\abs{L_j}=n/k$, e cada peso vale $(n/k)/n=1/k$. A média ponderada vira média
-simples --- que é exatamente a definição do ISLP.
+simples --- que é exatamente a definição do livro.
 
 E coincidem \textbf{exatamente}, não aproximadamente: é a mesma soma dos mesmos
 números com os mesmos pesos.
 
 Quanto à unidade, a diferença é essa: a fórmula da aula pondera igualmente cada
-\textbf{observação}, e a do ISLP pondera igualmente cada \textbf{dobra}.
+\textbf{observação}, e a do livro pondera igualmente cada \textbf{dobra}.
 
 \smallskip
 \textbf{(c)} $8+8+7+7+7+7+6=50$.
 
 Diferem porque os tamanhos não são todos iguais. Os pesos da fórmula da aula valem
-$8/50$, $8/50$, $7/50$ (quatro vezes) e $6/50$, enquanto a do ISLP usa $1/7$ para
+$8/50$, $8/50$, $7/50$ (quatro vezes) e $6/50$, enquanto a do livro usa $1/7$ para
 todas as sete.
 
 O efeito concreto é sobre as observações individuais: uma que caiu na dobra de $6$
-recebe, na conta do ISLP, peso maior do que uma que caiu na dobra de $8$ ---
+recebe, na conta do livro, peso maior do que uma que caiu na dobra de $8$ ---
 porque ela divide a responsabilidade da sua dobra com menos gente.
 
 \smallskip
@@ -75,13 +75,13 @@ outras $44$ observações com $44/50$:
    = \frac{6}{50}\times 10 + \frac{44}{50}\times 1
    = \frac{60+44}{50} = \frac{104}{50} = \mathbf{2{,}08}.
 \]
-Pela do ISLP, a dobra atípica é uma das sete, e só:
+Pela do livro, a dobra atípica é uma das sete, e só:
 \[
   \mathrm{CV}_{(7)} = \frac{1}{7}\big(10 + 6\times 1\big)
    = \frac{16}{7} \approx \mathbf{2{,}286}.
 \]
 
-A do ISLP dá mais peso à dobra atípica --- e é fácil ver por quê: ela é a
+A do livro dá mais peso à dobra atípica --- e é fácil ver por quê: ela é a
 \emph{menor} dobra e ainda assim vale $1/7\approx 0{,}143$ do total, contra
 $6/50=0{,}12$ na outra conta. Justamente por ter menos observações, cada uma delas
 pesa mais.
@@ -89,7 +89,7 @@ pesa mais.
 Qual reportar? Para \emph{estimar o risco}, a fórmula da aula é a mais
 defensável: a unidade amostral é a observação, não a dobra, e não há razão para
 uma observação valer mais por acaso de agrupamento. Na prática, porém, o
-\texttt{scikit-learn} segue o ISLP --- \texttt{cross\_val\_score(\dots).mean()}
+\texttt{scikit-learn} segue o livro --- \texttt{cross\_val\_score(\dots).mean()}
 é média não ponderada --- então o essencial é \emph{saber qual das duas o seu
 código está calculando} antes de comparar com o de outra pessoa.
 
