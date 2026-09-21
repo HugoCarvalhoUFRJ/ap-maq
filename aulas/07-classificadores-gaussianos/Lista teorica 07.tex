@@ -367,9 +367,10 @@ LDA diagonal, com fronteira linear.)
 maior, e não estimar bem as probabilidades. Com duas classes, a decisão depende só
 do sinal de $\delta_1-\delta_0$; quando covariáveis correlacionadas apontam para a
 mesma classe, contá-las como independentes exagera o \emph{tamanho} dessa diferença
-sem trocar o seu sinal. Some-se a isso o argumento de variância do item (a): com
-$4p+1$ parâmetros em vez de $2\,651$, as estimativas são muito mais estáveis, e o viés introduzido
-pela suposição falsa é compensado pela variância que se economiza.
+sem trocar o seu sinal. Some-se a isso o argumento de variância do item (a): o naive
+Bayes estima $4p+1$ parâmetros, contra $2p+p(p+1)+1$ do QDA --- $201$ contra $2\,651$
+em $p=50$ ---, então as estimativas são muito mais estáveis, e o viés introduzido pela
+suposição falsa é compensado pela variância que se economiza.
 
 O preço aparece na \textbf{calibração}: as probabilidades do naive Bayes são
 notoriamente ruins, tipicamente empurradas para 0 ou 1, porque ele multiplica
