@@ -1203,8 +1203,8 @@ margin-right: 0; }
 <li class="fragment">Porém, <span class="math inline">\(\mathbb{P}(Y = d | \mathbf{X} = \mathbf{x})\)</span> é em geral desconhecida</li>
 </ul>
 </section>
-<section id="classifidadores-plug-in" class="slide level2">
-<h2>Classifidadores <em>plug-in</em></h2>
+<section id="classificadores-plug-in" class="slide level2">
+<h2>Classificadores <em>plug-in</em></h2>
 <ul>
 <li class="fragment">Estimar <span class="math inline">\(\mathbb{P}(Y = d | \mathbf{X} = \mathbf{x})\)</span> para cada classe <span class="math inline">\(d \in \mathcal{C}\)</span></li>
 <li class="fragment">Considerar o classificador <span class="math display">\[g(\mathbf{x}) = \mathop{\mathrm{argmax}}_{d \in \mathcal{C}} \widehat{\mathbb{P}}(Y = d | \mathbf{X} = \mathbf{x})\]</span></li>
@@ -1343,7 +1343,7 @@ margin-right: 0; }
 <h2>Análise de discriminante linear (LDA)</h2>
 <ul>
 <li class="fragment"><span class="math inline">\(\widehat{\delta}_d(\mathbf{x})\)</span> <em>lineares</em> em <span class="math inline">\(\mathbf{x}\)</span></li>
-<li class="fragment">As fronteiras de decisão <span class="math inline">\(\{\mathbf{x} | \delta_d(\mathbf{x}) = \delta_c(\mathbf{x})\}\)</span> são hiperlanos em <span class="math inline">\(\mathbb{R}^p\)</span></li>
+<li class="fragment">As fronteiras de decisão <span class="math inline">\(\{\mathbf{x} | \delta_d(\mathbf{x}) = \delta_c(\mathbf{x})\}\)</span> são hiperplanos em <span class="math inline">\(\mathbb{R}^p\)</span></li>
 <li class="fragment">Vejamos uma ilustração</li>
 </ul>
 </section>
@@ -1409,6 +1409,74 @@ margin-right: 0; }
 
 </div>
 </div>
+</section></section>
+<section>
+<section id="regressão-logística" class="title-slide slide level1 center">
+<h1>Regressão logística</h1>
+
+</section>
+<section id="regressão-logística-a-ideia" class="slide level2">
+<h2>Regressão logística: a ideia</h2>
+<ul>
+<li class="fragment"><em>Naive Bayes</em> e LDA/QDA modelam <span class="math inline">\(q(\mathbf{x} | Y = d)\)</span> e invertem com o Teorema de Bayes</li>
+<li class="fragment">E se estimarmos <span class="math inline">\(\mathbb{P}(Y = d | \mathbf{X} = \mathbf{x})\)</span> diretamente?</li>
+<li class="fragment">No caso binário, <span class="math inline">\(\mathcal{C} = \{0, 1\}\)</span>, basta modelar <span class="math inline">\(\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x})\)</span></li>
+<li class="fragment">Cuidado: uma probabilidade vive em <span class="math inline">\([0, 1]\)</span>, mas <span class="math inline">\(\beta_0 + \boldsymbol{\beta}^T \mathbf{x}\)</span> vive em <span class="math inline">\(\mathbb{R}\)</span>!</li>
+</ul>
+</section>
+<section id="regressão-logística-o-modelo" class="slide level2">
+<h2>Regressão logística: o modelo</h2>
+<ul>
+<li class="fragment">A função logística <span class="math inline">\(\sigma(u) = e^u/(1 + e^u)\)</span> leva <span class="math inline">\(\mathbb{R}\)</span> em <span class="math inline">\((0, 1)\)</span>: <span class="math display">\[\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) = \frac{e^{\beta_0 + \boldsymbol{\beta}^T \mathbf{x}}}{1 + e^{\beta_0 + \boldsymbol{\beta}^T \mathbf{x}}} = \sigma(\beta_0 + \boldsymbol{\beta}^T \mathbf{x})\]</span></li>
+<li class="fragment">Como nos outros métodos, não acreditamos que o modelo seja verdadeiro: ele é um meio de chegar a um bom classificador</li>
+</ul>
+</section>
+<section id="regressão-logística-o-log-odds-é-linear" class="slide level2">
+<h2>Regressão logística: o <em>log-odds</em> é linear</h2>
+<ul>
+<li class="fragment">Invertendo o modelo: <span class="math display">\[\ln\left(\frac{\mathbb{P}(Y = 1 | \mathbf{x})}{\mathbb{P}(Y = 0 | \mathbf{x})}\right) = \beta_0 + \boldsymbol{\beta}^T \mathbf{x}\]</span></li>
+<li class="fragment">A fronteira de decisão é <span class="math inline">\(\{\mathbf{x} | \mathbb{P}(Y = 1 | \mathbf{x}) = 1/2\}\)</span>: um hiperplano em <span class="math inline">\(\mathbb{R}^p\)</span>, como no LDA</li>
+</ul>
+</section>
+<section id="regressão-logística-interpretando-os-coeficientes" class="slide level2">
+<h2>Regressão logística: interpretando os coeficientes</h2>
+<ul>
+<li class="fragment">Aumentar <span class="math inline">\(x_j\)</span> em uma unidade multiplica a razão de chances por <span class="math inline">\(e^{\beta_j}\)</span>, qualquer que seja o ponto de partida</li>
+<li class="fragment">Já o efeito sobre a <em>probabilidade</em> depende de onde se está: a curva é em S</li>
+<li class="fragment"><span class="math inline">\(\beta_j > 0\)</span> empurra para a classe <span class="math inline">\(1\)</span>; <span class="math inline">\(\beta_j < 0\)</span>, para a classe <span class="math inline">\(0\)</span></li>
+</ul>
+</section>
+<section id="regressão-logística-estimação" class="slide level2">
+<h2>Regressão logística: estimação</h2>
+<ul>
+<li class="fragment">Parâmetros estimados por máxima verossimilhança, com <span class="math inline">\(\pi(\mathbf{x}) = \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x})\)</span>: <span class="math display">\[L(\boldsymbol{\beta}) = \prod_{k = 1}^{n} \pi(\mathbf{x}_k)^{y_k} (1 - \pi(\mathbf{x}_k))^{1 - y_k}\]</span></li>
+<li class="fragment">Ao contrário dos mínimos quadrados, <strong>não há solução fechada</strong>: maximiza-se <span class="math inline">\(\ln L\)</span> numericamente (Newton-Raphson / IRLS)</li>
+<li class="fragment">No <code>scikit-learn</code>: <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html"><code>LogisticRegression</code></a></li>
+</ul>
+</section>
+<section id="regressão-logística-penalização" class="slide level2">
+<h2>Regressão logística: penalização</h2>
+<ul>
+<li class="fragment">Como em regressão linear, penalizar os coeficientes (<span class="math inline">\(\ell_1\)</span> ou <span class="math inline">\(\ell_2\)</span>) reduz a variância</li>
+<li class="fragment">No <code>scikit-learn</code> o parâmetro é o <code>C</code>, que é o <strong>inverso</strong> da penalização: <span class="math inline">\(C\)</span> pequeno <span class="math inline">\(\implies\)</span> regularização forte</li>
+<li class="fragment">Atenção: o padrão é <span class="math inline">\(C = 1\)</span> — a <code>LogisticRegression</code> já vem regularizada!</li>
+</ul>
+</section>
+<section id="regressão-logística-mais-de-duas-classes" class="slide level2">
+<h2>Regressão logística: mais de duas classes</h2>
+<ul>
+<li class="fragment">Uma logística por classe (um-contra-todos), normalizando as estimativas</li>
+<li class="fragment">Ou a versão multinomial (<em>softmax</em>), que garante soma <span class="math inline">\(1\)</span>: <span class="math display">\[\mathbb{P}(Y = d | \mathbf{X} = \mathbf{x}) = \frac{e^{\beta_{d, 0} + \boldsymbol{\beta}_d^T \mathbf{x}}}{\sum_{c \in \mathcal{C}} e^{\beta_{c, 0} + \boldsymbol{\beta}_c^T \mathbf{x}}}\]</span></li>
+</ul>
+</section>
+<section id="generativo-ou-discriminativo" class="slide level2">
+<h2>Generativo ou discriminativo?</h2>
+<ul>
+<li class="fragment"><strong>Generativos</strong> (<em>Naive Bayes</em>, LDA/QDA): modelam <span class="math inline">\(q(\mathbf{x} | Y = d)\)</span> e <span class="math inline">\(\mathbb{P}(Y = d)\)</span>, e invertem com Bayes</li>
+<li class="fragment"><strong>Discriminativo</strong> (logística): modela <span class="math inline">\(\mathbb{P}(Y = d | \mathbf{X} = \mathbf{x})\)</span> direto, supondo menos sobre <span class="math inline">\(\mathbf{X}\)</span></li>
+<li class="fragment">Sob as hipóteses do LDA, o <em>log-odds</em> é exatamente linear: mesma forma, estimações diferentes</li>
+<li class="fragment">Na dúvida, compare os dois por validação cruzada</li>
+</ul>
 </section></section>
     </div>
   </div>
