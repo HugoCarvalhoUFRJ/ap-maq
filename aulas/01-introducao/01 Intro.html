@@ -1287,7 +1287,7 @@ margin-right: 0; }
 <h2>Algumas verdades</h2>
 <ul>
 <li class="fragment">Aprendizado de Máquina <strong>não</strong> é a solução para todos os problemas do mundo</li>
-<li class="fragment">Redes neurais também <strong>não</strong> são são a solução para todos os problemas do mundo</li>
+<li class="fragment">Redes neurais também <strong>não</strong> são a solução para todos os problemas do mundo</li>
 <li class="fragment">Aprender a usar os pacotes do Python/R <strong>não</strong> é aprender Aprendizado de Máquina</li>
 <li class="fragment">Você <strong>não</strong> tem como aprender Aprendizado de Máquina sem dominar: cálculo, probabilidade, estatística e álgebra linear</li>
 <li class="fragment">Quem te diz o contrário está <strong>mentindo para você</strong></li>
@@ -1316,7 +1316,7 @@ margin-right: 0; }
 <ul>
 <li class="fragment"><span class="math inline">\(r\)</span> função fixa porém desconhecida</li>
 <li class="fragment">Informação sistemática que <span class="math inline">\(\mathbf{X}\)</span> dá sobre <span class="math inline">\(Y\)</span></li>
-<li class="fragment"><span class="math inline">\(\varepsilon\)</span> erro de observaçao (independente de <span class="math inline">\(\mathbf{X}\)</span> e de média zero)</li>
+<li class="fragment"><span class="math inline">\(\varepsilon\)</span> erro de observação (independente de <span class="math inline">\(\mathbf{X}\)</span> e de média zero)</li>
 </ul></li>
 </ul>
 </section>
@@ -1374,7 +1374,7 @@ margin-right: 0; }
 <section id="mais-sobre-as-duas-culturas-3" class="slide level2">
 <h2>Mais sobre as duas culturas</h2>
 <ul>
-<li class="fragment">Com <strong>objetivo preditivo</strong> não há nem porque assumir um modelo probabilístico subjacete, nem uma forma geral verdadeira para <span class="math inline">\(r\)</span>.
+<li class="fragment">Com <strong>objetivo preditivo</strong> não há nem porque assumir um modelo probabilístico subjacente, nem uma forma geral verdadeira para <span class="math inline">\(r\)</span>.
 <ul>
 <li class="fragment">Como encontrar o “melhor” preditor?</li>
 </ul></li>
@@ -1399,7 +1399,7 @@ margin-right: 0; }
 <li class="fragment">Tirando a dependência na observação específica…
 <ul>
 <li class="fragment"><span class="math inline">\(R_{\mathrm{pred}}(g) = \mathbb{E}[L(g; (\mathbf{X}, Y))]\)</span></li>
-<li class="fragment">No caso da perda quadrática (usual em regresão) <span class="math display">\[R_{\mathrm{pred}}(g) = \mathbb{E}[(Y - g(\mathbf{X}))^2]\]</span></li>
+<li class="fragment">No caso da perda quadrática (usual em regressão) <span class="math display">\[R_{\mathrm{pred}}(g) = \mathbb{E}[(Y - g(\mathbf{X}))^2]\]</span></li>
 </ul></li>
 </ul>
 </section>
@@ -1409,7 +1409,7 @@ margin-right: 0; }
 <li class="fragment">Medir a performance de um estimador com base em seu risco quadrático</li>
 <li class="fragment">São equivalentes:
 <ul>
-<li class="fragment">Criar uma “boa” função de predição <span class="math inline">\(g: \mathbb{R}^d \to \mathbb{R}\)</span></li>
+<li class="fragment">Criar uma “boa” função de predição <span class="math inline">\(g: \mathbb{R}^p \to \mathbb{R}\)</span></li>
 <li class="fragment">Encontrar um “bom” estimador para a função de regressão <span class="math inline">\(r(\mathbf{x})\)</span></li>
 </ul></li>
 <li class="fragment">Formalizado no Teorema a seguir</li>
@@ -1417,7 +1417,7 @@ margin-right: 0; }
 </section>
 <section id="teorema-teo.-1-sec.-1.4-ame" class="slide level2">
 <h2>Teorema (Teo. 1, Sec. 1.4 [AME])</h2>
-<p>Suponha que definimos o risco de uma função de predição <span class="math inline">\(g: \mathbb{R}^d \to \mathbb{R}\)</span> via perda quadrática: <span class="math inline">\(R_{\mathrm{pred}}(g) = \mathbb{E}[(Y - g(\mathbf{X}))^2]\)</span>, em que <span class="math inline">\((\mathbf{X}, Y)\)</span> é uma nova observação que não foi usada para estimar <span class="math inline">\(g\)</span>. Suponhamos também que medimos o risco de um estimador da função de regressão via perda quadrática: <span class="math inline">\(R_{\mathrm{reg}}(g) = \mathbb{E}[(r(\mathbf{X}) - g(\mathbf{X}))^2]\)</span>. Então <span class="math display">\[R_{\mathrm{pred}}(g) = R_{\mathrm{reg}}(g) + \mathbb{E}[\mathbb{V}[Y | \mathbf{X}]].\]</span></p>
+<p>Suponha que definimos o risco de uma função de predição <span class="math inline">\(g: \mathbb{R}^p \to \mathbb{R}\)</span> via perda quadrática: <span class="math inline">\(R_{\mathrm{pred}}(g) = \mathbb{E}[(Y - g(\mathbf{X}))^2]\)</span>, em que <span class="math inline">\((\mathbf{X}, Y)\)</span> é uma nova observação que não foi usada para estimar <span class="math inline">\(g\)</span>. Suponhamos também que medimos o risco de um estimador da função de regressão via perda quadrática: <span class="math inline">\(R_{\mathrm{reg}}(g) = \mathbb{E}[(r(\mathbf{X}) - g(\mathbf{X}))^2]\)</span>. Então <span class="math display">\[R_{\mathrm{pred}}(g) = R_{\mathrm{reg}}(g) + \mathbb{E}[\mathbb{V}[Y | \mathbf{X}]].\]</span></p>
 </section>
 <section id="teorema-teo.-1-sec.-1.4-ame-1" class="slide level2">
 <h2>Teorema (Teo. 1, Sec. 1.4 [AME])</h2>
