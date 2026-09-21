@@ -439,7 +439,7 @@ aula vai atrás.
 | onde | o corte de 16/09 | como está hoje |
 | --- | --- | --- |
 | notas, as duas versões | saíram a seção da logística (MV, separação perfeita, multiclasse), a regressão sobre indicadores e a comparação discriminativo $\times$ generativo; entraram a motivação da perda 0--1, o Bayes ingênuo discreto com as variantes do `scikit-learn`, a densidade normal multivariada, os estimadores de MV, o discriminante do QDA e a conta de parâmetros com $K$ classes | o que entrou ficou; a logística e a comparação voltaram em 21/09. **Só a regressão sobre indicadores continua fora** --- o deck não a tem |
-| `Aula prática 07` | saíram a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; 40→34 células | a logística e a §7 voltaram: **37 células**, com o caso real de novo na §8. A comparação de escala continua fora |
+| `Aula prática 07` | saíram a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; 40→34 células | a logística e a §7 voltaram, com o caso real de novo na §8; o texto foi reescrito na mesma tarde, e hoje são **49 células** (adiante). A comparação de escala continua fora |
 | `Lista prática 07` | saiu a logística dos Ex. 2 e 4; entraram o `reg_param` no QDA do Ex. 4 (com lacuna) e um `Sua vez` sobre a covariância comum, no lugar do de AUC, que é aula 08 | a logística voltou aos dois exercícios; o `reg_param` e o `Sua vez` novo ficaram |
 | `07-fronteiras` | o painel da logística: 4→3 painéis | de volta a **quatro**, com a legenda de antes |
 | fora da aula | saíram os ponteiros à logística ``da aula 07'' na `Lista prática 09`, nas notas da E3 (docente), no planejamento e no `requirements.txt` | os quatro voltaram |
@@ -480,9 +480,9 @@ Tudo medido em 16/09/2026, no `barennet_env`:
   covariância de cada classe com `tol=1e-4` **absoluto** e levanta `LinAlgError`
   quando a classe tem no máximo $p$ observações ou colunas quase colineares. Com
   **menos** observações que covariáveis, nenhum `reg_param` resolve; com
-  exatamente $p$, um `reg_param` de $0{,}1$ resolve e um de $10^{-4}$ não. No §6 do
-  laboratório e no Ex. 3 da lista, o `try` transforma a recusa em `nan` em $n=20$,
-  $p=10$ --- e o gabarito afirmava $0{,}5475$ e ``16 pontos abaixo do LDA'', número da
+  exatamente $p$, um `reg_param` de $0{,}1$ resolve e um de $10^{-4}$ não. No Ex. 3
+  da lista, o `try` transforma a recusa em `nan` em $n=20$, $p=10$, e o laboratório
+  mostra a própria mensagem de erro numa célula da §6 --- e o gabarito afirmava $0{,}5475$ e ``16 pontos abaixo do LDA'', número da
   sklearn antiga, repetido na tabela da `Lista teorica 07` 3(d). Hoje os três dizem
   que ali o QDA não ajusta, e usam $n=30$ ($+0{,}0392$ para o LDA) para a vantagem.
 - **A comparação de escala da antiga §8 do laboratório comparava cada modelo com ele
@@ -518,6 +518,79 @@ Tudo medido em 16/09/2026, no `barennet_env`:
 - **O AME omite o $\tfrac12$ do expoente** nas duas densidades normais da §8.1.4
   (p. 147 e 149 do livro; conferido com `pdftotext -layout`). As notas do aluno
   avisam na leitura recomendada.
+
+### O laboratório reescrito, e as notas na ordem do deck
+
+Pedido do Gabriel na tarde de 21/09/2026: o texto da `Aula prática 07` estava
+``artificial demais'', e ele pediu uma reescrita ``mais didática e humana'', junto com
+a correção de seis problemas levantados numa leitura do material. A orientação de
+estilo está na memória do Claude, não aqui.
+
+**O laboratório.** Todo o markdown foi reescrito; as seções e a numeração (§1 a §8)
+ficaram, porque as notas e a `Lista teorica 07` apontam para elas. De 37 para **49
+células**. O que mudou além do texto:
+
+- a §2 ganhou uma figura da população com a fronteira de Bayes, que é uma
+  **hipérbole**: o ramo de cima atravessa uma região quase sem dados, e o QDA o
+  reproduz --- ali quem desenha a fronteira é a suposição de normalidade;
+- `amostra` e `prob_bayes` aceitam `S1=`, e a população de covariâncias iguais da
+  §4 deixou de ser uma cópia do código; as figuras e tabelas das §3 e §4 saem de
+  duas funções, `desenhar_fronteiras` e `erros_no_teste`;
+- a ordem dos métodos é a do deck (Bayes ingênuo, LDA, QDA, logística). A
+  `07-fronteiras` continua com a logística primeiro; os números são os mesmos;
+- a §4 imprime as correlações estimadas pelo QDA ($+0{,}790$ e $-0{,}829$), que o
+  texto cita;
+- a recusa do QDA aparece com a mensagem do próprio `scikit-learn`, em $n=20$,
+  $p=10$ (§6) e no `breast_cancer` sem `reg_param` (§8). Na sklearn 1.3 o ajuste da
+  §6 passa em silêncio (o aviso é abafado pelo `filterwarnings`), e a célula diz isso
+  em vez de fingir que houve recusa;
+- `import sklearn.linear_model as skl`, como pede a convenção. Os outros treze
+  notebooks que usam a logística a importam direto (`from sklearn.linear_model
+  import LogisticRegression`) e ficaram como estavam.
+
+**A §6 agora reproduz a Figura `07-lda-qda` até a quarta casa** ($0{,}7480$ contra
+$0{,}6919$ em $n=30$, \dots, $0{,}8250$ contra $0{,}8932$ em $n=4000$). Antes ela usava
+60 repetições e incluía $n=20$ no mesmo laço, o que desloca o gerador: a célula dava
+$0{,}7502$ contra $0{,}6972$, e a legenda, $0{,}748$ contra $0{,}692$. Hoje o $p=10$
+usa os `ns` e as 120 repetições da figura, e o $n=20$ virou a célula da recusa. O
+$p=2$ continua com $n=20$ e 60 repetições, e com os números de antes: é ele que a
+`Lista teorica 07` 3(d) cita (``o QDA ganha desde $n=20$'').
+
+**As notas seguem a ordem do deck.** Nas duas versões, a logística foi para depois de
+LDA e QDA, com uma abertura como a do deck (``e se estimássemos $\Prob(Y\mid\x)$
+diretamente?''); objetivos, famílias do *plug-in*, resumo e código de exemplo
+seguiram a mesma ordem, e ``a outra família'' virou ``a primeira''. Na versão do aluno,
+a `07-fronteiras`, que mostra a logística, foi para a seção ``Discriminativo $\times$
+generativo'' e virou a Figura~2 (a `07-lda-qda` é hoje a Figura~1). O `\newpage` antes
+de ``Prática em Python'' saiu: com a nova ordem ele deixava a página 8 quase vazia. A
+versão do aluno segue com 9 páginas, e a do docente, com 6.
+
+**O que mais foi corrigido no mesmo passo:**
+
+- o gabarito da `Lista prática 07`, Ex. 4, dizia que LDA, QDA e Bayes ingênuo são
+  invariantes à escala. No próprio exercício, só o LDA é: com `StandardScaler` o
+  `QDA(reg_param=1e-4)` vai de $0{,}9508$ a $0{,}9561$ e o `GaussianNB` de $0{,}9385$ a
+  $0{,}9315$ (com `var_smoothing=0` a invariância volta), e a ordem dos quatro não
+  muda. A mesma célula dizia ``correlação acima de $0{,}99$'' entre raio, perímetro e
+  área (nas versões médias, vai de $0{,}987$ a $0{,}997$) e dava `area` e `perimeter`
+  como ``claramente assimétricas'', mas o perímetro dos benignos tem assimetria
+  $-0{,}06$. Medido: 19 das 30 medidas passam de 1 em alguma classe, e as de
+  erro-padrão (`area error`, `concavity error`) passam de 4. A célula só existe no
+  gabarito;
+- as duas versões das notas diziam que o notebook `Comparação entre classificadores
+  paramétricos` ``confronta esses métodos'': ele não tem logística e tem três SVMs.
+  O texto diz isso agora;
+- a `Lista teorica 07` 4(c) escrevia ``$4p+1$ parâmetros em vez de $2\,651$'', uma
+  fórmula contra o número de $p=50$. Só o gabarito foi recompilado;
+- o deck dizia que o `MultinomialNB` ``não assume independência'' (item 14 do
+  histórico de correções nos HTMLs).
+
+**Conferido e correto, para não reabrir:** mesmo com os dados padronizados, o QDA sem
+`reg_param` recusa o `breast_cancer` (menor autovalor da correlação intraclasse,
+$1{,}6\times10^{-4}$), então a recusa vem mesmo da colinearidade, e não só da escala
+contra o `tol` absoluto. E a logística bate o LDA na população da §2 em 96 de 100
+amostras de treino: a explicação do texto (o LDA paga pela covariância comum, que é
+falsa ali) não depende da amostra sorteada.
 
 ## Figuras (`recursos/figuras/`)
 
@@ -720,9 +793,9 @@ E pegou uma segunda, em 12/08/2026: o **`QuadraticDiscriminantAnalysis` levanta
 condicionada, e a `Aula prática 07` morria da §8 em diante — as 30 medidas do
 `breast_cancer` são colineares o bastante. A correção é `QDA(reg_param=1e-4)`, um
 ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empatado
-na frente para trás do LDA no teste. O texto foi reescrito sobre o medido. (A §8 é
-hoje a §7; a `Lista prática 07`, com a mesma chamada, só foi corrigida em
-16/09/2026, e a `Lista prática 10` continua sem a correção.)
+na frente para trás do LDA no teste. O texto foi reescrito sobre o medido. (O caso
+real é a §8 do laboratório; a `Lista prática 07`, com a mesma chamada, só foi
+corrigida em 16/09/2026, e a `Lista prática 10` em 21/09/2026.)
 
 E uma terceira, em 21/09/2026: o **`AdaBoostClassifier` perdeu o `algorithm`**. O
 `SAMME.R` foi depreciado na 1.4 e removido na 1.6, e o `SAMME` que ficou produz
@@ -781,6 +854,18 @@ máquina, **3.12.7**, em 39 dos 44 notebooks. As cinco exceções são exatament
 cinco herdados de demonstração (adiante), e ficam como estão: três em 3.11.7, um
 em 3.9.15, e o `Exemplo - PCA`, que é do Colab e cujo `language_info` só traz o
 nome da linguagem --- inventar versão ali seria fabricar metadado.
+
+**Um laboratório escapou dessa limpeza.** A `Aula prática 06` foi commitada **com
+saídas** no `ced60e1` (14/09/2026): cinco células com saída, os `execution_count`, as
+chaves na ordem do Jupyter e o `kernelspec` e o `language_info` do `barennet_env`
+(Python 3.11.5). Ficou assim uma semana, e só apareceu numa varredura. Foi limpa em
+21/09/2026, com o metadado da versão anterior (`4045219`); as saídas de uma execução
+nova conferiram, uma a uma, com as que estavam commitadas. A varredura que pega isso
+é barata: para cada `.ipynb`, contar saídas, `execution_count` e células fora da
+ordem de chaves, e conferir o `kernelspec` e o `language_info`. Ela também mostra seis
+notebooks com o `display_name` do `kernelspec` em `barennet_env` --- as aulas práticas
+02, 03 e 05 e os dois arquivos da `Lista prática 03` ---, sem saída e com as chaves em
+ordem; os outros 33 dizem `Python 3`. É resíduo inofensivo, e ficou como estava.
 
 Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
 `EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
@@ -1285,6 +1370,15 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
     Trocas em modo binário, exigindo exatamente uma ocorrência de cada trecho, e com
     o CRLF conferido nos quatro arquivos. Nenhuma mexe em fórmula, e nenhuma muda
     mais de um caractere o comprimento de um slide.
+14. Em 21/09/2026, no terceiro slide ``Classificador *Naive Bayes*: atributos
+    discretos'' do deck da aula 07, o `MultinomialNB` era descrito como ``Não assume
+    independência!''. É meia verdade: as contagens de uma multinomial não são
+    independentes (somam $n$), mas a hipótese ingênua continua lá, sobre as palavras,
+    como as notas do aluno já diziam. O item virou ``$\mathbf{X}|(Y=d)\sim
+    \mathrm{Multi}(\dots)$; palavras independentes dada a classe, contagens não''. Uma
+    primeira redação, mais longa, quebrava em três linhas e passava 24 px do fim do
+    slide; a atual ocupa as mesmas duas linhas de antes (folga de 80 px, medida no
+    navegador), com o CRLF preservado (2691 quebras antes e depois).
 
 ## O slide de SVM, o único em Beamer
 
