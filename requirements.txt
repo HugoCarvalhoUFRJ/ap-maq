@@ -37,10 +37,10 @@ ipykernel>=6.0
 # Por que scikit-learn >= 1.2
 # =============================================================================
 # As APIs abaixo aparecem nos notebooks. A que fixava o piso em 1.2 era
-# LogisticRegression(penalty=None), da aula 07: ela virou C=np.inf em 11/09/2026,
-# e a aula 07 deixou de usar a logística em 16/09/2026. Nenhuma das que sobraram
-# exige mais que a 1.1, mas o piso fica onde estava, porque baixá-lo exigiria
-# testar o material numa versão mais antiga.
+# LogisticRegression(penalty=None), da aula 07: ela virou C=np.inf em 11/09/2026 e
+# não voltou quando a logística voltou à aula, em 21/09/2026. Nenhuma das que
+# sobraram exige mais que a 1.1, mas o piso fica onde estava, porque baixá-lo
+# exigiria testar o material numa versão mais antiga.
 #
 #   RandomForestRegressor().max_features aula 10  -> vale 1.0 a partir de 1.1
 #                                        (antes era "auto", e a aula comenta o valor)
@@ -77,6 +77,15 @@ ipykernel>=6.0
 #                                           classe do que covariáveis, nenhum
 #                                           reg_param resolve: o solver "svd"
 #                                           recusa o ajuste.
+#
+#   AdaBoostClassifier()        aula 10  -> o algorithm="SAMME.R" foi depreciado na
+#                                           1.4 e removido na 1.6; o SAMME que
+#                                           ficou produz outras probabilidades. A
+#                                           acurácia não muda, mas AUC e Brier sim
+#                                           (no breast_cancer da Lista prática 10,
+#                                           0,9935 -> 0,9948 e 0,1480 -> 0,1264).
+#                                           Corrigido em 21/09/2026, sem erro
+#                                           nenhum no caminho.
 #
 #   TSNE(init=...)              aula E2  -> o padrão passou de "random" para
 #                                           "pca" na 1.2. Não quebra nada: muda
