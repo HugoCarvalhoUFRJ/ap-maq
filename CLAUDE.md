@@ -54,7 +54,8 @@ em português e as três caixas pedagógicas: `emsala`, `ideia` e `atencao`.
 
 **O número de covariáveis é `p`**, em todo o curso — notas, listas, slides,
 notebooks e figuras. A migração do `d` terminou em 12/08/2026 e são 629 trocas em
-54 arquivos.
+54 arquivos. (Duas tinham escapado, no deck da aula 01, e foram feitas em
+21/09/2026 --- item 12 do histórico de correções nos HTMLs.)
 
 Três papéis do `d` **sobreviveram de propósito**, e nenhum deles é dimensão:
 
@@ -974,6 +975,16 @@ comparação acusa diferenças de poucos caracteres que não existem no conteúd
 verificação correta é na fonte: conferir que os `\input` da prova são subconjunto
 dos da lista e que nenhum dos dois `.tex` de topo tem `\begin{solucao}`.
 
+Dá para conferir também nos PDFs, desde que a comparação seja **por multiconjunto de
+caracteres**, exercício a exercício, e não linha a linha. Três cuidados: tirar as
+marcas de pontuação `(1,6)`, que só a prova tem; tirar as duas linhas de cabeçalho
+de cada página; e tirar o rodapé pela linha que é **exatamente o número da página**,
+e não pela última linha --- o `pdftotext` às vezes solta um pedaço de fórmula
+depois do número (no gabarito da lista, o denominador $2\sigma_\beta^2$ do Ex. 5 sai
+depois do "9"). Feito em 21/09/2026, com os três exercícios sorteados: enunciados e
+soluções idênticos, 732, 916 e 1009 caracteres nos enunciados e 3194, 3524 e 4611 nas
+soluções.
+
 ### O gabarito da revisão foi reescrito, e cinco respostas mudaram
 
 Pedido do Gabriel em 21/09/2026, com a prova ainda por aplicar e a intenção de
@@ -1045,21 +1056,41 @@ E um aviso, registrado para não se perder: **liberar o gabarito da lista antes 
 prova entrega a resolução completa das três questões**, porque os Ex. 5, 7 e 11
 entram nela literalmente.
 
-### Pendências achadas na mesma revisão
+### Três achados da mesma revisão, corrigidos no mesmo dia
 
-- **O atalho do LOOCV não vale para o KNN, e o material se contradiz.** A
-  `Lista prática 04` mede isso (ver a seção da aula 04), mas as notas da aula 04
-  --- as duas versões: "basta que $\ell_i(\x)$ não dependa de $\bm{Y}$" --- e a
-  `Lista teorica 04` Ex. 2(c) --- "para $k\ge2$ a fórmula funciona normalmente" ---
-  afirmam o contrário. A razão é exata: com $k$ vizinhos,
-  $(Y_i-\rhat(\X_i))/(1-1/k)=Y_i-(\text{média dos outros } k-1 \text{ vizinhos})$,
-  isto é, o "atalho" calcula **o LOOCV do $(k-1)$-NN** (medido: $0{,}900322$ nos
-  dois, em $k=2$). No Ex. 6 da revisão, o passo que falha é o (b).
-- **O deck 01 ainda tem `g: \mathbb{R}^d \to \mathbb{R}`**, nos slides "A
-  importância da perda quadrática" e "Teorema (Teo. 1, Sec. 1.4 [AME])": uma
-  dimensão que escapou da migração.
-- **Dois erros de digitação nas notas da aula 06 (aluno)**: "píspares" e
-  "Inflacção".
+Achados em 21/09/2026, fora da lista de revisão, e corrigidos logo depois, a pedido
+do Gabriel.
+
+**O atalho do LOOCV não vale para o KNN, e o material se contradizia.** A
+`Lista prática 04` media isso (ver a seção da aula 04), mas as notas da aula 04 ---
+as duas versões: "valem para todos os atalhos vistos antes [...]: basta que
+$\ell_i(\x)$ não dependa de $\bm{Y}$" --- e a `Lista teorica 04` Ex. 2(c) --- "para
+$k\ge2$ a fórmula funciona normalmente" --- afirmavam o contrário. A razão é exata:
+com $k$ vizinhos, $h_{ii}=1/k$ e
+$(Y_i-\rhat(\X_i))/(1-1/k)=Y_i-(\text{média dos outros } k-1 \text{ vizinhos})$, isto
+é, o "atalho" calcula **o LOOCV do $(k-1)$-NN**. Conferido nos dados da própria
+`Lista prática 04`, até a sexta casa: o atalho em $k=3$ dá $0{,}988784$, que é o
+LOOCV exato do 2-NN (o $0{,}9888$ da tabela dela). Em $k=1$ seria o LOOCV de um
+"KNN com zero vizinhos" --- daí o $0/0$ que o Ex. 2(c) pede para interpretar.
+
+Hoje as três peças dizem a mesma coisa. A nota do aluno ganhou uma caixa `atencao`
+("linear, mas sem o atalho do LOOCV"), com a conta, e passou de 4 para 5 páginas; a
+do docente, uma `emsala` com a pergunta à turma; e o gabarito da `Lista teorica 04`
+2(c) foi reescrito, no registro da revisão, explicando também por que o erro muda de
+lado conforme $k$ (abaixo do $k$ ótimo o $(k-1)$-NN é pior, acima é melhor). O
+enunciado da lista não mudou, e por isso o PDF dele não foi recompilado. No Ex. 6
+da revisão, o passo que falha para o KNN é o (b) --- o gabarito de lá diz onde
+cada hipótese trabalhou, sem entrar no KNN.
+
+**O deck 01 tinha `g: \mathbb{R}^d \to \mathbb{R}`** nos slides "A importância da
+perda quadrática" e "Teorema (Teo. 1, Sec. 1.4 [AME])": duas dimensões que tinham
+escapado da migração. Viraram `\mathbb{R}^p` (item 12 do histórico de correções nos
+HTMLs). Uma varredura do texto visível dos onze decks, dos `.tex` e do markdown dos
+notebooks não achou outra.
+
+**Dois erros de digitação nas notas da aula 06 (aluno)**: "píspares" virou
+"díspares", na legenda da Figura~1, e "Inflacção", "Inflação", na caixa da
+hierarquia. A versão do docente não tinha nenhum dos dois.
 
 ## Dados
 
@@ -1233,6 +1264,27 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
     link para a documentação do `scikit-learn`, `^T` para transposta como no resto
     deste deck. O deck foi de 43 para 44 slides. Conferido no navegador: zero
     `MathJax_Error`, nenhum slide sem título e nenhum transbordando.
+12. Em 21/09/2026, dois `g: \mathbb{R}^d \to \mathbb{R}` do deck da aula 01 --- nos
+    slides "A importância da perda quadrática" e "Teorema (Teo. 1, Sec. 1.4 [AME])"
+    --- viraram `\mathbb{R}^p`: eram dimensões que tinham escapado da migração do
+    `d`. Troca de um caractere dentro de fórmula que já existia, com o CRLF
+    preservado (2711 quebras antes e depois, e o arquivo com o mesmo tamanho).
+13. Em 21/09/2026, oito erros de digitação em quatro decks, achados na releitura do
+    Bloco I:
+    - **deck 01**: "não são são a solução" (``Algumas verdades''), "erro de
+      observaçao" (``Formulação matemática - 1''), "subjacete" (``Mais sobre as
+      duas culturas - 3'') e "usual em regresão" (``A função risco - 1''). O deck 03,
+      que copia esses slides, já estava certo;
+    - **deck 04**: o texto do link para a documentação dizia `KNeighborRegressor`
+      --- o `href` já apontava para `KNeighborsRegressor`, só o texto estava errado;
+    - **deck 05**: "Proder preditivo", no slide ``Visão geral'';
+    - **deck 06**: o título ``Prós e contas do `StandardScaler`'' virou ``Prós e
+      contras'', e o `id` do slide foi junto (`prós-e-contras-do-standardscaler`).
+      Nenhum link apontava para o `id` antigo.
+
+    Trocas em modo binário, exigindo exatamente uma ocorrência de cada trecho, e com
+    o CRLF conferido nos quatro arquivos. Nenhuma mexe em fórmula, e nenhuma muda
+    mais de um caractere o comprimento de um slide.
 
 ## O slide de SVM, o único em Beamer
 
