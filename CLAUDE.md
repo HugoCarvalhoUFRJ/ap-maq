@@ -974,6 +974,93 @@ comparação acusa diferenças de poucos caracteres que não existem no conteúd
 verificação correta é na fonte: conferir que os `\input` da prova são subconjunto
 dos da lista e que nenhum dos dois `.tex` de topo tem `\begin{solucao}`.
 
+### O gabarito da revisão foi reescrito, e cinco respostas mudaram
+
+Pedido do Gabriel em 21/09/2026, com a prova ainda por aplicar e a intenção de
+liberar o gabarito da lista aos alunos: as onze soluções foram reescritas no
+registro de **um professor de matemática didático** --- hipóteses explícitas, cada
+passo justificado, e a leitura do resultado depois de cada conta. Os enunciados
+ficaram intactos byte a byte, com três exceções (adiante). O gabarito da lista foi
+de 18 para 23 páginas; o da prova, de 5 para 7.
+
+A reescrita derrubou cinco respostas e desfez uma ambiguidade:
+
+| Ex. | o que o gabarito dizia | o que diz hoje |
+| --- | --- | --- |
+| 8(c) | "os botões correm em sentidos opostos" --- e a frase seguinte dizia que $k$ grande e $\lambda$ grande simplificam os dois | correm no **mesmo** sentido; ao contrário corre o grau do polinômio, ou o número de nós. E $k$ não é "botão contínuo" |
+| 10(d) | o preço da floresta é "variância individual maior", e com $m$ pequeno "o produto $\rho v$ volta a subir" | o preço é **viés** --- a condição (i), que é o que o enunciado pergunta, e o que a `Lista teorica 05` 4(d) já dizia |
+| 10(a-i) | com viés, "a conclusão deixa de valer" | a comparação com cada $g_b$ sobrevive; o que se perde é o piso, que vira $\Var(Y\mid\x)+b^2$ |
+| 4(d) | $2{,}3$ é "uma espécie de média" de $\partial r/\partial x_1$, "podendo não coincidir com a inclinação em ponto nenhum" | com uma covariável é média e coincide em algum ponto; com várias nem média é: $\beta^\ast_1=2/(2+s^2)$ para $r=x_2^2$ e $X_1=X_2^2+\varepsilon$ |
+| 8(d) | só aceitava *smoothing splines*, que o deck 04 não tem e as notas citam numa frase | aceita a árvore podada --- o deck 05 a chama de não paramétrica, e o $\alpha\abs{T}$ de "reminiscente do Lasso" |
+| 7 | "a fórmula da aula" --- mas o deck 03 define $\frac1k\sum_i\mathrm{EQM}_i$, que é a do **livro** | "a fórmula das notas", também no enunciado do item (a) |
+
+O 10(d) foi medido na população do Ex. 2 da `Lista prática 05`, com as mesmas
+sementes (a tabela de lá se reproduz): de $m=p/3$ para $m=0{,}15\,p$ o piso $\rho v$
+ainda cai ($0{,}276\to0{,}208$), e quem faz o erro subir é o viés$^2$
+($0{,}984\to1{,}144$). Um detalhe para quem for mexer naquela lista: o "$v$" dela
+é a variância **entre as árvores de uma mesma floresta**, não a variância total de
+uma árvore, e o $\rho$ isolado da fórmula com esse $v$ sai $0{,}147$ no *bagging*,
+contra $0{,}127$ do verdadeiro. As conclusões não mudam. E o Ex. 2(c) passou a dizer
+por que a barra ingênua da CV não é honesta: na população da Aula 01 (grau 5,
+$n=50$, $k=5$, 4000 amostras), CV $\pm2$ EP cobre o risco condicional em 82,8% das
+vezes; o teste de $m=50$, em 92,0%.
+
+**As três mudanças de enunciado**: "sem intercepto" no Ex. 3 (a coluna de uns não
+cabe numa $\mathbb{X}$ com $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$); "fórmula das
+notas" no Ex. 7(a); e o título do Ex. 8 com maiúscula. Na prova que o aluno recebe,
+a única diferença de texto é a do Ex. 7(a) --- conferido pelas coordenadas das
+palavras no PDF (`pdftotext -bbox`), porque o `pdftotext -layout` acusou mudanças
+de espaçamento que não existem: ele estima a largura das colunas pela página
+inteira. **Os critérios da prova** ganharam três linhas: no Ex. 5, a ressalva do
+intercepto não é exigida; no Ex. 11(a)(i), vale dizer que a predição soma
+$\beta_jx_j$, desde que se note que cada parcela é invariante; no 11(c), vale o
+argumento de que a comparação usou o mesmo $\lambda$.
+
+**Armadilha nova: `\ref` nas soluções.** Os Ex. 1, 4 e 8 citam outros exercícios
+por `\ref{ex:...}`, com os `\label` da `Lista de revisao 01-06.tex`. Esses rótulos
+não existem na prova: se um sorteio futuro escolher um desses três, o gabarito da
+prova imprime `??`. Os três sorteados hoje (5, 7 e 11) não citam exercício nenhum
+por número --- "no caso ortonormal, em que o Lasso tem fórmula fechada", em vez de
+"Exercício 3".
+
+**Uma medição que não entrou, e é decisão do Gabriel.** Na mesma população, o
+*bagging* com árvores **podadas** fica com risco um pouco **menor**:
+
+| árvores do *bagging* | viés$^2$ | $v$ total | $\rho$ | piso $\rho v$ | EQM |
+| --- | --- | --- | --- | --- | --- |
+| profundas | 0,876 | 3,746 | 0,127 | 0,477 | 1,373 |
+| `ccp_alpha=0.05` | 0,913 | 3,036 | 0,145 | 0,439 | 1,367 |
+| `ccp_alpha=0.2` | 1,049 | 1,522 | 0,180 | 0,274 | 1,328 |
+| `max_depth=4` | 1,005 | 2,100 | 0,164 | 0,345 | 1,359 |
+| `max_depth=2` | 1,141 | 0,986 | 0,211 | 0,208 | 1,352 |
+
+Podar sobe o viés e **a correlação** --- as árvores ficam só com os cortes do topo,
+os mais estáveis de uma amostra bootstrap para outra ---, mas derruba o $v$, e a
+média não elimina o piso $\rho v$. É o contrário do "não podar as árvores!" do deck
+05. O Ex. 10(b) foi escrito **condicionado às hipóteses da proposição**, onde o
+argumento vale, e por isso não contradiz o deck. Levar a ressalva ao gabarito, às
+notas ou ao deck espera o Gabriel.
+
+E um aviso, registrado para não se perder: **liberar o gabarito da lista antes da
+prova entrega a resolução completa das três questões**, porque os Ex. 5, 7 e 11
+entram nela literalmente.
+
+### Pendências achadas na mesma revisão
+
+- **O atalho do LOOCV não vale para o KNN, e o material se contradiz.** A
+  `Lista prática 04` mede isso (ver a seção da aula 04), mas as notas da aula 04
+  --- as duas versões: "basta que $\ell_i(\x)$ não dependa de $\bm{Y}$" --- e a
+  `Lista teorica 04` Ex. 2(c) --- "para $k\ge2$ a fórmula funciona normalmente" ---
+  afirmam o contrário. A razão é exata: com $k$ vizinhos,
+  $(Y_i-\rhat(\X_i))/(1-1/k)=Y_i-(\text{média dos outros } k-1 \text{ vizinhos})$,
+  isto é, o "atalho" calcula **o LOOCV do $(k-1)$-NN** (medido: $0{,}900322$ nos
+  dois, em $k=2$). No Ex. 6 da revisão, o passo que falha é o (b).
+- **O deck 01 ainda tem `g: \mathbb{R}^d \to \mathbb{R}`**, nos slides "A
+  importância da perda quadrática" e "Teorema (Teo. 1, Sec. 1.4 [AME])": uma
+  dimensão que escapou da migração.
+- **Dois erros de digitação nas notas da aula 06 (aluno)**: "píspares" e
+  "Inflacção".
+
 ## Dados
 
 **Os notebooks não baixam dados da rede, e os `.csv` ficam numa cópia única em
