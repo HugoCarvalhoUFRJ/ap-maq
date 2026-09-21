@@ -3,7 +3,7 @@
 \usepackage{../../recursos/latex/estilo-notas}
 
 \begin{document}
-\cabecalhoaula{07}{Classificação e Classificadores Gaussianos}{AME §7.1--7.3 e §8.1; ISLP §2.2.3 e §4.4}
+\cabecalhoaula{07}{Classificação e Classificadores Gaussianos}{AME §7.1--7.3 e §8.1; ISLP §2.2.3, §4.3 e §4.4}
 
 %==============================================================================
 \section*{Objetivos da aula}
@@ -14,10 +14,13 @@ Ao final desta aula o aluno deve ser capaz de:
         \textbf{classificador de Bayes};
   \item descrever a estratégia \emph{plug-in}: estimar $\Prob(Y=c\mid\x)$ e
         classificar pela maior probabilidade;
-  \item estimar essa probabilidade pelo Teorema de Bayes: \textbf{Bayes ingênuo}
+  \item ajustar uma \textbf{regressão logística} por máxima verossimilhança e
+        reconhecer sua versão penalizada/multiclasse;
+  \item estimar a mesma probabilidade pelo Teorema de Bayes: \textbf{Bayes ingênuo}
         (contínuo e discreto), \textbf{LDA} e \textbf{QDA};
   \item entender por que LDA tem fronteira \emph{linear} e QDA \emph{quadrática};
-  \item escolher entre LDA e QDA pelo balanço viés--variância.
+  \item escolher entre LDA e QDA pelo balanço viés--variância;
+  \item contrastar abordagens \emph{discriminativas} e \emph{generativas}.
 \end{itemize}
 
 \begin{emsala}
@@ -99,9 +102,59 @@ O Teorema~\ref{teo:bayes} sugere uma receita direta, dita \textbf{\emph{plug-in}
   \item estime $\widehat\Prob(Y=c\mid\x)$ para cada classe $c\in\mathcal{C}$;
   \item classifique $\ghat(\x)=\argmax_{c\in\mathcal{C}}\widehat\Prob(Y=c\mid\x)$.
 \end{enumerate}
-Os métodos diferem em \emph{como} estimam $\Prob(Y=c\mid\x)$ --- a regressão
-logística, por exemplo, a modela diretamente. Esta aula desenvolve os que partem do
-\textbf{Teorema de Bayes}:
+Os métodos diferem em \emph{como} estimam $\Prob(Y=c\mid\x)$. Há duas grandes
+famílias:
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[Discriminativos] modelam $\Prob(Y=c\mid\x)$ \emph{diretamente} (regressão
+        logística).
+  \item[Generativos] modelam $f(\x\mid Y=c)$ e $\Prob(Y=c)$ e invertem com o
+        Teorema de Bayes (Bayes ingênuo, LDA, QDA).
+\end{description}
+
+%==============================================================================
+\section{Regressão logística (discriminativo)}
+%==============================================================================
+No caso binário $\mathcal{C}=\{0,1\}$, a regressão logística modela
+\begin{equation}\label{eq:logit}
+  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+                          {1+e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+  = \sigma\big(\beta_0+\bbeta^\top\x\big),
+\end{equation}
+onde $\sigma(u)=e^u/(1+e^u)$ é a função logística. Equivalentemente, o
+\emph{log-odds} é linear: $\log\frac{\Prob(Y=1\mid\x)}{\Prob(Y=0\mid\x)}
+=\beta_0+\bbeta^\top\x$ --- e a fronteira de decisão, onde ele se anula, é um
+hiperplano, como no LDA. Como em regressão, \emph{não} supomos que isso seja
+exatamente verdade --- esperamos que leve a um bom classificador.
+
+\begin{emsala}
+Pergunte: \emph{``por que não modelar $\Prob(Y=1\mid\x)$ com uma reta?''} Porque a
+reta sai de $[0,1]$. A $\sigma$ resolve isso, e de quebra dá a interpretação que
+todo mundo usa: aumentar $x_j$ em uma unidade multiplica a razão de chances por
+$e^{\beta_j}$, qualquer que seja o ponto de partida.
+\end{emsala}
+
+\subsection{Estimação por máxima verossimilhança}
+Dada uma amostra i.i.d., a verossimilhança condicional é
+\begin{equation}\label{eq:vero}
+  L(\bbeta) = \prod_{k=1}^n \pi(\x_k)^{Y_k}\big(1-\pi(\x_k)\big)^{1-Y_k},
+  \qquad \pi(\x_k)=\Prob(Y_k=1\mid\x_k,\bbeta).
+\end{equation}
+Maximiza-se o log da verossimilhança \eqref{eq:vero}. Ao contrário do MQO, não há
+solução fechada: usam-se métodos numéricos (Newton--Raphson / IRLS). Como na
+regressão linear, pode-se \textbf{penalizar} ($\ell_1$/$\ell_2$) para reduzir
+variância --- e, com separação perfeita no treino, a penalização deixa de ser opção:
+sem ela a verossimilhança não tem máximo e os coeficientes explodem. É por isso que
+o \texttt{scikit-learn} aplica $\ell_2$ por padrão.
+
+\subsection{Mais de duas classes}
+Para $\abs{\mathcal{C}}>2$: ou ajusta-se uma logística \emph{um-contra-todos} por
+classe (e normaliza-se), ou usa-se a \textbf{regressão logística multinomial}
+(\emph{softmax}), que garante que as probabilidades estimadas somem $1$.
+
+%==============================================================================
+\section{Modelos generativos: o Teorema de Bayes}
+%==============================================================================
+A outra família modela como os dados de cada classe são gerados, e inverte:
 \begin{equation}\label{eq:gen}
   \Prob(Y=c\mid\x) = \frac{f(\x\mid Y=c)\,\Prob(Y=c)}
                           {\sum_{s\in\mathcal{C}} f(\x\mid Y=s)\,\Prob(Y=s)}.
@@ -214,14 +267,48 @@ tabela do §6.
 \end{emsala}
 
 %==============================================================================
+\section{Discriminativo $\times$ generativo}
+%==============================================================================
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.2cm}p{5.4cm}p{5.4cm}@{}}
+\toprule
+ & \textbf{Discriminativo (logística)} & \textbf{Generativo (LDA/QDA/NB)} \\
+\midrule
+Modela & $\Prob(Y\mid\x)$ direto & $f(\x\mid Y)$ e $\Prob(Y)$ \\
+Suposições & poucas (forma do \emph{log-odds}) & distribucionais (gaussiana, indep.) \\
+Quando brilha & muitos dados; suposições gaussianas falsas & classes bem separadas; poucos dados; suposições aproximadamente corretas \\
+Bônus & --- & gera dados; lida com classes raras \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{ideia}
+Se as suposições gaussianas valem, LDA/QDA são (quase) ótimos e eficientes com
+poucos dados. Se não valem, a logística --- que assume menos --- tende a ser mais
+robusta com bastante dado. E sob as hipóteses do LDA o \emph{log-odds} sai
+exatamente linear (Prop.~\ref{prop:lda}), que é o que a logística
+\eqref{eq:logit} supõe: os dois coincidem em forma e diferem em como estimam. Na
+dúvida: experimente ambos e compare por validação cruzada.
+\end{ideia}
+
+%==============================================================================
 \section{Prática em Python}
 %==============================================================================
 \begin{lstlisting}
+from sklearn.linear_model import LogisticRegression
 from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis as LDA,
                                            QuadraticDiscriminantAnalysis as QDA)
 from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-for nome, modelo in [("NB", GaussianNB()), ("LDA", LDA()), ("QDA", QDA())]:
+# Logistica penalizada (C = 1/lambda); padronizar no pipeline (Aula 06)
+logit = make_pipeline(StandardScaler(),
+                      LogisticRegression(C=1.0, max_iter=1000))
+
+lda, qda, nb = LDA(), QDA(), GaussianNB()
+for nome, modelo in [("logit", logit), ("LDA", lda), ("QDA", qda), ("NB", nb)]:
     modelo.fit(X_tr, y_tr)
     print(nome, "acuracia:", modelo.score(X_te, y_te))
     # probabilidades plug-in: modelo.predict_proba(X_te)
@@ -237,8 +324,10 @@ e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
   \item Perda 0--1 \eqref{eq:risco01}; o \textbf{classificador de Bayes}
         $g^*(\x)=\argmax_c\Prob(Y=c\mid\x)$ é ótimo (Teo.~\ref{teo:bayes}) mas
         desconhecido.
-  \item \emph{Plug-in}: estimar $\Prob(Y=c\mid\x)$ e tomar o $\argmax$; aqui, pelo
-        Teorema de Bayes \eqref{eq:gen}.
+  \item \emph{Plug-in}: estimar $\Prob(Y=c\mid\x)$ e tomar o $\argmax$ --- direto
+        (discriminativo) ou pelo Teorema de Bayes \eqref{eq:gen} (generativo).
+  \item \textbf{Logística} \eqref{eq:logit}: discriminativa, MV, penalizável,
+        multiclasse; respeita $[0,1]$.
   \item \textbf{Bayes ingênuo}: independência condicional \eqref{eq:nb}, com um
         modelo univariado por covariável, contínua ou discreta.
   \item \textbf{LDA} (covariância comum $\to$ fronteira linear,
@@ -250,8 +339,9 @@ e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
 \end{itemize}
 
 \paragraph{Leitura recomendada.} [AME] §7.1 (risco 0--1, classificador de Bayes,
-Teorema~9), §7.2--7.3 e §8.1 (\emph{plug-in}, com Bayes ingênuo em §8.1.3 e LDA/QDA
-em §8.1.4; as densidades normais de lá omitem o $\tfrac12$ do expoente); [ISLP]
-§2.2.3 (classificador de Bayes) e §4.4 (modelos generativos).
+Teorema~9), §7.2--7.3 e §8.1 (\emph{plug-in}, com a logística em §8.1.2, o Bayes
+ingênuo em §8.1.3 e LDA/QDA em §8.1.4; as densidades normais de lá omitem o
+$\tfrac12$ do expoente); [ISLP] §2.2.3 (classificador de Bayes), §4.3 (logística) e
+§4.4 (modelos generativos).
 
 \end{document}
