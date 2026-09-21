@@ -30,72 +30,132 @@ que existe sempre que $\Sigma=\E[\X\X^\top]$ é bem definida e invertível ---
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Expanda o objetivo, tratando as esperanças como constantes:
-\[
-  Q(\bbeta)=\E[(Y-\bbeta^\top\X)^2]
-   = \E[Y^2] - 2\,\bbeta^\top\underbrace{\E[Y\X]}_{\bm\alpha}
-     + \bbeta^\top\underbrace{\E[\X\X^\top]}_{\Sigma}\bbeta .
-\]
-O gradiente é $\nabla Q=-2\bm\alpha+2\Sigma\bbeta$, que se anula quando
-$\Sigma\bbeta=\bm\alpha$, ou seja, $\bbeta^\ast=\Sigma^{-1}\bm\alpha$. A Hessiana
-é $2\Sigma$, definida positiva por hipótese: é mínimo, e é único.
-
-A conta é a mesma das equações normais da aula, com $\E[\X\X^\top]$ no
-lugar de $\frac1n\mathbb{X}^\top\mathbb{X}$ e $\E[Y\X]$ no lugar de
-$\frac1n\mathbb{X}^\top\bm y$. É o mesmo problema, escrito na população em vez de
-na amostra.
+Hipóteses em uso: $\E[Y^2]<\infty$ e $\E\norm{\X}^2<\infty$, para que $\Sigma$ e
+$\bm\alpha$ existam (a existência de $\bm\alpha$ sai por Cauchy--Schwarz), e $\Sigma$
+invertível. Como $\bm v^\top\Sigma\bm v=\E\big[(\bm v^\top\X)^2\big]\ge0$ para todo
+$\bm v$, $\Sigma$ é semidefinida positiva; sendo invertível, é definida positiva.
 
 \smallskip
-\textbf{(b)} Tanto $\widehat\Sigma$ quanto $\widehat{\bm\alpha}$ são
-\textbf{médias amostrais} de variáveis i.i.d.: a primeira das matrizes
-$\X_i\X_i^\top$, a segunda dos vetores $Y_i\X_i$. Essa é a observação que resolve
-o item.
+\textbf{(a)} Expanda o objetivo; as esperanças são números fixos:
+\[
+  Q(\bbeta)=\E\big[(Y-\bbeta^\top\X)^2\big]
+  =\E[Y^2]-2\,\bbeta^\top\underbrace{\E[Y\X]}_{\bm\alpha}
+   +\bbeta^\top\underbrace{\E[\X\X^\top]}_{\Sigma}\bbeta .
+\]
+É uma função quadrática de $\bbeta$, com gradiente $\nabla Q(\bbeta)=-2\bm\alpha+2\Sigma\bbeta$
+e Hessiana $2\Sigma$, definida positiva. Logo $Q$ é estritamente convexa, e seu único
+ponto crítico é o mínimo global:
+\[
+  \Sigma\bbeta=\bm\alpha
+  \iff
+  \bbeta^\ast=\Sigma^{-1}\bm\alpha .
+\]
+São as equações normais da aula com $\E[\X\X^\top]$ no lugar de
+$\frac1n\mathbb{X}^\top\mathbb{X}$ e $\E[Y\X]$ no lugar de $\frac1n\mathbb{X}^\top\bm y$:
+o mesmo problema, escrito na população em vez de na amostra.
 
-Pela lei dos grandes números, médias amostrais convergem para as esperanças
-correspondentes: $\widehat\Sigma\to\Sigma$ e $\widehat{\bm\alpha}\to\bm\alpha$ em
-probabilidade. Como inverter matriz e multiplicar são operações contínuas onde
-$\Sigma$ é invertível, o teorema de Mann--Wald (continuous mapping) transporta a
-convergência:
+Vale conhecer uma segunda demonstração, sem derivadas, porque ela rende uma identidade
+que usaremos em (c). Some e subtraia $\bbeta^{\ast\top}\X$ dentro do quadrado:
+\[
+\begin{aligned}
+  Q(\bbeta)
+  &=\E\Big[\big((Y-\bbeta^{\ast\top}\X)-(\bbeta-\bbeta^\ast)^\top\X\big)^2\Big]\\
+  &=Q(\bbeta^\ast)
+   -2(\bbeta-\bbeta^\ast)^\top\underbrace{\E\big[\X\,(Y-\X^\top\bbeta^\ast)\big]}_{=\;\bm\alpha-\Sigma\bbeta^\ast\;=\;\bm 0}
+   +(\bbeta-\bbeta^\ast)^\top\Sigma\,(\bbeta-\bbeta^\ast),
+\end{aligned}
+\]
+ou seja,
+\[
+  Q(\bbeta)=Q(\bbeta^\ast)+(\bbeta-\bbeta^\ast)^\top\Sigma\,(\bbeta-\bbeta^\ast).
+  \tag{$\dagger$}
+\]
+O último termo é estritamente positivo para $\bbeta\neq\bbeta^\ast$, o que prova de uma
+vez que $\bbeta^\ast$ é o mínimo e que é o único. É o mesmo "some e subtraia" do
+Exercício~\ref{ex:01-ropt}, e funciona pela mesma razão. Lá, o resíduo $Y-r(\X)$ era
+ortogonal a toda função de $\X$; aqui, $\E\big[\X(Y-\X^\top\bbeta^\ast)\big]=\bm0$ diz
+que o resíduo do melhor preditor linear é ortogonal a cada covariável. $r(\X)$ é a
+projeção de $Y$ sobre todas as funções de $\X$; $\bbeta^{\ast\top}\X$, a projeção sobre
+as lineares.
+
+\smallskip
+\textbf{(b)} $\widehat\Sigma$ e $\widehat{\bm\alpha}$ são \textbf{médias amostrais} de
+variáveis i.i.d.: a primeira, das matrizes $\X_i\X_i^\top$, cuja esperança é $\Sigma$;
+a segunda, dos vetores $Y_i\X_i$, cuja esperança é $\bm\alpha$. É essa observação que
+resolve o item.
+
+Pela lei dos grandes números, aplicada coordenada a coordenada (as esperanças existem
+pelas hipóteses acima), $\widehat\Sigma\to\Sigma$ e $\widehat{\bm\alpha}\to\bm\alpha$ em
+probabilidade. A função $(A,\bm a)\mapsto A^{-1}\bm a$ é contínua no conjunto aberto das
+matrizes invertíveis, que contém $\Sigma$; por isso $\widehat\Sigma$ é invertível com
+probabilidade tendendo a $1$, e o teorema de Mann--Wald (da aplicação contínua)
+transporta a convergência:
 \[
   \widehat\bbeta=\widehat\Sigma^{-1}\widehat{\bm\alpha}
-  \;\longrightarrow\; \Sigma^{-1}\bm\alpha = \bbeta^\ast .
+  \;\xrightarrow{\ P\ }\;\Sigma^{-1}\bm\alpha=\bbeta^\ast .
 \]
-
-Em nenhum passo foi preciso supor $r(\x)=\bbeta^\top\x$. A definição de
-$\bbeta^\ast$ é um problema de minimização que faz sentido para qualquer
-distribuição $P$; o que a linearidade de $r$ acrescentaria seria a coincidência
-$\bbeta^{\ast\top}\x=r(\x)$ --- uma coincidência agradável, mas dispensável para
-a convergência.
+Em nenhum passo apareceu a forma de $r$. O alvo $\bbeta^\ast$ é definido por um
+problema de minimização que faz sentido para qualquer distribuição com segundos
+momentos finitos; o que a linearidade de $r$ acrescentaria seria só a coincidência
+$\bbeta^{\ast\top}\x=r(\x)$ --- agradável, mas dispensável para a convergência.
 
 \smallskip
-\textbf{(c)} \textbf{Garante:} com $n$ grande, o MQO acerta a melhor aproximação
-linear disponível. Ele não fica vagando nem depende de sorte da amostra; converge
-para um alvo bem definido, e esse alvo é o melhor que a classe das funções
-lineares tem a oferecer.
+\textbf{(c)} Duas identidades do curso dizem tudo. Aplique a do
+Exercício~\ref{ex:01-ropt}(a) com $g(\x)=\bbeta^{\ast\top}\x$, e depois $(\dagger)$ com
+$\bbeta=\widehat\bbeta$ (fixado o treino, o risco do ajuste é
+$\risco(\widehat g)=Q(\widehat\bbeta)$):
+\[
+  \risco(\widehat g)=
+  \underbrace{\E\big[\Var(Y\mid\X)\big]}_{\text{irredutível}}
+  +\underbrace{\E\big[(r(\X)-\bbeta^{\ast\top}\X)^2\big]}_{\text{erro de aproximação}}
+  +\underbrace{(\widehat\bbeta-\bbeta^\ast)^\top\Sigma\,(\widehat\bbeta-\bbeta^\ast)}_{\text{erro de estimação}} .
+\]
+Com a decomposição à vista, as duas coisas se enunciam sem ambiguidade.
 
-\textbf{Não garante:} que esse alvo seja bom. Se $r$ for muito curva, o melhor
-preditor linear pode ter risco alto, e o teorema apenas assegura que chegaremos
-perto dele --- perto de uma aproximação ruim continua sendo ruim.
+\textbf{O que o teorema garante:} a terceira parcela vai a zero, porque
+$\widehat\bbeta\to\bbeta^\ast$ e a forma quadrática é contínua. Com $n$ grande, o MQO
+chega tão perto quanto se queira do melhor que a classe das funções lineares tem a
+oferecer, e $\risco(\widehat g)\to\risco(g_{\bbeta^\ast})$.
 
-Na linguagem da Aula~01: o teorema controla a \textbf{variância}, porque o erro de
-estimação some com $n$, e não diz absolutamente nada sobre o \textbf{viés de
-aproximação} $\E[(r(\X)-\bbeta^{\ast\top}\X)^2]$, que é o preço fixo de ter
-escolhido uma classe rígida. "Convergir para o alvo certo" e "o alvo certo ser
-bom" são afirmações independentes, e só a primeira foi demonstrada.
+\textbf{O que ele não garante:} que esse melhor seja bom. A segunda parcela não depende
+de $n$, e o teorema não diz nada sobre ela; se $r$ é muito curva, ela é grande, e
+convergir para uma aproximação ruim continua sendo ruim. Então não: o resultado
+\emph{não} diz que o risco de $\widehat\bbeta$ é pequeno, só que ele se aproxima do
+risco do oráculo. Tampouco diz \emph{com que rapidez}: é um resultado de convergência,
+sem taxa.
+
+Na linguagem da Aula~01, o teorema cuida do erro de estimação --- a variância, e a
+parte do viés que vem de $n$ ser finito --- e deixa intacto o viés de aproximação, que
+é o preço fixo de ter escolhido uma classe rígida.
 
 \smallskip
-\textbf{(d)} O erro é ler $\bbeta^\ast$ como efeito causal --- ou mesmo como
-descrição local de $r$.
+\textbf{(d)} \emph{A leitura legítima.} $2{,}3$ é o coeficiente de $x_1$ no hiperplano
+que \emph{melhor aproxima} $r$ em erro quadrático médio, sob a distribuição de $\X$ em
+que os dados foram colhidos. É um resumo global, e útil como tal.
 
-O que se pode dizer é que $2{,}3$ é a inclinação da reta que \emph{melhor aproxima}
-$r$ no sentido de erro quadrático médio, ponderada pela distribuição de $\X$. É um
-resumo global, e nada além disso.
-
-Duas consequências mostram por que a frase do colega não se sustenta. Primeira:
-com $r$ curva, a inclinação verdadeira $\partial r/\partial x_1$ muda de ponto
-para ponto, e $2{,}3$ é uma espécie de média dela --- podendo não coincidir com a
-inclinação em ponto nenhum. Segunda, e mais desconfortável: se ele coletar a mesma
-medida noutra população, com outra faixa de $x_1$, o $\bbeta^\ast$ muda, porque a
-ponderação mudou --- ainda que $r$ seja exatamente a mesma função do mundo. Um
-número que depende de onde você coletou não descreve um mecanismo.
+\emph{O que não se pode ler nele}, em três sentidos.
+\begin{itemize}[leftmargin=1.2cm]
+  \item \emph{Não é a inclinação de $r$.} Com $r$ curva, $\partial r/\partial x_1$ muda
+        de ponto para ponto, e $2{,}3$ não é o valor dela em lugar nenhum em
+        particular. Com várias covariáveis, pode nem ter relação com ela. Tome
+        $X_2\sim N(0,1)$, $X_1=X_2^2+\varepsilon$, com $\varepsilon\sim N(0,s^2)$
+        independente, e $r(\x)=x_2^2$: $r$ nem depende de $x_1$, e ainda assim,
+        regredindo em $(1,x_1,x_2)$,
+        \[
+          \beta_1^\ast=\frac{\Cov(X_1,X_2^2)}{\Var(X_1)}=\frac{2}{2+s^2}\neq0 .
+        \]
+        A reta usa $x_1$ como \emph{procurador} da parte curva de $r$ que ela não
+        consegue representar em $x_2$. (A conta: $X_2$ não é correlacionada nem com
+        $X_2^2$ nem com $X_1$, pois $\E[X_2^3]=0$; então o coeficiente de $x_2$ é zero,
+        o de $x_1$ é o da regressão simples, e $\Var(X_2^2)=\E[X_2^4]-1=2$.)
+  \item \emph{Depende de onde os dados caíram.} Mesmo com uma covariável só: para
+        $r(x)=x^2$ e $X\sim\mathrm{Unif}(0,a)$, a inclinação ótima é
+        $\Cov(X,X^2)/\Var(X)=(a^3/12)/(a^2/12)=a$. Colhendo dados em $[0,1]$ o colega
+        veria $1$; em $[0,2]$, veria $2$ --- com $r$ exatamente a mesma. Um número que
+        muda com a faixa amostrada não descreve um mecanismo.
+  \item \emph{"Aumentar $x_1$ aumenta $Y$" é uma frase causal}, sobre intervir no
+        sistema. Nenhuma regressão a autoriza sozinha, nem com $r$ linear: comparar
+        indivíduos que \emph{diferem} em $x_1$ não é o mesmo que \emph{mudar} o $x_1$
+        de alguém.
+\end{itemize}
 \end{solucao}

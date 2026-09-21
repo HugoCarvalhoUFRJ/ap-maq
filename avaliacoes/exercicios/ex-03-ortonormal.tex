@@ -11,6 +11,8 @@ Use as definições da aula, \textbf{sem} fator $\tfrac12$ no RSS:
   \widehat{\bbeta}^{\,\text{lasso}}
    = \argmin_{\bbeta}\Big\{\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\sum_j\abs{\beta_j}\Big\}.
 \]
+Aqui $\mathbb{X}\in\R^{n\times p}$ não tem a coluna de uns: não há intercepto, e as
+duas penalidades somam sobre os $p$ coeficientes.
 \begin{itens}
   \item \pts{1,1} Comece pelo passo que torna tudo possível. Supondo
         $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, mostre que o estimador de mínimos
@@ -38,112 +40,129 @@ Use as definições da aula, \textbf{sem} fator $\tfrac12$ no RSS:
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Com $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$, as equações normais dão
-diretamente
-$\widehat\bbeta=(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm y
-=\mathbb{X}^\top\bm y$.
+\textbf{(a)} Com $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$ a matriz é invertível, e as
+equações normais $\mathbb{X}^\top\mathbb{X}\,\bbeta=\mathbb{X}^\top\bm y$ dão
+diretamente $\widehat\bbeta=\mathbb{X}^\top\bm y$.
 
-Agora expanda o RSS, usando essa igualdade e a ortonormalidade:
+Para a identidade, o caminho mais curto é o teorema de Pitágoras. Escreva
+\[
+  \bm y-\mathbb{X}\bbeta=(\bm y-\mathbb{X}\widehat\bbeta)+\mathbb{X}(\widehat\bbeta-\bbeta).
+\]
+As duas parcelas são ortogonais, porque as equações normais dizem exatamente que o
+resíduo do MQO é ortogonal às colunas de $\mathbb{X}$:
+$\mathbb{X}^\top(\bm y-\mathbb{X}\widehat\bbeta)=\bm 0$. Logo, para \emph{qualquer}
+$\mathbb{X}$ de posto cheio,
 \[
   \norm{\bm y-\mathbb{X}\bbeta}^2
-   = \bm y^\top\bm y - 2\,\bbeta^\top\underbrace{\mathbb{X}^\top\bm y}_{=\;\widehat\bbeta}
-     + \bbeta^\top\underbrace{\mathbb{X}^\top\mathbb{X}}_{=\;\mathbb{I}}\bbeta
-   = \norm{\bm y}^2 - 2\,\bbeta^\top\widehat\bbeta + \norm{\bbeta}^2 .
+  =\norm{\bm y-\mathbb{X}\widehat\bbeta}^2
+   +(\bbeta-\widehat\bbeta)^\top\mathbb{X}^\top\mathbb{X}\,(\bbeta-\widehat\bbeta).
+  \tag{$*$}
 \]
-Os dois últimos termos pedem um completar quadrados:
+No caso ortonormal a forma quadrática é $\sum_j(\beta_j-\widehat\beta_j)^2$, e
 \[
-  -2\,\bbeta^\top\widehat\bbeta+\norm{\bbeta}^2
-   = \norm{\bbeta-\widehat\bbeta}^2-\norm{\widehat\bbeta}^2 ,
+  \norm{\bm y-\mathbb{X}\widehat\bbeta}^2
+  =\norm{\bm y}^2-2\,\widehat\bbeta^\top\underbrace{\mathbb{X}^\top\bm y}_{=\;\widehat\bbeta}
+   +\widehat\bbeta^\top\underbrace{\mathbb{X}^\top\mathbb{X}}_{=\;\mathbb{I}}\widehat\bbeta
+  =\norm{\bm y}^2-\norm{\widehat\bbeta}^2 ,
 \]
 o que dá a identidade do enunciado.
 
-O que ela tem de especial: o único termo que depende de $\bbeta$ é
-$\sum_j(\beta_j-\widehat\beta_j)^2$, e nessa soma a $j$-ésima parcela envolve
-\emph{apenas} $\beta_j$. Como as penalidades $\sum_j\beta_j^2$ e
-$\sum_j\abs{\beta_j}$ também são somas coordenada a coordenada, o problema inteiro
-vira $p$ problemas escalares que não conversam entre si --- e problema escalar a
-gente resolve derivando.
+\emph{Por que ela separa o problema.} Somando a penalidade, os dois objetivos ficam
+\[
+  \norm{\bm y}^2-\norm{\widehat\bbeta}^2+\sum_{j=1}^p h_j(\beta_j),
+  \qquad
+  h_j(\beta)=(\beta-\widehat\beta_j)^2+\lambda\,\mathrm{pen}(\beta),
+\]
+com $\mathrm{pen}(\beta)=\beta^2$ no Ridge e $\mathrm{pen}(\beta)=\abs{\beta}$ no
+Lasso. A constante não muda o minimizador, e o resto é uma soma de funções de
+\emph{uma coordenada cada}. Para somas assim vale um fato simples: $\bbeta^\ast$
+minimiza $\sum_jh_j(\beta_j)$ se e só se cada $\beta_j^\ast$ minimiza a sua $h_j$. (Se
+cada parcela está no seu mínimo, a soma está; e se alguma não estivesse, trocar só
+aquela coordenada baixaria a soma.) Um problema em $\R^p$ virou $p$ problemas na reta.
 
-Quando as colunas \emph{não} são ortonormais, $\mathbb{X}^\top\mathbb{X}$ tem
-termos fora da diagonal, aparecem produtos $\beta_j\beta_\ell$ com $j\ne\ell$, e a
-separação morre. É exatamente por isso que o Lasso não tem solução fechada no caso
-geral: a ortonormalidade é uma hipótese muito forte, não uma simplificação
-inocente.
+\emph{Por que isso falha sem ortonormalidade.} Em $(*)$, a forma quadrática tem os
+termos cruzados $2(\mathbb{X}^\top\mathbb{X})_{j\ell}(\beta_j-\widehat\beta_j)(\beta_\ell-\widehat\beta_\ell)$,
+e o melhor valor de uma coordenada passa a depender das outras. É por isso que o Lasso
+não tem fórmula fechada no caso geral, e as fórmulas deste exercício pedem uma
+hipótese forte. (É também por isso que o enunciado tira o intercepto: a coluna de uns
+tem norma $\sqrt n$ e não caberia numa matriz com $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$.
+Com dados centrados o intercepto sai de cena, e é nesse cenário que o caso ortonormal
+faz sentido.)
 
 \smallskip
-\textbf{(b)} O problema escalar é minimizar
-$h(\beta)=(\beta-\widehat\beta_j)^2+\lambda\beta^2$, que é derivável em toda a
-reta:
+\textbf{(b)} Para o Ridge, $h(\beta)=(\beta-\widehat\beta_j)^2+\lambda\beta^2$ é uma
+parábola com $h''=2(1+\lambda)>0$: estritamente convexa, com mínimo único onde a
+derivada se anula,
 \[
   h'(\beta)=2(\beta-\widehat\beta_j)+2\lambda\beta=0
-  \;\Longrightarrow\;
-  \beta(1+\lambda)=\widehat\beta_j
-  \;\Longrightarrow\;
-  \beta=\frac{\widehat\beta_j}{1+\lambda}.
+  \iff
+  \widehat\beta_j^{\,\text{ridge}}=\frac{\widehat\beta_j}{1+\lambda}.
 \]
-Como $h''=2(1+\lambda)>0$, é mínimo.
-
-Leia o resultado: o Ridge \textbf{multiplica} por um fator $1/(1+\lambda)<1$. Isso
-encolhe proporcionalmente --- quem era grande perde mais em valor absoluto --- e
-nunca zera, porque o fator só alcança zero no limite $\lambda\to\infty$.
+O Ridge \textbf{multiplica} todo coeficiente pelo mesmo fator $1/(1+\lambda)$: encolhe
+proporcionalmente --- quem é grande perde mais em valor absoluto --- e nunca zera um
+coeficiente não nulo, para $\lambda$ finito.
 
 \smallskip
-\textbf{(c)} Agora $h(\beta)=(\beta-\widehat\beta_j)^2+\lambda\abs{\beta}$. Analise
-por regiões.
+\textbf{(c)} Agora $h(\beta)=(\beta-b)^2+\lambda\abs{\beta}$, com $b=\widehat\beta_j$ e
+$\lambda>0$. A função é contínua em toda a reta e derivável fora do zero:
+\[
+  h'(\beta)=2(\beta-b)+\lambda\quad(\beta>0),
+  \qquad
+  h'(\beta)=2(\beta-b)-\lambda\quad(\beta<0).
+\]
+A estratégia é ver onde $h$ cresce e onde decresce, dos dois lados do zero.
 
-\emph{Onde $\beta>0$}, temos $\abs{\beta}=\beta$ e
-$h'(\beta)=2(\beta-\widehat\beta_j)+\lambda$, que zera em
-$\beta=\widehat\beta_j-\lambda/2$. Só que essa raiz precisa cair na região em que
-a conta vale, isto é, precisa ser positiva --- o que exige
-$\widehat\beta_j>\lambda/2$.
+\emph{Caso $b>\lambda/2$.} Para $\beta<0$, $h'(\beta)=2\beta-(2b+\lambda)<0$: $h$
+decresce em toda a semirreta negativa. Para $\beta>0$, $h'$ troca de sinal uma única
+vez, em $\beta=b-\lambda/2>0$: $h$ decresce até ali e cresce depois. Como $h$ é
+contínua no zero, o mínimo global é $\beta=b-\lambda/2$.
 
-\emph{Onde $\beta<0$}, temos $\abs{\beta}=-\beta$ e
-$h'(\beta)=2(\beta-\widehat\beta_j)-\lambda$, que zera em
-$\beta=\widehat\beta_j+\lambda/2$, admissível se $\widehat\beta_j<-\lambda/2$.
+\emph{Caso $b<-\lambda/2$.} Simétrico: o mínimo é $\beta=b+\lambda/2<0$.
 
-\emph{E se $\abs{\widehat\beta_j}\le\lambda/2$?} Aí nenhuma das duas raízes cai na
-sua própria região: a candidata positiva sai negativa e vice-versa. Como $h$ é
-convexa e contínua, o mínimo existe, e só pode estar no único ponto que sobrou ---
-$\beta=0$, justamente onde a função não é derivável. (Em linguagem de
-subgradiente: $0$ é mínimo quando $0\in -2\widehat\beta_j+\lambda[-1,1]$, que é
-exatamente a condição $\abs{\widehat\beta_j}\le\lambda/2$.)
+\emph{Caso $\abs{b}\le\lambda/2$.} Para $\beta>0$, $h'(\beta)=2\beta+(\lambda-2b)>0$,
+porque $\lambda-2b\ge0$; para $\beta<0$, $h'(\beta)=2\beta-(\lambda+2b)<0$, porque
+$\lambda+2b\ge0$. A função decresce até o zero e cresce depois dele: o mínimo é
+$\beta=0$ --- justamente o ponto em que ela não é derivável, e que nenhuma equação
+"$h'=0$" encontraria.
 
-Juntando os três casos,
+Os três casos cabem numa fórmula só,
 \[
   \widehat\beta_j^{\,\text{lasso}}
-   =\operatorname{sinal}(\widehat\beta_j)\big(\abs{\widehat\beta_j}-\lambda/2\big)_+ ,
+  =\operatorname{sinal}(\widehat\beta_j)\big(\abs{\widehat\beta_j}-\lambda/2\big)_+ ,
+  \qquad\text{e o coeficiente zera}\iff
+  \boxed{\;\abs{\widehat\beta_j}\le\lambda/2\;}.
 \]
-e a condição exata para zerar é $\boxed{\abs{\widehat\beta_j}\le\lambda/2}$.
+(Para quem conhece subgradientes: $0$ minimiza a função convexa $h$ quando
+$0\in\partial h(0)=-2b+\lambda[-1,1]$, que é a mesma condição.)
 
-Compare com (b) e a diferença salta: o Lasso \textbf{subtrai} uma constante em vez
-de multiplicar por um fator. Todo mundo encolhe pela mesma quantidade, $\lambda/2$,
-e quem era menor que isso em módulo não sobrevive ao deslocamento. É o
-\emph{soft thresholding}, e é a razão algébrica de o Lasso fazer seleção de
-variáveis.
+Compare com (b): o Lasso \textbf{subtrai} a mesma quantidade, $\lambda/2$, de todo
+coeficiente, em vez de multiplicar por um fator. Quem tinha módulo menor que isso não
+sobrevive ao deslocamento e vira exatamente zero. É o \emph{soft thresholding}, e é a
+razão algébrica de o Lasso fazer seleção de variáveis.
 
 \smallskip
-\textbf{(d)} O $2$ vem da derivada do quadrado. Derivando
-$(\beta-\widehat\beta_j)^2$ aparece um fator $2$; derivando $\lambda\abs{\beta}$
-aparece só $\pm\lambda$. Ao isolar $\beta$ dividimos tudo por $2$, e o $\lambda$
-vira $\lambda/2$.
+\textbf{(d)} O $2$ vem de derivar o quadrado. A derivada de $(\beta-\widehat\beta_j)^2$
+traz um fator $2$ que a de $\lambda\abs{\beta}$ não traz; ao isolar $\beta$, dividimos
+tudo por $2$, e o $\lambda$ vira $\lambda/2$.
 
-Com um $\tfrac12$ na frente do RSS, e só dele, o fator $2$ some da derivada do
-quadrado, e a da penalidade não muda. Refazendo as contas, o Lasso fica com
-$(\beta-\widehat\beta_j)\pm\lambda=0$, e o limiar vira $\lambda$; o Ridge fica com
-$(\beta-\widehat\beta_j)+2\lambda\beta=0$, e a fórmula vira
-$\widehat\beta_j/(1+2\lambda)$.
+Com o RSS definido com $\tfrac12$ na frente (e a penalidade sem), o problema seria
+minimizar $\tfrac12\norm{\bm y-\mathbb{X}\bbeta}^2+\lambda\,\mathrm{Pen}(\bbeta)$.
+Multiplicar um objetivo por uma constante positiva não muda o minimizador, e
+multiplicando este por $2$ ele vira o problema da aula com $2\lambda$ no lugar de
+$\lambda$. Basta fazer essa troca nas fórmulas:
+\[
+  \widehat\beta_j^{\,\text{ridge}}=\frac{\widehat\beta_j}{1+2\lambda},
+  \qquad
+  \widehat\beta_j^{\,\text{lasso}}
+  =\operatorname{sinal}(\widehat\beta_j)\big(\abs{\widehat\beta_j}-\lambda\big)_+ .
+\]
+(Pôr o $\tfrac12$ também na penalidade não mudaria nada: seria multiplicar o objetivo
+inteiro por uma constante.)
 
-As duas mudanças são, na verdade, uma só. Multiplicar o objetivo inteiro por $2$
-não altera o minimizador, e transforma o problema novo no da aula com $2\lambda$ no
-lugar de $\lambda$: basta fazer essa troca nas duas fórmulas. Repare que pôr o
-$\tfrac12$ também na penalidade não mudaria nada --- seria multiplicar o objetivo
-todo por uma constante.
-
-A lição prática é que \textbf{o limiar depende da convenção}, não da matemática.
-Antes de comparar um $\lambda$ do seu caderno com um $\lambda$ de um artigo ou de
-uma biblioteca, confira qual objetivo cada um está minimizando. O \texttt{Lasso} do
-\texttt{scikit-learn} é um bom exemplo: ele minimiza
-$\tfrac{1}{2n}\norm{\bm y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$, e o seu
-$\alpha$ corresponde a $\lambda=2n\alpha$ na convenção da aula --- o $n$ vem da
-média, e o $2$ é exatamente o deste item.
+A lição prática: \textbf{o valor numérico de $\lambda$ depende da convenção}, não só
+dos dados. Antes de comparar o $\lambda$ das notas com o de um livro, de um artigo ou
+de uma biblioteca, confira qual objetivo cada um minimiza. O \texttt{Lasso} do
+\texttt{scikit-learn} minimiza $\tfrac1{2n}\norm{\bm y-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$;
+multiplicando por $2n$ vê-se que o seu $\alpha$ corresponde a $\lambda=2n\alpha$ na
+convenção da aula. O $n$ vem de usar a média em vez da soma; o $2$ é o deste item.
 \end{solucao}

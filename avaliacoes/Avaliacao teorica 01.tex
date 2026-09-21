@@ -58,7 +58,8 @@ $\bbeta$.
 
 \textbf{(b)} 0,4 por eliminar o fator $1/(2\sigma^2)$ sem alterar o argmin; 0,6
 pelo valor de $\lambda$. Chegar a $\lambda$ invertido
-($\sigma_\beta^2/\sigma^2$) vale 0,3 dos 0,6.
+($\sigma_\beta^2/\sigma^2$) vale 0,3 dos 0,6. A observação de que a priori também
+encolhe o intercepto, que a Ridge da aula não penaliza, não é exigida.
 
 \textbf{(c)} 0,7 por extremo. Exige ligar priori e $\lambda$, não apenas
 descrever o comportamento do Ridge. Mencionar o par viés--variância é esperado,
@@ -97,7 +98,9 @@ existência das duas.
 \begin{criterio}
 \textbf{(a)} 0,2 pelo veredito e 0,2 pela justificativa, em cada um dos cinco
 itens. Veredito certo com justificativa ausente ou errada vale 0,2. Aceitar
-"equivariante" sem demonstração em (i).
+"equivariante" sem demonstração em (i); ali, também está certo dizer que a predição
+soma $\beta_jx_j$ sobre as colunas, desde que se note que cada parcela não depende da
+unidade.
 
 \textbf{(b)} 0,3 por apontar o KNN; 0,6 por comparar o que a escala controla em
 cada um: no Ridge, quanto um coeficiente é penalizado; no KNN, quem são os
@@ -111,7 +114,8 @@ importante deixa de ser encolhida. 0,6 por explicar por que a conclusão não se
 sustenta: numa coluna irrelevante o efeito tende a se inverter. A observação de que
 foi a unidade de medida que tomou a decisão é o ponto alto da resposta e deve ser
 premiada dentro dos 0,6; aceitar também, como parte deles, o argumento de que um
-resultado favorável isolado não valida o procedimento.
+resultado favorável isolado não valida o procedimento, ou o de que a comparação usou o
+mesmo $\lambda$, escolhido para os dados padronizados.
 \end{criterio}
 
 \vfill

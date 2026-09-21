@@ -32,82 +32,107 @@ subtrair a quantidade certa dentro de um quadrado.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Escreva a diferença em duas partes,
-\[
-  Y-g(\X) \;=\; \underbrace{\big(Y-r(\X)\big)}_{\text{o que ninguém prevê}}
-              + \underbrace{\big(r(\X)-g(\X)\big)}_{\text{o quanto } g \text{ erra o alvo}},
-\]
-e eleve ao quadrado:
-\[
-  (Y-g(\X))^2 = (Y-r(\X))^2 + 2\,(Y-r(\X))(r(\X)-g(\X)) + (r(\X)-g(\X))^2 .
-\]
-Tomando esperança, o que precisa ser mostrado é que o termo do meio some.
-
-Condicione em $\X$. Feito isso, $r(\X)-g(\X)$ vira uma constante --- as duas são
-funções de $\X$, e $\X$ está fixo --- e portanto sai de dentro da esperança
-condicional:
-\[
-  \E\big[(Y-r(\X))(r(\X)-g(\X))\big]
-   = \E\Big[\big(r(\X)-g(\X)\big)\;\underbrace{\E[\,Y-r(\X)\mid\X\,]}_{=\;0}\Big].
-\]
-E a esperança que sobrou é zero, porque $\E[Y\mid\X]=r(\X)$ é exatamente a
-definição de $r$. Sobram os dois quadrados.
+Suponha, ao longo de todo o exercício, que $\E[Y^2]<\infty$: é o que garante que
+todas as esperanças abaixo existam. Em particular $r(\X)$ também tem segundo momento
+finito, porque $\E[r(\X)^2]=\E\big[(\E[Y\mid\X])^2\big]\le\E\big[\E[Y^2\mid\X]\big]=\E[Y^2]$
+(desigualdade de Jensen, aplicada condicionalmente a $\X$).
 
 \smallskip
-\textbf{(b)} A identidade separa o risco de $g$ em duas parcelas, e só a segunda
-depende de $g$:
+\textbf{(a)} Some e subtraia $r(\X)$ e expanda o quadrado:
 \[
-  \risco(g) \;=\; \underbrace{\E\big[(Y-r(\X))^2\big]}_{\text{fixo, não depende de } g}
-   \;+\; \underbrace{\E\big[(r(\X)-g(\X))^2\big]}_{\ \ge\ 0}.
+  (Y-g(\X))^2 = \big(Y-r(\X)\big)^2
+     + 2\big(Y-r(\X)\big)\big(r(\X)-g(\X)\big)
+     + \big(r(\X)-g(\X)\big)^2 .
 \]
-Como a segunda é uma esperança de algo não negativo, ela nunca ajuda: o melhor que
-$g$ pode fazer é anulá-la, e isso acontece exatamente quando $g(\X)=r(\X)$ com
-probabilidade $1$. Logo $r$ minimiza, e o mínimo é a primeira parcela.
+As três parcelas são integráveis: as duas quadráticas porque $Y$, $r(\X)$ e $g(\X)$
+têm segundo momento finito, e o termo cruzado pela desigualdade de Cauchy--Schwarz,
+$\E\abs{UV}\le\sqrt{\E[U^2]\,\E[V^2]}$. Podemos, então, tomar esperança termo a
+termo, e tudo se resume a mostrar que o termo cruzado tem esperança zero.
 
-Para identificá-la, olhe para o que está dentro do quadrado: $Y-r(\X)=Y-\E[Y\mid\X]$
-é o desvio de $Y$ em relação à sua própria média condicional. A lei da esperança total dá
+Condicione em $\X$ e use a lei da esperança total:
+\[
+\begin{aligned}
+  \E\big[(Y-r(\X))(r(\X)-g(\X))\big]
+  &= \E\Big[\,\E\big[(Y-r(\X))(r(\X)-g(\X))\,\big|\,\X\big]\Big]\\
+  &= \E\Big[\big(r(\X)-g(\X)\big)\,
+       \underbrace{\E\big[Y-r(\X)\,\big|\,\X\big]}_{=\;r(\X)-r(\X)\;=\;0}\Big]
+  = 0 .
+\end{aligned}
+\]
+O passo do meio é a regra "o que é função de $\X$ sai da esperança condicional em
+$\X$": $r(\X)-g(\X)$ depende só de $\X$, e condicionar em $\X$ é tratá-lo como
+conhecido. O zero vem da \emph{definição} de $r$: $\E[Y\mid\X]=r(\X)$.
+
+Em palavras: o erro $Y-r(\X)$ que sobra depois de acertar a média condicional é
+\textbf{ortogonal a toda função de $\X$} --- nenhuma informação contida em $\X$ ajuda a
+prevê-lo. Guarde a frase: o Exercício~\ref{ex:02-oraculo} tem uma versão dela para
+as funções lineares.
+
+\smallskip
+\textbf{(b)} A identidade de (a) diz que
+\[
+  \risco(g) \;=\; \underbrace{\risco(r)}_{\text{não depende de } g}
+   \;+\; \underbrace{\E\big[(r(\X)-g(\X))^2\big]}_{\ge\ 0} .
+\]
+Logo $\risco(g)\ge\risco(r)$ para toda $g$: $r$ é minimizadora. E é a única, a menos
+de probabilidade zero: a igualdade vale se e só se $\E[(r(\X)-g(\X))^2]=0$, isto é,
+se $g(\X)=r(\X)$ com probabilidade $1$. (Alterar $g$ num conjunto de valores de $\x$
+que nunca ocorrem não muda risco nenhum.)
+
+O valor mínimo sai de novo pela esperança total. Dado $\X$, $Y-r(\X)$ é o desvio de
+$Y$ em torno da sua própria média condicional, e a esperança condicional do seu
+quadrado é, por definição, a variância condicional:
 \[
   \risco(r)=\E\big[(Y-\E[Y\mid\X])^2\big]
-   =\E\Big[\E\big[(Y-\E[Y\mid\X])^2\;\big|\;\X\big]\Big]
+   =\E\Big[\,\E\big[(Y-\E[Y\mid\X])^2\;\big|\;\X\big]\Big]
    =\E\big[\Var(Y\mid\X)\big].
 \]
 
 \smallskip
-\textbf{(c)} A expressão $\E[\Var(Y\mid\X)]$ não menciona $g$ nenhuma. Ela é uma
-propriedade da \textbf{distribuição conjunta de $(\X,Y)$} --- do problema, não do
-método.
+\textbf{(c)} A impossibilidade é matemática, e não tecnológica. O item (b) mostrou que
+\textbf{nenhuma} função de $\X$ tem risco menor que $\E[\Var(Y\mid\X)]$ --- nem mesmo
+$r$, conhecida exatamente, com $n=\infty$ e erro de estimação zero. E essa quantidade
+não menciona método nenhum: é uma propriedade da distribuição conjunta de $(\X,Y)$.
+Ela mede quanto $Y$ ainda varia entre indivíduos com \emph{o mesmo} $\x$. Dois
+pacientes com idade, peso e exames idênticos, mas desfechos diferentes, recebem
+forçosamente a mesma previsão, porque o preditor recebeu a mesma entrada nos dois
+casos.
 
-O que ela mede é isto: fixe um valor $\x$ das covariáveis; entre todos os
-indivíduos que têm exatamente esse $\x$, quanto $Y$ ainda varia? Se dois pacientes
-com idade, peso e exames idênticos ainda assim têm desfechos diferentes, nenhum
-algoritmo pode distinguir um do outro --- ele recebeu a mesma entrada nos dois
-casos. Mesmo conhecendo $r$ exatamente, com $n=\infty$ e zero erro de estimação,
-esse termo permanece.
-
-E é isso que diz o que fazer para baixá-lo: não trocar de modelo, e sim
-\textbf{trocar de $\X$}. Medir uma covariável nova, que explique parte do que hoje
-é indistinguível. Isso muda o problema, e só mudar o problema resolve.
+Para baixar o número é preciso mudar o problema: \textbf{medir mais}. Se $Z$ é uma
+covariável nova, a lei da variância total, aplicada condicionalmente a $\X$, dá
+\[
+  \E\big[\Var(Y\mid\X)\big]
+  = \E\big[\Var(Y\mid\X,Z)\big]
+    + \E\Big[\Var\big(\E[Y\mid\X,Z]\;\big|\;\X\big)\Big]
+  \;\ge\; \E\big[\Var(Y\mid\X,Z)\big],
+\]
+com igualdade só quando $Z$ não muda a média condicional, $\E[Y\mid\X,Z]=\E[Y\mid\X]$.
+Acrescentar informação nunca aumenta o erro irredutível, e o diminui sempre que a
+informação for relevante. Isso vale na população; com $n$ finito, cada covariável
+nova também custa variância de estimação (Aula~02), de modo que medir mais é
+necessário, mas não suficiente, para prever melhor.
 
 \smallskip
-\textbf{(d)} Aplique a identidade de (a) com $g\equiv\E[Y]$, que é o melhor
-preditor constante:
+\textbf{(d)} Aplique a identidade de (a) com $g\equiv\E[Y]$. O lado esquerdo é o risco
+do melhor preditor constante, $\Var(Y)$. E como $\E[r(\X)]=\E\big[\E[Y\mid\X]\big]=\E[Y]$,
+pela esperança total, a última parcela é uma variância:
 \[
-  \underbrace{\risco(\E[Y])}_{=\;\Var(Y)}
-   = \risco(r) + \E\big[(r(\X)-\E[Y])^2\big].
+  \Var(Y) = \risco(r) + \E\Big[\big(r(\X)-\E[r(\X)]\big)^2\Big]
+  \qquad\Longrightarrow\qquad
+  \boxed{\;\Var(Y)-\risco(r)=\Var\big(r(\X)\big)\;}
 \]
-A esperança que sobrou é a variância de $r(\X)$, porque $\E[r(\X)]=\E[Y]$ pela lei
-da esperança total. Logo
-\[
-  \Var(Y)-\risco(r) \;=\; \Var\big(r(\X)\big).
-\]
+É a lei da variância total, $\Var(Y)=\E[\Var(Y\mid\X)]+\Var(\E[Y\mid\X])$, obtida por
+outro caminho.
 
 A pergunta que isso responde é: \textbf{vale a pena usar as covariáveis?} O lado
-esquerdo é quanto se ganha ao trocar o preditor constante pelo melhor preditor
-possível. O lado direito diz que esse ganho é exatamente o quanto $r(\X)$ varia,
-isto é, o quanto a resposta esperada muda de um perfil de covariáveis para outro.
+esquerdo é o máximo que se pode ganhar trocando o preditor constante pelo melhor
+preditor possível; o direito diz que esse ganho é exatamente o quanto a resposta
+\emph{esperada} muda de um perfil de covariáveis para outro. Dividido por $\Var(Y)$,
+vira a fração da variância de $Y$ que as covariáveis conseguem explicar no melhor dos
+casos: um $R^2$ populacional, teto para o $R^2$ de qualquer modelo.
 
-Nos dois extremos: se $\Var(r(\X))=0$, a função de regressão é constante, as
-covariáveis não carregam informação nenhuma sobre $Y$, e prever pela média é o
-melhor que existe --- não há modelo a construir. Quanto maior essa variância,
-maior o prêmio por acertar $r$.
+Os dois extremos ajudam a fixar. Se $\Var(r(\X))=0$, a função de regressão é
+constante: as covariáveis não carregam informação sobre a média de $Y$, e prever pela
+média é o melhor que existe --- não há modelo a construir. Se $\risco(r)=0$, $Y$ é
+função de $\X$, e toda a sua variância é explicável.
 \end{solucao}

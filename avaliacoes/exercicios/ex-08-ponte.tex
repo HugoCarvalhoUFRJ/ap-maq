@@ -53,81 +53,115 @@ termo não depende do método; a disputa é entre os dois primeiros.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} O \textbf{viés} compara a média de $\rhat(\x_0)$ sobre todas as
-amostras de treino possíveis com o alvo $r(\x_0)$. É o erro sistemático, o que
-sobra depois que o acaso da amostra se cancela na média --- e, quando o modelo não
-consegue representar $r$, ele não diminui com mais dados. A \textbf{variância} mede
-a instabilidade: o quanto $\rhat(\x_0)$ mudaria se a amostra de treino fosse outra,
-do mesmo tamanho.
+\textbf{(a)} Fixe $\x_0$ e pense em $\rhat(\x_0)$ como uma variável aleatória: ele muda
+com a amostra $\Dados$.
 
-A \textbf{regularização ataca a variância}: ela restringe o espaço de soluções,
-encolhendo os coeficientes, e aceita pagar viés por isso.
+O \textbf{viés}, $\E_\Dados[\rhat(\x_0)]-r(\x_0)$, compara a \emph{média} das
+estimativas, sobre todas as amostras de treino possíveis, com o alvo. É o erro
+sistemático, o que sobra depois que o acaso da amostra se cancela na média --- e,
+quando a classe de funções do método não contém $r$, ele não some com mais dados. A
+\textbf{variância}, $\Var_\Dados(\rhat(\x_0))$, mede a instabilidade: o quanto a
+estimativa mudaria se a amostra de treino fosse outra, do mesmo tamanho.
 
-Os \textbf{métodos não paramétricos atacam o viés}: eles ampliam a classe de
-funções representáveis para que $r$ caiba nela, e aceitam pagar variância.
-
-O termo irredutível fica fora da disputa: nenhuma das duas famílias mexe nele.
-
-\smallskip
-\textbf{(b)} Antes do Ridge, o problema é um modelo \textbf{flexível demais para a
-amostra que se tem}: colunas demais ou colineares, o ajuste persegue o ruído e os
-coeficientes ficam instáveis. Excesso de variância.
-
-Antes do spline, o problema é um modelo \textbf{rígido demais para a verdade}: a
-reta não acompanha uma $r$ curva, e o erro persiste por mais dados que se colete.
-Excesso de viés.
-
-A diferença entre "para a amostra" e "para a verdade" é o coração da distinção:
-uma é falta de dados, a outra é falta de classe.
+A \textbf{regularização ataca a variância}: ela restringe o espaço de soluções --- no
+Ridge, encolhendo os coeficientes --- e aceita pagar viés por isso. Os \textbf{métodos
+não paramétricos atacam o viés}: ampliam a classe de funções representáveis, até que
+$r$ caiba nela, e aceitam pagar variância. O terceiro termo, $\sigma^2(\x_0)$, fica
+fora da disputa: é o erro irredutível do Exercício~\ref{ex:01-ropt}, e nenhuma das
+duas famílias mexe nele.
 
 \smallskip
-\textbf{(c)} Os dois erram por \textbf{variância}.
+\textbf{(b)} Antes do Ridge, o modelo é \textbf{flexível demais para a amostra}:
+covariáveis demais, ou colineares, para o $n$ disponível. A matriz
+$\Var(\widehat\bbeta)=\sigma^2(\mathbb{X}^\top\mathbb{X})^{-1}$ tem entradas enormes, e
+os coeficientes mudam muito de uma amostra para outra. Excesso de variância.
 
-O KNN com $k=1$ faz cada predição depender de uma única observação, e todo o ruído
-daquele ponto entra na resposta. A fórmula da dica mostra o tamanho disso: com
-$k=1$ o termo de variância vale $\sigma^2$, tanto quanto o próprio ruído, enquanto o
-viés costuma ser pequeno, porque o vizinho mais próximo está perto de $\x_0$. O
-ajuste passa exatamente pelos dados de treino,
-com resíduo nulo e nenhuma estabilidade --- troque a amostra e a função muda
-inteira.
+Antes do spline, o modelo é \textbf{rígido demais para a verdade}: $r$ é curva, e a
+reta não a acompanha. O erro que sobra é o erro de aproximação
+$\E[(r(\X)-\bbeta^{\ast\top}\X)^2]$ do Exercício~\ref{ex:02-oraculo}, que não depende de
+$n$ --- nenhum volume de dados conserta uma reta. Excesso de viés.
 
-O MQO com $p$ grande tem parâmetros demais para os dados disponíveis, e cada
-coeficiente é estimado com pouca informação. No limite $p>n$ a solução nem é
-única.
+"Para a amostra" contra "para a verdade" é o coração da distinção: uma é falta de
+dados, a outra é falta de classe.
 
-O remédio do KNN é \textbf{aumentar $k$}. Pela dica, a variância cai como
-$\sigma^2/k$, e o preço aparece no primeiro termo: vizinhos mais distantes entram
-na média, e $\frac1k\sum r(\X_i)$ se afasta de $r(\x_0)$. O do MQO é
-\textbf{regularizar}, encolhendo os coeficientes em direção a zero. No caso
-ortonormal a troca é igualmente explícita: o Ridge multiplica cada coeficiente por
-$1/(1+\lambda)$, o que divide a variância por $(1+\lambda)^2$ e cria um viés de
-$-\lambda\beta_j/(1+\lambda)$.
+\smallskip
+\textbf{(c)} Os dois erram por \textbf{variância}. Vale ver as contas, porque elas
+mostram também por que os remédios se parecem.
 
-Os dois se parecem porque fazem a mesma coisa no fundo: reduzem a
-\emph{complexidade efetiva} do ajuste, trocando variância por viés. Em ambos há um
-botão contínuo --- $k$ de um lado, $\lambda$ do outro --- e em ambos ele se
-escolhe por validação cruzada, nunca no olho.
+\emph{O KNN.} Na situação da dica, os vizinhos de $\x_0$ estão fixos e as respostas são
+$Y_i=r(\X_i)+\varepsilon_i$, com ruídos independentes, de média zero e variância
+$\sigma^2$. Então $\E[\rhat(\x_0)]=\frac1k\sum_{i\in\mathcal N_{\x_0}}r(\X_i)$ e
+$\Var(\rhat(\x_0))=\frac1{k^2}\cdot k\sigma^2=\sigma^2/k$; como $Y_0$ é independente da
+amostra, a decomposição da dica sai direto. Com $k=1$, a variância vale $\sigma^2$ ---
+tanto quanto o próprio ruído ---, enquanto o viés,
+$\big(r(\X_{(1)})-r(\x_0)\big)^2$, é pequeno se $r$ é contínua e o vizinho mais próximo,
+$\X_{(1)}$, está perto de $\x_0$. Nos pontos de treino, o ajuste reproduz cada $Y_i$:
+resíduo nulo e nenhuma estabilidade.
 
-Um cuidado que costuma confundir: os botões correm em sentidos opostos. $k$
-\emph{grande} e $\lambda$ \emph{grande} dão modelos mais simples, mas $k$ grande
-significa vizinhança larga e $\lambda$ grande significa coeficientes pequenos. O
-teste seguro, quando a memória falha, é perguntar de que lado está o modelo
+\emph{O MQO.} No mesmo regime (covariáveis fixas, ruído de variância $\sigma^2$),
+$\widehat{\bm y}=\bm H\bm y$ tem matriz de covariância $\sigma^2\bm H\bm H^\top=\sigma^2\bm H$,
+porque $\bm H$ é simétrica e idempotente. A variância média dos valores ajustados é
+\[
+  \frac1n\sum_{i=1}^n\Var\big(\widehat g(\X_i)\big)
+  =\frac{\sigma^2}{n}\operatorname{tr}(\bm H)=\sigma^2\,\frac{p+1}{n}.
+\]
+Ela cresce linearmente com o número de parâmetros e chega a $\sigma^2$ quando
+$p+1=n$ --- a interpolação, exatamente como no KNN com $k=1$. Com $p+1>n$, a solução
+nem é única.
+
+\emph{Por que caem no mesmo lugar.} O KNN também é um suavizador linear: cada linha da
+sua matriz $\bm H$ tem $k$ entradas iguais a $1/k$, de modo que
+$\operatorname{tr}(\bm H)=n/k$ (Lista Teórica~04) e
+$\Var(\rhat(\X_i))=\sigma^2\cdot k\cdot(1/k)^2=\sigma^2\operatorname{tr}(\bm H)/n$ --- a
+mesma expressão do MQO. Nos dois métodos, quem governa a variância é o \emph{número
+efetivo de parâmetros} $\operatorname{tr}(\bm H)$: $n/k$ num, $p+1$ no outro. E $k=1$ e
+$p+1=n$ são o mesmo desastre --- um parâmetro por observação.
+
+\emph{Os remédios.} O do KNN é \textbf{aumentar $k$}: pela dica, a variância cai como
+$\sigma^2/k$, e o preço aparece no primeiro termo, porque vizinhos mais distantes
+entram na média e $\frac1k\sum r(\X_i)$ se afasta de $r(\x_0)$. O do MQO é
+\textbf{regularizar}. No caso ortonormal do Exercício~\ref{ex:02-ortonormal} a troca é
+explícita: o Ridge divide cada coeficiente por $1+\lambda$, o que divide sua variância
+por $(1+\lambda)^2$ e cria um viés de $-\lambda\beta_j/(1+\lambda)$.
+
+Os dois se parecem porque fazem a mesma coisa: \textbf{reduzem $\operatorname{tr}(\bm H)$},
+trocando variância por viés. No KNN, $\operatorname{tr}(\bm H)=n/k$; no Ridge
+ortonormal, $\bm H_\lambda=\mathbb{X}(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\mathbb{X}^\top=\mathbb{X}\mathbb{X}^\top/(1+\lambda)$,
+e $\operatorname{tr}(\bm H_\lambda)=p/(1+\lambda)$. Nos dois há um botão --- $k$, que é
+inteiro, e $\lambda$, que é contínuo ---, e nos dois ele se escolhe por validação
+cruzada, nunca no olho.
+
+E os dois botões correm \textbf{no mesmo sentido}: $k$ grande e $\lambda$ grande dão
+modelos mais simples, e na ponta de cima dos dois está o modelo constante --- a média
+global quando $k=n$, só o intercepto quando $\lambda\to\infty$. O que corre ao contrário
+é o grau do polinômio, ou o número de nós de um spline: ali, grande quer dizer
+flexível. O teste seguro, quando a memória falha, é perguntar de que lado está o modelo
 constante.
 
 \smallskip
-\textbf{(d)} Podem, e o exemplo do curso são as \emph{smoothing splines} da
-Aula~04.
+\textbf{(d)} Podem, e o curso tem pelo menos dois exemplos.
 
-Elas põem um nó em \textbf{cada observação} --- portanto são não paramétricas ao
-extremo, com $I=n$ --- e controlam a flexibilidade resultante \textbf{penalizando
-a curvatura}:
+\emph{A árvore podada} (Aula~05). O crescimento a torna não paramétrica: o número de
+folhas não é fixado de antemão, e cresce com $n$. E a poda por custo--complexidade a
+regulariza:
 \[
-  \sum_{i=1}^n\big(y_i-g(x_i)\big)^2 + \gamma\int \big(g''(x)\big)^2\,dx .
+  \sum_{m=1}^{\abs{T}}\ \sum_{i:\;\X_i\in R_m}\big(Y_i-\widehat y_{R_m}\big)^2+\alpha\,\abs{T}
 \]
+é "ajuste mais preço vezes complexidade", a mesma estrutura do Ridge, com o número de
+folhas no lugar da soma dos quadrados dos coeficientes. A flexibilidade disponível vem
+do crescimento; quanto dela é usado, decide o $\alpha$.
 
-Os dois papéis estão separados e visíveis: a base cresce com $n$ (o lado não
-paramétrico) e o $\gamma$ regula quanta daquela liberdade é de fato usada (o lado
-regularizado). E neste método quem manda é o $\gamma$ --- os nós deixaram
-de ser o botão, porque são todos. É uma solução elegante para um problema chato,
-que é ter de escolher onde pôr os nós.
+\emph{As smoothing splines} (Aula~04), que põem um nó em cada observação --- não
+paramétricas ao extremo, com $n$ parâmetros nominais --- e controlam a flexibilidade
+penalizando a curvatura:
+\[
+  \sum_{i=1}^n\big(y_i-g(x_i)\big)^2+\gamma\int\big(g''(x)\big)^2\,dx .
+\]
+A base cresce com $n$ (o lado não paramétrico), e $\gamma$ regula quanta daquela
+liberdade é de fato usada (o lado regularizado). Os nós deixaram de ser o botão ---
+são todos ---, e quem manda é $\gamma$: quando ele vai de $0$ a $\infty$, os graus de
+liberdade efetivos caem de $n$ para $2$, os da reta de mínimos quadrados.
+
+(Vale também, no mesmo espírito, aplicar Ridge ou Lasso a uma base grande --- muitos
+monômios, ou um spline com muitos nós.)
 \end{solucao}

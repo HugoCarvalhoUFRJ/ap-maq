@@ -29,62 +29,87 @@ comparação. Se não soma, a unidade é irrelevante.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Só dois mudam, o Ridge e o KNN: os dois que somam coisas vindas de
-colunas diferentes.
-\begin{enumerate}[label=(\roman*),leftmargin=1.0cm,nosep]
-  \item \textbf{Não muda.} O MQO é equivariante: o coeficiente da coluna se divide
-        por $1000$ e o produto $\beta_jx_j$ fica igual. Nada na função-objetivo
-        compara coeficientes entre si.
-  \item \textbf{Muda.} A penalidade $\lambda\sum_j\beta_j^2$ \emph{soma}
-        coeficientes de colunas diferentes; mudar a unidade de uma delas muda
-        quanto ela pesa nessa soma.
-  \item \textbf{Não muda.} A árvore só pergunta "$x_j\le t$?". O corte $t$ é
-        multiplicado junto, e a pergunta separa exatamente as mesmas observações.
-  \item \textbf{Não muda.} É uma média de árvores, e cada uma é indiferente; a
-        indiferença atravessa a agregação.
-  \item \textbf{Muda.} A distância euclidiana $\sum_j(x_{ij}-x_{\ell j})^2$ é uma
-        soma sobre colunas.
+Uma única mudança de variáveis resolve de uma vez os três métodos lineares. Seja
+$c=1000$, e suponha que a coluna reescalada é a primeira: os dados novos são
+$\widetilde{\mathbb{X}}=\mathbb{X}D$, com $D=\operatorname{diag}(c,1,\dots,1)$. Para um
+vetor $\bm\gamma$ de coeficientes nos dados novos, escreva $\bbeta=D\bm\gamma$, isto é,
+$\beta_1=c\,\gamma_1$ e $\beta_j=\gamma_j$ para $j\ge2$. Então
+$\widetilde{\mathbb{X}}\bm\gamma=\mathbb{X}\bbeta$: é \emph{o mesmo ajuste}, escrito em
+outra unidade, e o RSS não muda. Já as penalidades mudam:
+\[
+  \sum_j\gamma_j^2=\frac{\beta_1^2}{c^2}+\sum_{j\ge2}\beta_j^2 ,
+  \qquad
+  \sum_j\abs{\gamma_j}=\frac{\abs{\beta_1}}{c}+\sum_{j\ge2}\abs{\beta_j}.
+\]
+Ou seja: \textbf{reescalar a coluna $1$ equivale a trocar o peso dela na penalidade}
+--- por $1/c^2=10^{-6}$ no Ridge, por $1/c=10^{-3}$ no Lasso --- e deixar todo o resto
+igual. Onde não há penalidade, não há o que mudar.
+
+\smallskip
+\textbf{(a)} Só dois mudam: o Ridge e o KNN.
+\begin{enumerate}[label=(\roman*),leftmargin=1.0cm]
+  \item \textbf{MQO: não muda.} Sem penalidade, o problema reescalado é o mesmo
+        problema: o coeficiente da coluna vira $\beta_1/1000$, o produto $\beta_1x_1$
+        fica igual, e as predições também. A predição \emph{soma} sobre as colunas,
+        $\sum_j\beta_jx_j$, mas cada parcela é um número na unidade de $Y$, que o
+        coeficiente ajusta livremente; nada na função-objetivo compara grandezas de
+        colunas diferentes com pesos fixos.
+  \item \textbf{Ridge ($\lambda>0$): muda.} A penalidade $\lambda\sum_j\beta_j^2$ soma,
+        com o mesmo peso, coeficientes de colunas diferentes, e cada coeficiente carrega
+        a unidade da sua coluna. Pela conta acima, a coluna reescalada passa a ser
+        penalizada com peso $\lambda\cdot10^{-6}$.
+  \item \textbf{Árvore: não muda.} Ela só pergunta "$x_j\le t$?", e
+        $\{x_1\le t\}=\{1000\,x_1\le1000\,t\}$: as partições que se consegue formar são as
+        mesmas, com o mesmo RSS cada uma, e o corte escolhido é o mesmo, com o limiar
+        multiplicado por $1000$.
+  \item \textbf{Floresta aleatória: não muda.} Cada árvore é indiferente à escala, e os
+        sorteios --- das amostras bootstrap e das covariáveis candidatas --- não olham os
+        valores. Com os mesmos sorteios, cada árvore sai idêntica, e a média também.
+  \item \textbf{KNN com $k$ fixo: muda.} A distância $\sum_j(x_{ij}-x_{\ell j})^2$ soma,
+        com o mesmo peso, diferenças medidas em unidades diferentes; a parcela da coluna
+        reescalada fica multiplicada por $10^6$.
 \end{enumerate}
 
 \smallskip
-\textbf{(b)} O \textbf{KNN}. A diferença não está no tamanho do fator --- nos
-dois métodos ele chega a $10^6$ ---, e sim no que a escala controla em cada um.
+\textbf{(b)} O \textbf{KNN}. O tamanho do fator não distingue os dois --- nos dois ele
+chega a $10^6$ ---; o que distingue é \emph{o que a escala controla} em cada um.
 
-No Ridge, a escala mexe só no \emph{quanto} um coeficiente é penalizado. O
-coeficiente que produz o mesmo ajuste fica $1000$ vezes menor, e o termo dele na
-penalidade $\lambda\sum_j\beta_j^2$, $10^6$ vezes menor: a coluna fica praticamente
-livre do encolhimento. Mas o ajuste continua usando todas as colunas, e o pior que
-pode acontecer é aquele coeficiente deixar de ser encolhido --- uma mudança
-limitada, que desaparece quando $\lambda\to 0$, porque aí o Ridge vira o MQO, que
-não muda.
+No Ridge, a escala controla \emph{quanto um coeficiente é penalizado}. Pela conta do
+início, o novo ajuste é o de um Ridge em que a coluna reescalada está praticamente
+isenta de encolhimento. Todas as colunas continuam sendo usadas, e a mudança é limitada:
+o pior que pode acontecer é aquele coeficiente deixar de ser encolhido --- e a diferença
+some quando $\lambda\to0$, porque aí o Ridge vira o MQO, que não muda.
 
-No KNN, a escala mexe em \emph{quem} entra na média. As diferenças na coluna
-reescalada são multiplicadas por $1000$, e a contribuição delas para
-$\sum_j(x_{ij}-x_{\ell j})^2$, por $10^6$. A coluna passa a decidir sozinha quem é
-vizinho de quem, e as demais não ficam apenas menos importantes --- somem da conta,
-e o método deixa de usar a informação que carregavam.
+No KNN, a escala controla \emph{quem entra na média}. A distância passa a ser
+\[
+  10^6\,(x_{i1}-x_{\ell1})^2+\sum_{j\ge2}(x_{ij}-x_{\ell j})^2 ,
+\]
+e basta que duas observações difiram um pouco em $x_1$ para essa parcela dominar todas
+as outras. Os vizinhos passam a ser, na prática, os de um KNN que só enxerga a coluna
+reescalada: as outras colunas não ficam só menos importantes --- saem da conta, e a
+informação que carregavam se perde. Nenhum $k$ a recupera.
 
 \smallskip
-\textbf{(c)} Primeiro, por que a reescala pode ter ajudado. Multiplicar a coluna
-por $1000$ faz o coeficiente que produz o mesmo ajuste ficar $1000$ vezes menor, e
-um coeficiente minúsculo quase não pesa em $\lambda\sum_j\abs{\beta_j}$: a coluna
-ficou praticamente isenta da penalidade. Como era a de maior efeito, o Lasso deixou
-de encolher justamente o coeficiente que mais importa.
+\textbf{(c)} \emph{Por que a reescala pode ter ajudado.} Pela conta do início, o Lasso
+nos dados reescalados é o Lasso original com a penalidade da coluna reescalada
+multiplicada por $10^{-3}$: justamente a coluna que mais importa ficou quase isenta de
+encolhimento. E encolher um coeficiente grande é quase só viés. No caso ortonormal, em
+que o Lasso tem fórmula fechada, um coeficiente com $\abs{\widehat\beta_j}$ bem acima de
+$\lambda/2$ é deslocado de exatamente $\lambda/2$: um deslocamento fixo, que não reduz
+variância nenhuma e acrescenta $\lambda^2/4$ ao erro quadrático daquele coeficiente.
+Tirar esse viés pode baixar o erro de teste --- pode, não precisa.
 
-E encolher um coeficiente grande é quase só viés. No caso ortonormal, o Lasso
-subtrai $\lambda/2$ de todo coeficiente que sobrevive, um deslocamento que não
-reduz variância nenhuma. Tirar esse viés pode baixar o erro de teste --- pode, não
-precisa: nem nesse caso favorável a melhora é garantida.
+\emph{Por que a conclusão não se sustenta.} O resultado dependeu de \emph{qual} coluna
+foi reescalada. Faça o mesmo com uma coluna \emph{irrelevante} e o efeito tende a se
+inverter: quase isenta da penalidade, ela deixa de ser zerada, recebe um coeficiente
+ajustado ao ruído, e o erro de teste piora. Além disso, a comparação usou o mesmo
+$\lambda$, escolhido por validação cruzada para os dados padronizados; nos dados
+reescalados, nem é esse o $\lambda$ que a validação cruzada escolheria.
 
-A conclusão, porém, não se sustenta, porque o resultado dependeu de \emph{qual}
-coluna foi reescalada. Aplique a mesma reescala a uma coluna \emph{irrelevante} e o
-efeito tende a se inverter: ela ganha liberdade para receber um coeficiente grande
-sem pagar por isso, e o ajuste passa a acompanhar ruído.
-
-O ponto de fundo é que, nos dois casos, quem decidiu quanto regularizar cada
-coluna não foi o analista: foi a \textbf{unidade de medida} em que o dado chegou.
-E é por isso que o argumento do colega não se salva nem quando o resultado o
-favorece --- um procedimento cujo desempenho depende de a coluna ter sido anotada
-em metros ou em milímetros está fora de controle, e ter dado certo desta vez não
-muda isso.
+O ponto de fundo é que, nos dois casos, quem decidiu quanto regularizar cada coluna não
+foi o analista: foi a \textbf{unidade de medida} em que o dado chegou. Um procedimento
+cujo resultado depende de a coluna ter sido anotada em metros ou em milímetros não está
+bem definido, e ter dado certo desta vez não muda isso. Se a conclusão é que aquela
+coluna merece menos penalidade, essa é uma decisão a tomar com os dados --- por
+validação cruzada ---, e não a deixar por conta da unidade.
 \end{solucao}

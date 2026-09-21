@@ -87,115 +87,125 @@ $\widehat g$; o (d) faz a conta; e o (e) interpreta o resultado.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} O vetor $\widehat{\bm y}$ empilha as predições de $\widehat g$ nos
-próprios pontos de treino. Como a linha $i$ de $\mathbb{X}$ é $\X_i^\top$, a
-coordenada $i$ de $\mathbb{X}\widehat\bbeta$ é $\X_i^\top\widehat\bbeta=\widehat g(\X_i)$,
-e por isso $\widehat{\bm y}=\mathbb{X}\widehat\bbeta$. Basta substituir $\widehat\bbeta$:
+\textbf{(a)} Como a linha $i$ de $\mathbb{X}$ é $\X_i^\top$, a coordenada $i$ de
+$\mathbb{X}\widehat\bbeta$ é $\X_i^\top\widehat\bbeta=\widehat g(\X_i)$; logo
+$\widehat{\bm y}=\mathbb{X}\widehat\bbeta$ e, substituindo $\widehat\bbeta$,
 \[
   \widehat{\bm y}
-   = \mathbb{X}\widehat\bbeta
-   = \underbrace{\mathbb{X}(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top}_{=\;\bm H}\,\bm y
-   = \bm H\bm y .
+  =\underbrace{\mathbb{X}(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top}_{=\;\bm H}\,\bm y
+  =\bm H\bm y .
 \]
-A coordenada $i$ de $\bm H\bm y$ é a linha $i$ de $\bm H$ multiplicada por $\bm y$,
-ou seja, $\sum_\ell h_{i\ell}Y_\ell$. Igualando as coordenadas $i$ dos dois lados,
-sai a igualdade pedida.
+A coordenada $i$ de $\bm H\bm y$ é a linha $i$ de $\bm H$ vezes $\bm y$; igualando as
+coordenadas $i$ dos dois lados, $\widehat g(\X_i)=\sum_\ell h_{i\ell}Y_\ell$.
 
-Os pesos $h_{i\ell}$ são entradas de $\bm H$, que é construída só com $\mathbb{X}$.
-Eles dependem das \textbf{covariáveis} e \textbf{não dependem das respostas}:
-troque o vetor $\bm y$ mantendo as covariáveis, e a predição em $\X_i$ continua
-sendo a mesma combinação, agora das respostas novas. É essa propriedade que o item
-(c) usa. (No modelo só com intercepto, $\mathbb{X}$ é uma coluna de uns, todas as
-entradas de $\bm H$ valem $1/n$, e a combinação é a média.)
+Os pesos são entradas de $\bm H$, que é construída só com $\mathbb{X}$: eles
+\textbf{dependem das covariáveis e não dependem das respostas}. Troque o vetor $\bm y$
+mantendo as covariáveis, e a predição em $\X_i$ continua sendo a mesma combinação,
+agora das respostas novas. É essa propriedade --- o ajuste é uma função \emph{linear}
+de $\bm y$ --- que o item (c) usa. (No modelo só com intercepto, $\mathbb{X}=\bm1$, todas
+as entradas de $\bm H$ valem $1/n$, e a combinação é a média.)
 
 \smallskip
-\textbf{(b)} Primeiro o caso da média. Seja $\bar Y_{-i}$ a média das outras $n-1$
-respostas. Trocando $Y_i$ por $\bar Y_{-i}$, a soma das $n$ respostas vira
-$(n-1)\bar Y_{-i}+\bar Y_{-i}=n\bar Y_{-i}$, e a nova média é $\bar Y_{-i}$. A
-observação trocada foi posta exatamente onde o ajuste sem ela já estava, e por isso
-não puxa o ajuste para lado nenhum.
+\textbf{(b)} \emph{O caso da média.} Seja $\bar Y_{-i}$ a média das outras $n-1$
+respostas. Trocando $Y_i$ por $\widetilde Y_i=\bar Y_{-i}$, a soma das $n$ respostas vira
+$(n-1)\bar Y_{-i}+\bar Y_{-i}=n\bar Y_{-i}$, e a nova média é $\bar Y_{-i}$. A observação
+trocada foi posta exatamente onde o ajuste sem ela já estava, e por isso não puxa o
+ajuste para lado nenhum.
 
-O caso geral é o mesmo argumento, escrito com o RSS. Para uma função linear $g$
-qualquer, o RSS do conjunto modificado é
+\emph{O caso geral} é o mesmo argumento, escrito com o RSS. Para uma função linear
+$g(\x)=\x^\top\bbeta$ qualquer, o RSS do conjunto modificado se parte em duas:
 \[
-  \underbrace{\sum_{\ell\neq i}\big(Y_\ell-g(\X_\ell)\big)^2}_{\text{as } n-1 \text{ parcelas de sempre}}
-  \;+\;\underbrace{\big(\widetilde Y_i-g(\X_i)\big)^2}_{\text{a parcela da observação } i} .
+  \widetilde{\mathrm{RSS}}(g)
+  =\underbrace{\sum_{\ell\neq i}\big(Y_\ell-g(\X_\ell)\big)^2}_{A(g)}
+  +\underbrace{\big(\widetilde Y_i-g(\X_i)\big)^2}_{B(g)\;\ge\;0} .
 \]
-Veja o que $\widehat g_{-i}$ faz com cada parte. A primeira ela minimiza: é a
-definição de $\widehat g_{-i}$, o ajuste de mínimos quadrados sem a observação $i$.
-A segunda ela zera, porque $\widetilde Y_i$ foi escolhido como
-$\widehat g_{-i}(\X_i)$.
-
-Nenhuma função linear consegue menos que o mínimo na primeira parte, nem menos que
-zero na segunda. Logo $\widehat g_{-i}$ atinge o menor RSS possível no conjunto
-modificado e, como o ajuste de mínimos quadrados é único, é ele.
+Por definição, $\widehat g_{-i}$ minimiza $A$ entre as funções lineares --- e está bem
+definido, porque $\mathbb{X}$ sem a linha $i$ tem posto cheio. E $B(\widehat g_{-i})=0$,
+porque $\widetilde Y_i$ foi escolhido como $\widehat g_{-i}(\X_i)$. Logo, para toda $g$
+linear,
+\[
+  \widetilde{\mathrm{RSS}}(g)=A(g)+B(g)\;\ge\;A(\widehat g_{-i})+0
+  =\widetilde{\mathrm{RSS}}(\widehat g_{-i}):
+\]
+$\widehat g_{-i}$ minimiza o RSS modificado. Como o conjunto modificado tem a mesma
+matriz $\mathbb{X}$, de posto cheio, esse minimizador é único; é, portanto, o ajuste de
+mínimos quadrados do conjunto modificado.
 
 \smallskip
-\textbf{(c)} O conjunto modificado difere do original só na resposta $i$. As
-covariáveis são as mesmas, então a matriz $\bm H$ é a mesma, e (a) diz que o ajuste
-nele prevê em $\X_i$ a mesma combinação de antes, com $\widetilde Y_i$ no lugar de
-$Y_i$:
+\textbf{(c)} Aplique (a) ao conjunto modificado. As covariáveis são as mesmas, então
+$\bm H$ é a mesma, e a predição em $\X_i$ é a mesma combinação de antes, com
+$\widetilde Y_i$ no lugar de $Y_i$. Por (b), essa predição é $\widehat g_{-i}(\X_i)$:
 \[
-  \sum_{\ell\neq i} h_{i\ell}Y_\ell + h_{ii}\widetilde Y_i .
+  \widehat g_{-i}(\X_i)=\sum_{\ell\neq i}h_{i\ell}Y_\ell+h_{ii}\widetilde Y_i .
 \]
-Por (b), esse ajuste é $\widehat g_{-i}$; logo a soma acima é
-$\widehat g_{-i}(\X_i)$, que é a primeira igualdade.
-
-Para a segunda, somar e subtrair $h_{ii}Y_i$ completa a soma sobre todos os $\ell$:
+Somando e subtraindo $h_{ii}Y_i$, a soma se completa e aparece $\widehat g(\X_i)$:
 \[
   \widehat g_{-i}(\X_i)
-   = \underbrace{\sum_{\ell} h_{i\ell}Y_\ell}_{=\;\widehat g(\X_i)}
-     + h_{ii}\widetilde Y_i - h_{ii}Y_i
-   = \widehat g(\X_i) + h_{ii}\big(\widetilde Y_i-Y_i\big).
+  =\underbrace{\sum_{\ell}h_{i\ell}Y_\ell}_{=\;\widehat g(\X_i)}+h_{ii}\big(\widetilde Y_i-Y_i\big).
 \]
 
 \smallskip
-\textbf{(d)} Como o lado esquerdo de (c) é $\widetilde Y_i$, a igualdade diz
+\textbf{(d)} O lado esquerdo de (c) é o próprio $\widetilde Y_i$. Subtraindo $Y_i$ dos
+dois lados, a diferença $\widetilde Y_i-Y_i$ aparece nos dois:
 \[
-  \widetilde Y_i = \widehat g(\X_i) + h_{ii}\big(\widetilde Y_i-Y_i\big).
+  \widetilde Y_i-Y_i=\big(\widehat g(\X_i)-Y_i\big)+h_{ii}\big(\widetilde Y_i-Y_i\big)
+  \iff
+  (1-h_{ii})\big(\widetilde Y_i-Y_i\big)=\widehat g(\X_i)-Y_i .
 \]
-Subtraindo $Y_i$ dos dois lados, a diferença $\widetilde Y_i-Y_i$ aparece nos dois:
+Como $h_{ii}\neq1$ (o item (e) confere), podemos dividir; trocando os sinais,
 \[
-  \widetilde Y_i-Y_i = \big(\widehat g(\X_i)-Y_i\big) + h_{ii}\big(\widetilde Y_i-Y_i\big)
-  \;\Longrightarrow\;
-  (1-h_{ii})\big(\widetilde Y_i-Y_i\big) = \widehat g(\X_i)-Y_i .
+  \boxed{\;Y_i-\widehat g_{-i}(\X_i)=\frac{Y_i-\widehat g(\X_i)}{1-h_{ii}}\;}
 \]
-Dividindo por $1-h_{ii}$ e trocando o sinal dos dois lados,
-\[
-  Y_i-\widehat g_{-i}(\X_i) \;=\; \frac{Y_i-\widehat g(\X_i)}{1-h_{ii}} .
-\]
-Elevando ao quadrado e tirando a média em $i$, sai a fórmula.
-
-O ganho está no lado direito: ele só usa $\widehat g$, o ajuste feito uma vez, com
-todos os dados. Os $n$ ajustes do LOOCV viraram um.
+Elevando ao quadrado e tirando a média em $i$, sai a fórmula do enunciado. O ganho está
+no lado direito: só entra $\widehat g$, ajustado \emph{uma} vez, com todos os dados. Os
+$n$ ajustes do LOOCV viraram um.
 
 \smallskip
-\textbf{(e)} Na igualdade do enunciado, a primeira passagem usa a simetria:
-$(\bm H\bm H)_{ii}=\sum_\ell h_{i\ell}h_{\ell i}=\sum_\ell h_{i\ell}^2$. Dela saem
-as duas desigualdades. Como soma de quadrados, $h_{ii}\ge 0$. E como a soma dos
-quadrados com $\ell\neq i$ também é $\ge 0$, temos $h_{ii}\ge h_{ii}^2$, isto é,
-$h_{ii}(1-h_{ii})\ge 0$ --- o que, junto com $h_{ii}\ge 0$, dá $h_{ii}\le 1$.
+\textbf{(e)} Pela simetria, a entrada $(i,i)$ de $\bm H\bm H$ é
+$\sum_\ell h_{i\ell}h_{\ell i}=\sum_\ell h_{i\ell}^2$; pela idempotência, ela vale
+$h_{ii}$. Daí saem as duas desigualdades:
+\[
+  h_{ii}=\sum_\ell h_{i\ell}^2\;\ge\;0,
+  \qquad
+  h_{ii}=h_{ii}^2+\sum_{\ell\neq i}h_{i\ell}^2\;\ge\;h_{ii}^2
+  \;\Longrightarrow\;h_{ii}(1-h_{ii})\ge0
+  \;\Longrightarrow\;h_{ii}\le1 .
+\]
 
-O extremo $h_{ii}=1$ é o que a hipótese do enunciado exclui. Ele acontece
-exatamente quando $\mathbb{X}$ perde posto sem a linha $i$ --- por exemplo, se uma
-coluna é uma indicadora que só a observação $i$ tem. Aí as outras observações não
-dizem nada sobre a predição em $\X_i$, e $\widehat g_{-i}$ nem é único.
+\emph{E a hipótese exclui $h_{ii}=1$.} Suponha $h_{ii}=\X_i^\top(\mathbb{X}^\top\mathbb{X})^{-1}\X_i=1$
+e tome $\bm v=(\mathbb{X}^\top\mathbb{X})^{-1}\X_i$, que não é nulo (senão $h_{ii}$ seria
+$0$). Sem a linha $i$, a matriz de delineamento $\mathbb{X}_{-i}$ satisfaz
+$\mathbb{X}_{-i}^\top\mathbb{X}_{-i}=\mathbb{X}^\top\mathbb{X}-\X_i\X_i^\top$, e então
+\[
+  \mathbb{X}_{-i}^\top\mathbb{X}_{-i}\,\bm v=\X_i-\X_i\,(\X_i^\top\bm v)=\X_i-\X_i\,h_{ii}=\bm0 :
+\]
+$\mathbb{X}_{-i}$ perderia o posto, contra a hipótese. (A recíproca também vale, e o
+exemplo típico é uma coluna indicadora que só a observação $i$ tem: sem ela, a coluna
+zera.)
 
 Com $0\le h_{ii}<1$, o fator $1/(1-h_{ii})$ é pelo menos $1$, e (d) dá
 \[
-  \abs{Y_i-\widehat g_{-i}(\X_i)} \;\ge\; \abs{Y_i-\widehat g(\X_i)}
+  \abs{Y_i-\widehat g_{-i}(\X_i)}\;\ge\;\abs{Y_i-\widehat g(\X_i)}
   \qquad\text{para toda observação } i .
 \]
 Tirando a média dos quadrados, $\riscohat_{\text{LOO}}$ nunca fica abaixo do erro
 quadrático médio de treino. Isso confirma, de um jeito bem concreto, que o erro de
-treino é \textbf{otimista}: na regressão linear ele fica abaixo da estimativa por
-LOOCV em toda amostra --- não só em média ---, observação por observação, e com o
-tamanho da correção escrito.
+treino é \textbf{otimista} --- e não só em média: em toda amostra, observação por
+observação, e com o tamanho da correção escrito.
 
-O $h_{ii}$ mede a \textbf{alavancagem}: quanto a própria $Y_i$ pesa na predição
-feita em $\X_i$. Perto de $1$, essa predição é quase só $Y_i$ --- o ajuste passa
-colado no ponto, e o resíduo de treino sai pequeno e engana. O fator
-$1/(1-h_{ii})$ fica grande justamente para desfazer o engano: sem a observação $i$,
-as outras quase não informam o que acontece em $\X_i$, e o resíduo de validação
-registra isso.
+O $h_{ii}$ mede a \textbf{alavancagem}: o peso da própria $Y_i$ na predição feita em
+$\X_i$. Perto de $1$, essa predição é quase só $Y_i$ --- o ajuste passa colado no
+ponto, e o resíduo de treino sai pequeno e engana. O fator $1/(1-h_{ii})$ fica grande
+justamente para desfazer o engano: sem a observação $i$, as outras quase não informam
+o que acontece em $\X_i$. Para ter uma escala,
+$\sum_ih_{ii}=\operatorname{tr}(\bm H)=\operatorname{tr}\big((\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\mathbb{X}\big)$
+é o número de colunas de $\mathbb{X}$; a alavancagem \emph{média} é, portanto, o número
+de parâmetros dividido por $n$, e "alta" quer dizer muito acima disso.
+
+Um último comentário, de método: repare onde cada hipótese trabalhou. A linearidade do
+ajuste nas respostas entrou em (a) e (c); o fato de $\widehat g_{-i}$ ser um ajuste de
+mínimos quadrados \emph{na mesma classe de funções}, em (b); o posto cheio, na
+unicidade de (b) e em $h_{ii}\neq1$; a simetria e a idempotência de $\bm H$, só em (e).
+Um método que não tenha alguma dessas propriedades não herda a fórmula
+automaticamente.
 \end{solucao}

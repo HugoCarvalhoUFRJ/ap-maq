@@ -23,49 +23,85 @@ amostras de treino possíveis, e temos o \textbf{risco esperado}.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} O \textbf{risco condicional} é uma garantia sobre \emph{aquela
-função específica}: se eu usar este $\ghat$, já ajustado, em observações novas, meu
-erro quadrático médio esperado é tanto.
-
-O \textbf{risco esperado} é uma garantia sobre o \emph{procedimento}: se eu
-sortear uma amostra de treino, rodar este método e usar o que sair, meu erro
-esperado é tanto. A esperança percorre também os treinos possíveis.
-
-Quem vai pôr o modelo em produção quer o \textbf{condicional}. O modelo dele é um
-só, já existe, não vai ser reajustado --- saber como se comportam os modelos que
-aquele método \emph{costuma} produzir não paga as contas.
-
-Quem está comparando métodos quer o \textbf{esperado}. A pergunta ali é "qual
-deles tende a produzir bons modelos", e uma rodada de sorte com um método ruim não
-deveria decidir a escolha.
-
-\smallskip
-\textbf{(b)} Estima o \textbf{risco condicional}.
-
-No momento da conta, $\ghat$ já foi ajustado e não muda: é uma função fixa. O que
-varia de uma parcela para outra é apenas o par $(\X_k,Y_k)$ sorteado para o
-teste. A aleatoriedade do treino --- que outra amostra teria dado outro $\ghat$
---- não entra na conta em momento nenhum, porque o treino aconteceu antes e não é
-repetido.
-
-Dito de outro modo: para estimar o risco \emph{esperado} você teria de repetir o
-processo inteiro, sorteando vários treinos, e não é o que um único conjunto de
-teste faz.
-
-\smallskip
-\textbf{(c)} Condicionalmente a $\ghat$ --- que é a situação, por (b) --- cada
-$W_k=(Y_k-\ghat(\X_k))^2$ é função de um único par $(\X_k,Y_k)$. Esses pares são
-i.i.d.\ entre si e independentes do treino, e a mesma função $\ghat$ é aplicada a
-todos. Logo os $W_k$ são i.i.d., com média $\risco(\ghat)$.
-
-Como $\riscohat$ é média de i.i.d., o Teorema Central do Limite se aplica e dá
+Vale escrever os dois objetos antes de compará-los. Seja $\ghat$ o ajuste obtido a
+partir de $\Dados$, e $(\X,Y)$ uma observação nova, independente de $\Dados$. O
+\textbf{risco condicional} é
 \[
-  \riscohat(\ghat)\;\pm\;2\sqrt{\widehat\sigma^2/m},
-  \qquad
-  \widehat\sigma^2=\frac1m\sum_{k=1}^m(W_k-\overline W)^2 .
+  \risco(\ghat)=\E\big[(Y-\ghat(\X))^2\,\big|\,\Dados\big]:
 \]
+a esperança percorre só a observação nova, com o treino fixo. Repare que ele é uma
+\emph{variável aleatória} --- cada amostra de treino produz o seu $\ghat$ e,
+portanto, o seu $\risco(\ghat)$. O \textbf{risco esperado} é a média desse número
+sobre as amostras de treino possíveis,
+$\E_\Dados\big[\risco(\ghat)\big]=\E\big[(Y-\ghat(\X))^2\big]$: um número só, que
+depende do método e de $n$, mas não da amostra que você tem.
 
-Há uma hipótese fazendo todo o trabalho aqui: o teste não participou de nada. Se ele
-tivesse sido usado para escolher qualquer coisa, os $W_k$ deixariam de ser
-independentes do $\ghat$ e o intervalo perderia o sentido.
+\smallskip
+\textbf{(a)} As duas garantias são sobre objetos diferentes.
+
+O \textbf{risco condicional} é uma garantia sobre \emph{a função que você tem nas
+mãos}: este $\ghat$, já ajustado, usado em observações novas, erra tanto em média.
+
+O \textbf{risco esperado} é uma garantia sobre o \emph{procedimento}: sortear uma
+amostra de tamanho $n$, rodar este método e usar o que sair erra tanto em média. Ele
+mistura as amostras de treino boas com as ruins.
+
+Quem vai pôr em produção um modelo já ajustado quer o \textbf{condicional}: o modelo
+dele é um só, não será reajustado, e o desempenho médio dos modelos que o método
+\emph{costuma} produzir não diz quanto \emph{este} vai errar. Quem ainda escolhe
+entre métodos quer o \textbf{esperado}: a pergunta ali é qual método tende a produzir
+bons modelos com dados como os seus, e uma amostra de sorte não deveria decidir a
+escolha.
+
+\smallskip
+\textbf{(b)} No momento da conta, $\Dados$ já foi sorteado e $\ghat$ está fixo; o
+que varia de uma parcela para outra é só o par de teste $(\X_k,Y_k)$, independente do
+treino. Condicionalmente a $\Dados$, cada $W_k$ tem média $\risco(\ghat)$, e
+\[
+  \E\big[\riscohat(\ghat)\,\big|\,\Dados\big]=\risco(\ghat),
+  \qquad
+  \Var\big(\riscohat(\ghat)\,\big|\,\Dados\big)=\frac{\Var(W_1\mid\Dados)}{m}
+  \;\xrightarrow[m\to\infty]{}\;0 .
+\]
+O número estima o \textbf{risco condicional}: pela lei dos grandes números, com um
+teste grande ele converge para $\risco(\ghat)$ --- o risco \emph{daquele} ajuste.
+
+Há uma sutileza que vale registrar, porque a pergunta a esconde. Tomando esperança
+também sobre o treino, $\E\big[\riscohat(\ghat)\big]=\E\big[\risco(\ghat)\big]$: o
+erro de teste é não viesado \emph{também} para o risco esperado. Mas não converge para
+ele. A diferença $\risco(\ghat)-\E[\risco(\ghat)]$ é aleatoriedade do treino, que já
+aconteceu e não é repetida; nenhum $m$ a elimina. Estimar bem o risco esperado exigiria
+repetir o procedimento inteiro com vários treinos.
+
+\smallskip
+\textbf{(c)} Condicione em $\Dados$. Então $\ghat$ é uma função fixa, e
+$W_k=(Y_k-\ghat(\X_k))^2$ é a mesma função fixa, $(\x,y)\mapsto(y-\ghat(\x))^2$,
+aplicada a pares $(\X_k,Y_k)$ i.i.d.\ e independentes do treino. Funções fixas de
+variáveis i.i.d.\ são i.i.d.: os $W_k$ são i.i.d., com média $\risco(\ghat)$ e
+variância $\tau^2=\Var(W_1\mid\Dados)$, que supomos finita.
+
+O Teorema Central do Limite, junto com a consistência de $\widehat\sigma^2$ para
+$\tau^2$, dá
+\[
+  \frac{\sqrt m\,\big(\riscohat(\ghat)-\risco(\ghat)\big)}{\widehat\sigma}
+  \;\xrightarrow{\ d\ }\;N(0,1),
+  \qquad
+  \widehat\sigma^2=\frac1m\sum_{k=1}^m\big(W_k-\overline W\big)^2 ,
+\]
+e daí o intervalo de confiança aproximado de 95\% para $\risco(\ghat)$, com $2$ no
+lugar de $1{,}96$, como nas notas:
+\[
+  \riscohat(\ghat)\;\pm\;2\sqrt{\widehat\sigma^2/m}.
+\]
+Duas ressalvas. A aproximação normal pede $m$ razoável: cada $W_k$ é um quadrado, e
+distribuições de quadrados são assimétricas à direita. E a hipótese que faz todo o
+trabalho é a independência entre teste e treino: se o teste tiver sido usado para
+escolher qualquer coisa, $\ghat$ passa a depender dele e o argumento desaba.
+
+E por que a validação cruzada não oferece o mesmo? Porque nela as parcelas
+$\big(Y_i-g_{-j}(\X_i)\big)^2$ não são independentes: os $k$ ajustes compartilham boa
+parte das observações de treino, e cada observação ajuda a treinar os modelos que
+avaliam as outras. Um erro-padrão calculado como se fossem independentes --- como o
+da regra de um erro-padrão --- serve de guia para comparar modelos, mas não entrega a
+cobertura anunciada: tende a sair estreito demais.
 \end{solucao}

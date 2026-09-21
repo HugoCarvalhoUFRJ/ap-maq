@@ -22,64 +22,77 @@ Proposições com hipóteses só ficam úteis quando se sabe o que acontece ao v
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} As duas condições são:
-
-\textbf{(i) não-viesados.} Se os $g_b$ tiverem viés, a média o herda
-integralmente: $\E[\bar g]=\E[g_b]\ne r(\x)$. Promediar reduz variância, mas
-\textbf{não corrige viés} --- a média de mil estimadores enviesados é igualmente
-enviesada. A conclusão sobre o risco deixa de valer, porque sobra um termo de
-viés$^2$ que $B$ nenhum elimina.
-
-\textbf{(ii) não-correlacionados.} Se houver correlação $\rho>0$ entre pares, a
-variância da média não é $v/B$, e sim
+Uma conta prepara o exercício todo. Fixe $\x$ e suponha que os $g_b(\x)$ tenham a mesma
+esperança $r(\x)+b(\x)$ --- um viés comum $b(\x)$ ---, a mesma variância $v$ e
+correlação $\rho$ dois a dois, e que a resposta nova $Y$ seja independente deles. A
+decomposição viés--variância da Aula~01 e a variância de uma soma dão
 \[
-  \Var(\bar g)=\rho\,v+\frac{1-\rho}{B}\,v \;\xrightarrow[B\to\infty]{}\; \rho\,v .
+\begin{aligned}
+  \E\big[(Y-\bar g(\x))^2\big]
+  &=\Var(Y\mid\x)+b(\x)^2
+   +\underbrace{\frac{1}{B^2}\Big(Bv+B(B-1)\rho v\Big)}_{\Var(\bar g(\x))}\\
+  &=\Var(Y\mid\x)+b(\x)^2+\rho v+\frac{1-\rho}{B}\,v .
+\end{aligned}
 \]
-A redução \textbf{estaciona num piso} $\rho v$, em vez de ir a zero.
+A proposição é o caso $b=0$ e $\rho=0$. Cada hipótese que falha deixa uma marca nessa
+fórmula.
 
 \smallskip
-\textbf{(b)} Atende a condição \textbf{(i)}, a de não-viesamento.
+\textbf{(a)} As duas condições são (i) \textbf{não viesamento} e (ii) \textbf{não
+correlação}. (A de variância comum é técnica: sem ela a conta muda de forma, não de
+conclusão.)
 
-Árvores profundas são muito flexíveis: acompanham $r$ de perto e têm viés baixo,
-ao custo de variância alta. E variância alta é justamente o defeito que a
-agregação sabe consertar --- de graça, pela própria proposição.
+\emph{Se (i) falha}, a média herda o viés inteiro: $\E[\bar g(\x)]=r(\x)+b(\x)$.
+Promediar reduz variância, mas \textbf{não corrige viés} --- a média de mil estimadores
+enviesados é igualmente enviesada. A comparação com cada $g_b$ sobrevive, porque o
+$b(\x)^2$ aparece dos dois lados; o que se perde é o piso: com $B\to\infty$, o risco
+desce até $\Var(Y\mid\x)+b(\x)^2$, e não até $\Var(Y\mid\x)$.
 
-Podar seria contraproducente porque a poda \emph{introduz viés de propósito} para
-reduzir variância. Só que a variância já vai ser tratada pela média dos $B$
-ajustes. Podar seria, então, pagar viés por um benefício que se teria sem pagar
-nada.
-
-A regra que fica: deixe cada árvore ser instável, e deixe a média estabilizar.
-
-\smallskip
-\textbf{(c)} As árvores do \emph{bagging} são treinadas em amostras bootstrap do
-\textbf{mesmo} conjunto de dados, e todas enxergam \textbf{todas} as $p$
-covariáveis em todos os nós.
-
-Se houver uma covariável fortemente preditiva, ela tende a ser escolhida no
-primeiro corte por quase todas as árvores. E árvores que começam igual continuam
-parecidas: elas erram juntas, o que é precisamente o que $\rho>0$ significa.
-
-Aumentar $B$ não resolve porque, na fórmula de (a), o termo $\rho v$ \textbf{não
-depende de $B$}. Acrescentar árvores só encolhe o segundo termo; o piso permanece
-onde está. Passado certo ponto, cada árvore nova custa tempo de computação e não
-compra quase nada.
+\emph{Se (ii) falha}, com $\rho>0$, a variância da média passa a ser
+$\rho v+(1-\rho)v/B$. Ela continua não passando de $v$, mas \textbf{estaciona num piso}
+$\rho v$ em vez de ir a zero: $B$ só mata o segundo termo.
 
 \smallskip
-\textbf{(d)} A floresta ataca diretamente o $\rho$. Ao sortear $m<p$ candidatas
-por nó, ela impede que a covariável dominante seja usada sempre: em cerca de
-$1-m/p$ dos nós ela sequer está disponível, e a árvore é obrigada a olhar para
-outra coisa. As árvores passam a divergir estruturalmente, $\rho$ cai, e com ele o
-piso $\rho v$.
+\textbf{(b)} Atende a condição (i). Árvores profundas são muito flexíveis: acompanham
+$r$ de perto e têm viés baixo, ao custo de variância alta. E variância é justamente o que
+a média sabe reduzir.
 
-O preço é pago na qualidade individual. Uma árvore proibida de usar a melhor
-covariável em parte dos nós é uma árvore \textbf{pior}, com variância individual
-$v$ maior. O sorteio degrada cada membro para melhorar o conjunto --- o que é
-contraintuitivo, e é o ponto que costuma ser mal explicado.
+Sob as hipóteses da proposição, podar seria contraproducente pela própria fórmula acima.
+A poda introduz viés para reduzir variância; mas, no risco da média, o viés entra
+inteiro, como $b(\x)^2$, enquanto a variância que a poda economizaria entra dividida por
+$B$ --- e, com $B$ grande, a média já a elimina sem custo nenhum. Seria pagar viés por
+um benefício que se tem de graça. Daí a regra: deixe cada árvore ser instável, e deixe a
+média estabilizar.
 
-Compensa porque, com $B$ grande, o que sobra em $\rho v+\frac{1-\rho}{B}v$ é
-$\rho v$, e a queda em $\rho$ costuma ser proporcionalmente maior que a subida em
-$v$. Há um limite, claro: com $m$ pequeno demais as árvores ficam ruins demais e o
-produto $\rho v$ volta a subir. É por isso que $m$ é um hiperparâmetro, e
-$m\approx p/3$ em regressão é um ponto de partida razoável --- não uma verdade.
+\smallskip
+\textbf{(c)} As árvores do \emph{bagging} são ajustadas em amostras bootstrap do
+\textbf{mesmo} conjunto de dados, e todas enxergam \textbf{todas} as $p$ covariáveis em
+todos os nós. Se há uma covariável fortemente preditiva, quase todas a escolhem no
+primeiro corte; e, como tudo o que vem abaixo depende do primeiro corte, árvores que
+começam igual continuam parecidas. Elas erram juntas --- e errar junto é exatamente o
+que $\rho>0$ significa.
+
+Aumentar $B$ não resolve porque o piso $\rho v$ \textbf{não depende de $B$}. Acrescentar
+árvores só encolhe $(1-\rho)v/B$, que depois de algumas dezenas delas já é pequeno:
+passado certo ponto, cada árvore nova custa tempo de computação e não compra quase nada.
+
+\smallskip
+\textbf{(d)} A floresta ataca o $\rho$. Sorteando $m<p$ candidatas por nó, ela impede
+que a covariável dominante seja usada sempre: numa fração $1-m/p$ dos nós, ela nem está
+disponível, e a árvore é obrigada a olhar para outra coisa. As árvores passam a divergir
+na estrutura, $\rho$ cai, e o piso $\rho v$ cai junto.
+
+O preço é pago na \textbf{outra condição, a (i)}. Uma árvore proibida de usar a melhor
+covariável em parte dos nós aproxima $r$ pior: o \textbf{viés} de cada árvore sobe --- e,
+pelo item (a), a floresta o herda inteiro, porque média nenhuma corrige viés. (Cada
+árvore também fica um pouco mais instável, e $v$ sobe; mas esse aumento, a queda de
+$\rho$ absorve com folga.)
+
+A troca compensa enquanto o piso cair mais do que o viés$^2$ subir. Com $B$ grande, o
+que sobra da fórmula é $\Var(Y\mid\x)+b(\x)^2+\rho v$: diminuir $m$ desce o terceiro
+termo e sobe o segundo. No começo, o terceiro cai depressa; com $m$ pequeno demais, o
+viés passa a dominar. É o que o Exercício~2 da Lista prática~05 mede: de $m=p/3$ para
+$m=0{,}15\,p$ o $\rho$ continua caindo, e o erro piora. Por isso $m$ é um hiperparâmetro,
+a escolher por validação cruzada, e $m\approx p/3$ em regressão é um ponto de partida
+--- não uma verdade.
 \end{solucao}

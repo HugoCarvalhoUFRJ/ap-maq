@@ -29,55 +29,96 @@ com $\sigma^2$ e $\sigma_\beta^2$ conhecidos.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Pelo teorema de Bayes, a posteriori é proporcional ao produto da
-verossimilhança pela priori:
+\textbf{(a)} Pelo teorema de Bayes, a densidade a posteriori é proporcional ao produto
+da verossimilhança pela priori. Com as duas densidades normais do modelo,
 \[
-  \pi(\bbeta\mid\bm y)\;\propto\; f(\bm y\mid\bbeta)\,\pi(\bbeta)
-   \;\propto\;
-   \exp\Big\{-\frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2\Big\}
-   \cdot
-   \exp\Big\{-\frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2\Big\}.
+  f(\bm y\mid\bbeta)=(2\pi\sigma^2)^{-n/2}
+    \exp\Big\{-\frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2\Big\},
+  \quad
+  \pi(\bbeta)=(2\pi\sigma_\beta^2)^{-q/2}
+    \exp\Big\{-\frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2\Big\},
 \]
-As constantes de normalização das duas gaussianas não dependem de $\bbeta$ e por
-isso podem ser absorvidas no $\propto$.
+em que $q$ é a dimensão de $\bbeta$, vem
+\[
+  \pi(\bbeta\mid\bm y)\;\propto\;f(\bm y\mid\bbeta)\,\pi(\bbeta)
+  \;\propto\;
+  \exp\Big\{-\frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2
+            -\frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2\Big\}.
+\]
+O "$\propto$" é em $\bbeta$: as constantes de normalização e a densidade marginal de
+$\bm y$ não dependem de $\bbeta$, e por isso não mudam \emph{onde} a posteriori é
+máxima.
 
-Maximizar uma função positiva é o mesmo que maximizar seu logaritmo, e o
-logaritmo de um produto de exponenciais é a soma dos expoentes:
+A moda a posteriori é o ponto de máximo dessa densidade. Como o logaritmo é
+estritamente crescente, maximizar uma função positiva é o mesmo que maximizar o seu
+logaritmo, que aqui é
 \[
-  \log\pi(\bbeta\mid\bm y)
-   = \text{const} - \frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2
-     - \frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2 .
+  \log\pi(\bbeta\mid\bm y)=\text{const}
+   -\frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2
+   -\frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2 ;
 \]
-Maximizar isso é minimizar o simétrico dos dois termos que dependem de $\bbeta$,
-que é exatamente o objetivo do enunciado.
+e maximizar $-F$ é o mesmo que minimizar $F$. Logo a moda é o minimizador de
+\[
+  \frac{1}{2\sigma^2}\norm{\bm y-\mathbb{X}\bbeta}^2
+  +\frac{1}{2\sigma_\beta^2}\norm{\bbeta}^2 .
+\]
+Esse objetivo é estritamente convexo (a segunda parcela já é), então o mínimo existe e
+é único: a moda está bem definida.
 
 \smallskip
-\textbf{(b)} O objetivo de (a) tem um $1/(2\sigma^2)$ na frente do primeiro termo,
-e a definição do Ridge não tem fator nenhum ali. Multiplique tudo por
-$2\sigma^2>0$ --- o que não altera o minimizador, por ser constante positiva:
+\textbf{(b)} Multiplicar o objetivo por $2\sigma^2>0$ não muda o minimizador, e
+elimina o fator que está na frente do RSS:
 \[
-  \norm{\bm y-\mathbb{X}\bbeta}^2 + \frac{\sigma^2}{\sigma_\beta^2}\norm{\bbeta}^2 .
+  \norm{\bm y-\mathbb{X}\bbeta}^2+\frac{\sigma^2}{\sigma_\beta^2}\norm{\bbeta}^2 .
 \]
-Agora a comparação é imediata, e
+Agora é o objetivo do Ridge, com
 \[
   \boxed{\;\lambda=\frac{\sigma^2}{\sigma_\beta^2}\;}
 \]
+O cuidado do enunciado era esse: comparar antes de eliminar o fator leva a ler
+$\lambda=1/(2\sigma_\beta^2)$, ou a inverter a razão.
+
+Um detalhe de rigor. Se $\mathbb{X}$ tem a coluna de uns, a priori acima encolhe
+também o intercepto --- e a Ridge da aula não o penaliza. A correspondência exata pede
+a priori normal só para $\beta_1,\dots,\beta_p$, com uma priori plana para $\beta_0$
+($\pi(\beta_0)\propto1$); ou dados centrados, em que o intercepto sai de cena. Nos dois
+casos a conta é a mesma, e o $\lambda$ também.
+
+De quebra: completando o quadrado no expoente, vê-se que a posteriori é normal,
+\[
+  \bbeta\mid\bm y\;\sim\;N\Big((\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\mathbb{X}^\top\bm y,\;
+    \sigma^2(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\Big),
+\]
+e a média é exatamente o minimizador acima. Numa normal, moda e média coincidem --- é
+por isso que, no Ridge, a solução é a moda \emph{e} a média a posteriori.
 
 \smallskip
-\textbf{(c)} Quando $\sigma_\beta^2\to\infty$, a priori fica \textbf{difusa}: ela
-espalha massa por toda parte e não expressa preferência alguma por coeficientes
-pequenos. Em outras palavras, ela não afirma nada. Correspondentemente
-$\lambda\to 0$ e o Ridge degenera no MQO: os dados decidem sozinhos, com viés
-baixo e variância alta.
+\textbf{(c)} A ponte é $\lambda=\sigma^2/\sigma_\beta^2$: cada afirmação sobre a priori
+vira uma afirmação sobre a penalização.
 
-Quando $\sigma_\beta^2\to 0$, a priori fica \textbf{concentrada em zero}: ela
-afirma, antes de ver dado nenhum, que os coeficientes são praticamente nulos.
-Correspondentemente $\lambda\to\infty$ e $\widehat\bbeta\to\bm 0$: viés máximo,
-variância mínima.
+\emph{Quando $\sigma_\beta^2\to\infty$}, a priori se espalha. Para dois valores
+quaisquer de $\bbeta$, a razão das densidades,
+$\pi(\bbeta)/\pi(\bbeta')=\exp\big\{(\norm{\bbeta'}^2-\norm{\bbeta}^2)/(2\sigma_\beta^2)\big\}$,
+tende a $1$: ela deixa de preferir um valor a outro --- não afirma nada ---, e a
+posteriori passa a ser ditada pela verossimilhança. Do lado do Ridge, $\lambda\to0$, e
+\[
+  \widehat\bbeta_\lambda=(\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I})^{-1}\mathbb{X}^\top\bm y
+  \;\longrightarrow\;(\mathbb{X}^\top\mathbb{X})^{-1}\mathbb{X}^\top\bm y
+\]
+quando $\mathbb{X}^\top\mathbb{X}$ é invertível, porque a inversão de matrizes é
+contínua: o Ridge vira o MQO, com viés pequeno e variância alta.
 
-Entre os dois extremos, a fórmula $\lambda=\sigma^2/\sigma_\beta^2$ diz uma coisa
-bem razoável: regulariza-se mais quando os \emph{dados} são ruidosos
-($\sigma^2$ grande) ou quando a \emph{crença prévia} é firme ($\sigma_\beta^2$
-pequeno). O $\lambda$ é a razão entre duas incertezas, e escolhê-lo por validação
-cruzada é, nessa leitura, deixar os dados escolherem a priori que melhor prediz.
+\emph{Quando $\sigma_\beta^2\to0$}, a priori se concentra em zero:
+$\Prob(\norm{\bbeta}>\varepsilon)\to0$ para todo $\varepsilon>0$. Ela afirma, antes de
+ver dado algum e com certeza cada vez maior, que os coeficientes são praticamente
+nulos. Do lado do Ridge, $\lambda\to\infty$ e $\widehat\bbeta_\lambda\to\bm0$: como todos
+os autovalores de $\mathbb{X}^\top\mathbb{X}+\lambda\mathbb{I}$ são pelo menos $\lambda$,
+vale $\norm{\widehat\bbeta_\lambda}\le\norm{\mathbb{X}^\top\bm y}/\lambda\to0$. Variância
+nula e viés máximo: a estimativa ignora os dados.
+
+Entre os extremos, a fórmula diz uma coisa sensata: regulariza-se mais quando os dados
+são ruidosos ($\sigma^2$ grande) ou quando a crença prévia é firme ($\sigma_\beta^2$
+pequeno). O $\lambda$ é a razão entre duas incertezas, a do ruído e a da priori; e
+escolhê-lo por validação cruzada é, nessa leitura, deixar os dados escolherem a priori
+que melhor prediz.
 \end{solucao}

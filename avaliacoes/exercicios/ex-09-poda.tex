@@ -27,69 +27,100 @@ Se a forma lembra a regularização, não é coincidência.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Com $\alpha=0$ a penalidade some e $C_0(T)$ é só o RSS. Como o RSS
-nunca aumenta ao acrescentar cortes, a minimizadora é a árvore inteira $T_0$ ---
-no limite, uma observação por folha e RSS zero.
-
-Com $\alpha\to\infty$ o termo $\alpha\abs{T}$ domina, e minimizá-lo exige
-$\abs{T}$ mínimo: a vencedora é a \textbf{raiz sozinha}, uma única folha, cuja
-predição é a média de todas as respostas.
-
-Entre os dois extremos, $\alpha$ percorre uma sequência finita de subárvores
-aninhadas --- e é essa sequência que a validação cruzada percorre para escolher o
-$\alpha$.
-
-\smallskip
-\textbf{(b)} Dividir a folha troca $1$ folha por $2$: o número de folhas sobe em
-$1$ e o custo de complexidade sobe em $\alpha$. Em compensação o RSS cai de $S$
-para $S_a+S_b$. A divisão reduz $C_\alpha$ se, e só se,
+Um fato prepara o exercício todo: \textbf{dividir uma região nunca aumenta o RSS}. Se
+a região $R$ se divide em $R_a$ e $R_b$, então
 \[
-  \big(S_a+S_b\big) + \alpha(\abs{T}+1)
-  \;<\; S + \alpha\abs{T}
-  \quad\Longleftrightarrow\quad
-  S-\big(S_a+S_b\big) \;>\; \alpha .
+\begin{aligned}
+  S=\sum_{i\in R}(Y_i-\bar Y_R)^2
+   &=\sum_{i\in R_a}(Y_i-\bar Y_R)^2+\sum_{i\in R_b}(Y_i-\bar Y_R)^2\\
+   &\ge\sum_{i\in R_a}(Y_i-\bar Y_{R_a})^2+\sum_{i\in R_b}(Y_i-\bar Y_{R_b})^2
+   =S_a+S_b ,
+\end{aligned}
 \]
-
-Em palavras: \textbf{a divisão precisa reduzir o RSS em mais de $\alpha$}.
-
-E a interpretação sai direto daí: o $\alpha$ é literalmente o \emph{preço de uma
-folha}, cobrado na mesma unidade do RSS. Ganhos menores que esse preço não pagam
-a complexidade que introduzem. Se o RSS está em reais ao quadrado, o $\alpha$
-também está --- o que, de passagem, explica por que ele não é comparável entre
-problemas de escalas diferentes.
+porque, dentro de cada parte, a média é a constante que minimiza a soma de quadrados
+--- é o melhor preditor constante da Lista Teórica~01, na versão amostral.
 
 \smallskip
-\textbf{(c)} A árvore grande custa $120+6\alpha$; a podada, $140+4\alpha$. A
-podada vence quando
+\textbf{(a)} \emph{Com $\alpha=0$}, $C_0(T)$ é só o RSS. Toda subárvore $T\subseteq T_0$
+se obtém de $T_0$ juntando folhas, e pelo fato acima isso nunca diminui o RSS; logo a
+árvore inteira $T_0$ minimiza $C_0$, com todas as suas $\abs{T_0}$ folhas --- no limite
+do crescimento, uma observação por folha e RSS zero. (Uma subárvore com o mesmo RSS de
+$T_0$ empataria com ela.)
+
+\emph{Quando $\alpha\to\infty$}, seja $S_{\mathrm{raiz}}$ o RSS da raiz sozinha, isto é,
+a soma de quadrados total. A raiz custa $S_{\mathrm{raiz}}+\alpha$, e qualquer árvore com
+$\abs{T}\ge2$ folhas custa pelo menos $2\alpha$. Assim que $\alpha>S_{\mathrm{raiz}}$, a
+raiz vence: \textbf{uma folha só}, que prediz a média de todas as respostas. Não é
+preciso $\alpha$ infinito; basta passar da soma de quadrados total.
+
+Entre os dois extremos, as subárvores vencedoras formam uma sequência finita e
+encaixada, de $T_0$ até a raiz, podando um ramo de cada vez --- e é essa sequência que a
+validação cruzada percorre para escolher o $\alpha$.
+
+\smallskip
+\textbf{(b)} Dividir a folha troca $1$ folha por $2$: o RSS cai de $S$ para $S_a+S_b$, e
+o custo de complexidade sobe $\alpha$. A divisão reduz $C_\alpha$ se, e só se,
 \[
-  140+4\alpha < 120+6\alpha
-  \quad\Longleftrightarrow\quad
-  20 < 2\alpha
-  \quad\Longleftrightarrow\quad
-  \boxed{\alpha > 10}.
+  \big(S_a+S_b\big)+\alpha\big(\abs{T}+1\big)<S+\alpha\abs{T}
+  \iff
+  \boxed{\;S-\big(S_a+S_b\big)>\alpha\;}
 \]
-Para $\alpha<10$ mantêm-se as seis folhas; em $\alpha=10$ as duas empatam.
-
-O $10$ é exatamente o ganho médio de RSS por folha removida, $20/2$. O
-ponto de indiferença é sempre o ganho por folha --- o que dá uma forma rápida de
-estimar de cabeça qual $\alpha$ separa duas subárvores.
+(na igualdade, é indiferente). \textbf{A divisão precisa reduzir o RSS em mais de
+$\alpha$}. O $\alpha$ é literalmente o \emph{preço de uma folha}, cobrado na mesma
+unidade do RSS: se $Y$ está em reais, $\alpha$ está em reais ao quadrado --- o que
+explica, de passagem, por que um valor de $\alpha$ não se transporta de um problema
+para outro de escala diferente.
 
 \smallskip
-\textbf{(d)} Porque o critério de parada é \textbf{míope}: ele avalia um corte de
-cada vez e não enxerga o que viria depois. Um corte pode reduzir pouco o RSS
-sozinho e ainda assim ser indispensável, por \emph{viabilizar} os cortes
-seguintes. Quem para ali nunca chega a eles.
+\textbf{(c)} A árvore grande custa $120+6\alpha$; a podada, $140+4\alpha$. A podada é
+preferível quando
+\[
+  140+4\alpha<120+6\alpha
+  \iff 20<2\alpha
+  \iff \boxed{\;\alpha>10\;},
+\]
+com empate em $\alpha=10$ e as seis folhas mantidas abaixo disso.
 
-O exemplo clássico é a \textbf{interação}. Tome $y=\operatorname{sinal}(x_1x_2)$,
-com $x_1$ e $x_2$ simétricos em torno de zero. Um corte em $x_1$ isolado quase não
-reduz o RSS: de cada lado dele, $y$ continua metade positivo e metade negativo, e
-a média local segue perto de zero. O mesmo vale para $x_2$. Só a \emph{combinação}
-dos dois cortes separa os quadrantes --- e um critério de parada com limiar
-razoável interromperia o crescimento logo no primeiro, devolvendo a raiz sozinha.
+O $10$ é $20/2$: o aumento de RSS \emph{por folha removida}. E a conta é sempre essa.
+Se uma árvore tem $L$ folhas a menos que outra e RSS maior em $\Delta$, a menor vence
+exatamente quando
+\[
+  \alpha>\frac{\Delta}{L}.
+\]
+O item (b) é o caso $L=1$. A regra dá um jeito rápido de estimar de cabeça qual $\alpha$
+separa duas subárvores --- e, mais importante, mostra que a poda julga \emph{grupos} de
+cortes pelo que eles rendem juntos, por folha.
 
-A poda escapa disso porque \textbf{cresce primeiro e corta depois}: a árvore
-grande chega a descobrir a interação, e a poda então avalia subárvores inteiras,
-não cortes isolados. É por isso que os dois objetivos são diferentes de propósito
---- e é por isso que não se deve confundir o $\alpha$ da poda com um limite de
-profundidade, que é justamente um critério de parada disfarçado.
+\smallskip
+\textbf{(d)} Porque o critério de parada é \textbf{míope}: julga cada corte pelo que ele
+rende sozinho, e um corte que rende pouco pode ser indispensável por \emph{viabilizar}
+os seguintes. A poda julga ramos inteiros --- é o critério de (c) --- e por isso enxerga
+o que só aparece depois de dois ou mais cortes.
+
+O exemplo clássico é a \textbf{interação}. Tome $X_1$ e $X_2$ independentes e uniformes
+em $[-1,1]$, e $Y=\operatorname{sinal}(X_1X_2)$, sem ruído, com $n$ observações. A média
+de $Y$ é zero, e $S_{\mathrm{raiz}}=\sum_iY_i^2=n$.
+\begin{itemize}[leftmargin=1.2cm]
+  \item \emph{Um corte sozinho não rende nada.} Depois de um corte $X_1\le t$, os dois
+        lados continuam com média zero, porque, pela independência,
+        $\E[\operatorname{sinal}(X_1X_2)\mid X_1\in A]
+        =\E[\operatorname{sinal}(X_1)\mid X_1\in A]\cdot\E[\operatorname{sinal}(X_2)]=0$;
+        o mesmo vale para cortes em $X_2$. Na população, o ganho de qualquer primeiro
+        corte é exatamente zero; na amostra, é só flutuação. Um critério de parada com
+        qualquer limiar positivo devolve a raiz sozinha.
+  \item \emph{Dois níveis de cortes resolvem tudo.} Cortando $X_1$ em $0$ e depois
+        $X_2$ em $0$ dos dois lados, as quatro folhas são os quadrantes, cada uma com
+        $Y$ constante: RSS zero. Pelo critério de (c), essa subárvore de $4$ folhas vence
+        a raiz sempre que $\alpha<n/3$ (ganho $n$ por três folhas a mais) e a de $2$
+        folhas sempre que $\alpha<n/2$.
+\end{itemize}
+Quem cresce primeiro e poda depois chega aos quadrantes e os mantém para qualquer
+$\alpha$ razoável; quem para cedo nunca chega lá. (Se o primeiro corte da árvore
+gananciosa cair fora do zero --- todos empatam, afinal ---, ela gasta mais folhas para
+separar os quadrantes, mas a conclusão não muda: o ramo inteiro rende uma fração fixa de
+$n$ por folha, e o primeiro corte, sozinho, zero.)
+
+É por isso que crescer e podar usam critérios diferentes de propósito, e por que não se
+deve confundir o $\alpha$ da poda com um limite de profundidade: limitar a profundidade
+é, ele próprio, um critério de parada.
 \end{solucao}
