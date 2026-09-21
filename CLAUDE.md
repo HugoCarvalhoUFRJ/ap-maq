@@ -341,8 +341,10 @@ sai na 1.10**. Eram quatro ocorrências, todas corrigidas em 11/09/2026:
   saem bit-idênticos (diferença absoluta máxima $0$), e a leitura da seção ---
   ``$C=1$ encolhe os coeficientes cerca de 10%'' --- continua valendo: $10{,}2\%$.
 
-As três ocorrências da aula 07 saíram de vez em 16/09/2026, junto com a logística
---- ver ``A aula 07 segue o deck'', adiante. Sobrou a da `Lista teorica 06`.
+As três ocorrências da aula 07 saíram em 16/09/2026, junto com a logística, e ela
+voltou em 21/09/2026 **sem** o `penalty`: o laboratório usa `C=np.inf` na §7 e as
+notas, `C=1.0`. Ver ``A aula 07 segue o deck (e o deck mudou)'', adiante. Sobrou a
+ocorrência da `Lista teorica 06`.
 
 **Cuidado ao procurar por este:** os notebooks chamam
 `warnings.filterwarnings("ignore")`, então executá-los **não** mostra o aviso. Só
@@ -409,28 +411,52 @@ impressa no slide ``Um exemplo''. O `l1_ratio=1` colapsa o ElasticNet em Lasso, 
 dois empatam em EQM de CV ($1{,}1293$) e no teste ($1{,}2110$); o teste é pior que a
 CV porque o `best_score_` é o melhor de 56 estimativas ruidosas.
 
-## A aula 07 segue o deck
+## A aula 07 segue o deck (e o deck mudou)
 
-Decisão do Gabriel em 16/09/2026, no espírito da aula 06 e indo além dela: aqui
-**as notas também** foram atrás do deck, não só o laboratório e as listas. O deck
-cobre a formulação com perda 0--1, o classificador de Bayes, o *plug-in*, o Bayes
-ingênuo (contínuo e discreto, com as variantes do `scikit-learn`), a normal
-multivariada, LDA, QDA e a escolha entre os dois. **A regressão logística aparece
-nele só como exemplo de *plug-in***, e é assim que ela ficou nas notas: citada numa
-frase, não desenvolvida. **Não a reintroduza na aula 07.**
+Duas decisões, com cinco dias entre elas, e é preciso ler as duas juntas.
 
-| onde | o que saiu | o que entrou |
+**Em 16/09/2026** o Gabriel decidiu que a aula 07 passaria a cobrir o que o deck
+cobre --- no espírito da aula 06 e indo além dela, porque aqui **as notas também**
+foram atrás, não só o laboratório e as listas. O deck cobria a formulação com perda
+0--1, o classificador de Bayes, o *plug-in*, o Bayes ingênuo (contínuo e discreto,
+com as variantes do `scikit-learn`), a normal multivariada, LDA, QDA e a escolha
+entre os dois; a regressão logística aparecia nele só como exemplo de *plug-in*, e
+por isso saiu de tudo. É o corte que a tabela abaixo registra.
+
+**Em 21/09/2026** ele pediu slides de regressão logística **para o deck** (item 11
+do histórico de correções nos HTMLs), e com isso a premissa do corte caiu. A
+logística voltou no mesmo dia para as notas, o laboratório, a lista prática e a
+figura, alinhada aos slides novos. O que **não** voltou, de propósito: a subseção
+``via regressão sobre indicadores'' das notas, que o deck não tem, e a comparação
+de escala da antiga §8 do laboratório, que não media nada (adiante) e é assunto da
+aula 06.
+
+O princípio continua valendo: **o deck manda**. Se um assunto não estiver nele, não
+entre nas notas sem falar com o Gabriel --- e, se ele entrar no deck, o resto da
+aula vai atrás.
+
+| onde | o corte de 16/09 | como está hoje |
 | --- | --- | --- |
-| notas, as duas versões | a seção da logística (MV, separação perfeita, multiclasse, a $\sigma$), a regressão sobre indicadores, a seção discriminativo $\times$ generativo e o `C` na prática em Python | a motivação da perda 0--1, o Bayes ingênuo contínuo com qualquer densidade e o discreto com as variantes, a densidade normal multivariada, os estimadores de MV, o discriminante do QDA e a conta de parâmetros com $K$ classes |
-| `Aula prática 07` | a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; a antiga §8 é hoje a **§7**; 40→**34 células** | a explicação do `nan` da §6 |
-| `Lista prática 07` | a logística dos Ex. 2 e 4 | `reg_param` no QDA do Ex. 4, com lacuna; um `Sua vez` sobre a covariância comum no lugar do de AUC, que é aula 08 |
-| `07-fronteiras` | o painel da logística: 4→3 painéis, na ordem do deck | --- |
-| fora da aula | a logística ``da aula 07'' na `Lista prática 09`, nas notas da E3 (docente), no planejamento e no `requirements.txt` | --- |
+| notas, as duas versões | saíram a seção da logística (MV, separação perfeita, multiclasse), a regressão sobre indicadores e a comparação discriminativo $\times$ generativo; entraram a motivação da perda 0--1, o Bayes ingênuo discreto com as variantes do `scikit-learn`, a densidade normal multivariada, os estimadores de MV, o discriminante do QDA e a conta de parâmetros com $K$ classes | o que entrou ficou; a logística e a comparação voltaram em 21/09. **Só a regressão sobre indicadores continua fora** --- o deck não a tem |
+| `Aula prática 07` | saíram a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; 40→34 células | a logística e a §7 voltaram: **37 células**, com o caso real de novo na §8. A comparação de escala continua fora |
+| `Lista prática 07` | saiu a logística dos Ex. 2 e 4; entraram o `reg_param` no QDA do Ex. 4 (com lacuna) e um `Sua vez` sobre a covariância comum, no lugar do de AUC, que é aula 08 | a logística voltou aos dois exercícios; o `reg_param` e o `Sua vez` novo ficaram |
+| `07-fronteiras` | o painel da logística: 4→3 painéis | de volta a **quatro**, com a legenda de antes |
+| fora da aula | saíram os ponteiros à logística ``da aula 07'' na `Lista prática 09`, nas notas da E3 (docente), no planejamento e no `requirements.txt` | os quatro voltaram |
 
 A `Lista teorica 07` não tinha logística e não perdeu exercício, mas foi corrigida
-junto. **A logística continua sendo usada nas aulas 08, 09, 10, E2 e E3**, notas e
-notebooks, como ferramenta conhecida --- e nenhum deck a desenvolve. Isso é anterior
-ao corte (o deck da 07 nunca a teve) e ficou como estava.
+junto. A logística é usada também nas aulas 08, 09, 10, E2 e E3, notas e notebooks;
+antes de 21/09/2026 **nenhum deck a desenvolvia**, e ela era usada como ferramenta
+já conhecida. Agora o deck da 07 a apresenta.
+
+**O que voltou em 21/09/2026**, alinhado aos slides: a seção das notas (as duas
+versões, com o modelo, a interpretação em razão de chances, a MV, a separação
+perfeita e o caso multiclasse), a seção ``Discriminativo $\times$ generativo'', o
+painel da logística na `07-fronteiras` (de volta a quatro), as §3, §4 e §8 do
+laboratório e a §7 inteira (a pegadinha do `C`), os Ex. 2 e 4 da `Lista prática 07`
+e os ponteiros do planejamento, da E3 e da `Lista prática 09`. Os números medidos
+são os de antes do corte, reconferidos na 1.9: logística $0{,}1230$ de erro na §3,
+$+0{,}0032$ na §4, $10{,}2\%$ de encolhimento em $C=1$ na §7 e $0{,}9591$ no teste
+da §8.
 
 O que ficou nas notas sem estar no deck, de propósito: a caixa de que a acurácia
 engana (a aula 08 abre citando ``o aviso da Aula 07''), a caixa do preço do
@@ -445,8 +471,10 @@ Tudo medido em 16/09/2026, no `barennet_env`:
   `QuadraticDiscriminantAnalysis()` sem `reg_param` no `breast_cancer`, e os cinco
   ajustes da CV falhavam --- a quebra que o laboratório corrigiu em 12/08, e da qual a
   lista tinha escapado. Com `reg_param=1e-4` o QDA dá $0{,}9508$ (o gabarito dizia
-  $0{,}9561$) e segue atrás do LDA. **A `Lista prática 10` tem a mesma chamada, no
-  mesmo banco, e não foi corrigida.**
+  $0{,}9561$) e segue atrás do LDA. A `Lista prática 10` tinha a mesma chamada, no
+  mesmo banco, e foi corrigida em 21/09/2026 (o QDA dela vai de $0{,}9561$ a
+  $0{,}9508$ de acurácia, de $0{,}9912$ a $0{,}9894$ de AUC e de $0{,}0398$ a
+  $0{,}0434$ de Brier).
 - **O QDA da 1.9 recusa classe pequena.** O `fit` compara os autovalores da
   covariância de cada classe com `tol=1e-4` **absoluto** e levanta `LinAlgError`
   quando a classe tem no máximo $p$ observações ou colunas quase colineares. Com
@@ -611,7 +639,7 @@ Três colisões saíram dessa varredura e estão corrigidas:
   a covariância. (Em 16/09/2026 descobriu-se que a medição que sustentava isso, na
   §8 da `Aula prática 07`, comparava cada modelo com ele mesmo. A invariância vale
   para os estimadores de MV; o `var_smoothing` do `GaussianNB` e o `reg_param` do
-  QDA a quebram --- ver ``A aula 07 segue o deck''.)
+  QDA a quebram --- ver ``A aula 07 segue o deck (e o deck mudou)''.)
 
 **O grau 49 da aula 03 não tem um número, tem uma faixa** (medido em 19/08/2026). Os
 três valores que o §3 afirmava — erro de treino $0{,}3049$, EQM de teste $25{,}5$ e
@@ -694,6 +722,14 @@ ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empat
 na frente para trás do LDA no teste. O texto foi reescrito sobre o medido. (A §8 é
 hoje a §7; a `Lista prática 07`, com a mesma chamada, só foi corrigida em
 16/09/2026, e a `Lista prática 10` continua sem a correção.)
+
+E uma terceira, em 21/09/2026: o **`AdaBoostClassifier` perdeu o `algorithm`**. O
+`SAMME.R` foi depreciado na 1.4 e removido na 1.6, e o `SAMME` que ficou produz
+**outras probabilidades**. A acurácia não se mexe; AUC e Brier, sim: no
+`breast_cancer` da `Lista prática 10`, $0{,}9935 \to 0{,}9948$ e
+$0{,}1480 \to 0{,}1264$. Não levanta erro nenhum — só aparece rodando. (A §7 da
+`Aula prática 10`, que também usa AdaBoost, já estava medida numa versão recente e
+confere na 1.9 até a quarta casa.)
 
 Uma varredura dos argumentos de **todas** as chamadas do scikit-learn em **todos**
 os notebooks contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas
@@ -1098,6 +1134,18 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
    "Permite criar uma medida de importância para cada covariável", quando a
    importância de variáveis saiu da aula. Foi a **única linha** que os três
    assuntos cortados ocupavam no deck inteiro.
+10. Em 21/09/2026, dois erros de digitação no deck da aula 07: ``Classifidadores
+    *plug-in*'' virou ``Classificadores'' --- no título e no `id` do slide, que nada
+    mais referenciava --- e ``hiperlanos'' virou ``hiperplanos'', no slide das
+    fronteiras do LDA.
+11. Em 21/09/2026, o deck da aula 07 ganhou uma seção de **regressão logística**, a
+    pedido do Gabriel: oito slides (a ideia, o modelo, o *log-odds* linear, a
+    interpretação dos coeficientes, a estimação por MV, a penalização com o `C`
+    invertido, o caso multiclasse e um fecho ``generativo ou discriminativo''),
+    escritos no padrão dos outros --- `<li class="fragment">`, MathJax, `<code>` com
+    link para a documentação do `scikit-learn`, `^T` para transposta como no resto
+    deste deck. O deck foi de 43 para 44 slides. Conferido no navegador: zero
+    `MathJax_Error`, nenhum slide sem título e nenhum transbordando.
 
 ## O slide de SVM, o único em Beamer
 
