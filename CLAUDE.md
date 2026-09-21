@@ -862,10 +862,12 @@ chaves na ordem do Jupyter e o `kernelspec` e o `language_info` do `barennet_env
 21/09/2026, com o metadado da versão anterior (`4045219`); as saídas de uma execução
 nova conferiram, uma a uma, com as que estavam commitadas. A varredura que pega isso
 é barata: para cada `.ipynb`, contar saídas, `execution_count` e células fora da
-ordem de chaves, e conferir o `kernelspec` e o `language_info`. Ela também mostra seis
-notebooks com o `display_name` do `kernelspec` em `barennet_env` --- as aulas práticas
-02, 03 e 05 e os dois arquivos da `Lista prática 03` ---, sem saída e com as chaves em
-ordem; os outros 33 dizem `Python 3`. É resíduo inofensivo, e ficou como estava.
+ordem de chaves, e conferir o `kernelspec` e o `language_info`. Ela também mostrou
+cinco notebooks com o `display_name` do `kernelspec` em `barennet_env` --- as aulas
+práticas 02, 03 e 05 e os dois arquivos da `Lista prática 03` ---, sem saída e com as
+chaves em ordem. Foram acertados no mesmo dia, uma linha por arquivo, e hoje os 39
+notebooks que seguem as convenções dizem `Python 3` no `kernelspec` e 3.12.7 no
+`language_info`.
 
 Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
 `EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
