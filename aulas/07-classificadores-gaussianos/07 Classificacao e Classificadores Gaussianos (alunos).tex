@@ -22,14 +22,14 @@ Ao final desta aula você deve ser capaz de:
         \textbf{classificador de Bayes};
   \item descrever a estratégia \emph{plug-in}: estimar $\Prob(Y=c\mid\x)$ e
         classificar pela maior probabilidade;
-  \item ajustar uma \textbf{regressão logística} por máxima verossimilhança e
-        reconhecer sua versão penalizada e a multiclasse;
-  \item estimar a mesma probabilidade pelo Teorema de Bayes, com o \textbf{Bayes
+  \item estimar essa probabilidade pelo Teorema de Bayes, com o \textbf{Bayes
         ingênuo} (covariáveis contínuas ou discretas) e com a \textbf{análise
         discriminante} (LDA e QDA);
   \item entender por que LDA tem fronteira \emph{linear} e QDA \emph{quadrática};
   \item escolher entre LDA e QDA pelo balanço viés--variância;
-  \item contrastar as abordagens \emph{discriminativa} e \emph{generativa}.
+  \item estimá-la diretamente, com uma \textbf{regressão logística} ajustada por
+        máxima verossimilhança, e reconhecer sua versão penalizada e a multiclasse;
+  \item contrastar as abordagens \emph{generativa} e \emph{discriminativa}.
 \end{itemize}
 
 \noindent
@@ -126,71 +126,18 @@ O Teorema~\ref{teo:bayes} sugere uma receita direta, dita \textbf{\emph{plug-in}
 Os métodos diferem em \emph{como} estimam $\Prob(Y=c\mid\x)$. Há duas grandes
 famílias:
 \begin{description}[leftmargin=2.6cm,style=nextline]
-  \item[Discriminativos] modelam $\Prob(Y=c\mid\x)$ \emph{diretamente} --- é o caso
-        da regressão logística, a próxima seção.
   \item[Generativos] modelam $f(\x\mid Y=c)$ e $\Prob(Y=c)$ e invertem com o
-        Teorema de Bayes (Bayes ingênuo, LDA, QDA).
+        Teorema de Bayes --- é o caso do Bayes ingênuo, do LDA e do QDA, as
+        próximas seções.
+  \item[Discriminativos] modelam $\Prob(Y=c\mid\x)$ \emph{diretamente} --- é o caso
+        da regressão logística, que fecha a aula.
 \end{description}
-
-%==============================================================================
-\section{Regressão logística (discriminativo)}
-%==============================================================================
-No caso binário $\mathcal{C}=\{0,1\}$, a regressão logística modela
-\begin{equation}\label{eq:logit}
-  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
-                          {1+e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
-  = \sigma\big(\beta_0+\bbeta^\top\x\big),
-\end{equation}
-onde $\sigma(u)=e^u/(1+e^u)$ é a função logística, que leva $\R$ em $(0,1)$.
-Equivalentemente, o \emph{log-odds} é linear:
-$\log\frac{\Prob(Y=1\mid\x)}{\Prob(Y=0\mid\x)} =\beta_0+\bbeta^\top\x$. Como em
-regressão, \emph{não} supomos que isso seja exatamente verdade --- esperamos que
-leve a um bom classificador. Note que a fronteira de decisão
-$\{\x : \Prob(Y=1\mid\x)=\tfrac12\}$ é o conjunto em que o \emph{log-odds} se anula:
-um \textbf{hiperplano}, como no LDA.
-
-\begin{ideia}[por que a logística e não outra curva em $[0,1]$]
-A função $\sigma$ tem duas propriedades que a tornam a escolha natural. Primeira:
-ela é a inversa do \emph{logit} $\log\frac{p}{1-p}$, que leva $[0,1]$ em toda a reta
---- ou seja, ela transforma um problema restrito num problema linear irrestrito.
-Segunda: a linearidade do \emph{log-odds} dá a interpretação que os usuários
-querem --- aumentar $x_j$ em uma unidade multiplica a razão de chances por
-$e^{\beta_j}$, qualquer que seja o ponto de partida. (O efeito sobre a
-\emph{probabilidade}, esse sim, depende de onde se está na curva.) Você vai
-reencontrar $\sigma$ na Aula~09 e em qualquer rede neural.
-\end{ideia}
-
-\subsection{Estimação por máxima verossimilhança}
-Dada uma amostra i.i.d., a verossimilhança condicional é
-\begin{equation}\label{eq:vero}
-  L(\bbeta) = \prod_{k=1}^n \pi(\x_k)^{Y_k}\big(1-\pi(\x_k)\big)^{1-Y_k},
-  \qquad \pi(\x_k)=\Prob(Y_k=1\mid\x_k,\bbeta).
-\end{equation}
-Maximiza-se o log da verossimilhança \eqref{eq:vero}. Ao contrário do MQO, não há
-solução fechada: usam-se métodos numéricos (Newton--Raphson / IRLS). Como na
-regressão linear, pode-se \textbf{penalizar} ($\ell_1$/$\ell_2$) para reduzir
-variância --- é literalmente a Aula~02 aplicada a outra função-objetivo.
-
-\begin{atencao}[separação perfeita]
-Se existir um hiperplano que separa as duas classes \emph{sem erro} no treino, a
-verossimilhança \eqref{eq:vero} não tem máximo: empurrar $\norm{\bbeta}\to\infty$
-faz as probabilidades tenderem a $0$ e $1$ e a verossimilhança crescer sem parar. O
-otimizador roda até o limite de iterações e devolve coeficientes gigantescos e sem
-sentido. Acontece com frequência quando $p$ é grande em relação a $n$. A solução é
-a penalização --- e é por isso que o \texttt{scikit-learn} aplica $\ell_2$ por
-\emph{padrão} na \texttt{LogisticRegression}.
-\end{atencao}
-
-\subsection{Mais de duas classes}
-Para $\abs{\mathcal{C}}>2$: ou ajusta-se uma logística \emph{um-contra-todos} por
-classe (e normaliza-se), ou usa-se a \textbf{regressão logística multinomial}
-(\emph{softmax}), que garante que as probabilidades estimadas somem $1$.
 
 %==============================================================================
 \section{Modelos generativos: o Teorema de Bayes}
 %==============================================================================
-A outra família não modela $\Prob(Y=c\mid\x)$; modela como os dados de cada classe
-são gerados, e inverte:
+A primeira família não modela $\Prob(Y=c\mid\x)$ diretamente; modela como os dados de
+cada classe são gerados, e inverte:
 \begin{equation}\label{eq:gen}
   \Prob(Y=c\mid\x) = \frac{f(\x\mid Y=c)\,\Prob(Y=c)}
                           {\sum_{s\in\mathcal{C}} f(\x\mid Y=s)\,\Prob(Y=s)},
@@ -209,7 +156,8 @@ Repare no que \eqref{eq:gen} pede. Em vez de perguntar ``dado este $\x$, qual a
 classe?'', pergunta-se ``\emph{se} a classe fosse $c$, que $\x$ eu esperaria ver?''
 --- e o Teorema de Bayes inverte a resposta. Daí o nome \emph{generativo}: o modelo
 descreve como os dados são \textbf{gerados}, e por isso permite \emph{simular}
-observações novas de cada classe, coisa que a logística não faz.
+observações novas de cada classe, coisa que um modelo discriminativo, como a
+regressão logística do fim da aula, não faz.
 \end{ideia}
 
 %==============================================================================
@@ -356,22 +304,9 @@ constante de normalização de \eqref{eq:normal}. A função discriminante fica
 \]
 \textbf{quadrática} em $\x$, e as fronteiras $\{\x:\delta_c(\x)=\delta_{c'}(\x)\}$
 são superfícies quádricas em $\R^p$ --- em $\R^2$, cônicas: elipses, parábolas,
-hipérboles. A Figura~\ref{fig:fronteiras} põe as quatro fronteiras lado a lado.
+hipérboles. No fim da aula, a Figura~\ref{fig:fronteiras} põe a fronteira do QDA ao
+lado das dos outros três métodos.
 \end{observacao}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{../../recursos/figuras/07-fronteiras.pdf}
-  \caption{Fronteiras de decisão em duas classes gaussianas com covariâncias
-  \emph{diferentes} ($n=400$). Logística e LDA chegam a retas quase idênticas por
-  caminhos completamente distintos --- uma modelando $\Prob(Y\mid\x)$ direto, a
-  outra modelando $f(\x\mid Y)$ e invertendo. O QDA, livre da hipótese de
-  covariância comum, curva a fronteira e acompanha o formato de cada nuvem: é o
-  modelo correto para estes dados. O Bayes ingênuo também curva, mas erra o ângulo:
-  ele supõe as duas covariáveis independentes dentro de cada classe, e aqui elas
-  não são.}
-  \label{fig:fronteiras}
-\end{figure}
 
 \subsection{LDA ou QDA? Uma questão de viés e variância}
 QDA é mais flexível (menos viés), mas estima muito mais parâmetros. A conta, com $K$
@@ -407,8 +342,87 @@ bolso.
 \end{ideia}
 
 %==============================================================================
+\section{Regressão logística (discriminativo)}
+%==============================================================================
+O Bayes ingênuo, o LDA e o QDA chegam a $\Prob(Y=c\mid\x)$ por um caminho indireto:
+modelam como os dados de cada classe são gerados e invertem com o Teorema de Bayes.
+E se estimássemos $\Prob(Y=c\mid\x)$ \emph{diretamente}, sem passar pelas densidades?
+É o que fazem os métodos discriminativos, e a regressão logística é o principal
+deles. No caso binário $\mathcal{C}=\{0,1\}$ basta modelar $\Prob(Y=1\mid\x)$, com um
+cuidado: uma probabilidade vive em $[0,1]$, enquanto uma função linear
+$\beta_0+\bbeta^\top\x$ vive em toda a reta. A regressão logística resolve isso
+modelando
+\begin{equation}\label{eq:logit}
+  \Prob(Y=1\mid\x) = \frac{e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+                          {1+e^{\beta_0+\sum_{i=1}^p\beta_i x_i}}
+  = \sigma\big(\beta_0+\bbeta^\top\x\big),
+\end{equation}
+onde $\sigma(u)=e^u/(1+e^u)$ é a função logística, que leva $\R$ em $(0,1)$.
+Equivalentemente, o \emph{log-odds} é linear:
+$\log\frac{\Prob(Y=1\mid\x)}{\Prob(Y=0\mid\x)} =\beta_0+\bbeta^\top\x$. Como em
+regressão, \emph{não} supomos que isso seja exatamente verdade --- esperamos que
+leve a um bom classificador. Note que a fronteira de decisão
+$\{\x : \Prob(Y=1\mid\x)=\tfrac12\}$ é o conjunto em que o \emph{log-odds} se anula:
+um \textbf{hiperplano}, como no LDA.
+
+\begin{ideia}[por que a logística e não outra curva em $[0,1]$]
+A função $\sigma$ tem duas propriedades que a tornam a escolha natural. Primeira:
+ela é a inversa do \emph{logit} $\log\frac{p}{1-p}$, que leva $[0,1]$ em toda a reta
+--- ou seja, ela transforma um problema restrito num problema linear irrestrito.
+Segunda: a linearidade do \emph{log-odds} dá a interpretação que os usuários
+querem --- aumentar $x_j$ em uma unidade multiplica a razão de chances por
+$e^{\beta_j}$, qualquer que seja o ponto de partida. (O efeito sobre a
+\emph{probabilidade}, esse sim, depende de onde se está na curva.) Você vai
+reencontrar $\sigma$ na Aula~09 e em qualquer rede neural.
+\end{ideia}
+
+\subsection{Estimação por máxima verossimilhança}
+Dada uma amostra i.i.d., a verossimilhança condicional é
+\begin{equation}\label{eq:vero}
+  L(\bbeta) = \prod_{k=1}^n \pi(\x_k)^{Y_k}\big(1-\pi(\x_k)\big)^{1-Y_k},
+  \qquad \pi(\x_k)=\Prob(Y_k=1\mid\x_k,\bbeta).
+\end{equation}
+Maximiza-se o log da verossimilhança \eqref{eq:vero}. Ao contrário do MQO, não há
+solução fechada: usam-se métodos numéricos (Newton--Raphson / IRLS). Como na
+regressão linear, pode-se \textbf{penalizar} ($\ell_1$/$\ell_2$) para reduzir
+variância --- é literalmente a Aula~02 aplicada a outra função-objetivo.
+
+\begin{atencao}[separação perfeita]
+Se existir um hiperplano que separa as duas classes \emph{sem erro} no treino, a
+verossimilhança \eqref{eq:vero} não tem máximo: empurrar $\norm{\bbeta}\to\infty$
+faz as probabilidades tenderem a $0$ e $1$ e a verossimilhança crescer sem parar. O
+otimizador roda até o limite de iterações e devolve coeficientes gigantescos e sem
+sentido. Acontece com frequência quando $p$ é grande em relação a $n$. A solução é
+a penalização --- e é por isso que o \texttt{scikit-learn} aplica $\ell_2$ por
+\emph{padrão} na \texttt{LogisticRegression}.
+\end{atencao}
+
+\subsection{Mais de duas classes}
+Para $\abs{\mathcal{C}}>2$: ou ajusta-se uma logística \emph{um-contra-todos} por
+classe (e normaliza-se), ou usa-se a \textbf{regressão logística multinomial}
+(\emph{softmax}), que garante que as probabilidades estimadas somem $1$.
+
+%==============================================================================
 \section{Discriminativo $\times$ generativo}
 %==============================================================================
+Com os quatro métodos na mão, vale compará-los. A Figura~\ref{fig:fronteiras} põe as
+fronteiras de todos lado a lado, numa mesma amostra de duas classes gaussianas, e a
+tabela abaixo resume o que distingue as duas famílias.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../../recursos/figuras/07-fronteiras.pdf}
+  \caption{Fronteiras de decisão em duas classes gaussianas com covariâncias
+  \emph{diferentes} ($n=400$). Logística e LDA chegam a retas quase idênticas por
+  caminhos completamente distintos --- uma modelando $\Prob(Y\mid\x)$ direto, a
+  outra modelando $f(\x\mid Y)$ e invertendo. O QDA, livre da hipótese de
+  covariância comum, curva a fronteira e acompanha o formato de cada nuvem: é o
+  modelo correto para estes dados. O Bayes ingênuo também curva, mas erra o ângulo:
+  ele supõe as duas covariáveis independentes dentro de cada classe, e aqui elas
+  não são.}
+  \label{fig:fronteiras}
+\end{figure}
+
 \begin{center}\small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}p{3.2cm}p{5.4cm}p{5.4cm}@{}}
@@ -434,26 +448,24 @@ o que explica os dois primeiros painéis da Figura~\ref{fig:fronteiras}. Na dúv
 experimente ambos e compare por validação cruzada.
 \end{ideia}
 
-% sem a quebra, o título abaixo fica sozinho no pé da página, com o listing
-% inteiro empurrado para a página seguinte
-\newpage
 %==============================================================================
 \section{Prática em Python}
 %==============================================================================
 \begin{lstlisting}
-from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis as LDA,
                                            QuadraticDiscriminantAnalysis as QDA)
-from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+
+nb, lda, qda = GaussianNB(), LDA(), QDA()
 
 # Logistica penalizada (C = 1/lambda); padronizar no pipeline (Aula 06)
 logit = make_pipeline(StandardScaler(),
                       LogisticRegression(C=1.0, max_iter=1000))
 
-lda, qda, nb = LDA(), QDA(), GaussianNB()
-for nome, modelo in [("logit", logit), ("LDA", lda), ("QDA", qda), ("NB", nb)]:
+for nome, modelo in [("NB", nb), ("LDA", lda), ("QDA", qda), ("logit", logit)]:
     modelo.fit(X_tr, y_tr)
     print(nome, "acuracia:", modelo.score(X_te, y_te))
     # probabilidades plug-in: modelo.predict_proba(X_te)
@@ -474,9 +486,11 @@ direção da identidade e resolve (a §8 da \texttt{Aula prática 07} precisa de
 com menos observações na classe do que covariáveis, nem ele.
 \end{atencao}
 
-O notebook \texttt{Comparação entre classificadores paramétricos} confronta esses
-métodos; \texttt{Aula prática 07} calcula o erro de Bayes numa população conhecida
-e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
+O notebook \texttt{Comparação entre classificadores paramétricos} põe o Bayes
+ingênuo, o LDA e o QDA lado a lado em três conjuntos de dados artificiais, junto com
+três SVMs, que são assunto da Aula~09. A \texttt{Aula prática 07} calcula o erro de
+Bayes numa população conhecida, compara os quatro métodos desta aula e mede a troca
+LDA$\times$QDA em $p=2$ e $p=10$.
 
 %==============================================================================
 \section*{Resumo}
@@ -485,12 +499,9 @@ e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
   \item Perda 0--1 \eqref{eq:risco01}; o \textbf{classificador de Bayes}
         $g^*(\x)=\argmax_c\Prob(Y=c\mid\x)$ é ótimo (Teo.~\ref{teo:bayes}) mas
         desconhecido --- é a moda condicional, como $r$ era a média condicional.
-  \item \emph{Plug-in}: estimar $\Prob(Y=c\mid\x)$ e tomar o $\argmax$ --- ou
-        diretamente (discriminativo), ou pelo Teorema de Bayes \eqref{eq:gen},
-        modelando $f(\x\mid Y=c)$ (generativo).
-  \item \textbf{Logística} \eqref{eq:logit}: discriminativa, ajustada por máxima
-        verossimilhança, penalizável e multiclasse; respeita $[0,1]$ por
-        construção, e cuidado com a separação perfeita.
+  \item \emph{Plug-in}: estimar $\Prob(Y=c\mid\x)$ e tomar o $\argmax$ --- ou pelo
+        Teorema de Bayes \eqref{eq:gen}, modelando $f(\x\mid Y=c)$ (generativo), ou
+        diretamente (discriminativo).
   \item \textbf{Bayes ingênuo}: independência condicional \eqref{eq:nb}, com um
         modelo univariado por covariável (\texttt{GaussianNB},
         \texttt{BernoulliNB}, \texttt{MultinomialNB}, \dots) --- barato, mas
@@ -501,8 +512,11 @@ e mede a troca LDA$\times$QDA em $p=2$ e $p=10$.
         Fig.~\ref{fig:fronteiras}.
   \item LDA $\times$ QDA é viés $\times$ variância (Fig.~\ref{fig:ldaqda}): o
         modelo correto pode perder por falta de dados.
-  \item Discriminativo (menos suposições, robusto com muito dado) $\times$
-        generativo (eficiente sob suposições corretas e com poucos dados).
+  \item \textbf{Logística} \eqref{eq:logit}: discriminativa, ajustada por máxima
+        verossimilhança, penalizável e multiclasse; respeita $[0,1]$ por
+        construção, e cuidado com a separação perfeita.
+  \item Generativo (eficiente sob suposições corretas e com poucos dados) $\times$
+        discriminativo (menos suposições, robusto com muito dado).
   \item Cuidado com acurácia em dados desbalanceados $\Rightarrow$ Aula~08.
 \end{itemize}
 
