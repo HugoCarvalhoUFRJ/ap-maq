@@ -122,12 +122,31 @@ paramétrico.
 zero. E o numerador também é zero, porque $\rhat(\X_i)=Y_i$. Ou seja, $0/0$ --- a
 fórmula não diz nada.
 
-E está certa em não dizer. O atalho vale para ajustes lineares em que nenhuma
-observação determina sozinha a própria predição; com $k=1$ ela a determina
-inteiramente, e o resíduo de treino perdeu \emph{toda} a informação sobre o erro
-de validação. Não há como recuperar o LOOCV de um único ajuste nesse caso: é
-preciso rodar a força bruta, refazendo o ajuste $n$ vezes. Para $k\ge 2$ a fórmula
-funciona normalmente, com o fator de inflação $1/(1-1/k)=k/(k-1)$.
+E ela está certa em não dizer, por um motivo que vale para todo $k$: \textbf{a
+fórmula não calcula o LOOCV do KNN}. Ela foi deduzida supondo que o ajuste sem a
+observação $i$ é o mesmo tipo de ajuste, com os pesos das outras observações apenas
+reescalados. No KNN, tirar $\X_i$ muda \emph{quem são} os vizinhos de $\X_i$: o próprio
+ponto sai da lista, e entra o $(k+1)$-ésimo mais próximo, que antes tinha peso zero.
+
+Veja o que a fórmula calcula no lugar do LOOCV. Chame de $S_i$ a soma das respostas
+dos outros $k-1$ vizinhos de $\X_i$. Então $\rhat(\X_i)=(Y_i+S_i)/k$, e com
+$h_{ii}=1/k$,
+\[
+  \frac{Y_i-\rhat(\X_i)}{1-1/k}
+  =\frac{(k-1)Y_i-S_i}{k}\cdot\frac{k}{k-1}
+  =Y_i-\frac{S_i}{k-1}.
+\]
+Isso é o resíduo de validação do KNN com $k-1$ vizinhos: sem a observação $i$, os
+$k-1$ vizinhos mais próximos de $\X_i$ são exatamente esses "outros $k-1$". Aplicada ao
+KNN, \textbf{a fórmula devolve o LOOCV do $(k-1)$-NN}, e não o do $k$-NN. Em $k=1$
+isso seria o LOOCV de um KNN com zero vizinhos, que não existe --- daí o $0/0$.
+
+O LOOCV verdadeiro, por sua vez, é barato sem fórmula nenhuma: para cada ponto de
+treino, peça $k+1$ vizinhos, descarte o próprio ponto e tire a média dos outros $k$.
+A \texttt{Lista prática 04} mede o erro de usar a fórmula no lugar disso: $27\%$ em
+$k=2$, e para lados opostos conforme $k$. É o que a conta acima prevê quando o LOOCV,
+como função de $k$, tem forma de U: abaixo do $k$ ótimo, o $(k-1)$-NN é pior que o
+$k$-NN e a fórmula superestima; acima dele, é melhor, e ela subestima.
 \end{solucao}
 
 

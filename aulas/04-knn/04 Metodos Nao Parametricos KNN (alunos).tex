@@ -207,10 +207,27 @@ pesos}: o KNN concentra todo o peso numa janela retangular em torno de $\x$, lar
 onde há poucos dados e estreita onde há muitos; uma base de \emph{splines} espalha
 o peso segundo as funções da base. Essa estrutura comum explica por que todos
 enfrentam o mesmo dilema --- o botão de flexibilidade $\leftrightarrow$
-viés--variância --- e por que valem para
-todos os atalhos vistos antes, como o do LOOCV via \emph{leverage} (Aula~03,
-Prop.~3.1): basta que $\ell_i(\x)$ não dependa de $\bm{Y}$.
+viés--variância.
 \end{ideia}
+
+\begin{atencao}[linear, mas sem o atalho do LOOCV]
+Seria natural esperar que o atalho do LOOCV via \emph{leverage} (Aula~03, Prop.~3.1)
+valesse para todo suavizador linear. Não vale, e o KNN é o contraexemplo. O atalho
+supõe que tirar a observação $i$ apenas \emph{reescale} os pesos das outras. No KNN,
+tirar $\X_i$ muda \emph{quem são} os vizinhos de $\X_i$: entra o $(k+1)$-ésimo, que
+antes tinha peso zero.
+
+A conta mostra o que a fórmula calcula no lugar do LOOCV. Como $h_{ii}=1/k$, e
+$\rhat(\X_i)$ é a média de $Y_i$ com as respostas dos outros $k-1$ vizinhos,
+\[
+  \frac{Y_i-\rhat(\X_i)}{1-1/k}
+  = Y_i-\big(\text{média dos outros } k-1 \text{ vizinhos de } \X_i\big),
+\]
+que é o resíduo de validação do KNN com $k-1$ vizinhos, e não com $k$: aplicada ao
+KNN, a fórmula devolve o LOOCV do $(k-1)$-NN. O LOOCV verdadeiro é barato do mesmo
+jeito --- basta pedir $k+1$ vizinhos a cada ponto de treino e descartar o próprio
+---, mas não sai da fórmula. A \texttt{Lista prática 04} mede a diferença.
+\end{atencao}
 
 %==============================================================================
 \section*{Resumo}

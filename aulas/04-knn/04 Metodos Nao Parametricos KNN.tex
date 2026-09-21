@@ -137,8 +137,17 @@ com pesos $\ell_i(\x)$ que dependem só das covariáveis (não de $\bm{Y}$). Par
 KNN, $\ell_i(\x)=\tfrac1k\1{i\in\mathcal{N}_{\x}}$; para uma base, $\ell_i(\x)$ vem
 do ajuste de mínimos quadrados na base.
 Essa estrutura comum explica por que todos têm o mesmo dilema (o botão de
-flexibilidade $\leftrightarrow$ viés--variância) e por que valem atalhos como o do
-LOOCV (Aula~03, Prop.\ do \emph{leverage}).
+flexibilidade $\leftrightarrow$ viés--variância).
+
+\begin{emsala}
+Pergunta que rende: \emph{``o KNN é linear e tem $h_{ii}=1/k$; o atalho do LOOCV da
+Aula~03 (Prop.\ do \emph{leverage}) vale para ele?''} A resposta intuitiva é sim, e
+está errada. O atalho supõe que tirar a observação $i$ só reescale os pesos das
+outras; no KNN, tirar $\X_i$ muda \emph{quem são} os vizinhos --- entra o
+$(k+1)$-ésimo. Com $h_{ii}=1/k$, a fórmula dá
+$Y_i-(\text{média dos outros } k-1 \text{ vizinhos})$: ela calcula o LOOCV do KNN com
+$k-1$ vizinhos. A \texttt{Lista prática 04} mede o erro: $27\%$ em $k=2$.
+\end{emsala}
 
 %==============================================================================
 \section*{Resumo}
