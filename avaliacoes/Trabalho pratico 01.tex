@@ -1,0 +1,1091 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Trabalho Prático 01 --- Aulas 01 a 10 (sem as extras)
+%
+%  O roteiro de correção sai de "Trabalho pratico 01 - gabarito.tex", que apenas
+%  liga a opção [gabarito] e inclui este arquivo --- fonte única, dois PDFs.
+%  As caixas "solucao" e "criterio" só aparecem no roteiro; no enunciado o
+%  comment.sty as descarta, e por isso \begin e \end delas ficam sozinhos na
+%  linha.
+%
+%  Os números das soluções foram MEDIDOS no notebook
+%  "Trabalho pratico 01 - resolucao.ipynb", nesta pasta, com scikit-learn 1.9.0,
+%  e com as sementes que o enunciado fixa. Ao mexer numa semente, num dado ou
+%  numa grade, rode o notebook de novo e confira as caixas.
+%
+%  Os dados são dois arquivos do UCI Machine Learning Repository, convertidos de
+%  .xls para .csv SEM limpeza nenhuma (só os nomes das colunas do concreto foram
+%  traduzidos, e a resposta do crédito foi renomeada para "default"). Ficam em
+%  recursos/dados/concreto.csv e recursos/dados/credito.csv.
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../recursos/latex/estilo-avaliacao}
+
+% Prazo e valor ficam aqui em cima, para serem trocados sem caçar no texto.
+\newcommand{\prazo}{a definir pelo professor}
+\newcommand{\valortotal}{10,0 pontos}
+
+% \tarefa{código}{título}{valor}
+\newcommand{\tarefa}[3]{%
+  \bigskip\par\noindent
+  {\large\bfseries\color{azulufrj}#1. #2}\hfill{\bfseries(#3)}\par
+  \nopagebreak\vspace{0.3em}}
+
+\newcommand{\cod}[1]{\texttt{#1}}
+
+\begin{document}
+\cabecalhotrabalho{01}{\valortotal}{\prazo}
+
+%==============================================================================
+\section*{O que é este trabalho}
+%==============================================================================
+Ao longo do curso você viu cada método isolado, quase sempre em dados simulados, em
+que a resposta certa é conhecida. Neste trabalho a situação se inverte: dois
+conjuntos de dados reais, públicos, de áreas diferentes, e nenhuma resposta
+conhecida de antemão. O que se pede é o que se faz numa análise de verdade ---
+entender os dados antes de modelar, montar um protocolo de avaliação honesto, comparar
+métodos com as ferramentas certas e, no fim, \emph{dizer o que os números significam}.
+
+O trabalho tem duas partes, uma de \textbf{regressão} e uma de
+\textbf{classificação}, e cada tarefa corresponde a uma ou mais aulas do curso. A
+maior parte do código de que você precisa já apareceu nas aulas práticas; o que é
+novo aqui é juntar as peças e decidir, em cada passo, \emph{por que} fazer assim.
+
+\begin{ideia}[o que vale nota]
+Um número sem leitura não responde nada. Quando uma tarefa pergunta ``por quê?'',
+``o que isso significa?'' ou ``compare'', a resposta é um texto curto, em português,
+numa célula de \emph{markdown} logo abaixo do código --- e é esse texto que recebe a
+maior parte da nota. Um resultado errado com uma leitura honesta (``esperava $X$,
+obtive $Y$, e desconfio de $Z$'') vale mais do que um resultado certo sem
+explicação nenhuma.
+\end{ideia}
+
+%==============================================================================
+\section{Regras de entrega}\label{sec:regras}
+%==============================================================================
+\begin{enumerate}[leftmargin=1.4cm]
+  \item \textbf{Um único notebook} \cod{TP01\_<matrícula>\_<nome>.ipynb}, com as duas
+        partes, \textbf{entregue com as saídas} (gráficos e números visíveis). Use o
+        \cod{Trabalho pratico 01 - modelo.ipynb} como ponto de partida: ele já
+        carrega os dados e tem uma seção por tarefa.
+  \item O notebook deve \textbf{rodar do início ao fim sem erro} com
+        \emph{Kernel $\to$ Restart \& Run All}, com os dois \cod{.csv} na mesma pasta
+        dele, sem baixar nada da internet. Em um computador comum, a execução
+        completa deve levar no máximo uns 20 minutos: se passar disso, reduza grades
+        ou o número de árvores e diga que reduziu.
+  \item \textbf{Bibliotecas}: \cod{numpy}, \cod{pandas}, \cod{matplotlib},
+        \cod{scipy} e \cod{scikit-learn} (versão $\ge 1.2$; o trabalho foi testado
+        na 1.9). Nada de outras bibliotecas de aprendizado de máquina.
+  \item \textbf{Reprodutibilidade}: use as sementes do enunciado onde ele as fixa, e
+        fixe você mesmo (\cod{random\_state} ou \cod{np.random.default\_rng}) toda
+        outra aleatoriedade.
+  \item \textbf{O conjunto de teste de cada parte é tocado uma única vez}, nas
+        tarefas R8 e C7. Toda escolha anterior --- de modelo, de hiperparâmetro, de
+        corte --- é feita por validação cruzada \emph{dentro do treino}. Usar o
+        teste antes disso para escolher qualquer coisa invalida a tarefa
+        correspondente.
+  \item \textbf{Gráficos} com eixos rotulados e unidades. \textbf{Tabelas} com
+        poucas casas decimais --- três ou quatro algarismos significativos bastam.
+  \item O trabalho é \textbf{individual}. Pode (e deve) reaproveitar código das
+        aulas práticas e das listas; o que se exige é que cada resposta escrita seja
+        sua.
+\end{enumerate}
+
+\noindent
+\textbf{Distribuição dos pontos.} Parte~I, 4,5 pontos; Parte~II, 4,5 pontos;
+\textbf{qualidade do notebook}, 1,0 ponto --- roda do começo ao fim, está
+organizado por tarefa, explica \emph{antes} de cada bloco de código o que ele vai
+fazer, tem gráficos legíveis, e não toca o teste antes da hora.
+
+\begin{criterio}
+\textbf{Qualidade (1,0).} 0,3 roda sem erro do começo ao fim (se não roda, mas as
+saídas entregues são coerentes com o código, 0,15); 0,3 organização por tarefa e
+texto antes do código; 0,2 gráficos e tabelas legíveis; 0,2 teste tocado só em R8 e
+C7. Quem escolheu modelo, hiperparâmetro ou corte olhando o teste perde esses 0,2
+\emph{e} a nota da tarefa em que fez a escolha.
+\end{criterio}
+
+%==============================================================================
+\section{Os dados}
+%==============================================================================
+Os dois conjuntos são do \emph{UCI Machine Learning Repository}
+(\url{https://archive.ics.uci.edu}), um dos repositórios públicos de dados mais
+usados em aprendizado de máquina; os dois também estão no Kaggle. Ambos são
+distribuídos sob a licença CC~BY~4.0, que exige citar a fonte --- e é isso que o seu
+notebook deve fazer na primeira célula. Os arquivos que você recebe são os originais,
+convertidos de planilha para \cod{.csv} \textbf{sem limpeza nenhuma}: só os nomes das
+colunas do concreto foram traduzidos, e a resposta do crédito foi renomeada para
+\cod{default}. Tudo o que houver de estranho nos dados está lá de propósito --- ou
+melhor, está lá porque dados reais são assim.
+
+\subsection{Parte I --- \texttt{concreto.csv}: resistência do concreto à compressão}
+
+\noindent\textbf{Fonte.} I.-C. Yeh (1998), ``Modeling of strength of
+high-performance concrete using artificial neural networks'', \emph{Cement and
+Concrete Research} 28(12), 1797--1808. Repositório UCI, \emph{Concrete Compressive
+Strength}, DOI \href{https://doi.org/10.24432/C5PK67}{10.24432/C5PK67}.
+
+\medskip\noindent\textbf{O problema.} O concreto é o material mais usado na
+engenharia civil, e a sua resistência à compressão é a propriedade que define para
+que ele serve. Ela depende da \emph{receita} --- as quantidades de cimento, água,
+aditivos e agregados em um metro cúbico de mistura, o que os engenheiros chamam de
+\textbf{traço} --- e da \textbf{idade}: o concreto continua ganhando resistência por
+meses depois de moldado. Medir a resistência exige moldar corpos de prova, esperar e
+rompê-los numa prensa, o que é caro e lento --- a norma usual é esperar 28 dias. Um
+bom preditor permitiria estimar a resistência de um traço \emph{novo} antes de
+ensaiá-lo.
+
+\medskip\noindent\textbf{As variáveis.} São $n=1030$ ensaios de laboratório, sem
+valores faltantes:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{coluna} & \textbf{significado} & \textbf{unidade} \\
+\midrule
+\cod{cimento}            & cimento Portland                               & kg/m$^3$ de mistura \\
+\cod{escoria}            & escória de alto-forno (subproduto siderúrgico)  & kg/m$^3$ \\
+\cod{cinza\_volante}     & cinza volante (subproduto de termelétricas)    & kg/m$^3$ \\
+\cod{agua}               & água                                           & kg/m$^3$ \\
+\cod{superplastificante} & aditivo que dá fluidez com menos água          & kg/m$^3$ \\
+\cod{agregado\_graudo}   & brita                                          & kg/m$^3$ \\
+\cod{agregado\_miudo}    & areia                                          & kg/m$^3$ \\
+\cod{idade}              & idade do corpo de prova no ensaio              & dias (1 a 365) \\
+\midrule
+\cod{resistencia}        & \textbf{resposta}: resistência à compressão    & MPa \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+Um fato da engenharia que vai ser útil: a \textbf{lei de Abrams} (1918) diz que, para
+os mesmos materiais, a resistência cai com a \textbf{razão água/cimento} --- é a
+regra mais antiga e mais citada da dosagem de concreto.
+
+\subsection{Parte II --- \texttt{credito.csv}: inadimplência no cartão de crédito}
+
+\noindent\textbf{Fonte.} I.-C. Yeh e C.-H. Lien (2009), ``The comparisons of data
+mining techniques for the predictive accuracy of probability of default of credit
+card clients'', \emph{Expert Systems with Applications} 36(2), 2473--2480.
+Repositório UCI, \emph{Default of Credit Card Clients}, DOI
+\href{https://doi.org/10.24432/C55S3H}{10.24432/C55S3H}.
+
+\medskip\noindent\textbf{O problema.} São $n=30\,000$ clientes de um banco de
+Taiwan, acompanhados de abril a setembro de 2005. Para cada um, sabe-se o limite de
+crédito, alguns dados cadastrais e o histórico dos últimos seis meses --- se pagou
+em dia ou com atraso, quanto veio na fatura e quanto pagou. A resposta é se o
+cliente \textbf{ficou inadimplente no mês seguinte} (outubro de 2005). Os valores
+estão em dólares de Taiwan (NT\$).
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lp{10.6cm}@{}}
+\toprule
+\textbf{coluna} & \textbf{significado} \\
+\midrule
+\cod{ID}          & número do cliente \\
+\cod{LIMIT\_BAL}  & limite de crédito concedido (NT\$), individual mais o da família \\
+\cod{SEX}         & 1 = masculino; 2 = feminino \\
+\cod{EDUCATION}   & 1 = pós-graduação; 2 = universidade; 3 = ensino médio; 4 = outros \\
+\cod{MARRIAGE}    & 1 = casado(a); 2 = solteiro(a); 3 = outros \\
+\cod{AGE}         & idade (anos) \\
+\cod{PAY\_0}, \cod{PAY\_2}, \dots, \cod{PAY\_6}
+                  & situação do pagamento em setembro (\cod{PAY\_0}), agosto
+                    (\cod{PAY\_2}), \dots, abril (\cod{PAY\_6}): $-1$ = pagou em dia;
+                    $1$ = um mês de atraso; $2$ = dois meses; \dots; $9$ = nove meses
+                    ou mais. (Não existe \cod{PAY\_1}: o nome é assim no original.) \\
+\cod{BILL\_AMT1}, \dots, \cod{BILL\_AMT6}
+                  & valor da fatura (NT\$) em setembro, agosto, \dots, abril \\
+\cod{PAY\_AMT1}, \dots, \cod{PAY\_AMT6}
+                  & valor pago (NT\$) em setembro, agosto, \dots, abril \\
+\midrule
+\cod{default}     & \textbf{resposta}: 1 se ficou inadimplente em outubro, 0 se não \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+A descrição acima é a da documentação oficial. Você vai encontrar nos dados códigos
+que ela \emph{não} descreve; tratá-los é parte da Tarefa~C1.
+
+%==============================================================================
+\section{Parte I --- Regressão: a resistência do concreto \hfill (4,5 pontos)}
+%==============================================================================
+
+%------------------------------------------------------------------------------
+\tarefa{R1}{Conhecendo os dados}{0,6 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 01 e 03.} Antes de ajustar qualquer coisa, olhe para os dados.
+
+\begin{itens}
+  \item Quantas observações e covariáveis há? O problema é de regressão ou de
+        classificação? Justifique pelo critério da Aula~01, e não pelo tipo da
+        coluna no \cod{pandas}.
+  \item Faça o histograma da resistência e os diagramas de dispersão da resistência
+        contra a idade e contra a razão água/cimento. Qual das relações é mais
+        visivelmente não linear? Em que idades os ensaios foram feitos?
+  \item Procure \textbf{linhas duplicadas}: linhas inteiramente idênticas a outra, e
+        linhas com as mesmas oito covariáveis. Quantas há de cada tipo? Uma
+        resistência medida em laboratório, igual a outra até a oitava casa decimal,
+        é um segundo ensaio ou outra coisa? Decida o que fazer com as linhas
+        inteiramente repetidas, \textbf{justifique}, e siga com essa decisão no resto
+        da Parte~I.
+  \item Os grupos de linhas com as mesmas oito covariáveis e resistências
+        \emph{diferentes} são \textbf{réplicas}: o mesmo experimento repetido. Com
+        eles dá para estimar o erro irredutível $\sigma^2=\Var(Y\mid\X=\x)$ sem modelo
+        nenhum, pela variância combinada dentro dos grupos,
+        \[
+          \widehat\sigma^2=\frac{\sum_g\sum_{i\in g}(Y_i-\bar Y_g)^2}{\sum_g(n_g-1)},
+        \]
+        em que $g$ percorre os grupos de réplicas, $n_g$ é o tamanho do grupo e $\bar
+        Y_g$ a sua média. Calcule $\widehat\sigma^2$ \emph{antes} e \emph{depois} da
+        decisão do item~(c), com os graus de liberdade $\sum_g(n_g-1)$ de cada caso, e
+        um intervalo de 95\% para $\sigma^2$ supondo normalidade e variância
+        constante. O que essa estimativa diz sobre o menor erro quadrático médio que
+        \emph{qualquer} preditor poderia atingir (Aula~01)? E quão confiável ela é?
+  \item O mesmo \textbf{traço} (as sete quantidades de ingredientes) foi ensaiado em
+        várias idades. Crie uma coluna que identifique o traço,
+\begin{lstlisting}
+componentes = ["cimento", "escoria", "cinza_volante", "agua",
+               "superplastificante", "agregado_graudo", "agregado_miudo"]
+concreto["traco"] = concreto.groupby(componentes).ngroup()
+\end{lstlisting}
+        e conte: quantos traços distintos há, e quantas linhas por traço? Por que
+        isso significa que as linhas da tabela \emph{não} são observações
+        independentes umas das outras?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} $n=1030$, $p=8$, todas quantitativas e sem faltantes. A resposta é
+quantitativa --- faz sentido uma ``resistência média'' ---, então é regressão.
+
+\textbf{(b)} A idade é a relação mais não linear: sobe depressa nas primeiras semanas e
+quase estabiliza depois de 90 dias, o que sugere $\log(\text{idade})$. A razão
+água/cimento tem relação decrescente e razoavelmente monótona (Abrams). Os ensaios
+concentram-se em 14 idades; 28 dias tem 425 das 1030 linhas.
+
+\textbf{(c)} 25 linhas são idênticas a uma anterior, e 34 repetem as oito
+covariáveis. Uma medida contínua repetida até a oitava casa não é réplica: é registro
+duplicado. O esperado é remover as 25, ficando com $n=1005$. (Manter e justificar ---
+``não sei se são erros'' --- é aceitável, desde que a consequência para o item~(d) seja
+discutida.)
+
+\textbf{(d)} Com as duplicatas: 19 grupos, 34 graus de liberdade,
+$\widehat\sigma^2=25{,}1$, IC~$(16{,}4;\ 43{,}1)$. Sem elas: 9 grupos, 9 graus de
+liberdade, $\widehat\sigma^2=64{,}6$, IC~$(30{,}6;\ 215{,}5)$. Os zeros das duplicatas
+puxavam a estimativa para baixo e davam uma falsa precisão; o que sobra é
+praticamente inútil --- um intervalo que vai de 31 a 215. A leitura correta: o piso do
+risco existe (Aula~01, $\E[\Var(Y\mid\X)]$), mas estes dados quase não o identificam;
+e, com variância não constante, as poucas réplicas nem representariam todas as regiões
+do espaço. (Na Tarefa~R8 os melhores modelos ficam com EQM de validação em torno de
+35, compatível com o intervalo.)
+
+\textbf{(e)} 428 traços para 1005 linhas; 246 traços aparecem uma vez e 77 aparecem
+cinco vezes. Linhas do mesmo traço compartilham a receita --- e o que quer que tenha
+acontecido no preparo daquela mistura ---, então não são independentes: o traço é a
+unidade, a linha é uma medida repetida dela.
+\end{solucao}
+
+\begin{criterio}
+0,1 por item, e 0,2 no (d). No (c), a nota vem da justificativa: remover sem dizer
+por quê vale metade. No (d), exigir os dois cálculos e a leitura de que 9 graus de
+liberdade não sustentam conclusão; o intervalo pode ser qualquer um corretamente
+justificado.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R2}{Protocolo de avaliação}{0,4 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 01, 03 e 06.} A pergunta que o preditor responde é: \emph{qual a
+resistência de um traço que ainda não foi ensaiado?}
+
+\begin{itens}
+  \item Separe o conjunto de teste \textbf{por traço}, exatamente assim:
+\begin{lstlisting}
+import sklearn.model_selection as skm
+separa = skm.GroupShuffleSplit(n_splits=1, test_size=0.25, random_state=2026)
+i_tr, i_te = next(separa.split(X, y, groups=concreto["traco"]))
+\end{lstlisting}
+        Quantas linhas e quantos traços ficaram em cada lado? Confira que nenhum
+        traço aparece nos dois.
+  \item Por que separar por traço, e não por linha com \cod{train\_test\_split}? Que
+        tipo de vazamento da hierarquia da Aula~06 a separação por linha produziria,
+        e para qual pergunta ela seria, ao contrário, a separação certa?
+  \item Toda escolha de hiperparâmetro da Parte~I será feita por validação cruzada
+        de 5 dobras \textbf{em grupo}, dentro do treino, passando \cod{groups=} os
+        traços do treino:
+\begin{lstlisting}
+dobras = skm.GroupKFold(n_splits=5, shuffle=True, random_state=0)
+\end{lstlisting}
+        Reporte sempre o risco estimado como
+        \textbf{média $\pm$ erro-padrão} das cinco dobras. O que esse erro-padrão
+        mede, e o que ele \emph{não} mede?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} 756 linhas no treino e 249 no teste (a proporção de 25\% é de traços,
+não de linhas); nenhum traço em comum.
+
+\textbf{(b)} Com a separação por linha, o mesmo traço, ensaiado em outra idade, ficaria
+no treino e no teste --- ``a mesma unidade dos dois lados'', um vazamento
+\textbf{grave} da hierarquia da Aula~06, que nenhum \emph{pipeline} conserta. O teste
+mediria o acerto em traços já conhecidos. A separação por linha seria a certa para
+outra pergunta: prever a resistência de um traço já ensaiado, numa idade que ainda não
+foi.
+
+\textbf{(c)} O erro-padrão mede a variabilidade entre as cinco dobras --- quanto a
+estimativa dependeria de quais traços caíram em cada uma. Não mede a variabilidade da
+amostra inteira (outro conjunto de 428 traços), e é otimista mesmo como medida da
+primeira coisa, porque as dobras compartilham treino e as cinco estimativas não são
+independentes (Aula~03).
+\end{solucao}
+
+\begin{criterio}
+0,1 no (a); 0,2 no (b) --- 0,1 por nomear o vazamento, 0,1 por identificar a
+pergunta para a qual a separação por linha serviria; 0,1 no (c). No (c), aceitar a
+resposta sem a ressalva da dependência entre dobras, desde que diga o que o EP mede.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R3}{Modelos lineares e regularização}{0,9 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 01, 02 e 06.}
+
+\begin{itens}
+  \item Estime o risco do \textbf{preditor constante} (a média do treino,
+        \cod{DummyRegressor}) e do \textbf{MQO} nas oito covariáveis originais. Some
+        as sete colunas de ingredientes linha a linha: o que você observa? Calcule o
+        número de condição de $\mathbb{X}^\top\mathbb{X}$ (com a coluna de uns) nas
+        escalas original e padronizada. Com isso em mente, faz sentido ler o
+        coeficiente da água como ``o efeito de aumentar a água em 1~kg/m$^3$
+        mantendo as outras covariáveis fixas''?
+  \item Acrescente duas covariáveis construídas, $\log(\text{idade})$ no lugar da
+        idade e a razão água/cimento, e reestime o risco do MQO. Por que o modelo
+        continua sendo uma regressão \emph{linear}? De onde veio o ganho, em termos
+        de viés e variância?
+  \item Sobre as covariáveis de (b), faça a expansão polinomial de grau~2
+        (\cod{PolynomialFeatures}) e ajuste MQO, Ridge e Lasso, com a padronização
+        \emph{dentro} do \emph{pipeline}. Escolha o $\lambda$ de cada um por validação
+        cruzada numa grade logarítmica e mostre a curva do risco estimado contra
+        $\lambda$, com barras de um erro-padrão. Aplique também a \textbf{regra de um
+        erro-padrão}. Quantos coeficientes o Lasso zera em cada escolha? Faça o
+        gráfico do caminho de regularização do Lasso.
+  \item Por que foi preciso padronizar antes do Ridge e do Lasso, e não antes do
+        MQO? O $\lambda$ escolhido para o Ridge e o escolhido para o Lasso podem ser
+        comparados diretamente no \cod{scikit-learn}?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Constante: $250{,}5\pm21{,}7$. MQO original: $105{,}4\pm5{,}6$. Os sete
+ingredientes somam quase o mesmo valor em toda linha (média 2339, desvio
+$63{,}8$~kg/m$^3$) --- é a massa de um metro cúbico de concreto. Com o intercepto, as
+colunas ficam quase linearmente dependentes: número de condição $1{,}0\times10^{10}$
+na escala original, $72$ padronizado (a padronização resolve a parte numérica, não a
+colinearidade de fundo). ``Aumentar a água mantendo o resto fixo'' descreve uma
+mistura que muda de volume --- que não existe; aumentar a água é, na prática,
+diminuir outra coisa. O coeficiente é uma comparação entre misturas que diferem em
+tudo, e não um efeito causal.
+
+\textbf{(b)} $51{,}5\pm3{,}4$: o risco cai à metade. O modelo continua linear
+\emph{nos parâmetros} (Aula~02); as covariáveis é que são funções dos dados. O ganho
+é de \textbf{viés}: a classe de funções passou a conter formas (crescimento
+logarítmico, efeito da razão) que a reta nas covariáveis originais não alcançava,
+com só um parâmetro a mais.
+
+\textbf{(c)} Com 54 covariáveis: MQO $53{,}7\pm7{,}9$; Ridge $43{,}8\pm4{,}3$ no
+mínimo ($\alpha\approx4$) e $46{,}7\pm3{,}5$ pela regra 1-EP ($\alpha\approx63$); Lasso
+$44{,}7\pm5{,}3$ no mínimo ($\alpha\approx0{,}012$, 37 de 54 coeficientes não nulos) e
+$48{,}4\pm3{,}5$ pela regra 1-EP ($\alpha\approx0{,}14$, 23 não nulos). A expansão
+sozinha piora o MQO por variância; a penalização recupera. Leituras esperadas: a regra
+1-EP troca pouco risco por um modelo bem mais simples; o $\lambda$ que melhor prediz
+não é o que melhor seleciona (Aula~02).
+
+\textbf{(d)} A penalização soma $\beta_j^2$ ou $\abs{\beta_j}$, que dependem da
+unidade da covariável; o MQO é equivariante (a predição não muda). E não: o
+\cod{Ridge} minimiza $\norm{\bm y-\mathbb X\bbeta}^2+\alpha\norm{\bbeta}^2$ e o
+\cod{Lasso}, $\frac1{2n}\norm{\bm y-\mathbb X\bbeta}^2+\alpha\norm{\bbeta}_1$ --- há um
+fator $2n$ entre as escalas de $\alpha$ (Aula~02, ``um detalhe de escala'').
+\end{solucao}
+
+\begin{criterio}
+(a) 0,25 --- 0,05 pelos riscos, 0,1 pela soma e pelo número de condição, 0,1 pela
+leitura do coeficiente. (b) 0,15. (c) 0,35 --- 0,1 pela validação sem vazamento
+(padronização no \emph{pipeline}, dobras em grupo), 0,1 pelas curvas, 0,1 pela regra
+1-EP e contagem de zeros, 0,05 pelo caminho. (d) 0,15. Grades que param na borda
+(o $\lambda$ escolhido é o menor ou o maior da grade) sem comentário perdem 0,05.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R4}{Validação cruzada por dentro, LOOCV e \emph{bootstrap}}{0,6 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 02 e 03.} Use o MQO com as covariáveis de R3(b).
+
+\begin{itens}
+  \item Implemente à mão a validação cruzada em grupo, dobra a dobra, com as dobras
+        de R2(c). As dobras têm o mesmo tamanho? Calcule o risco pela média
+        \emph{simples} dos cinco EQM e pela média \emph{ponderada} pelo tamanho das
+        dobras (a fórmula das notas da Aula~03), e compare com o
+        \cod{cross\_val\_score}.
+  \item Calcule o LOOCV de duas formas: com $n$ ajustes, e pelo atalho da
+        \emph{leverage} $h_{ii}$ (Proposição da Aula~03), com um único ajuste. Confira
+        que coincidem. O LOOCV fica acima ou abaixo da validação em grupo? Por quê, e
+        qual dos dois responde à pergunta de R2?
+  \item Estime o erro-padrão de cada coeficiente de três formas: pela fórmula
+        clássica, a raiz da diagonal de
+        $\widehat\sigma^2(\mathbb{X}^\top\mathbb{X})^{-1}$, com
+        $\widehat\sigma^2=\text{RSS}/(n-p-1)$; por \emph{bootstrap} das
+        \textbf{linhas}; e por \emph{bootstrap} dos \textbf{traços} --- sorteando traços
+        inteiros, com reposição, e levando todas as linhas de cada traço sorteado. Use
+        $B=2000$ e o gerador \cod{np.random.default\_rng(2026)}. Compare as três
+        colunas. Qual reamostragem imita o jeito como os dados foram coletados?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Não: 160, 150, 153, 147 e 146 linhas, porque os traços têm tamanhos
+diferentes. Média simples $51{,}526$ (igual ao \cod{cross\_val\_score}, que faz a
+média não ponderada); ponderada $51{,}429$. A diferença é pequena, e a razão é a da
+Aula~03: as duas fórmulas só coincidem quando as dobras têm o mesmo tamanho.
+
+\textbf{(b)} Atalho e explícito dão $49{,}3603$ até a sexta casa. O LOOCV fica
+\emph{abaixo} da validação em grupo ($51{,}53$): ao deixar uma linha de fora, as outras
+idades do mesmo traço continuam no treino, e o modelo ``já conhece'' aquela receita.
+O LOOCV responde a ``prever um ensaio novo de um traço conhecido''; a pergunta de R2 é
+a da validação em grupo. Para o MQO, com 10 parâmetros, a diferença é pequena --- o
+modelo quase não consegue decorar traços. Em R7 ela aparece grande nos modelos
+flexíveis.
+
+\textbf{(c)} Para $\log(\text{idade})$: $0{,}218$, $0{,}220$ e $0{,}304$; para a
+razão água/cimento: $2{,}10$, $2{,}31$ e $3{,}45$. O \emph{bootstrap} das linhas
+reproduz aproximadamente a fórmula clássica (e é um pouco maior, porque não supõe
+variância constante); o dos traços dá erros-padrão cerca de 1,5 vez maiores em quase
+todos os coeficientes. Os dados foram coletados por traço --- cada receita, ensaiada
+em várias idades ---, e a reamostragem que imita isso é a dos traços. As outras duas
+tratam as linhas como independentes e subestimam a incerteza.
+\end{solucao}
+
+\begin{criterio}
+(a) 0,2; (b) 0,2 --- 0,1 pela igualdade, 0,1 pela comparação com a validação em
+grupo; (c) 0,2 --- 0,1 pelos três cálculos, 0,1 pela leitura. Implementar o
+\emph{bootstrap} dos traços errado (sorteando linhas dentro de traços, por exemplo)
+vale metade do (c) se a leitura estiver certa.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R5}{Métodos não paramétricos: KNN e \emph{splines}}{0,5 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 03, 04 e 06.}
+
+\begin{itens}
+  \item Ajuste o KNN com as covariáveis padronizadas, escolhendo $k$ de 1 a 30 por
+        validação cruzada, e mostre a curva do risco estimado contra $k$. Qual $k$
+        foi escolhido? Ajuste também o KNN \emph{sem} padronizar, com $k=5$, e
+        explique a diferença.
+  \item Ajuste um modelo aditivo de \emph{splines} cúbicos: cada covariável ganha a
+        sua própria base (\cod{SplineTransformer}), e uma Ridge ajusta os
+        coeficientes. Escolha o número de nós e o $\lambda$ por validação cruzada,
+        com os nós em duas posições --- igualmente espaçados no intervalo de cada
+        covariável (\cod{knots="uniform"}, o padrão) e nos quantis
+        (\cod{knots="quantile"}). Compare as duas curvas do risco contra o número de
+        nós. Por que uma delas se comporta de forma tão errática? (Pense na
+        distribuição da idade.)
+  \item O KNN e os \emph{splines} são suavizadores lineares (Aula~04). O que isso
+        quer dizer? O atalho do LOOCV de R4(b) vale para os dois?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} A validação escolhe $k=1$ ($57{,}3\pm4{,}1$), e a curva cresce
+monotonamente com $k$ --- com poucos traços parecidos entre si, o vizinho mais
+próximo é o único que ajuda. (O mesmo acontece com as covariáveis construídas:
+$55{,}4$.) Sem padronizar, $k=5$ dá $88{,}0\pm2{,}0$: a distância euclidiana passa a
+ser dominada pelas colunas de maior amplitude (agregados, cimento, escória, em
+centenas de kg), e a idade --- que é a covariável mais informativa --- quase não pesa.
+
+\textbf{(b)} Nós nos quantis: a curva é plana, entre $34{,}3$ e $40{,}8$ para 3 a 15
+nós, e a escolha é 12 nós com $\alpha=1$, risco $34{,}3\pm1{,}6$. Nós uniformes: a curva
+salta --- $36{,}8$ com 10 nós, $83{,}5$ com 12, $36{,}6$ com 15. A idade vai de 1 a 365
+dias, mas 90\% dos ensaios têm até 100 dias: nós uniformes caem em regiões quase
+vazias, os coeficientes dessas funções da base ficam mal determinados, e a
+extrapolação dentro de cada dobra explode. Nós nos quantis põem as funções da base
+onde há dados.
+
+\textbf{(c)} A predição é $\sum_i\ell_i(\x)Y_i$ com pesos que dependem só das
+covariáveis. O atalho vale para os \emph{splines} com a Ridge de $\lambda$ fixo (a
+matriz chapéu existe e tirar uma linha só reescala a solução), mas \textbf{não} para o
+KNN: tirar $\X_i$ muda quem são os vizinhos, e a fórmula devolve o LOOCV do
+$(k-1)$-NN (Aula~04).
+\end{solucao}
+
+\begin{criterio}
+(a) 0,2 --- 0,1 pela curva e escolha, 0,1 pela explicação da escala; (b) 0,2 ---
+0,1 pelo ajuste, 0,1 pela explicação da diferença entre as posições dos nós;
+(c) 0,1. Não exigir que o aluno acerte a causa exata do comportamento errático;
+exigir que ele o note e o relacione à distribuição das covariáveis.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R6}{Árvores, \emph{bagging} e florestas}{0,5 ponto}
+%------------------------------------------------------------------------------
+\emph{Aula 05.}
+
+\begin{itens}
+  \item Ajuste uma árvore de regressão cheia e calcule o seu erro de treino e o seu
+        risco estimado. Pode por custo--complexidade, escolhendo \cod{ccp\_alpha}
+        por validação cruzada. Desenhe a árvore com profundidade~3
+        (\cod{plot\_tree}) e interprete os três primeiros cortes em linguagem de
+        engenheiro.
+  \item Ajuste o \emph{bagging} e florestas aleatórias com $m$ (\cod{max\_features})
+        de 1 a 8. Mostre o risco estimado contra $m$. Qual é o padrão de
+        \cod{max\_features} no \cod{RandomForestRegressor}, e o que isso quer dizer?
+        Use a Aula~05 ($\rho\,v$) para explicar a forma da curva.
+  \item Mostre o risco estimado da floresta escolhida contra o número de árvores
+        $B$, de 1 a algumas centenas. Por que $B$ não é escolhido por validação
+        cruzada como $m$?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} A árvore cheia tem 740 folhas e erro de treino $0{,}05$ --- não é zero
+porque as réplicas, com as mesmas covariáveis e respostas diferentes, não podem ser
+separadas ---, e risco estimado $56{,}4\pm2{,}8$. A poda escolhe um $\alpha$ pequeno
+(320 folhas) e quase não ajuda: $55{,}9\pm2{,}5$. Os primeiros cortes são na idade e
+no cimento: ensaios de poucos dias têm resistência baixa qualquer que seja a
+receita, e entre os mais velhos, mais cimento dá mais resistência.
+
+\textbf{(b)} De $47{,}3$ ($m=1$) o risco cai até $35{,}5$ ($m=5$) e fica praticamente
+plano até o \emph{bagging} ($m=8$: $36{,}3$); todas as diferenças de $m=3$ em diante
+estão dentro de um erro-padrão (cerca de $4{,}3$). O padrão do
+\cod{RandomForestRegressor} é \cod{max\_features=1.0}, isto é, todas as covariáveis:
+é \emph{bagging}, e não floresta. Com $m=1$ as árvores ficam descorrelacionadas mas
+fracas demais (o $v$ e o viés sobem mais do que o $\rho$ cai); com $p=8$ covariáveis,
+das quais poucas dominam, há pouco a descorrelacionar.
+
+\textbf{(c)} De $87{,}9$ com uma árvore o risco desce a $38{,}6$ com 10, $35{,}9$ com
+50 e estaciona em $35{,}2$--$35{,}5$ de 100 a 400. Aumentar $B$ só reduz o termo
+$(1-\rho)v/B$, e não há superajuste em $B$ (Aula~05): basta um $B$ grande o bastante.
+\end{solucao}
+
+\begin{criterio}
+(a) 0,2 --- 0,1 pelos números e pela poda, 0,1 pela interpretação da árvore;
+(b) 0,2 --- inclui dizer que o padrão é \emph{bagging}; (c) 0,1.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R7}{Escala e vazamento, medidos}{0,5 ponto}
+%------------------------------------------------------------------------------
+\emph{Aula 06.}
+
+\begin{itens}
+  \item Troque a unidade da idade de dias para horas (multiplique por 24) e
+        reestime o risco do MQO, de um Lasso padronizado com $\lambda$ fixo, do KNN
+        com $k=5$ com e sem padronização, da árvore podada e da floresta. Quem muda?
+        Explique usando as três categorias da Aula~06.
+  \item Para o MQO de R3(b), o Lasso de R3(c), os \emph{splines} de R5(b), a floresta de
+        R6(b) e o KNN padronizado com $k=1$, compare o risco estimado pela validação
+        em grupo com o estimado por \cod{skm.KFold(5, shuffle=True, random\_state=0)},
+        que ignora os traços. Em quais modelos a diferença é grande, e por quê? A
+        validação por linha é \emph{sempre} otimista?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Só o KNN sem padronizar muda: de $88{,}0$ para $63{,}4$. MQO
+($105{,}4$), Lasso padronizado ($119{,}3$), KNN padronizado ($85{,}4$), árvore e floresta
+ficam idênticos até a terceira casa. O MQO é equivariante à escala; o Lasso e o KNN
+padronizados absorvem a mudança no \cod{StandardScaler}; árvore e floresta comparam
+valores dentro de cada coluna. O KNN cru é o único que enxerga a unidade --- e aqui
+melhora por acaso, porque em horas a idade (a covariável mais informativa) passa a
+dominar a distância. Quem decidiu foi a unidade de medida, não o analista.
+
+\textbf{(b)} \cod{KFold} contra \cod{GroupKFold}: MQO $49{,}6$ e $51{,}5$; Lasso
+$34{,}5$ e $44{,}7$; \emph{splines} $28{,}7$ e $34{,}3$; floresta
+$21{,}8$ e $35{,}5$; KNN $k=1$ padronizado $77{,}0$ e $57{,}3$. Quanto mais flexível o
+modelo, mais ele aproveita ter visto o mesmo traço em outra idade: a floresta parece
+38\% melhor do que é. Mas a validação por linha \textbf{não} é sempre otimista: no
+1-NN ela é \emph{pessimista}, porque o vizinho mais próximo de uma linha passa a ser o
+mesmo traço numa idade diferente, e a resistência muda muito com a idade. O que é
+certo é que ela responde à pergunta errada.
+\end{solucao}
+
+\begin{criterio}
+(a) 0,2 --- 0,1 pelos números, 0,1 pela explicação por categoria; (b) 0,3 --- 0,15
+pelos números e por identificar os flexíveis como os mais afetados, 0,15 pela
+discussão de que o viés não tem sinal garantido (o KNN) e de que o problema é a
+pergunta. Quem não testar o 1-NN mas disser, justificadamente, que o sinal depende do
+modelo, recebe a nota cheia.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{R8}{Escolha final e teste}{0,5 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 01 e 03.}
+
+\begin{itens}
+  \item Monte uma tabela com o risco estimado ($\pm$ erro-padrão) de pelo menos um
+        modelo de cada família: constante, linear regularizado, KNN,
+        \emph{splines}, árvore e floresta. Escolha \textbf{um} modelo final e
+        justifique --- a regra de um erro-padrão pode entrar no argumento.
+  \item Reajuste o modelo escolhido em \emph{todo} o treino e meça, \textbf{uma
+        vez}, o EQM no teste, com o intervalo de 95\% da Aula~01 e o $R^2$. O EQM de
+        teste ficou acima ou abaixo da estimativa da validação cruzada? Compare a
+        variância da resistência no treino e no teste antes de concluir.
+  \item Só agora, calcule o EQM de teste dos outros finalistas --- para leitura, sem
+        trocar a escolha. Os intervalos se sobrepõem? Algum modelo foi muito pior no
+        teste do que a validação previa? Investigue os maiores erros dele: as
+        covariáveis dessas observações estão dentro do intervalo visto no treino?
+  \item Em um parágrafo, para uma engenheira que não fez este curso: o que o modelo
+        consegue prever, com que erro típico (em MPa), e em que situação você não
+        confiaria nele.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Na validação: \emph{splines} com nós nos quantis $34{,}3\pm1{,}6$,
+floresta ($m=5$) $35{,}5\pm4{,}5$, \emph{bagging} $36{,}3\pm4{,}5$, Ridge grau~2
+$43{,}8$, Lasso $44{,}7$, MQO com covariáveis construídas $51{,}5$, KNN e árvore
+$55$--$57$, constante $250$. \emph{Splines} e floresta empatam dentro de um
+erro-padrão; qualquer um dos dois, bem justificado, é aceitável. A resolução fica com
+o de menor risco estimado, os \emph{splines}, que têm de quebra a vantagem de ser
+aditivos (o efeito de cada covariável é uma curva que se desenha).
+
+\textbf{(b)} \emph{Splines} no teste: EQM $50{,}5$, IC~$(36{,}4;\ 64{,}7)$,
+$R^2=0{,}837$. O EQM ficou acima da validação ($34{,}3$), e há duas razões. A
+primeira é que o teste é mais difícil: a variância da resistência é $310{,}6$ no teste
+contra $248{,}2$ no treino, e o preditor constante vai de $250$ na validação para
+$317$ no teste --- a mesma razão, $1{,}27$. É a variabilidade de sortear 107 traços,
+não sinal de superajuste. A segunda está no item~(c).
+
+\textbf{(c)} Floresta $45{,}8\pm13{,}9$, Lasso 1-EP $48{,}9\pm11{,}8$, MQO construído
+$56{,}4\pm12{,}3$, KNN $65{,}4\pm15{,}6$, árvore $92{,}7\pm25{,}0$: os intervalos dos
+bons modelos se sobrepõem, e o teste não os distingue. Mas os \emph{splines}, que
+ganharam na validação, ficaram atrás da floresta, e o diagnóstico acha a causa: um
+traço do teste (5 linhas) tem água ($126{,}6$) abaixo e agregado miúdo ($992{,}6$)
+acima de tudo o que havia no treino, e três dos seis maiores erros dos \emph{splines}
+são dele. Sem essas 5 linhas, o EQM deles cai para $41{,}4$; o da floresta, constante
+fora dos dados, fica em $46{,}5$. A base cúbica extrapola --- é a razão de existirem os
+\emph{natural splines} (Aula~04). A escolha \textbf{não} muda por causa disso: o teste
+mede, não escolhe; mas o relatório tem de contar.
+
+\textbf{(d)} Algo como: ``prevê a resistência de um traço novo com erro típico de uns
+7~MPa (a raiz do EQM de teste), explicando 84\% da variação entre ensaios; não
+confiaria para traços fora da faixa de dosagens dos dados --- por exemplo, com menos
+água ou mais areia do que qualquer mistura ensaiada ---, nem para idades fora de 1 a
+365 dias.''
+\end{solucao}
+
+\begin{criterio}
+(a) 0,15; (b) 0,15 --- a comparação das variâncias é o que se quer; (c) 0,1 ---
+exigir que o aluno \emph{investigue} o pior caso, e não que ache exatamente a
+extrapolação (se o modelo dele não tiver o problema, vale olhar os maiores erros do
+que tiver); (d) 0,1 --- erro em MPa, não em MPa$^2$.
+\end{criterio}
+
+%==============================================================================
+\section{Parte II --- Classificação: inadimplência no cartão \hfill (4,5 pontos)}
+%==============================================================================
+
+%------------------------------------------------------------------------------
+\tarefa{C1}{Conhecendo os dados}{0,4 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 06, 07 e 08.}
+
+\begin{itens}
+  \item Qual a proporção de inadimplentes? Qual a acurácia do classificador que diz
+        ``ninguém fica inadimplente''? O que isso antecipa sobre a acurácia como
+        métrica neste problema?
+  \item Tabele os valores de \cod{SEX}, \cod{EDUCATION}, \cod{MARRIAGE} e
+        \cod{PAY\_0}. Que códigos aparecem sem estar na documentação? Decida o que
+        fazer com eles e justifique. Quais dessas colunas são nominais, e o que isso
+        exige antes de usá-las num modelo que soma covariáveis? E o \cod{ID}?
+  \item Os \cod{PAY\_*} misturam atrasos (1 a 9 meses, uma escala ordinal) com
+        códigos ($-2$, $-1$, $0$) que não são ``quantidades de atraso''. Que problema
+        isso cria para um modelo linear que usa \cod{PAY\_0} como número? Proponha
+        uma alternativa.
+  \item Calcule a matriz de correlação das seis colunas \cod{BILL\_AMT}. Para qual
+        dos classificadores da Aula~07 isso é uma má notícia, e por quê?
+  \item \cod{SEX}, \cod{AGE} e \cod{MARRIAGE} são covariáveis disponíveis. Em uma
+        linha: vê algum problema em usá-las para decidir quem recebe crédito?
+        (Não é preciso retirá-las do modelo; é preciso pensar nisso.)
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} $22{,}12\%$; a acurácia de ``ninguém'' é $77{,}9\%$. Qualquer modelo tem
+de ser comparado com esse piso, e mesmo um bom modelo vai ganhar poucos pontos de
+acurácia (C4).
+
+\textbf{(b)} \cod{EDUCATION} tem 0, 5 e 6 (345 clientes) e \cod{MARRIAGE} tem 0 (54),
+não documentados; \cod{PAY\_0} tem $-2$ e $0$, também não documentados. Juntar os
+códigos desconhecidos em ``outros'' é a escolha mais simples e defensável; tratá-los
+como faltantes também. \cod{SEX}, \cod{EDUCATION} e \cod{MARRIAGE} são nominais e
+precisam de \emph{dummies} (\cod{OneHotEncoder} num \cod{ColumnTransformer}, Aula~06);
+usá-las como número impõe uma ordem e distâncias que não existem. O \cod{ID} é
+identificador e sai --- a taxa de inadimplência por decil do \cod{ID} não mostra
+tendência.
+
+\textbf{(c)} Como número, \cod{PAY\_0} supõe que a diferença entre $-2$ e $-1$ é a mesma
+entre $1$ e $2$ meses de atraso, e que o efeito no \emph{log-odds} é linear na
+escala. Alternativa: \emph{dummies} por código (medido em C3: a AUC da logística vai
+de $0{,}719$ para $0{,}765$), ou uma indicadora ``em atraso'' mais o número de meses.
+
+\textbf{(d)} Correlações de $0{,}80$ a $0{,}95$. É má notícia para o \textbf{Bayes
+ingênuo}: ele trata seis colunas que dizem quase a mesma coisa como seis testemunhas
+independentes, e as probabilidades saem extremas (Aulas 07 e 08; medido em C4).
+
+\textbf{(e)} Sim: decisão de crédito com base em sexo ou estado civil pode ser
+discriminatória, e é restrita por lei em muitos países --- e retirar a coluna não
+basta se outras covariáveis a reproduzirem. Qualquer resposta que reconheça a questão
+vale a nota.
+\end{solucao}
+
+\begin{criterio}
+0,1 em (a), (b) e (c); 0,05 em (d) e (e).
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{C2}{Protocolo e custos}{0,4 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 03 e 08.}
+
+\begin{itens}
+  \item Separe o teste de forma estratificada, exatamente assim, e use estas
+        dobras em toda validação cruzada da Parte~II (os nomes com \cod{c} evitam
+        sobrescrever as variáveis da Parte~I):
+\begin{lstlisting}
+Xc_tr, Xc_te, yc_tr, yc_te = skm.train_test_split(
+    Xc, yc, test_size=0.25, stratify=yc, random_state=2026)
+dobras_c = skm.StratifiedKFold(5, shuffle=True, random_state=0)
+\end{lstlisting}
+        Por que estratificar aqui, se na Parte~I a separação foi por grupo? Há alguma
+        unidade repetida nestes dados?
+  \item O banco vai usar o modelo para decidir \textbf{quem contatar} com uma
+        proposta de renegociação antes do vencimento. Contatar um cliente que pagaria
+        de qualquer jeito custa $c_{FP}=1$ (tempo da equipe, desconto concedido sem
+        necessidade); deixar de contatar um cliente que vai ficar inadimplente custa
+        $c_{FN}=5$. Deduza, a partir da Proposição da Aula~08, o corte ótimo
+        para a probabilidade \emph{verdadeira} $\Prob(Y=1\mid\x)$.
+  \item Calcule, no treino, o custo médio por cliente das duas regras triviais,
+        ``não contatar ninguém'' e ``contatar todos''. Qual delas é a referência a
+        bater?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} A estratificação mantém a prevalência de $22{,}12\%$ nos dois lados e nas
+dobras, o que estabiliza as métricas com classe desbalanceada. Aqui a unidade é o
+cliente e cada um aparece uma vez (35 linhas são idênticas em tudo menos no
+\cod{ID}, provavelmente clientes sem movimento; não é o caso de agrupar).
+
+\textbf{(b)} Prever 1 custa $c_{FP}(1-\eta)$ em esperança; prever 0 custa
+$c_{FN}\eta$. Prever 1 quando $c_{FP}(1-\eta)<c_{FN}\eta$, isto é,
+$\eta>c_{FP}/(c_{FP}+c_{FN})=1/6\approx0{,}167$.
+
+\textbf{(c)} Ninguém: $5\times0{,}2212=1{,}106$ por cliente. Todos:
+$1\times0{,}7788=0{,}779$. A referência é ``contatar todos'' --- e um modelo só vale a
+pena se ficar abaixo de $0{,}779$.
+\end{solucao}
+
+\begin{criterio}
+(a) 0,1; (b) 0,2 --- a dedução, não só o número; (c) 0,1.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{C3}{Regressão logística e modelos generativos}{0,8 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 06 e 07.} Em toda esta parte, o pré-processamento (padronização das
+numéricas, \emph{dummies} das nominais) mora dentro do \emph{pipeline}.
+
+\begin{itens}
+  \item Ajuste a regressão logística com \cod{PAY\_*} como número, escolhendo o
+        \cod{C} por validação cruzada com \cod{scoring="neg\_log\_loss"}. Reporte a
+        razão de chances $e^{\beta_j}$ de \cod{PAY\_0}, de \cod{LIMIT\_BAL} e de
+        \cod{BILL\_AMT1} e \cod{BILL\_AMT2}, e interprete as duas primeiras --- atenção
+        à escala em que os coeficientes estão. O que acontece com os sinais de
+        \cod{BILL\_AMT1} e \cod{BILL\_AMT2}, e por que eles não devem ser lidos
+        isoladamente?
+  \item Ajuste a mesma logística com os \cod{PAY\_*} em \emph{dummies} e compare as
+        duas pela AUC, fora da dobra (\cod{cross\_val\_predict}).
+  \item Ajuste o Bayes ingênuo gaussiano, o LDA e o QDA. O QDA com o
+        \cod{reg\_param} padrão ajusta? Leia a mensagem de erro, explique a causa, e
+        escolha um \cod{reg\_param} por validação cruzada. Quantos parâmetros de
+        covariância o LDA e o QDA estimam no seu $p$ (depois das \emph{dummies})?
+  \item Faça o histograma de \cod{LIMIT\_BAL} e de \cod{BILL\_AMT1} em cada classe.
+        Quais suposições dos modelos generativos são claramente falsas aqui? Isso os
+        impede de classificar bem? (Guarde a pergunta; C4 responde.)
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} $C\approx0{,}32$. Com as numéricas padronizadas, $e^{\beta_j}$ é o fator
+na chance por \textbf{um desvio-padrão} a mais: \cod{PAY\_0}, $1{,}85$ por DP
+($\approx1{,}12$ ``unidades'' de código) --- quem atrasa mais tem chance quase o dobro
+maior; \cod{LIMIT\_BAL}, $0{,}92$ por DP ($\approx$ NT\$130 mil) --- limite maior,
+chance um pouco menor, com o resto fixo. \cod{BILL\_AMT1} tem razão $0{,}64$ e
+\cod{BILL\_AMT2}, $1{,}25$: sinais opostos em duas colunas com correlação $0{,}95$. É o
+efeito da colinearidade --- o modelo contrasta as duas faturas, e ``aumentar uma
+mantendo a outra fixa'' é uma situação quase inexistente nos dados. Lê-se o par, não
+cada um.
+
+\textbf{(b)} AUC fora da dobra: $0{,}719$ com \cod{PAY\_*} numérico e $0{,}765$ com
+\emph{dummies} ($C=0{,}1$). A forma funcional estava errada, e a correção é de
+\emph{covariáveis}, não de método.
+
+\textbf{(c)} Bayes ingênuo: AUC $0{,}726$. LDA: $0{,}713$. O QDA sem regularização
+levanta \cod{LinAlgError}: ``The covariance matrix of class 0 is not full rank''. As
+\emph{dummies} de uma mesma variável somam (quase) uma constante e, dentro de uma
+classe, algumas colunas ficam constantes ou colineares; a covariância da classe é
+singular. Com \cod{reg\_param} entre $0{,}3$ e $0{,}5$, AUC $\approx0{,}73$ (a
+resolução usa $0{,}5$, pelo \emph{log-loss}). Com $p=28$ depois das \emph{dummies}:
+$p(p+1)/2=406$ parâmetros de covariância no LDA e $812$ no QDA.
+
+\textbf{(d)} As duas são muito assimétricas, positivas, com massa em zero (faturas
+nulas) e caudas longas; a normalidade dentro de cada classe é falsa, e a
+independência do Bayes ingênuo também (C1). Mesmo assim os três ordenam razoavelmente
+(AUC 0,71--0,73): classificar bem exige menos do que estimar bem as densidades. O
+preço aparece nas probabilidades, em C4.
+\end{solucao}
+
+\begin{criterio}
+(a) 0,25 --- 0,1 pela interpretação por desvio-padrão (interpretar como ``por
+unidade'' com dados padronizados perde esses 0,1), 0,15 pela leitura do par de
+faturas; (b) 0,15; (c) 0,25 --- 0,1 pela causa da recusa do QDA, 0,1 pelo
+\cod{reg\_param} escolhido por validação, 0,05 pela conta; (d) 0,15.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{C4}{Métricas, custos e calibração}{1,0 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 07 e 08.} Toda esta tarefa usa probabilidades \textbf{fora da dobra}
+no treino, e o teste continua guardado:
+\begin{lstlisting}
+p = skm.cross_val_predict(modelo, Xc_tr, yc_tr, cv=dobras_c,
+                          method="predict_proba")[:, 1]
+\end{lstlisting}
+
+\begin{itens}
+  \item Para a logística com \cod{PAY\_*} em \emph{dummies}, no corte $0{,}5$: a matriz
+        de confusão, a acurácia, a sensibilidade, a especificidade, a precisão, o VPN
+        e o $F_1$. Compare a acurácia com a de C1(a). Qual erro o modelo comete mais?
+  \item Sobreponha as curvas ROC e as curvas precisão--\emph{recall} da logística, do
+        Bayes ingênuo e do LDA, com a AUC e a precisão média de cada um.
+  \item Compare a \textbf{calibração}: o score de Brier e a curva de calibração da
+        logística e do Bayes ingênuo. Que fração das probabilidades do Bayes ingênuo
+        passa de $0{,}99$? Calibre-o com \cod{CalibratedClassifierCV}
+        (\cod{method="isotonic"}) e compare de novo. O que mudou na AUC, e o que mudou
+        no Brier? Por quê?
+  \item Para cada modelo até aqui, calcule o custo médio por cliente no corte
+        $1/6$ de C2(b) e o menor custo possível varrendo o corte de $0{,}02$ a
+        $0{,}95$. Em quais modelos o melhor corte fica perto de $1/6$, e em quais fica
+        longe? Relacione com o item~(c).
+  \item Reajuste a logística com \cod{class\_weight="balanced"}. O que acontece com o
+        Brier e com o custo no corte $1/6$? Mostre que, se a reponderação
+        multiplica a chance estimada por $n_0/n_1$, o corte que corresponde a $1/6$ no
+        modelo reponderado é
+        $\big[\tfrac15\cdot\tfrac{n_0}{n_1}\big]\big/\big[1+\tfrac15\cdot\tfrac{n_0}{n_1}\big]$,
+        calcule-o e confira com o melhor corte que você encontrou.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} VN 16725, FP 798, FN 3248, VP 1729: acurácia $0{,}820$ (contra $0{,}779$ do
+trivial --- quatro pontos), sensibilidade $0{,}347$, especificidade $0{,}955$,
+precisão $0{,}684$, VPN $0{,}837$, $F_1$ $0{,}461$. O erro dominante é o falso
+negativo: dois em cada três inadimplentes passam sem ser apontados no corte $0{,}5$ ---
+justamente o erro que custa 5.
+
+\textbf{(b)} AUC: logística $0{,}765$, Bayes ingênuo $0{,}726$, LDA $0{,}713$; precisão
+média $0{,}536$, $0{,}479$ e $0{,}495$ (referência: a prevalência, $0{,}221$). A ROC da
+logística domina as outras em quase toda a extensão.
+
+\textbf{(c)} Brier: logística $0{,}137$, Bayes ingênuo $0{,}335$ --- quase duas vezes e
+meia pior, com AUC comparável. $14{,}5\%$ das probabilidades do ingênuo passam de
+$0{,}99$ (e $11\%$ ficam abaixo de $0{,}01$); a curva de calibração dele é quase
+horizontal. Calibrado: Brier $0{,}145$, AUC $0{,}729$ --- a AUC quase não se mexe,
+porque a calibração isotônica é monótona e preserva a ordem; o Brier cai porque os
+números passam a significar frequências. Classificar (ordenar) bem $\neq$ estimar bem
+probabilidades (Aula~08), e a causa é a correlação das faturas (C1d).
+
+\textbf{(d)} No corte $1/6$ e no melhor corte: logística com \emph{dummies} $0{,}580$
+e $0{,}579$ (corte $0{,}16$); Bayes ingênuo calibrado $0{,}618$ e $0{,}617$ ($0{,}17$);
+logística com \cod{PAY\_*} numérico $0{,}691$ e $0{,}635$ ($0{,}23$); LDA $0{,}690$ e
+$0{,}638$ ($0{,}21$); QDA $0{,}709$ e $0{,}612$ ($0{,}36$); Bayes ingênuo $0{,}701$ e
+$0{,}622$ ($0{,}77$). O corte teórico só é o ótimo quando as probabilidades são
+honestas: os modelos calibrados têm melhor corte em $1/6$; os descalibrados, longe. E
+a logística com \cod{PAY\_*} numérico mostra que especificação errada também
+descalibra.
+
+\textbf{(e)} Brier $0{,}186$ (piora) e custo em $1/6$ de $0{,}755$ --- quase o de
+``contatar todos''. Com $n_0/n_1=3{,}52$, a chance $1/5$ vira $0{,}704$ e o corte
+equivalente é $0{,}413$; o melhor corte medido é $0{,}40$, com custo $0{,}579$ ---
+igual ao da logística sem peso no corte $1/6$. Reponderar é mover o corte por outro
+caminho, e ao preço de estragar as probabilidades (Aula~08).
+\end{solucao}
+
+\begin{criterio}
+(a) 0,15; (b) 0,15; (c) 0,3 --- 0,1 pelas medidas, 0,1 pela calibração do ingênuo,
+0,1 pela explicação de por que a AUC não muda; (d) 0,25 --- a relação entre
+calibração e corte é o centro da tarefa; (e) 0,15 --- 0,1 pela conta do corte
+equivalente. Custos calculados no teste, em vez de fora da dobra, zeram o (d).
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{C5}{SVM}{0,5 ponto}
+%------------------------------------------------------------------------------
+\emph{Aula 09.} O custo de treinar o \cod{SVC} cresce entre $n^2$ e $n^3$. Faça esta
+tarefa numa subamostra estratificada de 5000 clientes do treino:
+\begin{lstlisting}
+i_sub = skm.train_test_split(np.arange(len(yc_tr)), train_size=5000,
+                             stratify=yc_tr, random_state=2026)[0]
+\end{lstlisting}
+
+\begin{itens}
+  \item Ajuste a SVM com \emph{kernel} RBF, escolhendo \cod{C} e \cod{gamma} numa
+        grade bidimensional por validação cruzada (\cod{scoring="roc\_auc"}), e a SVM
+        linear. Mostre a tabela da grade. O ótimo ficou no interior dela?
+  \item Compare com a logística ajustada na \emph{mesma} subamostra. Como a SVM não
+        estima probabilidades, de onde vem a AUC dela?
+  \item Conte os vetores de suporte para alguns valores de \cod{C}. No
+        \cod{scikit-learn}, o que se espera que aconteça com eles quando \cod{C}
+        cresce? Aconteceu? Explique o que viu pensando na sobreposição das classes.
+  \item Seria razoável usar o corte $1/6$ de C2 nas ``probabilidades'' de
+        \cod{SVC(probability=True)}? Por quê?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Com \cod{C} em $\{0{,}1;1;10;100\}$ e \cod{gamma} em
+$\{10^{-4},\dots,10^{-2}\}$, o ótimo é interior, perto de \cod{C}$=10$,
+\cod{gamma}$=3\times10^{-4}$, AUC $\approx0{,}748$; o linear fica em $\approx0{,}74$.
+Uma grade que ponha o ótimo na borda precisa ser estendida.
+
+\textbf{(b)} A logística na mesma subamostra: AUC $0{,}753$ --- a SVM não ganha. A AUC
+só precisa de um \emph{escore} que ordene, e a \cod{decision\_function} (a distância
+com sinal à fronteira) serve.
+
+\textbf{(c)} No \cod{scikit-learn} \cod{C} é o peso da penalidade: \cod{C} maior
+tolera menos violações, a margem estreita, e espera-se \emph{menos} vetores de
+suporte (Aula~09). Aqui eles ficam em torno de 2200--2300 de 5000 para qualquer
+\cod{C}. As classes se sobrepõem muito (o erro de Bayes aqui não é pequeno): todo ponto
+mal classificado é vetor de suporte, e os pontos dentro da margem também; com tanta
+sobreposição, quase metade da amostra está sempre nessa situação.
+
+\textbf{(d)} Não sem verificar: as ``probabilidades'' do \cod{SVC} vêm de um ajuste de
+Platt \emph{a posteriori}, feito por validação cruzada interna, e não do método. Se
+estiverem calibradas o corte vale; é preciso conferir (Brier, curva de calibração)
+antes de usá-lo.
+\end{solucao}
+
+\begin{criterio}
+(a) 0,15; (b) 0,1; (c) 0,15 --- a nota é da explicação, e não de o número de vetores
+ter caído; (d) 0,1.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{C6}{KNN, árvores e florestas}{0,6 ponto}
+%------------------------------------------------------------------------------
+\emph{Aula 10.}
+
+\begin{itens}
+  \item Ajuste o KNN (padronizado, dentro do \emph{pipeline}), escolhendo $k$ ímpar por
+        validação cruzada pela AUC. Por que o $k$ escolhido é tão maior do que o da
+        Parte~I?
+  \item Ajuste árvores de classificação com Gini e com entropia, de profundidade 3:
+        os cortes coincidem? Pode uma árvore cheia por custo--complexidade e desenhe a
+        de profundidade~3, interpretando o primeiro corte.
+  \item Ajuste florestas com $m=\sqrt p$ (o padrão do \cod{RandomForestClassifier}),
+        $m\approx p/3$ e $m=p$ (\emph{bagging}), com \cod{min\_samples\_leaf=5}, e uma
+        com folhas cheias. Compare AUC e Brier. (Opcional: o \cod{AdaBoostClassifier}
+        --- e o custo dele no corte $1/6$.)
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} A AUC sobe de $0{,}613$ ($k=1$) a $0{,}745$ ($k=101$) e fica plana
+($\approx0{,}748$) de 150 a 600: qualquer $k$ nesse platô é equivalente. A escolha é
+grande porque o sinal é fraco e ruidoso (as classes se sobrepõem, $n$ é grande), e
+estimar uma proporção local exige muitos vizinhos; na Parte~I o sinal era forte e
+$n$, pequeno.
+
+\textbf{(b)} Os cortes das duas árvores de profundidade 3 coincidem quase todos
+(\cod{PAY\_0}$\le1{,}5$, \cod{PAY\_2}$\le1{,}5$, \cod{PAY\_AMT3}$\le664{,}5$, \dots), como a
+Aula~10 antecipa. A poda por \emph{log-loss} deixa 14 folhas (AUC $0{,}751$, contra
+$0{,}611$ da cheia). O primeiro corte separa quem está com dois ou mais meses de atraso
+em setembro --- o grupo de maior risco.
+
+\textbf{(c)} Com 200 árvores: $m=\sqrt p$, AUC $0{,}773$ e Brier $0{,}1356$;
+$m\approx p/3$, $0{,}772$; \emph{bagging}, $0{,}767$; folhas cheias, $0{,}760$ e Brier
+$0{,}1387$ --- folhas de uma observação dão probabilidades mais extremas. O AdaBoost ordena
+bem (AUC $0{,}771$), mas as probabilidades dele ficam entre $0{,}22$ e $0{,}67$: no corte
+$1/6$ ele contata todo mundo, com custo $0{,}779$ --- o mesmo da regra trivial (é o
+fenômeno da Aula~10: o corte por custo pode não cortar nada).
+\end{solucao}
+
+\begin{criterio}
+(a) 0,15; (b) 0,2; (c) 0,25. O AdaBoost é opcional e não soma pontos, mas uma boa
+leitura dele pode compensar até 0,1 perdido nesta tarefa.
+\end{criterio}
+
+%------------------------------------------------------------------------------
+\tarefa{C7}{Escolha final e teste}{0,8 ponto}
+%------------------------------------------------------------------------------
+\emph{Aulas 03 e 08.}
+
+\begin{itens}
+  \item Monte uma tabela, com probabilidades fora da dobra no treino, de todos os
+        modelos: AUC, precisão média, Brier, custo no corte $1/6$, melhor corte e
+        custo nele. Escolha o modelo final \emph{e} o corte, e justifique. Qual das
+        colunas responde à pergunta do banco?
+  \item Reajuste o modelo escolhido em todo o treino e aplique-o \textbf{uma vez} ao
+        teste, no corte escolhido: a matriz de confusão, o custo médio por cliente, a
+        sensibilidade e a fração de clientes contatados. Compare com as regras
+        triviais.
+  \item Faça um \emph{bootstrap} \textbf{pareado} no teste ($B=1000$,
+        \cod{np.random.default\_rng(2026)}): em cada réplica, sorteie clientes com
+        reposição e calcule, nos \emph{mesmos} clientes, a diferença de AUC e a
+        diferença de custo entre o seu modelo e a logística com \cod{PAY\_*} em
+        \emph{dummies}. Dê os intervalos de 95\% (percentis). O seu modelo é
+        melhor que a logística? Por que o \emph{bootstrap} precisa ser pareado?
+  \item Em um parágrafo, para a gerente de risco: quantos clientes contatar, quantos
+        inadimplentes isso pega, e o que se ganha em relação a contatar todos.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Pelo custo no corte $1/6$: floresta $m=\sqrt p$ $0{,}565$, floresta
+$p/3$ $0{,}571$, \emph{bagging} $0{,}579$, logística com \emph{dummies} $0{,}580$, árvore
+podada $0{,}586$, KNN $0{,}598$ --- todos bem abaixo de $0{,}779$. A coluna que
+responde ao banco é o custo; a AUC ordena modelos sem saber dos custos, e o Brier diz
+se o corte teórico é confiável. A floresta $m=\sqrt p$ tem o menor custo, e o melhor
+corte dela ($0{,}16$) coincide com o teórico --- o que autoriza usar $1/6$. A logística
+com \emph{dummies}, a $0{,}015$ de distância e muito mais interpretável, é uma escolha
+igualmente defensável.
+
+\textbf{(b)} Floresta no teste, corte $1/6$: VN 3632, FP 2209, FN 386, VP 1273. Custo
+médio $0{,}552$ por cliente, contra $0{,}779$ de contatar todos (29\% menos);
+contata $46{,}4\%$ dos clientes e pega $76{,}7\%$ dos inadimplentes. AUC $0{,}787$,
+Brier $0{,}134$.
+
+\textbf{(c)} AUC: floresta $0{,}787$, logística $0{,}784$, diferença com IC
+$(-0{,}006;\ 0{,}012)$. Custo: floresta $0{,}552$, logística $0{,}538$, diferença com IC
+$(-0{,}008;\ 0{,}035)$. Os dois intervalos contêm zero: o teste \emph{não distingue} os
+dois modelos, e no custo a logística até ficou à frente nesta amostra. O
+\emph{bootstrap} é pareado porque os dois modelos são avaliados nos mesmos clientes:
+os erros são correlacionados (clientes difíceis são difíceis para os dois), e a
+diferença tem variância muito menor do que a soma das variâncias. Reamostrar cada modelo
+separadamente jogaria fora essa correlação e produziria intervalos largos demais.
+
+\textbf{(d)} ``Contatando os clientes com probabilidade estimada acima de 17\% --- cerca
+de 47\% da carteira ---, pegamos três de cada quatro que vão ficar inadimplentes, e o
+custo total cai cerca de 30\% em relação a contatar todos. Um modelo mais simples, a
+regressão logística, faz praticamente o mesmo.''
+\end{solucao}
+
+\begin{criterio}
+(a) 0,25 --- a escolha do corte e a justificativa pelo custo; (b) 0,2; (c) 0,25 ---
+0,1 pelo cálculo pareado, 0,15 pela conclusão e pela explicação do pareamento;
+(d) 0,1. Não há modelo ``certo'': a nota é da coerência entre a tabela, a escolha e a
+conclusão.
+\end{criterio}
+
+%==============================================================================
+\section*{Para fechar}
+%==============================================================================
+Se você chegou até aqui, percorreu o curso inteiro --- risco, viés e variância,
+regularização, validação cruzada, métodos não paramétricos, árvores e florestas,
+\emph{pipelines}, os classificadores generativos e discriminativos, as métricas, a SVM
+--- em dados que ninguém inventou. Repare no que decidiu os resultados mais
+importantes: quase nunca foi a escolha do método. Foi olhar os dados antes (as
+duplicatas, o traço, os códigos do \cod{PAY}), avaliar do jeito que responde à
+pergunta (por grupo, com o custo certo) e desconfiar dos números que pareciam bons
+demais. É isso que se leva deste curso.
+
+\end{document}

@@ -96,6 +96,49 @@
   \fi
   \vspace{0.6em}}
 
+% ----- Cabeçalho do trabalho prático ------------------------------------------
+% \cabecalhotrabalho{número}{valor total}{prazo}
+% O enunciado traz uma caixa com o que entregar e como; no gabarito, a caixa dá
+% lugar a um aviso ao professor, como na prova.
+\newcommand{\cabecalhotrabalho}[3]{%
+  \ifgabarito
+    \fancyhead[R]{\small\itshape Trabalho Prático #1 --- roteiro de correção}%
+  \else
+    \fancyhead[R]{\small\itshape Trabalho Prático #1}%
+  \fi
+  \begin{center}
+    {\Large\bfseries Trabalho Prático #1\ifgabarito\ --- Roteiro de Correção\fi}\\[0.3em]
+    {\large Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
+    {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
+  \end{center}
+  \ifgabarito
+    \vspace{0.4em}
+    \begin{atencao}
+      Documento do professor. Os números das caixas de solução foram medidos no
+      notebook de resolução, com as sementes do enunciado e o
+      \texttt{scikit-learn}~1.9; outra versão, ou outra escolha razoável do
+      aluno, desloca a terceira casa decimal e às vezes a segunda. O que se
+      corrige é o \emph{raciocínio} --- a leitura do número, não o número.
+    \end{atencao}
+  \else
+    \begin{tcolorbox}[colback=cinzaclaro,colframe=azulufrj,boxrule=0.6pt,
+                      left=8pt,right=8pt,top=6pt,bottom=6pt]
+    \small
+    \textbf{Instruções.}
+    \begin{itemize}[leftmargin=1.3cm,nosep]
+      \item O trabalho é \textbf{individual} e vale \textbf{#2}; o valor de cada
+            tarefa está indicado ao lado dela.
+      \item Prazo de entrega: \textbf{#3}.
+      \item Entrega: \textbf{um único notebook Jupyter} (\texttt{.ipynb}), com o
+            código \emph{e} as respostas escritas, nas regras da
+            Seção~\ref{sec:regras}.
+      \item \textbf{Justifique todas as respostas.} Número sem leitura não
+            responde pergunta nenhuma.
+    \end{itemize}
+    \end{tcolorbox}
+  \fi
+  \vspace{0.6em}}
+
 % ----- Fonte única: lista de revisão e prova ----------------------------------
 % O corpo de cada exercício mora em avaliacoes/exercicios/ex-NN-slug.tex e é
 % incluído por \input pelos DOIS documentos. Assim é impossível que a prova e a

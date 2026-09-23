@@ -136,6 +136,12 @@ ipykernel>=6.0
 #   bank_train_redux.csv     aulas 06, 08 e 10  (96 MB, 5 notebooks)
 #   spam.csv                 aula E3        (0,5 MB, 3 notebooks)
 #
+# e mais dois, do Trabalho Prático 01 (avaliacoes/), lidos pelos dois notebooks
+# de lá, que procuram em ../recursos/dados/ (um nível só, como os .tex):
+#
+#   concreto.csv             Parte I        (48 KB)
+#   credito.csv              Parte II       (2,9 MB)
+#
 # NENHUM notebook baixa .csv da rede. Todos procuram o arquivo em dois lugares,
 # nesta ordem — a pasta do próprio notebook e depois ../../recursos/dados/ — e
 # falham com mensagem clara se não acharem. Assim funcionam no repositório

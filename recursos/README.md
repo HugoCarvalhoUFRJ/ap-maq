@@ -10,7 +10,11 @@ Materiais usados ao longo de todo o curso (não pertencem a uma aula específica
 - **`dados/`** — conjuntos de dados (`.csv`) usados nas aulas práticas.
   Fontes: [superconductivity](https://archive.ics.uci.edu/dataset/464/superconductivty+data)
   e [bank_train_redux](https://www.kaggle.com/competitions/santander-customer-transaction-prediction/)
-  (excerto da base do Kaggle, por motivos de espaço no GitHub).
+  (excerto da base do Kaggle, por motivos de espaço no GitHub). Ficam aqui também
+  os dois do **Trabalho Prático 01** (`avaliacoes/`), ambos do UCI e sob CC BY 4.0:
+  `concreto.csv`, do [Concrete Compressive Strength](https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength)
+  (Yeh, 1998), e `credito.csv`, do [Default of Credit Card Clients](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients)
+  (Yeh & Lien, 2009) --- convertidos de `.xls` sem limpeza nenhuma.
 - **`avaliacoes/`** — as **Avaliações Presenciais de 2025-02** (AP1 e AP2) com
   gabarito, herdadas. As avaliações do curso atual **não** ficam aqui: estão em
   `avaliacoes/`, na raiz do repositório. E as **listas de exercícios** também

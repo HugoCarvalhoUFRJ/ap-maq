@@ -1100,9 +1100,15 @@ avaliacoes/
 ├── Lista de revisao 01-06 - gabarito.tex invólucro de 3 linhas
 ├── Avaliacao teorica 01.tex              3 questões sorteadas
 ├── Avaliacao teorica 01 - gabarito.tex   invólucro de 3 linhas
+├── Trabalho pratico 01.tex               o trabalho prático, aulas 01 a 10
+├── Trabalho pratico 01 - gabarito.tex    invólucro: o roteiro de correção
+├── Trabalho pratico 01 - modelo.ipynb    ponto de partida do aluno
+├── Trabalho pratico 01 - resolucao.ipynb resolução de referência (docente)
 └── exercicios/
     └── ex-NN-slug.tex                    o corpo de cada exercício, 11 arquivos
 ```
+
+O trabalho prático tem seção própria, adiante: ``O Trabalho Prático 01''.
 
 **Os 11 exercícios são inéditos**, e não repetem nenhum dos 20 das
 `Lista teorica 01`--`06`. O critério que os tornou inéditos por construção: boa
@@ -1336,6 +1342,66 @@ notebooks não achou outra.
 **Dois erros de digitação nas notas da aula 06 (aluno)**: "píspares" virou
 "díspares", na legenda da Figura~1, e "Inflacção", "Inflação", na caixa da
 hierarquia. A versão do docente não tinha nenhum dos dois.
+
+## O Trabalho Prático 01
+
+Pedido do Gabriel em 23/09/2026: um trabalho prático valendo nota, cobrindo as aulas
+01 a 10 (sem as extras), com um conjunto de regressão e um de classificação,
+públicos, e entrega em notebook. Mora em `avaliacoes/`, com o mesmo arranjo de fonte
+única da prova: `Trabalho pratico 01.tex` é o enunciado, e o invólucro
+`- gabarito.tex` liga a opção `[gabarito]`, que mostra as caixas `solucao` (o
+esperado, com os números) e `criterio` (a distribuição dos pontos). O cabeçalho é o
+`\cabecalhotrabalho`, acrescentado ao `estilo-avaliacao.sty`.
+
+São 15 tarefas: R1--R8 no concreto e C1--C7 no crédito, 4,5 pontos cada parte e 1,0
+de qualidade do notebook. **Ao contrário da prova, o trabalho cita as aulas por
+número**, de propósito: ele é para consulta. **Decisões que ficaram com o Gabriel**:
+o prazo (a macro `\prazo`, hoje ``a definir pelo professor''), o valor (a macro
+`\valortotal`, hoje 10,0) e a política sobre assistentes de IA, que o enunciado não
+menciona.
+
+**Os dados** são dois do UCI, sob CC BY 4.0, em `recursos/dados/`:
+`concreto.csv` (Yeh, 1998; 1030 × 9) e `credito.csv` (Yeh & Lien, 2009; 30 000 ×
+25). Foram convertidos do `.xls` original **sem limpeza nenhuma** --- só os nomes das
+colunas do concreto foram traduzidos, e a resposta do crédito virou `default` ---,
+porque limpar faz parte das tarefas.
+
+**Os números das soluções saem de `Trabalho pratico 01 - resolucao.ipynb`**, rodado
+na sklearn 1.9 com as sementes do enunciado (10 a 13 minutos nesta máquina). Ao mexer
+numa semente, numa grade ou num dado, rode-o de novo e confira as caixas. O
+`- modelo.ipynb` é o ponto de partida do aluno: carrega os dois `.csv` e tem uma
+seção por tarefa. Os dois procuram os dados em `../recursos/dados/` --- um nível só,
+como os `.tex` desta pasta.
+
+O que o trabalho foi montado para fazer o aluno encontrar, todos medidos:
+
+- **O concreto tem 25 linhas duplicadas**, idênticas até a oitava casa, e a
+  variância das réplicas muda com elas: $25{,}1$ com 34 graus de liberdade, $64{,}6$
+  com 9 (IC $31$--$215$) sem elas. O piso do risco existe, mas estes dados quase não
+  o identificam;
+- **1005 linhas vêm de 428 traços** (a receita), ensaiados em várias idades. O teste
+  é separado por traço e a validação é `GroupKFold`. Validar por linha é o vazamento
+  grave da Aula 06 medido: a floresta vai de $35{,}5$ a $21{,}8$. **Mas o sinal não é
+  garantido** --- no 1-NN a validação por linha é pessimista ($77$ contra $57$),
+  porque o vizinho mais próximo vira o mesmo traço em outra idade;
+- os sete ingredientes somam quase a mesma massa (2339 ± 64 kg/m³), e o número de
+  condição do MQO é $10^{10}$: o coeficiente da água não é ``efeito da água'';
+- **os *splines* com nós uniformes são erráticos** (a idade vai a 365 dias com 90\%
+  abaixo de 100); com nós nos quantis a curva é plana e o modelo empata com a
+  floresta na validação. No teste ele perde para ela por causa de **um traço que
+  extrapola** o treino (menos água e mais areia do que qualquer outro) --- e a
+  resolução mantém a escolha, porque o teste mede, não escolhe;
+- no crédito, os `PAY_*` como número custam caro: com *dummies* a AUC da logística
+  vai de $0{,}719$ a $0{,}765$. O QDA recusa o ajuste sem `reg_param`. O Bayes ingênuo
+  ordena como a logística e tem Brier $0{,}335$ contra $0{,}137$. O corte de custo
+  $1/6$ só é o ótimo para os modelos calibrados; o AdaBoost, com probabilidades entre
+  $0{,}22$ e $0{,}67$, contata todo mundo; e `class_weight="balanced"` desloca o corte
+  ótimo para $0{,}41$, que sai da conta $n_0/n_1$;
+- o **bootstrap pareado** no teste não separa o modelo escolhido da logística com
+  *dummies*.
+
+A SVM roda numa subamostra de 5000 do treino, fixada no enunciado: com o treino
+inteiro a grade não caberia nos 20 minutos que as regras permitem.
 
 ## Dados
 
