@@ -54,14 +54,19 @@ que eles leem, diz-se **regressão** e **classificação**: ``começa aqui o est
 classificação'', ``o que vimos em regressão''. ``Parte~I'' no sentido de parte do
 curso cai junto; ``Parte~I do [AME]'', que é a parte do livro (aula 01), fica.
 
-As notas da aula 07 foram as primeiras a mudar. Em 23/09/2026 o material do aluno
-ainda falava em bloco em outros lugares:
+A troca foi feita no mesmo dia em todo o material, roteiros do docente incluídos: as
+notas das aulas 07, 10 e E1 (as duas versões) e E2 (a do aluno), as aulas práticas 06,
+07, 09 e 10 e os notebooks das listas práticas 06, 09 e 10. O ``Bloco~III'' da E1
+virou ``o aprendizado não supervisionado''. Uma varredura depois disso não achou mais
+nenhum: os ``bloco'' que sobram são de código (o `Pipeline` como ``um único bloco'') ou
+de matemática (``constante em blocos'').
 
-- ``Bloco'', como nome: a `Aula prática 07` (a abertura), a `Aula prática 06` e os dois
-  notebooks da `Lista prática 06` (``Fecha o Bloco I''), e as notas das aulas 10 e E1
-  (as duas versões) e E2 (a do aluno);
-- ``o bloco de classificação'' e ``deste bloco'', em minúscula: as aulas práticas 09 e
-  10 e os notebooks das listas práticas 09 e 10.
+Na mesma passada saíram três ponteiros que a renumeração de 31/08 deixou para trás, nas
+células que já estavam sendo editadas: ``as árvores da Aula 06'' (são da 05) e ``um
+método das Aulas 07 a 11'' na `Aula prática 10`, e ``a síntese das Aulas 07 a 11'' nos
+dois notebooks da `Lista prática 10`. Uma busca por ``Aula 11'' não acha mais nada;
+ponteiros deslocados para aulas que existem, como aquele ``Aula 06'', não foram
+varridos no resto do curso.
 
 ## Notas de aula (LaTeX)
 
