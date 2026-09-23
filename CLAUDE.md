@@ -46,6 +46,23 @@ repositório não é *entregue* aos alunos ---, mas não como garantia: quem tiv
 endereço lê tudo. Mudar a visibilidade é com quem administra o repositório no
 GitHub (o dono é a conta `HugoCarvalhoUFRJ`), e a `main` do Hugo iria junto.
 
+## Os alunos não conhecem os blocos
+
+Decisão do Gabriel em 23/09/2026. A divisão do curso em Blocos I, II e III é do
+planejamento (`00 Planejamento.tex`, `README.md`) e não chega aos alunos. No material
+que eles leem, diz-se **regressão** e **classificação**: ``começa aqui o estudo da
+classificação'', ``o que vimos em regressão''. ``Parte~I'' no sentido de parte do
+curso cai junto; ``Parte~I do [AME]'', que é a parte do livro (aula 01), fica.
+
+As notas da aula 07 foram as primeiras a mudar. Em 23/09/2026 o material do aluno
+ainda falava em bloco em outros lugares:
+
+- ``Bloco'', como nome: a `Aula prática 07` (a abertura), a `Aula prática 06` e os dois
+  notebooks da `Lista prática 06` (``Fecha o Bloco I''), e as notas das aulas 10 e E1
+  (as duas versões) e E2 (a do aluno);
+- ``o bloco de classificação'' e ``deste bloco'', em minúscula: as aulas práticas 09 e
+  10 e os notebooks das listas práticas 09 e 10.
+
 ## Notas de aula (LaTeX)
 
 **Cada aula tem duas versões, e elas não são rascunho e versão final** — são dois
@@ -485,7 +502,7 @@ da §8.
 O que ficou nas notas sem estar no deck, de propósito: a caixa de que a acurácia
 engana (a aula 08 abre citando ``o aviso da Aula 07''), a caixa do preço do
 ``ingênuo'' (a aula 08 cita o motivo do descalibramento) e a observação do que se
-transfere da Parte I.
+transfere da regressão.
 
 ### O que a reescrita derrubou
 
@@ -585,8 +602,8 @@ diretamente?''); objetivos, famílias do *plug-in*, resumo e código de exemplo
 seguiram a mesma ordem, e ``a outra família'' virou ``a primeira''. Na versão do aluno,
 a `07-fronteiras`, que mostra a logística, foi para a seção ``Discriminativo $\times$
 generativo'' e virou a Figura~2 (a `07-lda-qda` é hoje a Figura~1). O `\newpage` antes
-de ``Prática em Python'' saiu: com a nova ordem ele deixava a página 8 quase vazia. A
-versão do aluno segue com 9 páginas, e a do docente, com 6.
+de ``Prática em Python'' saiu: com a nova ordem ele deixava a página 8 quase vazia.
+(Em 23/09/2026 a própria seção saiu; ver adiante.)
 
 **O que mais foi corrigido no mesmo passo:**
 
@@ -602,7 +619,8 @@ versão do aluno segue com 9 páginas, e a do docente, com 6.
   gabarito;
 - as duas versões das notas diziam que o notebook `Comparação entre classificadores
   paramétricos` ``confronta esses métodos'': ele não tem logística e tem três SVMs.
-  O texto diz isso agora;
+  O texto passou a dizer isso, e em 23/09/2026 o parágrafo saiu com a seção de
+  Python;
 - a `Lista teorica 07` 4(c) escrevia ``$4p+1$ parâmetros em vez de $2\,651$'', uma
   fórmula contra o número de $p=50$. Só o gabarito foi recompilado;
 - o deck dizia que o `MultinomialNB` ``não assume independência'' (item 14 do
@@ -614,6 +632,29 @@ $1{,}6\times10^{-4}$), então a recusa vem mesmo da colinearidade, e não só da
 contra o `tol` absoluto. E a logística bate o LDA na população da §2 em 96 de 100
 amostras de treino: a explicação do texto (o LDA paga pela covariância comum, que é
 falsa ali) não depende da amostra sorteada.
+
+### As notas perderam os blocos e a seção de Python
+
+Pedido do Gabriel em 23/09/2026, nas duas versões das notas:
+
+- **os blocos** (ver ``Os alunos não conhecem os blocos'', no início deste arquivo):
+  a abertura ``Começa aqui o Bloco~II [...] do Bloco~I'' virou ``Começa aqui o estudo
+  da classificação [...] o que vimos em regressão'', e a observação ``O que se
+  transfere da Parte~I'' virou ``da regressão''. No docente, a `emsala` de abertura
+  seguiu a mesma troca;
+- **a seção ``Prática em Python''**, como nas aulas 04 e 05: saíram o código, o
+  parágrafo que apontava a `Aula prática 07` e o notebook herdado e, na versão do
+  aluno, a caixa das ``três pegadinhas'' que comentava o código --- o `C` como inverso
+  da penalização, o `score` que devolve acurácia e a recusa do QDA, com o remédio do
+  `reg_param`. Nada foi realocado. O `C` invertido segue no deck (slide da
+  penalização) e no §7 do laboratório; a recusa do QDA, nos §6 e §8 do laboratório e
+  numa `emsala` do docente;
+- **o ``Para praticar''** saiu da versão do aluno, como na 05 (a 04 o manteve): dizia
+  ``nesta mesma pasta'' e ``com gabarito'', o que pressupõe o repositório que o aluno
+  não recebe. A 05 e a 07 são hoje as duas notas sem ele.
+
+A versão do aluno foi de 9 para 8 páginas, e a do docente ficou com 6. O texto
+extraído de duas compilações locais, antes e depois, difere só nesses trechos.
 
 ## Figuras (`recursos/figuras/`)
 
