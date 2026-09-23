@@ -24,11 +24,11 @@ Ao final desta aula o aluno deve ser capaz de:
 \end{itemize}
 
 \begin{emsala}
-Início do Bloco~II. A boa notícia: \emph{quase tudo} da Parte~I se transfere ---
-risco, viés--variância, validação cruzada. A mudança é que $Y$ agora é
-\emph{qualitativo} e a perda natural não é a quadrática, mas a 0--1. Pergunta de
-abertura: \emph{``qual é o melhor classificador possível, se eu conhecesse a
-distribuição dos dados?''}
+Início da classificação. A boa notícia: \emph{quase tudo} o que vimos em regressão
+se transfere --- risco, viés--variância, validação cruzada. A mudança é que $Y$
+agora é \emph{qualitativo} e a perda natural não é a quadrática, mas a 0--1.
+Pergunta de abertura: \emph{``qual é o melhor classificador possível, se eu
+conhecesse a distribuição dos dados?''}
 \end{emsala}
 
 %==============================================================================
@@ -77,7 +77,7 @@ $g^*$ é \emph{desconhecido}, pois depende de $\Prob(Y=c\mid\x)$. Todo método d
 classificação é uma tentativa de \emph{aproximá-lo}.
 \end{ideia}
 
-\begin{observacao}[O que se transfere da Parte~I]
+\begin{observacao}[O que se transfere da regressão]
 A estimação do risco \eqref{eq:risco01} é feita por \emph{data splitting}/validação
 cruzada (Aula~03), agora medindo a \emph{proporção de erros} na validação. O balanço
 viés--variância também vale: $R(g)-R^*$ decompõe-se num termo tipo variância (classe
@@ -293,34 +293,6 @@ exatamente linear (Prop.~\ref{prop:lda}), que é o que a logística
 \eqref{eq:logit} supõe: os dois coincidem em forma e diferem em como estimam. Na
 dúvida: experimente ambos e compare por validação cruzada.
 \end{ideia}
-
-%==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis as LDA,
-                                           QuadraticDiscriminantAnalysis as QDA)
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-
-nb, lda, qda = GaussianNB(), LDA(), QDA()
-
-# Logistica penalizada (C = 1/lambda); padronizar no pipeline (Aula 06)
-logit = make_pipeline(StandardScaler(),
-                      LogisticRegression(C=1.0, max_iter=1000))
-
-for nome, modelo in [("NB", nb), ("LDA", lda), ("QDA", qda), ("logit", logit)]:
-    modelo.fit(X_tr, y_tr)
-    print(nome, "acuracia:", modelo.score(X_te, y_te))
-    # probabilidades plug-in: modelo.predict_proba(X_te)
-\end{lstlisting}
-O notebook \texttt{Comparação entre classificadores paramétricos} põe o Bayes
-ingênuo, o LDA e o QDA lado a lado em três conjuntos de dados artificiais, junto com
-três SVMs, que são assunto da Aula~09. A \texttt{Aula prática 07} calcula o erro de
-Bayes numa população conhecida, compara os quatro métodos desta aula e mede a troca
-LDA$\times$QDA em $p=2$ e $p=10$.
 
 %==============================================================================
 \section*{Resumo}

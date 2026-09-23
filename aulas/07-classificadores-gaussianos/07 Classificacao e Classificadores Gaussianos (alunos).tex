@@ -33,10 +33,11 @@ Ao final desta aula você deve ser capaz de:
 \end{itemize}
 
 \noindent
-Começa aqui o Bloco~II, e a boa notícia é que \emph{quase tudo} do Bloco~I se
-transfere: risco, balanço viés--variância, validação cruzada, \emph{pipelines}. A
-única mudança é que $Y$ agora é \emph{qualitativo}, e por isso a perda natural
-deixa de ser a quadrática e passa a ser a 0--1. Comece pela pergunta:
+Começa aqui o estudo da classificação, e a boa notícia é que \emph{quase tudo} o
+que vimos em regressão se transfere: risco, balanço viés--variância, validação
+cruzada, \emph{pipelines}. A única mudança é que $Y$ agora é \emph{qualitativo}, e
+por isso a perda natural deixa de ser a quadrática e passa a ser a 0--1. Comece
+pela pergunta:
 
 \begin{center}\itshape
   qual é o melhor classificador possível, se eu conhecesse\\
@@ -99,7 +100,7 @@ risco $R^*$ é o análogo do \emph{erro irredutível}. Mas $g^*$ é
 uma tentativa de aproximá-lo.
 \end{ideia}
 
-\begin{observacao}[O que se transfere da Parte~I]
+\begin{observacao}[O que se transfere da regressão]
 A estimação do risco \eqref{eq:risco01} é feita por \emph{data splitting}/validação
 cruzada (Aula~03), agora medindo a \emph{proporção de erros} na validação. O balanço
 viés--variância também vale: $R(g)-R^*$ decompõe-se num termo tipo variância (classe
@@ -449,50 +450,6 @@ experimente ambos e compare por validação cruzada.
 \end{ideia}
 
 %==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis as LDA,
-                                           QuadraticDiscriminantAnalysis as QDA)
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-
-nb, lda, qda = GaussianNB(), LDA(), QDA()
-
-# Logistica penalizada (C = 1/lambda); padronizar no pipeline (Aula 06)
-logit = make_pipeline(StandardScaler(),
-                      LogisticRegression(C=1.0, max_iter=1000))
-
-for nome, modelo in [("NB", nb), ("LDA", lda), ("QDA", qda), ("logit", logit)]:
-    modelo.fit(X_tr, y_tr)
-    print(nome, "acuracia:", modelo.score(X_te, y_te))
-    # probabilidades plug-in: modelo.predict_proba(X_te)
-\end{lstlisting}
-
-\begin{atencao}
-Três pegadinhas. Primeira: em \texttt{LogisticRegression}, o parâmetro é o
-\texttt{C}, que é o \textbf{inverso} da penalização --- $C$ \emph{pequeno} significa
-regularização \emph{forte}, ao contrário do \texttt{alpha} do Ridge/Lasso.
-Segunda: \texttt{modelo.score} devolve \emph{acurácia}, e a caixa de atenção lá do
-começo desta aula explica por que isso pode ser uma medida péssima --- leia a
-Aula~08 antes de tirar conclusões dessas linhas. Terceira: o \texttt{QDA} das
-versões recentes do \texttt{scikit-learn} \emph{recusa} o ajuste quando a
-covariância estimada de alguma classe é singular ou quase --- por exemplo, quando a
-classe tem no máximo $p$ observações, ou quando há colunas quase colineares. No
-segundo caso, o argumento \texttt{reg\_param} puxa as covariâncias levemente na
-direção da identidade e resolve (a §8 da \texttt{Aula prática 07} precisa dele);
-com menos observações na classe do que covariáveis, nem ele.
-\end{atencao}
-
-O notebook \texttt{Comparação entre classificadores paramétricos} põe o Bayes
-ingênuo, o LDA e o QDA lado a lado em três conjuntos de dados artificiais, junto com
-três SVMs, que são assunto da Aula~09. A \texttt{Aula prática 07} calcula o erro de
-Bayes numa população conhecida, compara os quatro métodos desta aula e mede a troca
-LDA$\times$QDA em $p=2$ e $p=10$.
-
-%==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
@@ -530,7 +487,5 @@ Bayes), §4.3 (a logística, com a interpretação dos coeficientes em razão de
 e §4.4 (os modelos generativos: a Figura~4.9 deles é a versão da nossa
 Figura~\ref{fig:fronteiras} para LDA e QDA, e o §4.4.3 traz a conta de parâmetros
 que está por trás da Figura~\ref{fig:ldaqda}).
-
-\paragraph{Para praticar.} \texttt{Lista teorica 07.pdf} (teórica, com gabarito) e \texttt{Lista prática 07.ipynb} (prática, para completar as lacunas), nesta mesma pasta.
 
 \end{document}
