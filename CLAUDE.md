@@ -627,7 +627,8 @@ de ``Prática em Python'' saiu: com a nova ordem ele deixava a página 8 quase v
   O texto passou a dizer isso, e em 23/09/2026 o parágrafo saiu com a seção de
   Python;
 - a `Lista teorica 07` 4(c) escrevia ``$4p+1$ parâmetros em vez de $2\,651$'', uma
-  fórmula contra o número de $p=50$. Só o gabarito foi recompilado;
+  fórmula contra o número de $p=50$. Só o gabarito foi recompilado. (O Ex. 4 inteiro
+  saiu em 23/09/2026; ver adiante.);
 - o deck dizia que o `MultinomialNB` ``não assume independência'' (item 14 do
   histórico de correções nos HTMLs).
 
@@ -660,6 +661,52 @@ Pedido do Gabriel em 23/09/2026, nas duas versões das notas:
 
 A versão do aluno foi de 9 para 8 páginas, e a do docente ficou com 6. O texto
 extraído de duas compilações locais, antes e depois, difere só nesses trechos.
+
+### A `Lista teorica 07` perdeu o Ex. 4, e o resto ganhou rigor
+
+Decisão do Gabriel em 23/09/2026: saiu o Ex. 4, ``naive Bayes gaussiano é QDA com as
+mãos amarradas'', e a lista fica com três exercícios. Foram junto a conta $4p+1$ do
+Bayes ingênuo, a função discriminante dele, a explicação de por que ele classifica bem
+e calibra mal (com a AUC e o Brier da aula 08) e as elipses cruzadas com $\rho=\pm0{,}9$
+(`GaussianNB` $0{,}5104$, LDA $0{,}4949$, QDA $0{,}8575$). O único ponteiro de fora,
+``o cenário do Exercício 4 da Lista Teórica 07'' no gabarito do Ex. 2 da
+`Lista prática 07`, saiu --- só a remissão; a frase se sustenta.
+
+A pedido dele, os três que ficaram passaram por uma revisão de rigor, sem mudar o
+registro:
+
+- **Ex. 1**: a equivalência com $\pi_1f_1>\pi_0f_0$ passou a vir do Teorema de Bayes,
+  com o denominador comum; o empate em $x=0$ ganhou uma frase ($\Prob(X=0)=0$, não
+  altera o risco); o risco é decomposto pela probabilidade total, com as duas
+  parcelas calculadas; e, no (d), ``acertar mais positivos custaria muitos falsos
+  positivos'' virou a conta: mover o corte para $t<x^\ast$ muda o risco de
+  $\int_t^{x^\ast}(0{,}9f_0-0{,}1f_1)\,dx>0$;
+- **Ex. 2**: o enunciado ganhou as $K$ classes, $\bm\Sigma$ positiva definida, $f_k$
+  definida e $\X$ em negrito, e o título diz ``linear'' em vez de ``reta''. A solução
+  diz por que se maximiza o log, usa a simetria de $\bm\Sigma^{-1}$ nos termos
+  cruzados, troca $|\bm\Sigma|$ por $\det\bm\Sigma$, escreve a constante do
+  hiperplano, exige $\bm\mu_k\ne\bm\mu_\ell$, diz o que muda com $K>2$, chama a
+  fronteira do QDA de quádrica (cônica só em $\R^2$) e restringe o ``a linearidade vem
+  da covariância comum'' ao modelo gaussiano. O (d) ganhou o caso de prioris
+  diferentes, $x=\frac{\sigma^2}{2}\ln\frac{\pi_0}{\pi_1}$, que reencontra o $x^\ast$
+  do Ex. 1(c);
+- **Ex. 3**: o enunciado do (d) diz que o QDA é o modelo correto nas duas populações
+  e que a virada cai entre $n=30$ e $n=50$, porque a grade é grossa. A solução
+  justifica o posto no máximo $9$, diz que sem regularização o QDA não está definido e
+  troca ``as duas classes têm quase a mesma correlação, então ele tem pouco a ganhar''
+  pelo medido.
+
+**O medido, porque a explicação antiga não se sustentava.** Na população de $p=2$ do
+Ex. 3 --- a da `Lista prática 07` --- as correlações são mesmo parecidas ($-0{,}47$ e
+$-0{,}45$), mas as variâncias não: a de $X_2$ é $3{,}85$ numa classe e $1{,}83$ na
+outra. O que limita o ganho do QDA é a distância entre o erro de Bayes e o do LDA com
+dados infinitos. Medido em dois milhões de pontos: Bayes $0{,}8841$, LDA ajustado com
+um milhão $0{,}8805$, a melhor reta (varrendo ângulo e corte) $0{,}8806$ --- nem com
+infinitos dados o QDA abriria mais que $0{,}4$ ponto. Em $p=10$, Bayes $0{,}8964$,
+contra $0{,}8239$ do LDA-limite. O gabarito do Ex. 3 da `Lista prática 07` ainda dá a
+correlação parecida como a razão, e não foi tocado.
+
+O enunciado segue com 2 páginas; o gabarito foi de 6 para 5.
 
 ## Figuras (`recursos/figuras/`)
 
