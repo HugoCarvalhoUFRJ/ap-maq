@@ -23,6 +23,29 @@ diferentes — não etapas de um refactor:
 rebasear ou "sincronizar com a `main`", nem trate as diferenças entre as duas como
 pendência.
 
+## O repositório não é entregue aos alunos
+
+Decisão do Gabriel em 23/09/2026. O repositório serve **só para guardar** o
+material das aulas; não é por ele que o material chega aos alunos. Eles não têm
+acesso ao repositório completo e recebem apenas o que o Gabriel escolhe
+disponibilizar, quando ele escolhe.
+
+Por isso os gabaritos, a prova e o gabarito dela, e os roteiros do docente
+convivem aqui com o material dos alunos, de propósito. **O que liberar, e quando, é
+decisão dele, e não é pendência**: um fato como "o gabarito da lista de revisão
+resolve as três questões da prova" é informação para essa escolha, não um alerta a
+repetir no fim de cada sessão.
+
+**Mas o remote é público.** Conferido em 23/09/2026 pela API do GitHub, sem
+autenticação: `HugoCarvalhoUFRJ/ap-maq` tem `"visibility": "public"`, a
+`refactoring-baby` está lá no mesmo commit que a local, e
+`avaliacoes/Avaliacao teorica 01 - gabarito.pdf` baixa anonimamente (HTTP 200). A
+prova chegou ao GitHub no push de 14/09/2026, às 15:58, que levou o `32a5cab`, e
+está exposta desde então. Enquanto for assim, a decisão vale como política --- o
+repositório não é *entregue* aos alunos ---, mas não como garantia: quem tiver o
+endereço lê tudo. Mudar a visibilidade é com quem administra o repositório no
+GitHub (o dono é a conta `HugoCarvalhoUFRJ`), e a `main` do Hugo iria junto.
+
 ## Notas de aula (LaTeX)
 
 **Cada aula tem duas versões, e elas não são rascunho e versão final** — são dois
@@ -1139,9 +1162,9 @@ média não elimina o piso $\rho v$. É o contrário do "não podar as árvores!
 argumento vale, e por isso não contradiz o deck. Levar a ressalva ao gabarito, às
 notas ou ao deck espera o Gabriel.
 
-E um aviso, registrado para não se perder: **liberar o gabarito da lista antes da
-prova entrega a resolução completa das três questões**, porque os Ex. 5, 7 e 11
-entram nela literalmente.
+Um fato para a decisão de liberar o gabarito da lista, que é do Gabriel (ver ``O
+repositório não é entregue aos alunos''): **ele traz a resolução completa das três
+questões da prova**, porque os Ex. 5, 7 e 11 entram nela literalmente.
 
 ### Três achados da mesma revisão, corrigidos no mesmo dia
 
