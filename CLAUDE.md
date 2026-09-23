@@ -554,8 +554,12 @@ Tudo medido em 16/09/2026, no `barennet_env`:
   listas, ``em dimensão baixa a escolha não importa'', era falsa --- o próprio Ex. 2
   mostra o QDA 4 pontos à frente em $p=2$ ---, e a do laboratório, ``é a razão
   $n/p^2$ que governa'', generalizava demais. As peças dizem hoje a mesma coisa:
-  $n$ contra $p(p+1)/2$ governa o que o QDA tem a **perder**; o quanto as
-  covariâncias diferem, o que ele tem a **ganhar**.
+  $n$ contra $p(p+1)/2$ governa o que o QDA tem a **perder**; e o que ele tem a
+  **ganhar** é o quanto a fronteira de Bayes se afasta de uma reta onde há dados.
+  As duas listas dizem isso assim desde 23/09/2026 (ver adiante); as notas e o
+  laboratório dizem ``o quanto as covariâncias diferem'', que é a condição
+  necessária --- covariâncias diferentes não bastam, e a população do Ex. 3 mostra
+  isso.
 - **No breast_cancer, LDA e QDA empatam dentro do ruído.** O laboratório lia a
   vantagem do LDA no teste ($0{,}0117$, que são **dois** tumores em 171) como ``a conta
   de parâmetros cobrando''; na CV da mesma tabela o QDA fica à frente
@@ -703,8 +707,10 @@ outra. O que limita o ganho do QDA é a distância entre o erro de Bayes e o do 
 dados infinitos. Medido em dois milhões de pontos: Bayes $0{,}8841$, LDA ajustado com
 um milhão $0{,}8805$, a melhor reta (varrendo ângulo e corte) $0{,}8806$ --- nem com
 infinitos dados o QDA abriria mais que $0{,}4$ ponto. Em $p=10$, Bayes $0{,}8964$,
-contra $0{,}8239$ do LDA-limite. O gabarito do Ex. 3 da `Lista prática 07` ainda dá a
-correlação parecida como a razão, e não foi tocado.
+contra $0{,}8239$ do LDA-limite. O gabarito do Ex. 3 da `Lista prática 07`, que dava
+a correlação parecida como a razão, foi acertado no mesmo dia, e mede também o outro
+lado: na população dos Ex. 1 e 2, com correlações de sinais opostos, Bayes
+$0{,}9036$ contra $0{,}8693$ do LDA-limite --- $3{,}4$ pontos.
 
 O enunciado segue com 2 páginas; o gabarito foi de 6 para 5.
 
