@@ -388,8 +388,9 @@ sai na 1.10**. Eram quatro ocorrências, todas corrigidas em 11/09/2026:
   ``$C=1$ encolhe os coeficientes cerca de 10%'' --- continua valendo: $10{,}2\%$.
 
 As três ocorrências da aula 07 saíram em 16/09/2026, junto com a logística, e ela
-voltou em 21/09/2026 **sem** o `penalty`: o laboratório usa `C=np.inf` na §7 e as
-notas, `C=1.0`. Ver ``A aula 07 segue o deck (e o deck mudou)'', adiante. Sobrou a
+voltou em 21/09/2026 **sem** o `penalty`: o laboratório usava `C=np.inf` na §7 e as
+notas, `C=1.0` --- até a seção de Python das notas sair, em 23/09/2026, e a §7 do
+laboratório, em 28/09/2026. Ver ``A aula 07 segue o deck (e o deck mudou)'', adiante. Sobrou a
 ocorrência da `Lista teorica 06`.
 
 **Cuidado ao procurar por este:** os notebooks chamam
@@ -484,7 +485,7 @@ aula vai atrás.
 | onde | o corte de 16/09 | como está hoje |
 | --- | --- | --- |
 | notas, as duas versões | saíram a seção da logística (MV, separação perfeita, multiclasse), a regressão sobre indicadores e a comparação discriminativo $\times$ generativo; entraram a motivação da perda 0--1, o Bayes ingênuo discreto com as variantes do `scikit-learn`, a densidade normal multivariada, os estimadores de MV, o discriminante do QDA e a conta de parâmetros com $K$ classes | o que entrou ficou; a logística e a comparação voltaram em 21/09. **Só a regressão sobre indicadores continua fora** --- o deck não a tem |
-| `Aula prática 07` | saíram a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; 40→34 células | a logística e a §7 voltaram, com o caso real de novo na §8; o texto foi reescrito na mesma tarde, e hoje são **49 células** (adiante). A comparação de escala continua fora |
+| `Aula prática 07` | saíram a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; 40→34 células | a logística e a §7 voltaram, com o caso real de novo na §8; o texto foi reescrito na mesma tarde, e eram **49 células** até a §7 sair, em 28/09/2026; hoje são **46** (adiante). A comparação de escala continua fora |
 | `Lista prática 07` | saiu a logística dos Ex. 2 e 4; entraram o `reg_param` no QDA do Ex. 4 (com lacuna) e um `Sua vez` sobre a covariância comum, no lugar do de AUC, que é aula 08 | a logística voltou aos dois exercícios; o `reg_param` e o `Sua vez` novo ficaram |
 | `07-fronteiras` | o painel da logística: 4→3 painéis | de volta a **quatro**, com a legenda de antes |
 | fora da aula | saíram os ponteiros à logística ``da aula 07'' na `Lista prática 09`, nas notas da E3 (docente), no planejamento e no `requirements.txt` | os quatro voltaram |
@@ -656,8 +657,9 @@ Pedido do Gabriel em 23/09/2026, nas duas versões das notas:
   parágrafo que apontava a `Aula prática 07` e o notebook herdado e, na versão do
   aluno, a caixa das ``três pegadinhas'' que comentava o código --- o `C` como inverso
   da penalização, o `score` que devolve acurácia e a recusa do QDA, com o remédio do
-  `reg_param`. Nada foi realocado. O `C` invertido segue no deck (slide da
-  penalização) e no §7 do laboratório; a recusa do QDA, nos §6 e §8 do laboratório e
+  `reg_param`. Nada foi realocado. O `C` invertido ficou no deck e no §7 do
+  laboratório, e os dois saíram em 28/09/2026 (ver ``O laboratório perdeu a §7 e a
+  busca do `C`'', adiante); a recusa do QDA segue nos §6 e §7 do laboratório --- esta era a §8 --- e
   numa `emsala` do docente;
 - **o ``Para praticar''** saiu da versão do aluno, como na 05 (a 04 o manteve): dizia
   ``nesta mesma pasta'' e ``com gabarito'', o que pressupõe o repositório que o aluno
@@ -713,6 +715,39 @@ lado: na população dos Ex. 1 e 2, com correlações de sinais opostos, Bayes
 $0{,}9036$ contra $0{,}8693$ do LDA-limite --- $3{,}4$ pontos.
 
 O enunciado segue com 2 páginas; o gabarito foi de 6 para 5.
+
+### O laboratório perdeu a §7 e a busca do `C`
+
+Decisão do Gabriel em 28/09/2026, no mesmo dia em que o deck perdeu os slides de
+penalização e de interpretação dos coeficientes (item 15 do histórico de correções
+nos HTMLs). Saiu a §7 da `Aula prática 07`, ``A `LogisticRegression` já vem
+regularizada'': as três células que variavam o `C` (a norma dos coeficientes
+$2{,}198$ em $C=1$ contra $2{,}448$ sem penalidade, o encolhimento de $10{,}2\%$, o
+`C=np.inf`). O caso real, que era a §8, **virou a §7** --- toda menção a ``§8 do
+laboratório'' anterior a esta data, neste arquivo, é a §7 de hoje. Nenhum outro
+arquivo cita as §7 ou §8 do laboratório pelo número; as notas do docente citam o §6,
+que não mudou.
+
+Foram junto o objetivo ``saber o que o parâmetro `C` controla'', a linha 7 do Resumo
+e o ``como recomendado na seção anterior'' do caso real.
+
+**O caso real perdeu também a busca do `C`**, no mesmo dia e pelo mesmo motivo: sem
+o slide e sem a §7, o `C` não era mais definido em nenhum material do aluno da aula
+07. A logística segue num `Pipeline` com `StandardScaler`, agora com o `C` padrão, e
+saiu o parágrafo que descrevia a busca e a validação aninhada que ela criava. O teste
+não se mexe --- $0{,}9591$, porque o $C=1$ acerta os mesmos tumores que o
+$C\approx0{,}316$ que a busca escolhia ---, e a CV cai de $0{,}9799$ para $0{,}9724$; a
+logística continua a melhor nas duas colunas, e o Resumo não mudou. O `C` não aparece
+mais em nenhum material do aluno da aula 07. As notas seguem dizendo que a logística
+se penaliza e que o `scikit-learn` aplica $\ell_2$ por padrão, o que ainda justifica o
+`StandardScaler` (aula 06).
+
+O laboratório tem 46 células e roda inteiro, conferido com a sklearn 1.5.1 desta
+máquina e sem gravar saída. As outras quatro linhas da tabela saem idênticas às
+medidas na 1.9 --- e a logística com a busca também saía ---; o $0{,}9724$ foi medido
+na 1.5.1. Antes de ser limpo, o arquivo tinha sido executado e salvo no VS Code, com
+14 células com saída, as chaves na ordem do Jupyter e o `kernelspec` como ``base'':
+o metadado voltou ao do HEAD.
 
 ## Figuras (`recursos/figuras/`)
 
@@ -916,7 +951,8 @@ condicionada, e a `Aula prática 07` morria da §8 em diante — as 30 medidas d
 `breast_cancer` são colineares o bastante. A correção é `QDA(reg_param=1e-4)`, um
 ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empatado
 na frente para trás do LDA no teste. O texto foi reescrito sobre o medido. (O caso
-real é a §8 do laboratório; a `Lista prática 07`, com a mesma chamada, só foi
+real era a §8 do laboratório, e é a §7 desde 28/09/2026; a `Lista prática 07`, com a
+mesma chamada, só foi
 corrigida em 16/09/2026, e a `Lista prática 10` em 21/09/2026.)
 
 E uma terceira, em 21/09/2026: o **`AdaBoostClassifier` perdeu o `algorithm`**. O
@@ -1503,6 +1539,20 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
     primeira redação, mais longa, quebrava em três linhas e passava 24 px do fim do
     slide; a atual ocupa as mesmas duas linhas de antes (folga de 80 px, medida no
     navegador), com o CRLF preservado (2691 quebras antes e depois).
+15. Em 28/09/2026, a pedido do Gabriel, o deck da aula 07 perdeu dois dos oito
+    slides do item 11: ``Regressão logística: interpretando os coeficientes'' (a
+    razão de chances multiplicada por $e^{\beta_j}$, o efeito não linear sobre a
+    probabilidade e o sinal de $\beta_j$) e ``Regressão logística: penalização''
+    ($\ell_1$/$\ell_2$, o `C` como inverso da penalização e o `C=1` padrão). O deck
+    foi de 44 para 42 slides, e a seção da logística ficou com a ideia, o modelo, o
+    *log-odds*, a estimação, o caso multiclasse e o fecho. Nenhum `id` dos dois era
+    referenciado; saíram 16 linhas, com o CRLF preservado (2691 → 2675 quebras,
+    nenhum LF solto) e 48 → 46 `<section>`. No mesmo dia o laboratório perdeu a §7,
+    a do `C`, e o caso real a busca do `C` (ver ``O laboratório perdeu a §7 e a busca
+    do `C`''). O resto da aula não foi atrás: a interpretação em razão de chances
+    segue nas notas (as duas versões), e a penalização nas notas e na leitura do
+    Ex. 4 do gabarito da `Lista prática 07`. Pelo ``o deck manda'', alinhar é decisão
+    do Gabriel.
 
 ## O slide de SVM, o único em Beamer
 
