@@ -58,8 +58,7 @@ $g:\R^p\to\mathcal{C}$, e queremos, como em regressão, que ela acerte observaç
 novas: $g(\x_{n+1})\approx y_{n+1}$.
 
 O primeiro passo é decidir o que esse ``$\approx$'' quer dizer. A perda quadrática
-$(Y-g(\X))^2$ não serve: se $Y$ é ``\emph{spam}'' ou ``não \emph{spam}'', não existe
-a diferença $Y-g(\X)$. Codificar as classes por números não resolve, porque a conta
+$(Y-g(\X))^2$ não serve: codificar as classes por números não resolve, porque a conta
 passa a depender de uma escolha arbitrária --- com três classes codificadas como
 $1$, $2$ e $3$, confundir a classe~1 com a~3 custaria $4$, e com a~2 custaria $1$,
 como se houvesse uma ordem entre as classes. Em classificação só há duas
@@ -102,7 +101,7 @@ uma tentativa de aproximá-lo.
 
 \begin{observacao}[O que se transfere da regressão]
 A estimação do risco \eqref{eq:risco01} é feita por \emph{data splitting}/validação
-cruzada (Aula~03), agora medindo a \emph{proporção de erros} na validação. O balanço
+cruzada, agora medindo a \emph{proporção de erros} na validação. O balanço
 viés--variância também vale: $R(g)-R^*$ decompõe-se num termo tipo variância (classe
 $\mathcal{G}$ grande demais) e num termo tipo viés (classe pequena demais). E, como
 em regressão, compare \emph{poucos} modelos no teste --- faça o \emph{tuning} por CV
