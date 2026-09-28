@@ -45,7 +45,7 @@ que a resposta certa é conhecida. Neste trabalho a situação se inverte: dois
 conjuntos de dados reais, públicos, de áreas diferentes, e nenhuma resposta
 conhecida de antemão. O que se pede é o que se faz numa análise de verdade ---
 entender os dados antes de modelar, montar um protocolo de avaliação honesto, comparar
-métodos com as ferramentas certas e, no fim, \emph{dizer o que os números significam}.
+métodos com as ferramentas certas e, no fim, \emph{chegar às suas próprias conclusões}.
 
 O trabalho tem duas partes, uma de \textbf{regressão} e uma de
 \textbf{classificação}, e cada tarefa corresponde a uma ou mais aulas do curso. A
@@ -53,7 +53,7 @@ maior parte do código de que você precisa já apareceu nas aulas práticas; o 
 novo aqui é juntar as peças e decidir, em cada passo, \emph{por que} fazer assim.
 
 \begin{ideia}[o que vale nota]
-Um número sem leitura não responde nada. Quando uma tarefa pergunta ``por quê?'',
+Um número sem justificativa não será considerado. Quando uma tarefa pergunta ``por quê?'',
 ``o que isso significa?'' ou ``compare'', a resposta é um texto curto, em português,
 numa célula de \emph{markdown} logo abaixo do código --- e é esse texto que recebe a
 maior parte da nota. Um resultado errado com uma leitura honesta (``esperava $X$,
@@ -65,9 +65,8 @@ explicação nenhuma.
 \section{Regras de entrega}\label{sec:regras}
 %==============================================================================
 \begin{enumerate}[leftmargin=1.4cm]
-  \item \textbf{Um único notebook} \cod{TP01\_<matrícula>\_<nome>.ipynb}, com as duas
-        partes, \textbf{entregue com as saídas} (gráficos e números visíveis). Use o
-        \cod{Trabalho pratico 01 - modelo.ipynb} como ponto de partida: ele já
+  \item \textbf{Um único notebook} \cod{TP01\_<nome>.ipynb}, com as duas
+        partes. Use o \cod{Trabalho pratico 01 - modelo.ipynb} como ponto de partida: ele já
         carrega os dados e tem uma seção por tarefa.
   \item O notebook deve \textbf{rodar do início ao fim sem erro} com
         \emph{Kernel $\to$ Restart \& Run All}, com os dois \cod{.csv} na mesma pasta
@@ -75,12 +74,11 @@ explicação nenhuma.
         completa deve levar no máximo uns 20 minutos: se passar disso, reduza grades
         ou o número de árvores e diga que reduziu.
   \item \textbf{Bibliotecas}: \cod{numpy}, \cod{pandas}, \cod{matplotlib},
-        \cod{scipy} e \cod{scikit-learn} (versão $\ge 1.2$; o trabalho foi testado
-        na 1.9). Nada de outras bibliotecas de aprendizado de máquina.
+        \cod{scipy} e \cod{scikit-learn}. Nada de outras bibliotecas de aprendizado de máquina.
   \item \textbf{Reprodutibilidade}: use as sementes do enunciado onde ele as fixa, e
         fixe você mesmo (\cod{random\_state} ou \cod{np.random.default\_rng}) toda
         outra aleatoriedade.
-  \item \textbf{O conjunto de teste de cada parte é tocado uma única vez}, nas
+  \item \textbf{O conjunto de teste de cada parte deve ser usado uma única vez}, nas
         tarefas R8 e C7. Toda escolha anterior --- de modelo, de hiperparâmetro, de
         corte --- é feita por validação cruzada \emph{dentro do treino}. Usar o
         teste antes disso para escolher qualquer coisa invalida a tarefa
@@ -96,7 +94,7 @@ explicação nenhuma.
 \textbf{Distribuição dos pontos.} Parte~I, 4,5 pontos; Parte~II, 4,5 pontos;
 \textbf{qualidade do notebook}, 1,0 ponto --- roda do começo ao fim, está
 organizado por tarefa, explica \emph{antes} de cada bloco de código o que ele vai
-fazer, tem gráficos legíveis, e não toca o teste antes da hora.
+fazer, tem gráficos legíveis, etc.
 
 \begin{criterio}
 \textbf{Qualidade (1,0).} 0,3 roda sem erro do começo ao fim (se não roda, mas as
@@ -112,8 +110,7 @@ C7. Quem escolheu modelo, hiperparâmetro ou corte olhando o teste perde esses 0
 Os dois conjuntos são do \emph{UCI Machine Learning Repository}
 (\url{https://archive.ics.uci.edu}), um dos repositórios públicos de dados mais
 usados em aprendizado de máquina; os dois também estão no Kaggle. Ambos são
-distribuídos sob a licença CC~BY~4.0, que exige citar a fonte --- e é isso que o seu
-notebook deve fazer na primeira célula. Os arquivos que você recebe são os originais,
+distribuídos sob a licença CC~BY~4.0. Os arquivos que você recebe são os originais,
 convertidos de planilha para \cod{.csv} \textbf{sem limpeza nenhuma}: só os nomes das
 colunas do concreto foram traduzidos, e a resposta do crédito foi renomeada para
 \cod{default}. Tudo o que houver de estranho nos dados está lá de propósito --- ou
@@ -159,7 +156,7 @@ valores faltantes:
 \end{center}
 
 \noindent
-Um fato da engenharia que vai ser útil: a \textbf{lei de Abrams} (1918) diz que, para
+Um fato da engenharia que pode vir a ser útil: a \textbf{lei de Abrams} (1918) diz que, para
 os mesmos materiais, a resistência cai com a \textbf{razão água/cimento} --- é a
 regra mais antiga e mais citada da dosagem de concreto.
 
