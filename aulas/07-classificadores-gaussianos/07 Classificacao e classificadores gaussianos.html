@@ -1438,28 +1438,12 @@ margin-right: 0; }
 <li class="fragment">A fronteira de decisão é <span class="math inline">\(\{\mathbf{x} | \mathbb{P}(Y = 1 | \mathbf{x}) = 1/2\}\)</span>: um hiperplano em <span class="math inline">\(\mathbb{R}^p\)</span>, como no LDA</li>
 </ul>
 </section>
-<section id="regressão-logística-interpretando-os-coeficientes" class="slide level2">
-<h2>Regressão logística: interpretando os coeficientes</h2>
-<ul>
-<li class="fragment">Aumentar <span class="math inline">\(x_j\)</span> em uma unidade multiplica a razão de chances por <span class="math inline">\(e^{\beta_j}\)</span>, qualquer que seja o ponto de partida</li>
-<li class="fragment">Já o efeito sobre a <em>probabilidade</em> depende de onde se está: a curva é em S</li>
-<li class="fragment"><span class="math inline">\(\beta_j > 0\)</span> empurra para a classe <span class="math inline">\(1\)</span>; <span class="math inline">\(\beta_j < 0\)</span>, para a classe <span class="math inline">\(0\)</span></li>
-</ul>
-</section>
 <section id="regressão-logística-estimação" class="slide level2">
 <h2>Regressão logística: estimação</h2>
 <ul>
 <li class="fragment">Parâmetros estimados por máxima verossimilhança, com <span class="math inline">\(\pi(\mathbf{x}) = \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x})\)</span>: <span class="math display">\[L(\boldsymbol{\beta}) = \prod_{k = 1}^{n} \pi(\mathbf{x}_k)^{y_k} (1 - \pi(\mathbf{x}_k))^{1 - y_k}\]</span></li>
 <li class="fragment">Ao contrário dos mínimos quadrados, <strong>não há solução fechada</strong>: maximiza-se <span class="math inline">\(\ln L\)</span> numericamente (Newton-Raphson / IRLS)</li>
 <li class="fragment">No <code>scikit-learn</code>: <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html"><code>LogisticRegression</code></a></li>
-</ul>
-</section>
-<section id="regressão-logística-penalização" class="slide level2">
-<h2>Regressão logística: penalização</h2>
-<ul>
-<li class="fragment">Como em regressão linear, penalizar os coeficientes (<span class="math inline">\(\ell_1\)</span> ou <span class="math inline">\(\ell_2\)</span>) reduz a variância</li>
-<li class="fragment">No <code>scikit-learn</code> o parâmetro é o <code>C</code>, que é o <strong>inverso</strong> da penalização: <span class="math inline">\(C\)</span> pequeno <span class="math inline">\(\implies\)</span> regularização forte</li>
-<li class="fragment">Atenção: o padrão é <span class="math inline">\(C = 1\)</span> — a <code>LogisticRegression</code> já vem regularizada!</li>
 </ul>
 </section>
 <section id="regressão-logística-mais-de-duas-classes" class="slide level2">
