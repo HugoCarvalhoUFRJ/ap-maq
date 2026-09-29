@@ -271,7 +271,7 @@ $\widehat\sigma^2=25{,}1$, IC~$(16{,}4;\ 43{,}1)$. Sem elas: 9 grupos, 9 graus d
 liberdade, $\widehat\sigma^2=64{,}6$, IC~$(30{,}6;\ 215{,}5)$. Os zeros das duplicatas
 puxavam a estimativa para baixo e davam uma falsa precisão; o que sobra é
 praticamente inútil --- um intervalo que vai de 31 a 215. A leitura correta: o piso do
-risco existe (Aula~01, $\E[\Var(Y\mid\X)]$), mas estes dados quase não o identificam;
+risco existe ($\E[\Var(Y\mid\X)]$), mas estes dados quase não o identificam;
 e, com variância não constante, as poucas réplicas nem representariam todas as regiões
 do espaço. (Na Tarefa~R8 os melhores modelos ficam com EQM de validação em torno de
 35, compatível com o intervalo.)
@@ -324,7 +324,7 @@ não de linhas); nenhum traço em comum.
 
 \textbf{(b)} Com a separação por linha, o mesmo traço, ensaiado em outra idade, ficaria
 no treino e no teste --- ``a mesma unidade dos dois lados'', um vazamento
-\textbf{grave} da hierarquia da Aula~06, que nenhum \emph{pipeline} conserta. O teste
+\textbf{grave}, que nenhum \emph{pipeline} conserta. O teste
 mediria o acerto em traços já conhecidos. A separação por linha seria a certa para
 outra pergunta: prever a resistência de um traço já ensaiado, numa idade que ainda não
 foi.
@@ -333,7 +333,7 @@ foi.
 estimativa dependeria de quais traços caíram em cada uma. Não mede a variabilidade da
 amostra inteira (outro conjunto de 428 traços), e é otimista mesmo como medida da
 primeira coisa, porque as dobras compartilham treino e as cinco estimativas não são
-independentes (Aula~03).
+independentes.
 \end{solucao}
 
 \begin{criterio}
@@ -382,7 +382,7 @@ diminuir outra coisa. O coeficiente é uma comparação entre misturas que difer
 tudo, e não um efeito causal.
 
 \textbf{(b)} $51{,}5\pm3{,}4$: o risco cai à metade. O modelo continua linear
-\emph{nos parâmetros} (Aula~02); as covariáveis é que são funções dos dados. O ganho
+\emph{nos parâmetros}; as covariáveis é que são funções dos dados. O ganho
 é de \textbf{viés}: a classe de funções passou a conter formas (crescimento
 logarítmico, efeito da razão) que a reta nas covariáveis originais não alcançava,
 com só um parâmetro a mais.
@@ -393,13 +393,13 @@ $44{,}7\pm5{,}3$ no mínimo ($\alpha\approx0{,}012$, 37 de 54 coeficientes não 
 $48{,}4\pm3{,}5$ pela regra 1-EP ($\alpha\approx0{,}14$, 23 não nulos). A expansão
 sozinha piora o MQO por variância; a penalização recupera. Leituras esperadas: a regra
 1-EP troca pouco risco por um modelo bem mais simples; o $\lambda$ que melhor prediz
-não é o que melhor seleciona (Aula~02).
+não é o que melhor seleciona.
 
 \textbf{(d)} A penalização soma $\beta_j^2$ ou $\abs{\beta_j}$, que dependem da
 unidade da covariável; o MQO é equivariante (a predição não muda). E não: o
 \cod{Ridge} minimiza $\norm{\bm y-\mathbb X\bbeta}^2+\alpha\norm{\bbeta}^2$ e o
 \cod{Lasso}, $\frac1{2n}\norm{\bm y-\mathbb X\bbeta}^2+\alpha\norm{\bbeta}_1$ --- há um
-fator $2n$ entre as escalas de $\alpha$ (Aula~02, ``um detalhe de escala'').
+fator $2n$ entre as escalas de $\alpha$.
 \end{solucao}
 
 \begin{criterio}
@@ -438,8 +438,8 @@ Use o MQO com as covariáveis de R3(b).
 \begin{solucao}
 \textbf{(a)} Não: 160, 150, 153, 147 e 146 linhas, porque os traços têm tamanhos
 diferentes. Média simples $51{,}526$ (igual ao \cod{cross\_val\_score}, que faz a
-média não ponderada); ponderada $51{,}429$. A diferença é pequena, e a razão é a da
-Aula~03: as duas fórmulas só coincidem quando as dobras têm o mesmo tamanho.
+média não ponderada); ponderada $51{,}429$. A diferença é pequena, e existe porque
+as duas fórmulas só coincidem quando as dobras têm o mesmo tamanho.
 
 \textbf{(b)} Atalho e explícito dão $49{,}3603$ até a sexta casa. O LOOCV fica
 \emph{abaixo} da validação em grupo ($51{,}53$): ao deixar uma linha de fora, as outras
@@ -506,7 +506,7 @@ onde há dados.
 covariáveis. O atalho vale para os \emph{splines} com a Ridge de $\lambda$ fixo (a
 matriz chapéu existe e tirar uma linha só reescala a solução), mas \textbf{não} para o
 KNN: tirar $\X_i$ muda quem são os vizinhos, e a fórmula devolve o LOOCV do
-$(k-1)$-NN (Aula~04).
+$(k-1)$-NN.
 \end{solucao}
 
 \begin{criterio}
@@ -553,7 +553,7 @@ das quais poucas dominam, há pouco a descorrelacionar.
 
 \textbf{(c)} De $87{,}9$ com uma árvore o risco desce a $38{,}6$ com 10, $35{,}9$ com
 50 e estaciona em $35{,}2$--$35{,}5$ de 100 a 400. Aumentar $B$ só reduz o termo
-$(1-\rho)v/B$, e não há superajuste em $B$ (Aula~05): basta um $B$ grande o bastante.
+$(1-\rho)v/B$, e não há superajuste em $B$: basta um $B$ grande o bastante.
 \end{solucao}
 
 \begin{criterio}
@@ -650,7 +650,7 @@ traço do teste (5 linhas) tem água ($126{,}6$) abaixo e agregado miúdo ($992{
 acima de tudo o que havia no treino, e três dos seis maiores erros dos \emph{splines}
 são dele. Sem essas 5 linhas, o EQM deles cai para $41{,}4$; o da floresta, constante
 fora dos dados, fica em $46{,}5$. A base cúbica extrapola --- é a razão de existirem os
-\emph{natural splines} (Aula~04). A escolha \textbf{não} muda por causa disso: o teste
+\emph{natural splines}. A escolha \textbf{não} muda por causa disso: o teste
 mede, não escolhe; mas o relatório tem de contar.
 
 \textbf{(d)} Algo como: ``prevê a resistência de um traço novo com erro típico de uns
@@ -703,7 +703,7 @@ acurácia (C4).
 não documentados; \cod{PAY\_0} tem $-2$ e $0$, também não documentados. Juntar os
 códigos desconhecidos em ``outros'' é a escolha mais simples e defensável; tratá-los
 como faltantes também. \cod{SEX}, \cod{EDUCATION} e \cod{MARRIAGE} são nominais e
-precisam de \emph{dummies} (\cod{OneHotEncoder} num \cod{ColumnTransformer}, Aula~06);
+precisam de \emph{dummies} (\cod{OneHotEncoder} num \cod{ColumnTransformer});
 usá-las como número impõe uma ordem e distâncias que não existem. O \cod{ID} é
 identificador e sai --- a taxa de inadimplência por decil do \cod{ID} não mostra
 tendência.
@@ -715,7 +715,7 @@ de $0{,}719$ para $0{,}765$), ou uma indicadora ``em atraso'' mais o número de 
 
 \textbf{(d)} Correlações de $0{,}80$ a $0{,}95$. É má notícia para o \textbf{Bayes
 ingênuo}: ele trata seis colunas que dizem quase a mesma coisa como seis testemunhas
-independentes, e as probabilidades saem extremas (Aulas 07 e 08; medido em C4).
+independentes, e as probabilidades saem extremas (medido em C4).
 
 \textbf{(e)} Sim: decisão de crédito com base em sexo ou estado civil pode ser
 discriminatória, e é restrita por lei em muitos países --- e retirar a coluna não
@@ -884,7 +884,7 @@ $0{,}99$ (e $11\%$ ficam abaixo de $0{,}01$); a curva de calibração dele é qu
 horizontal. Calibrado: Brier $0{,}145$, AUC $0{,}729$ --- a AUC quase não se mexe,
 porque a calibração isotônica é monótona e preserva a ordem; o Brier cai porque os
 números passam a significar frequências. Classificar (ordenar) bem $\neq$ estimar bem
-probabilidades (Aula~08), e a causa é a correlação das faturas (C1d).
+probabilidades, e a causa é a correlação das faturas (C1d).
 
 \textbf{(d)} No corte $1/6$ e no melhor corte: logística com \emph{dummies} $0{,}580$
 e $0{,}579$ (corte $0{,}16$); Bayes ingênuo calibrado $0{,}618$ e $0{,}617$ ($0{,}17$);
@@ -899,7 +899,7 @@ descalibra.
 ``contatar todos''. Com $n_0/n_1=3{,}52$, a chance $1/5$ vira $0{,}704$ e o corte
 equivalente é $0{,}413$; o melhor corte medido é $0{,}40$, com custo $0{,}579$ ---
 igual ao da logística sem peso no corte $1/6$. Reponderar é mover o corte por outro
-caminho, e ao preço de estragar as probabilidades (Aula~08).
+caminho, e ao preço de estragar as probabilidades.
 \end{solucao}
 
 \begin{criterio}
@@ -944,7 +944,7 @@ com sinal à fronteira) serve.
 
 \textbf{(c)} No \cod{scikit-learn} \cod{C} é o peso da penalidade: \cod{C} maior
 tolera menos violações, a margem estreita, e espera-se \emph{menos} vetores de
-suporte (Aula~09). Aqui eles ficam em torno de 2200--2300 de 5000 para qualquer
+suporte. Aqui eles ficam em torno de 2200--2300 de 5000 para qualquer
 \cod{C}. As classes se sobrepõem muito (o erro de Bayes aqui não é pequeno): todo ponto
 mal classificado é vetor de suporte, e os pontos dentro da margem também; com tanta
 sobreposição, quase metade da amostra está sempre nessa situação.
@@ -985,8 +985,8 @@ estimar uma proporção local exige muitos vizinhos; na Parte~I o sinal era fort
 $n$, pequeno.
 
 \textbf{(b)} Os cortes das duas árvores de profundidade 3 coincidem quase todos
-(\cod{PAY\_0}$\le1{,}5$, \cod{PAY\_2}$\le1{,}5$, \cod{PAY\_AMT3}$\le664{,}5$, \dots), como a
-Aula~10 antecipa. A poda por \emph{log-loss} deixa 14 folhas (AUC $0{,}751$, contra
+(\cod{PAY\_0}$\le1{,}5$, \cod{PAY\_2}$\le1{,}5$, \cod{PAY\_AMT3}$\le664{,}5$, \dots), como era
+de esperar: as duas medidas de impureza são muito parecidas. A poda por \emph{log-loss} deixa 14 folhas (AUC $0{,}751$, contra
 $0{,}611$ da cheia). O primeiro corte separa quem está com dois ou mais meses de atraso
 em setembro --- o grupo de maior risco.
 
@@ -994,8 +994,8 @@ em setembro --- o grupo de maior risco.
 $m\approx p/3$, $0{,}772$; \emph{bagging}, $0{,}767$; folhas cheias, $0{,}760$ e Brier
 $0{,}1387$ --- folhas de uma observação dão probabilidades mais extremas. O AdaBoost ordena
 bem (AUC $0{,}771$), mas as probabilidades dele ficam entre $0{,}22$ e $0{,}67$: no corte
-$1/6$ ele contata todo mundo, com custo $0{,}779$ --- o mesmo da regra trivial (é o
-fenômeno da Aula~10: o corte por custo pode não cortar nada).
+$1/6$ ele contata todo mundo, com custo $0{,}779$ --- o mesmo da regra trivial (o corte
+por custo pode não cortar nada).
 \end{solucao}
 
 \begin{criterio}
