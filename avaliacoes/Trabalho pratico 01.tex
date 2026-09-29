@@ -305,7 +305,7 @@ i_tr, i_te = next(separa.split(X, y, groups=concreto["traco"]))
         Quantas linhas e quantos traços ficaram em cada lado? Confira que nenhum
         traço aparece nos dois.
   \item Por que separar por traço, e não por linha com \cod{train\_test\_split}? Que
-        tipo de vazamento da hierarquia da Aula~06 a separação por linha produziria,
+        tipo de vazamento --- grave ou leve --- a separação por linha produziria,
         e para qual pergunta ela seria, ao contrário, a separação certa?
   \item Toda escolha de hiperparâmetro da Parte~I será feita por validação cruzada
         de 5 dobras \textbf{em grupo}, dentro do treino, passando \cod{groups=} os
@@ -419,10 +419,10 @@ Use o MQO com as covariáveis de R3(b).
   \item Implemente à mão a validação cruzada em grupo, dobra a dobra, com as dobras
         de R2(c). As dobras têm o mesmo tamanho? Calcule o risco pela média
         \emph{simples} dos cinco EQM e pela média \emph{ponderada} pelo tamanho das
-        dobras (a fórmula das notas da Aula~03), e compare com o
+        dobras (a fórmula das notas de aula), e compare com o
         \cod{cross\_val\_score}.
   \item Calcule o LOOCV de duas formas: com $n$ ajustes, e pelo atalho da
-        \emph{leverage} $h_{ii}$ (Proposição da Aula~03), com um único ajuste. Confira
+        \emph{leverage} $h_{ii}$, com um único ajuste. Confira
         que coincidem. O LOOCV fica acima ou abaixo da validação em grupo? Por quê, e
         qual dos dois responde à pergunta de R2?
   \item Estime o erro-padrão de cada coeficiente de três formas: pela fórmula
@@ -468,7 +468,6 @@ vale metade do (c) se a leitura estiver certa.
 %------------------------------------------------------------------------------
 \tarefa{R5}{Métodos não paramétricos: KNN e \emph{splines}}{0,5 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 03, 04 e 06.}
 
 \begin{itens}
   \item Ajuste o KNN com as covariáveis padronizadas, escolhendo $k$ de 1 a 30 por
@@ -483,7 +482,7 @@ vale metade do (c) se a leitura estiver certa.
         (\cod{knots="quantile"}). Compare as duas curvas do risco contra o número de
         nós. Por que uma delas se comporta de forma tão errática? (Pense na
         distribuição da idade.)
-  \item O KNN e os \emph{splines} são suavizadores lineares (Aula~04). O que isso
+  \item O KNN e os \emph{splines} são suavizadores lineares. O que isso
         quer dizer? O atalho do LOOCV de R4(b) vale para os dois?
 \end{itens}
 
@@ -520,7 +519,6 @@ exigir que ele o note e o relacione à distribuição das covariáveis.
 %------------------------------------------------------------------------------
 \tarefa{R6}{Árvores, \emph{bagging} e florestas}{0,5 ponto}
 %------------------------------------------------------------------------------
-\emph{Aula 05.}
 
 \begin{itens}
   \item Ajuste uma árvore de regressão cheia e calcule o seu erro de treino e o seu
@@ -531,7 +529,7 @@ exigir que ele o note e o relacione à distribuição das covariáveis.
   \item Ajuste o \emph{bagging} e florestas aleatórias com $m$ (\cod{max\_features})
         de 1 a 8. Mostre o risco estimado contra $m$. Qual é o padrão de
         \cod{max\_features} no \cod{RandomForestRegressor}, e o que isso quer dizer?
-        Use a Aula~05 ($\rho\,v$) para explicar a forma da curva.
+        Use o piso $\rho\,v$ da variância para explicar a forma da curva.
   \item Mostre o risco estimado da floresta escolhida contra o número de árvores
         $B$, de 1 a algumas centenas. Por que $B$ não é escolhido por validação
         cruzada como $m$?
@@ -566,13 +564,12 @@ $(1-\rho)v/B$, e não há superajuste em $B$ (Aula~05): basta um $B$ grande o ba
 %------------------------------------------------------------------------------
 \tarefa{R7}{Escala e vazamento, medidos}{0,5 ponto}
 %------------------------------------------------------------------------------
-\emph{Aula 06.}
 
 \begin{itens}
   \item Troque a unidade da idade de dias para horas (multiplique por 24) e
         reestime o risco do MQO, de um Lasso padronizado com $\lambda$ fixo, do KNN
         com $k=5$ com e sem padronização, da árvore podada e da floresta. Quem muda?
-        Explique usando as três categorias da Aula~06.
+        Explique usando as três categorias de métodos quanto à escala.
   \item Para o MQO de R3(b), o Lasso de R3(c), os \emph{splines} de R5(b), a floresta de
         R6(b) e o KNN padronizado com $k=1$, compare o risco estimado pela validação
         em grupo com o estimado por \cod{skm.KFold(5, shuffle=True, random\_state=0)},
@@ -610,7 +607,6 @@ modelo, recebe a nota cheia.
 %------------------------------------------------------------------------------
 \tarefa{R8}{Escolha final e teste}{0,5 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 01 e 03.}
 
 \begin{itens}
   \item Monte uma tabela com o risco estimado ($\pm$ erro-padrão) de pelo menos um
@@ -618,7 +614,7 @@ modelo, recebe a nota cheia.
         \emph{splines}, árvore e floresta. Escolha \textbf{um} modelo final e
         justifique --- a regra de um erro-padrão pode entrar no argumento.
   \item Reajuste o modelo escolhido em \emph{todo} o treino e meça, \textbf{uma
-        vez}, o EQM no teste, com o intervalo de 95\% da Aula~01 e o $R^2$. O EQM de
+        vez}, o EQM no teste, com um intervalo de 95\% para o risco e o $R^2$. O EQM de
         teste ficou acima ou abaixo da estimativa da validação cruzada? Compare a
         variância da resistência no treino e no teste antes de concluir.
   \item Só agora, calcule o EQM de teste dos outros finalistas --- para leitura, sem
@@ -678,7 +674,6 @@ que tiver); (d) 0,1 --- erro em MPa, não em MPa$^2$.
 %------------------------------------------------------------------------------
 \tarefa{C1}{Conhecendo os dados}{0,4 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 06, 07 e 08.}
 
 \begin{itens}
   \item Qual a proporção de inadimplentes? Qual a acurácia do classificador que diz
@@ -693,7 +688,7 @@ que tiver); (d) 0,1 --- erro em MPa, não em MPa$^2$.
         isso cria para um modelo linear que usa \cod{PAY\_0} como número? Proponha
         uma alternativa.
   \item Calcule a matriz de correlação das seis colunas \cod{BILL\_AMT}. Para qual
-        dos classificadores da Aula~07 isso é uma má notícia, e por quê?
+        dos classificadores generativos isso é uma má notícia, e por quê?
   \item \cod{SEX}, \cod{AGE} e \cod{MARRIAGE} são covariáveis disponíveis. Em uma
         linha: vê algum problema em usá-las para decidir quem recebe crédito?
         (Não é preciso retirá-las do modelo; é preciso pensar nisso.)
@@ -735,7 +730,6 @@ vale a nota.
 %------------------------------------------------------------------------------
 \tarefa{C2}{Protocolo e custos}{0,4 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 03 e 08.}
 
 \begin{itens}
   \item Separe o teste de forma estratificada, exatamente assim, e use estas
@@ -752,7 +746,7 @@ dobras_c = skm.StratifiedKFold(5, shuffle=True, random_state=0)
         proposta de renegociação antes do vencimento. Contatar um cliente que pagaria
         de qualquer jeito custa $c_{FP}=1$ (tempo da equipe, desconto concedido sem
         necessidade); deixar de contatar um cliente que vai ficar inadimplente custa
-        $c_{FN}=5$. Deduza, a partir da Proposição da Aula~08, o corte ótimo
+        $c_{FN}=5$. Deduza o corte ótimo
         para a probabilidade \emph{verdadeira} $\Prob(Y=1\mid\x)$.
   \item Calcule, no treino, o custo médio por cliente das duas regras triviais,
         ``não contatar ninguém'' e ``contatar todos''. Qual delas é a referência a
@@ -781,7 +775,7 @@ pena se ficar abaixo de $0{,}779$.
 %------------------------------------------------------------------------------
 \tarefa{C3}{Regressão logística e modelos generativos}{0,8 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 06 e 07.} Em toda esta parte, o pré-processamento (padronização das
+Em toda esta parte, o pré-processamento (padronização das
 numéricas, \emph{dummies} das nominais) mora dentro do \emph{pipeline}.
 
 \begin{itens}
@@ -843,7 +837,7 @@ faturas; (b) 0,15; (c) 0,25 --- 0,1 pela causa da recusa do QDA, 0,1 pelo
 %------------------------------------------------------------------------------
 \tarefa{C4}{Métricas, custos e calibração}{1,0 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 07 e 08.} Toda esta tarefa usa probabilidades \textbf{fora da dobra}
+Toda esta tarefa usa probabilidades \textbf{fora da dobra}
 no treino, e o teste continua guardado:
 \begin{lstlisting}
 p = skm.cross_val_predict(modelo, Xc_tr, yc_tr, cv=dobras_c,
@@ -918,7 +912,7 @@ equivalente. Custos calculados no teste, em vez de fora da dobra, zeram o (d).
 %------------------------------------------------------------------------------
 \tarefa{C5}{SVM}{0,5 ponto}
 %------------------------------------------------------------------------------
-\emph{Aula 09.} O custo de treinar o \cod{SVC} cresce entre $n^2$ e $n^3$. Faça esta
+O custo de treinar o \cod{SVC} cresce entre $n^2$ e $n^3$. Faça esta
 tarefa numa subamostra estratificada de 5000 clientes do treino:
 \begin{lstlisting}
 i_sub = skm.train_test_split(np.arange(len(yc_tr)), train_size=5000,
@@ -969,7 +963,6 @@ ter caído; (d) 0,1.
 %------------------------------------------------------------------------------
 \tarefa{C6}{KNN, árvores e florestas}{0,6 ponto}
 %------------------------------------------------------------------------------
-\emph{Aula 10.}
 
 \begin{itens}
   \item Ajuste o KNN (padronizado, dentro do \emph{pipeline}), escolhendo $k$ ímpar por
@@ -1013,7 +1006,6 @@ leitura dele pode compensar até 0,1 perdido nesta tarefa.
 %------------------------------------------------------------------------------
 \tarefa{C7}{Escolha final e teste}{0,8 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 03 e 08.}
 
 \begin{itens}
   \item Monte uma tabela, com probabilidades fora da dobra no treino, de todos os
