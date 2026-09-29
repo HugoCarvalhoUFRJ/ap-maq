@@ -212,12 +212,11 @@ que ela \emph{não} descreve; tratá-los é parte da Tarefa~C1.
 %------------------------------------------------------------------------------
 \tarefa{R1}{Conhecendo os dados}{0,6 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 01 e 03.} Antes de ajustar qualquer coisa, olhe para os dados.
+Antes de ajustar um modelo, vamos olhar para os dados.
 
 \begin{itens}
   \item Quantas observações e covariáveis há? O problema é de regressão ou de
-        classificação? Justifique pelo critério da Aula~01, e não pelo tipo da
-        coluna no \cod{pandas}.
+        classificação?
   \item Faça o histograma da resistência e os diagramas de dispersão da resistência
         contra a idade e contra a razão água/cimento. Qual das relações é mais
         visivelmente não linear? Em que idades os ensaios foram feitos?
@@ -239,7 +238,7 @@ que ela \emph{não} descreve; tratá-los é parte da Tarefa~C1.
         decisão do item~(c), com os graus de liberdade $\sum_g(n_g-1)$ de cada caso, e
         um intervalo de 95\% para $\sigma^2$ supondo normalidade e variância
         constante. O que essa estimativa diz sobre o menor erro quadrático médio que
-        \emph{qualquer} preditor poderia atingir (Aula~01)? E quão confiável ela é?
+        \emph{qualquer} preditor poderia atingir?
   \item O mesmo \textbf{traço} (as sete quantidades de ingredientes) foi ensaiado em
         várias idades. Crie uma coluna que identifique o traço,
 \begin{lstlisting}
@@ -293,7 +292,7 @@ justificado.
 %------------------------------------------------------------------------------
 \tarefa{R2}{Protocolo de avaliação}{0,4 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 01, 03 e 06.} A pergunta que o preditor responde é: \emph{qual a
+A pergunta que queremos responder é: \emph{qual a
 resistência de um traço que ainda não foi ensaiado?}
 
 \begin{itens}
@@ -346,7 +345,6 @@ resposta sem a ressalva da dependência entre dobras, desde que diga o que o EP 
 %------------------------------------------------------------------------------
 \tarefa{R3}{Modelos lineares e regularização}{0,9 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 01, 02 e 06.}
 
 \begin{itens}
   \item Estime o risco do \textbf{preditor constante} (a média do treino,
@@ -415,7 +413,7 @@ leitura do coeficiente. (b) 0,15. (c) 0,35 --- 0,1 pela validação sem vazament
 %------------------------------------------------------------------------------
 \tarefa{R4}{Validação cruzada por dentro, LOOCV e \emph{bootstrap}}{0,6 ponto}
 %------------------------------------------------------------------------------
-\emph{Aulas 02 e 03.} Use o MQO com as covariáveis de R3(b).
+Use o MQO com as covariáveis de R3(b).
 
 \begin{itens}
   \item Implemente à mão a validação cruzada em grupo, dobra a dobra, com as dobras
