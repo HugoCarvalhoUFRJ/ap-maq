@@ -20,8 +20,9 @@ Ao final desta aula você deve ser capaz de:
 \begin{itemize}[leftmargin=1.4cm]
   \item explicar por que a \emph{acurácia} pode ser uma péssima medida de
         desempenho;
-  \item construir a \textbf{matriz de confusão} e definir sensibilidade,
-        especificidade, precisão, VPN e $F_1$;
+  \item construir a \textbf{matriz de confusão}, definir sensibilidade,
+        especificidade, precisão, VPN e $F_1$ e escrever o risco em termos das taxas
+        de erro de cada classe;
   \item derivar o \textbf{corte ótimo} sob uma perda assimétrica;
   \item ler uma \textbf{curva ROC}, interpretar a \textbf{AUC} e saber quando ela
         engana;
@@ -152,6 +153,69 @@ sensibilidade'' pode, ainda assim, dar mais falsos que verdadeiros positivos num
 doença rara.
 \end{atencao}
 
+\paragraph{Duas taxas com nome próprio.} Na curva ROC (Seção~\ref{sec:roc}) e no
+\texttt{scikit-learn}, duas dessas quantidades aparecem com outro nome. A
+sensibilidade é a \textbf{taxa de verdadeiros positivos}, $\text{TPR}=S$; e
+$1-E=\text{FP}/(\text{FP}+\text{VN})$, a fração dos negativos que o classificador
+acusa, é a \textbf{taxa de falsos positivos}, FPR --- a \texttt{roc\_curve} devolve
+justamente \texttt{fpr} e \texttt{tpr}. As duas dividem por um total de
+\emph{coluna}: os $n_1=\text{VP}+\text{FN}$ positivos e os $n_0=\text{FP}+\text{VN}$
+negativos verdadeiros. (Os slides os chamam de $P$ e $N$, como o [ISLP]; aqui $P$ já
+é a precisão.) Por isso, dados $n_1$ e $n_0$, o par $(\text{FPR},\text{TPR})$
+reconstrói a matriz inteira:
+\[
+  \text{VP}=\text{TPR}\cdot n_1,\qquad \text{FN}=(1-\text{TPR})\,n_1,\qquad
+  \text{FP}=\text{FPR}\cdot n_0,\qquad \text{VN}=(1-\text{FPR})\,n_0 .
+\]
+É esse par que a curva ROC vai acompanhar.
+
+\begin{observacao}
+Quem vem de testes de hipóteses já conhece as duas. Tome $Y=0$ como a hipótese nula
+e ``$\ghat=1$'' como a decisão de rejeitá-la: a FPR estima a probabilidade do
+\emph{erro do tipo I}, e a TPR, o \emph{poder} do teste.
+\end{observacao}
+
+\paragraph{O risco em termos das taxas.} Com $\pi_1=\Prob(Y=1)$ e $\pi_0=1-\pi_1$, a
+lei da probabilidade total separa o risco 0--1 pelas duas classes verdadeiras:
+\[
+  \risco(g)=\Prob\big(g(\X)\neq Y\big)
+  =\pi_1\,\Prob\big(g(\X)=0\mid Y=1\big)+\pi_0\,\Prob\big(g(\X)=1\mid Y=0\big).
+\]
+O risco é, portanto, uma média das taxas de erro das duas classes --- a de falsos
+negativos e a de falsos positivos ---, \emph{ponderada pelas prevalências}. Na
+amostra de teste, a conta análoga é uma identidade exata:
+\[
+  \frac{\text{FP}+\text{FN}}{m}
+  =\frac{n_1}{m}\cdot\frac{\text{FN}}{n_1}+\frac{n_0}{m}\cdot\frac{\text{FP}}{n_0}.
+\]
+Numa doença rara, $\pi_1\approx0$, e o risco quase não enxerga os falsos negativos:
+é isso que faz o classificador trivial parecer tão bom.
+
+\begin{exemplo}[A doença rara em números]
+Num teste com $m=1000$ pacientes, dos quais $10$ doentes ([AME] §7.4), compare o
+trivial $g_1\equiv 0$ com um classificador hipotético $g_2$, que acha 8 dos 10
+doentes e dá alarme falso para 40 dos 990 saudáveis:
+\begin{center}\small
+\begin{tabular}{c|cc}
+  $g_1$ & $Y=0$ & $Y=1$ \\ \hline
+  $0$ & 990 & 10 \\
+  $1$ & 0 & 0
+\end{tabular}
+\qquad\qquad
+\begin{tabular}{c|cc}
+  $g_2$ & $Y=0$ & $Y=1$ \\ \hline
+  $0$ & 950 & 2 \\
+  $1$ & 40 & 8
+\end{tabular}
+\end{center}
+As taxas de erro são $10/1000=0{,}010$ e $42/1000=0{,}042$: o risco estimado prefere
+$g_1$, que não acha doente nenhum. As taxas por classe contam outra história:
+$\text{TPR}=0$ para $g_1$ e $8/10=0{,}8$ para $g_2$, ao preço de uma FPR de
+$40/990\approx0{,}040$. A identidade acima mostra o que aconteceu:
+$0{,}01\cdot1+0{,}99\cdot0=0{,}010$ e $0{,}01\cdot0{,}2+0{,}99\cdot0{,}040\approx0{,}042$.
+A sensibilidade que $g_1$ perde inteira entra no risco com peso $0{,}01$.
+\end{exemplo}
+
 %==============================================================================
 \section{Perdas assimétricas e o corte ótimo}
 %==============================================================================
@@ -186,22 +250,31 @@ número com que você as compara.
 \end{ideia}
 
 %==============================================================================
-\section{Escolhendo o corte: curva ROC e AUC}
+\section{Escolhendo o corte: curva ROC e AUC}\label{sec:roc}
 %==============================================================================
 Um classificador \emph{plug-in} probabilístico gera uma \emph{família} de
 classificadores variando o corte $K$: $g_K(\x)=\1{\widehat\Prob(Y=1\mid\x)\ge K}$.
-Cada $K$ dá um par (sensibilidade, especificidade).
-
-A \textbf{curva ROC} (\emph{Receiver Operating Characteristic}) traça a
-sensibilidade contra $1-$especificidade à medida que $K$ varia de $1$ a $0$.
+Cada $K$ dá um par $(\text{FPR}(K),\text{TPR}(K))$, e a \textbf{curva ROC}
+(\emph{Receiver Operating Characteristic}) é o conjunto desses pontos,
+\[
+  \big\{\,(\text{FPR}(K),\,\text{TPR}(K)) : K\in[0,1]\,\big\},
+\]
+isto é, a sensibilidade contra $1-$especificidade à medida que $K$ varia de $1$ a
+$0$. As duas taxas são funções \emph{não crescentes} de $K$: subir o corte só tira
+observações do grupo dos classificados como positivos. Detectar mais positivos, em
+geral, custa acusar mais negativos, e a curva mostra esse comportamento conjunto.
 Propriedades:
 \begin{itemize}[leftmargin=1.4cm,nosep]
+  \item com $K$ acima de todas as probabilidades estimadas, ninguém é classificado
+        como positivo: ponto $(0,0)$; com $K=0$, todos são: ponto $(1,1)$;
   \item o canto superior esquerdo $(0,1)$ é o classificador perfeito;
-  \item a diagonal é o ``palpite aleatório'';
+  \item a diagonal é o ``palpite aleatório'': sortear $\ghat=1$ com probabilidade
+        $q$, ignorando $\x$, dá $\text{TPR}=\text{FPR}=q$;
   \item a \textbf{AUC} (área sob a curva) resume o desempenho em um número:
-        $\text{AUC}=1$ é perfeito, $0{,}5$ é aleatório. Interpretação:
-        probabilidade de o modelo dar \emph{score} maior a um positivo sorteado do
-        que a um negativo sorteado.
+        $\text{AUC}=1$ é perfeito, $0{,}5$ é aleatório. Interpretação: sorteados de
+        forma independente um positivo e um negativo, com escores $Z_1$ e $Z_0$,
+        $\text{AUC}=\Prob(Z_1>Z_0)+\tfrac12\,\Prob(Z_1=Z_0)$ --- sem empates, a
+        probabilidade de o modelo dar \emph{score} maior ao positivo.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -360,7 +433,8 @@ conceitos com dados reais.
   \item A \textbf{matriz de confusão} (Fig.~\ref{fig:confusao}) gera sensibilidade e
         especificidade (leitura por coluna, independentes da prevalência) e precisão
         e VPN (leitura por linha, dependentes dela); $F_1$ \eqref{eq:f1} é a média
-        harmônica de $P$ e $S$.
+        harmônica de $P$ e $S$. O risco 0--1 é a média das taxas de erro das duas
+        classes, ponderada pelas prevalências: uma classe rara quase não pesa nele.
   \item Custos assimétricos $\Rightarrow$ o corte ótimo é $l_1/(l_0+l_1)$
         (Prop.~\ref{prop:corte}), não $1/2$. Mudar custos é mudar o corte, não o
         modelo.

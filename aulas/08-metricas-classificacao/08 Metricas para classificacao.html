@@ -1161,19 +1161,91 @@ margin-right: 0; }
 <ul>
 <li class="fragment">Nem sempre <span class="math inline">\(R(g) = \mathbb{P}(Y \neq g(\mathbf{X}))\)</span> dará boas informações sobre quão bom <span class="math inline">\(g\)</span> é…</li>
 <li class="fragment">Cenário hipotético: <span class="math display">\[\begin{cases} Y = 0 &amp;\text{pessoa saudável} \\ Y = 1 &amp;\text{pessoa com doença rara} \end{cases}\]</span></li>
-<li class="fragment">Classificador <span class="math inline">\(g(\mathbf{x}) \equiv 0\)</span> possui baixo risco: <span class="math display">\[R(g) = \mathbb{P}(Y \neq g(\mathbf{X})) = \mathbb{P}(Y = 1)\]</span></li>
+<li class="fragment">Classificador <span class="math inline">\(g(\mathbf{x}) \equiv 0\)</span> possui baixo risco: <span class="math inline">\(R(g) = \mathbb{P}(Y \neq g(\mathbf{X})) = \mathbb{P}(Y = 1)\)</span></li>
 <li class="fragment">Porém, sua performance claramente deixa a desejar…</li>
 </ul>
 </section>
-<section id="a-matriz-de-confusão-e-métricas-dela-derivadas" class="slide level2">
-<h2>A matriz de confusão e métricas dela derivadas</h2>
-<p>Veja arquivo <code>MatConf.pdf</code></p>
+<section id="a-matriz-de-confusão" class="slide level2">
+<h2>A matriz de confusão</h2>
+<ul>
+<li class="fragment">Classificação binária, com <span class="math inline">\(Y = 1\)</span> a classe <em>positiva</em></li>
+<li class="fragment">Numa amostra de teste, não usada para construir <span class="math inline">\(g\)</span>, cruzamos o predito com o verdadeiro: <span class="math display">\[\begin{array}{c|cc} &amp; Y = 0 &amp; Y = 1 \\ \hline g(\mathbf{X}) = 0 &amp; \mathrm{VN} &amp; \mathrm{FN} \\ g(\mathbf{X}) = 1 &amp; \mathrm{FP} &amp; \mathrm{VP} \\ \hline \text{total} &amp; N &amp; P \end{array}\]</span></li>
+<li class="fragment">Na diagonal, os acertos; fora dela, os erros ([AME] Tabela 7.1)</li>
+</ul>
+</section>
+<section id="a-matriz-de-confusão-1" class="slide level2">
+<h2>A matriz de confusão</h2>
+<ul>
+<li class="fragment">Cada casela é uma contagem: <span class="math inline">\(\mathrm{VP} = \#\{i : g(\mathbf{X}_i) = 1 \text{ e } Y_i = 1\}\)</span>, e as outras três são análogas</li>
+<li class="fragment"><em>Falso positivo</em>: um negativo que <span class="math inline">\(g\)</span> acusa</li>
+<li class="fragment"><em>Falso negativo</em>: um positivo que <span class="math inline">\(g\)</span> deixa passar</li>
+<li class="fragment"><span class="math inline">\(P = \mathrm{VP} + \mathrm{FN}\)</span> e <span class="math inline">\(N = \mathrm{FP} + \mathrm{VN}\)</span> são os totais de positivos e negativos <strong>verdadeiros</strong>, e <span class="math inline">\(P + N = m\)</span></li>
+<li class="fragment">O <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html"><code>confusion_matrix</code></a> do <code>scikit-learn</code> devolve a <strong>transposta</strong>: verdadeiro nas linhas</li>
+</ul>
+</section>
+<section id="voltando-à-doença-rara" class="slide level2">
+<h2>Voltando à doença rara</h2>
+<ul>
+<li class="fragment">O trivial <span class="math inline">\(g_1 \equiv 0\)</span> e um <span class="math inline">\(g_2\)</span> hipotético, num teste com <span class="math inline">\(m = 1000\)</span> pacientes e <span class="math inline">\(10\)</span> doentes ([AME] §7.4): <span class="math display">\[\begin{array}{c|cc} g_1 &amp; Y = 0 &amp; Y = 1 \\ \hline 0 &amp; 990 &amp; 10 \\ 1 &amp; 0 &amp; 0 \end{array} \qquad \begin{array}{c|cc} g_2 &amp; Y = 0 &amp; Y = 1 \\ \hline 0 &amp; 950 &amp; 2 \\ 1 &amp; 40 &amp; 8 \end{array}\]</span></li>
+<li class="fragment">Taxa de erro, <span class="math inline">\((\mathrm{FP} + \mathrm{FN})/m\)</span>: <span class="math inline">\(0,\!010\)</span> (<span class="math inline">\(g_1\)</span>) e <span class="math inline">\(0,\!042\)</span> (<span class="math inline">\(g_2\)</span>)</li>
+<li class="fragment">O risco estimado prefere <span class="math inline">\(g_1\)</span>, que não acha nenhum doente; <span class="math inline">\(g_2\)</span> acha 8 dos 10, ao preço de 40 alarmes falsos</li>
+</ul>
+</section>
+<section id="taxa-de-verdadeiros-positivos" class="slide level2">
+<h2>Taxa de verdadeiros positivos</h2>
+<ul>
+<li class="fragment">Dos positivos verdadeiros, que fração <span class="math inline">\(g\)</span> detecta? <span class="math display">\[\mathrm{TPR} = \frac{\mathrm{VP}}{P} = \frac{\mathrm{VP}}{\mathrm{VP} + \mathrm{FN}}\]</span></li>
+<li class="fragment">Também chamada de <strong>sensibilidade</strong> ou <strong>revocação</strong> (<em>recall</em>)</li>
+<li class="fragment">Estima a probabilidade <span class="math inline">\(\mathbb{P}(g(\mathbf{X}) = 1 | Y = 1)\)</span></li>
+<li class="fragment">Complemento: <span class="math inline">\(\mathrm{FNR} = \mathrm{FN}/P = 1 - \mathrm{TPR}\)</span>, a taxa de falsos negativos</li>
+<li class="fragment">No exemplo: <span class="math inline">\(0\)</span> para <span class="math inline">\(g_1\)</span> e <span class="math inline">\(8/10 = 0,\!8\)</span> para <span class="math inline">\(g_2\)</span></li>
+</ul>
+</section>
+<section id="taxa-de-falsos-positivos" class="slide level2">
+<h2>Taxa de falsos positivos</h2>
+<ul>
+<li class="fragment">Dos negativos verdadeiros, que fração <span class="math inline">\(g\)</span> acusa? <span class="math display">\[\mathrm{FPR} = \frac{\mathrm{FP}}{N} = \frac{\mathrm{FP}}{\mathrm{FP} + \mathrm{VN}}\]</span></li>
+<li class="fragment">Estima a probabilidade <span class="math inline">\(\mathbb{P}(g(\mathbf{X}) = 1 | Y = 0)\)</span></li>
+<li class="fragment">Complemento: a <strong>especificidade</strong>, <span class="math inline">\(\mathrm{TNR} = \mathrm{VN}/N = 1 - \mathrm{FPR}\)</span></li>
+<li class="fragment">No exemplo: <span class="math inline">\(0\)</span> para <span class="math inline">\(g_1\)</span> e <span class="math inline">\(40/990 \approx 0,\!040\)</span> para <span class="math inline">\(g_2\)</span></li>
+</ul>
+</section>
+<section id="por-que-essas-duas-taxas" class="slide level2">
+<h2>Por que essas duas taxas?</h2>
+<ul>
+<li class="fragment">Cada uma divide por um total de <strong>coluna</strong>: olha uma classe verdadeira de cada vez</li>
+<li class="fragment">Fixados <span class="math inline">\(P\)</span> e <span class="math inline">\(N\)</span>, o par <span class="math inline">\((\mathrm{FPR}, \mathrm{TPR})\)</span> determina a matriz inteira: <span class="math display">\[\begin{aligned} \mathrm{VP} &amp;= \mathrm{TPR} \cdot P, &amp; \mathrm{FN} &amp;= (1 - \mathrm{TPR}) \cdot P, \\ \mathrm{FP} &amp;= \mathrm{FPR} \cdot N, &amp; \mathrm{VN} &amp;= (1 - \mathrm{FPR}) \cdot N \end{aligned}\]</span></li>
+<li class="fragment">É esse par que a curva ROC acompanha: FPR no eixo horizontal, TPR no vertical</li>
+</ul>
+</section>
+<section id="por-que-essas-duas-taxas-1" class="slide level2">
+<h2>Por que essas duas taxas?</h2>
+<ul>
+<li class="fragment">Não dependem da prevalência: se só a proporção de doentes mudar, mantida a distribuição de <span class="math inline">\(\mathbf{X}\)</span> em cada classe, o que elas estimam fica igual</li>
+<li class="fragment">Para quem vem de testes de hipóteses: com <span class="math inline">\(Y = 0\)</span> no papel de <span class="math inline">\(H_0\)</span>, a FPR estima a probabilidade do erro do tipo I, e a TPR, o poder do teste</li>
+</ul>
+</section>
+<section id="o-risco-em-termos-das-taxas" class="slide level2">
+<h2>O risco em termos das taxas</h2>
+<ul>
+<li class="fragment">Com <span class="math inline">\(\pi_1 = \mathbb{P}(Y = 1)\)</span> e <span class="math inline">\(\pi_0 = 1 - \pi_1\)</span>, pela lei da probabilidade total, <span class="math display">\[\begin{aligned} R(g) &amp;= \pi_1\, \mathbb{P}(g(\mathbf{X}) = 0 | Y = 1) \\ &amp;\quad + \pi_0\, \mathbb{P}(g(\mathbf{X}) = 1 | Y = 0) \end{aligned}\]</span></li>
+<li class="fragment">O risco é uma média das taxas de erro das duas classes, ponderada pelas prevalências</li>
+<li class="fragment">Numa doença rara, <span class="math inline">\(\pi_1 \approx 0\)</span>: o risco quase não enxerga os falsos negativos</li>
+</ul>
+</section>
+<section id="o-risco-em-termos-das-taxas-1" class="slide level2">
+<h2>O risco em termos das taxas</h2>
+<ul>
+<li class="fragment">Na amostra de teste, a mesma conta é uma identidade exata: <span class="math display">\[\frac{\mathrm{FP} + \mathrm{FN}}{m} = \frac{P}{m}\, \mathrm{FNR} + \frac{N}{m}\, \mathrm{FPR}\]</span></li>
+<li class="fragment">Para <span class="math inline">\(g_1\)</span>: <span class="math inline">\(0,\!01 \cdot 1 + 0,\!99 \cdot 0 = 0,\!010\)</span></li>
+<li class="fragment">Para <span class="math inline">\(g_2\)</span>: <span class="math inline">\(0,\!01 \cdot 0,\!2 + 0,\!99 \cdot 0,\!040 \approx 0,\!042\)</span></li>
+<li class="fragment">Se um falso negativo custar mais que um falso positivo, os pesos deveriam ser outros: é o que vem a seguir</li>
+</ul>
 </section>
 <section id="melhorando-o-classificador-de-bayes" class="slide level2">
 <h2>Melhorando o classificador de Bayes</h2>
 <ul>
-<li class="fragment">Contexto de classificação binária</li>
-<li class="fragment">Comparar as quantidades <span class="math inline">\(\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x})\)</span> e <span class="math inline">\(\mathbb{P}(Y = 0 | \mathbf{X} = \mathbf{x})\)</span></li>
+<li class="fragment">Contexto de classificação binária: comparar as quantidades <span class="math inline">\(\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x})\)</span> e <span class="math inline">\(\mathbb{P}(Y = 0 | \mathbf{X} = \mathbf{x})\)</span></li>
 <li class="fragment">Escolher a classe com maior probabilidade: <span class="math display">\[g(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; 0,\!5\]</span></li>
 <li class="fragment">E se fizéssemos <span class="math display">\[g(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; p_0 ~ ?\]</span></li>
 <li class="fragment">Como escolher <span class="math inline">\(p_0\)</span>?</li>
@@ -1181,9 +1253,9 @@ margin-right: 0; }
 </section>
 <section id="melhorando-o-classificador-de-bayes-1" class="slide level2">
 <h2>Melhorando o classificador de Bayes</h2>
-<p><strong>Teorema</strong>: O classificador <span class="math inline">\(g: \mathbb{R}^p \to \mathcal{C}\)</span> que minimiza o risco <span class="math display">\[R(g) = \ell_1 \mathbb{P}(g(\mathbf{x}) = 1, Y = 0) + \ell_0 \mathbb{P}(g(\mathbf{x}) = 0, Y = 1)\]</span> é dado por <span class="math display">\[g(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; \frac{\ell_1}{\ell_0 + \ell_1}.\]</span></p>
+<p><strong>Teorema</strong>: O classificador <span class="math inline">\(g: \mathbb{R}^p \to \mathcal{C}\)</span> que minimiza o risco <span class="math display">\[R(g) = \ell_1 \mathbb{P}(g(\mathbf{X}) = 1, Y = 0) + \ell_0 \mathbb{P}(g(\mathbf{X}) = 0, Y = 1)\]</span> é dado por <span class="math display">\[g(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; \frac{\ell_1}{\ell_0 + \ell_1}.\]</span></p>
 <ul>
-<li class="fragment">Nesse caso, <span class="math inline">\(\ell_0\)</span> e <span class="math inline">\(\ell_1\)</span> são <em>custos</em> para cada um dos tipos de erro</li>
+<li class="fragment">Nesse caso, <span class="math inline">\(\ell_1\)</span> é o <em>custo</em> de um falso positivo, e <span class="math inline">\(\ell_0\)</span>, o de um falso negativo</li>
 </ul>
 </section>
 <section id="a-curva-roc" class="slide level2">
@@ -1194,32 +1266,32 @@ margin-right: 0; }
 <section id="a-curva-roc-1" class="slide level2">
 <h2>A curva ROC</h2>
 <ul>
-<li class="fragment">Taxa de verdadeiros positivos (sensibilidade/revocação): <span class="math display">\[TPR = VP/P \approx \mathbb{P}(g(\mathbf{x}) = 1 | Y = 1) ◄\]</span></li>
-<li class="fragment">Taxa de verdadeiros negativos (especificidade): <span class="math display">\[TNR = VN/N \approx \mathbb{P}(g(\mathbf{x}) = 0 | Y = 0)\]</span></li>
+<li class="fragment">O que acontece ao variar <span class="math inline">\(p_0\)</span> no classificador <span class="math inline">\(g_{p_0}(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; p_0\)</span>?</li>
+<li class="fragment"><span class="math inline">\(\uparrow p_0 \implies\)</span> mais raro classificar <span class="math inline">\(Y = 1\)</span>
+<ul>
+<li class="fragment"><span class="math inline">\(\mathrm{TPR}\)</span> e <span class="math inline">\(\mathrm{FPR}\)</span> não aumentam</li>
+</ul></li>
+<li class="fragment"><span class="math inline">\(\downarrow p_0 \implies\)</span> mais comum classificar <span class="math inline">\(Y = 1\)</span>
+<ul>
+<li class="fragment"><span class="math inline">\(\mathrm{TPR}\)</span> e <span class="math inline">\(\mathrm{FPR}\)</span> não diminuem</li>
+</ul></li>
+<li class="fragment">Para detectar mais positivos, em geral acusamos mais negativos: a curva ROC mostra esse comportamento conjunto</li>
 </ul>
 </section>
 <section id="a-curva-roc-2" class="slide level2">
 <h2>A curva ROC</h2>
 <ul>
-<li class="fragment">Taxa de falsos positivos: <span class="math display">\[FPR = FP/N \approx \mathbb{P}(g(\mathbf{x}) = 1 | Y = 0) ◄\]</span></li>
-<li class="fragment">Taxa de falsos negativos: <span class="math display">\[FNR = FN/P \approx \mathbb{P}(g(\mathbf{x}) = 0 | Y = 1)\]</span></li>
-<li class="fragment">Note que: <span class="math display">\[TPR = 1 - FNR ~~ \text {e} ~~ TNR = 1 - FPR\]</span></li>
+<li class="fragment">Sejam <span class="math inline">\(\mathrm{TPR}(p_0)\)</span> e <span class="math inline">\(\mathrm{FPR}(p_0)\)</span> as taxas de <span class="math inline">\(g_{p_0}\)</span>. A curva ROC é o conjunto <span class="math display">\[\big\{ (\mathrm{FPR}(p_0),\, \mathrm{TPR}(p_0)) : p_0 \in [0, 1] \big\}\]</span></li>
+<li class="fragment">Em <span class="math inline">\(p_0 = 1\)</span>, ninguém é classificado como positivo: <span class="math inline">\((0, 0)\)</span></li>
+<li class="fragment">Com <span class="math inline">\(p_0\)</span> abaixo de todas as probabilidades, todos são: <span class="math inline">\((1, 1)\)</span></li>
+<li class="fragment">O ideal é o canto <span class="math inline">\((0, 1)\)</span>: todos os positivos detectados, nenhum negativo acusado</li>
 </ul>
 </section>
 <section id="a-curva-roc-3" class="slide level2">
 <h2>A curva ROC</h2>
 <ul>
-<li class="fragment">O que acontece ao variar <span class="math inline">\(p_0\)</span> no classificador <span class="math inline">\(g(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; p_0\)</span>?</li>
-<li class="fragment"><span class="math inline">\(\uparrow p_0 \implies\)</span> mais raro classificar <span class="math inline">\(Y = 1\)</span>
-<ul>
-<li class="fragment"><span class="math inline">\(\downarrow \mathrm{TPR}\)</span> e <span class="math inline">\(\uparrow \mathrm{TNR}\)</span> (<span class="math inline">\(\downarrow \mathrm{FPR}\)</span>)</li>
-</ul></li>
-<li class="fragment"><span class="math inline">\(\downarrow p_0 \implies\)</span> mais comum classificar <span class="math inline">\(Y = 1\)</span>
-<ul>
-<li class="fragment"><span class="math inline">\(\uparrow \mathrm{TPR}\)</span> e <span class="math inline">\(\downarrow \mathrm{TNR}\)</span> (<span class="math inline">\(\uparrow \mathrm{FPR}\)</span>)</li>
-</ul></li>
-<li class="fragment">A curva ROC nos permite enxergar esse comportamento conjunto!</li>
-<li class="fragment">Gráfico de <span class="math inline">\(\mathrm{TPR}\)</span> em função de <span class="math inline">\(\mathrm{FPR}\)</span></li>
+<li class="fragment">Ignorar <span class="math inline">\(\mathbf{x}\)</span> e sortear <span class="math inline">\(g = 1\)</span> com probabilidade <span class="math inline">\(q\)</span> dá <span class="math inline">\(\mathrm{TPR} = \mathrm{FPR} = q\)</span>: a diagonal é o desempenho sem informação</li>
+<li class="fragment">Na prática, <span class="math inline">\(\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x})\)</span> é substituída por uma estimativa, e as taxas são calculadas na amostra de teste</li>
 </ul>
 </section>
 <section id="a-curva-roc-4" class="slide level2">
@@ -1237,12 +1309,12 @@ margin-right: 0; }
 <section id="área-sob-a-curva-roc-auc-1" class="slide level2">
 <h2>Área sob a curva ROC (AUC)</h2>
 <ul>
-<li class="fragment">Sejam <span class="math inline">\(\mathbf{X}_0\)</span> e <span class="math inline">\(\mathbf{X}_1\)</span> instâncias negativa e positiva, respectivamente, escolhidas ao acaso</li>
+<li class="fragment">Sejam <span class="math inline">\(\mathbf{X}_0\)</span> e <span class="math inline">\(\mathbf{X}_1\)</span> instâncias negativa e positiva, respectivamente, escolhidas ao acaso e de forma independente</li>
 <li class="fragment">Sejam <span class="math inline">\(S_0\)</span> e <span class="math inline">\(S_1\)</span> seus respectivos <em>scores</em>
 <ul>
 <li class="fragment">No caso dos classificadores que estamos tratando, são <span class="math inline">\(\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{X}_i)\)</span>, para <span class="math inline">\(i = 0, 1\)</span>, respectivamente</li>
 </ul></li>
-<li class="fragment"><strong>Teorema</strong>: A AUC é igual à probabilidade <span class="math inline">\(\mathbb{P}(S_1 &gt; S_0)\)</span></li>
+<li class="fragment"><strong>Teorema</strong>: Se <span class="math inline">\(\mathbb{P}(S_1 = S_0) = 0\)</span>, a AUC é igual à probabilidade <span class="math inline">\(\mathbb{P}(S_1 &gt; S_0)\)</span>. Em geral, <span class="math inline">\(\mathrm{AUC} = \mathbb{P}(S_1 &gt; S_0) + \tfrac{1}{2}\,\mathbb{P}(S_1 = S_0)\)</span></li>
 </ul>
 </section>
 <section id="auc---alguns-problemas" class="slide level2">
@@ -1251,7 +1323,7 @@ margin-right: 0; }
 </section>
 <section id="auc---alguns-problemas-1" class="slide level2">
 <h2>AUC - alguns problemas</h2>
-<p>“<em>[…] the AUC uses different misclassification cost distributions for different classifiers. This means that using the AUC is equivalent to using different metrics to evaluate different classification rules. It is equivalent to saying that, using one classifier, misclassifying a class 1 point is <span class="math inline">\(A\)</span> times as serious as misclassifying a class 0 point, but, using another classifier, misclassifying a class 1 point is <span class="math inline">\(B\)</span> times as serious, where <span class="math inline">\(A \neq B\)</span>. This is nonsensical because the relative severities of different kinds of misclassifications of individual points is a property of the problem, not the classifiers which happen to have been chosen.</em>” <a href="https://link.springer.com/article/10.1007/s10994-009-5119-5">David J. Hand - Measuring classifier performance</a></p>
+<p><span style="font-size: 90%;">“<em>[…] the AUC uses different misclassification cost distributions for different classifiers. This means that using the AUC is equivalent to using different metrics to evaluate different classification rules. It is equivalent to saying that, using one classifier, misclassifying a class 1 point is <span class="math inline">\(A\)</span> times as serious as misclassifying a class 0 point, but, using another classifier, misclassifying a class 1 point is <span class="math inline">\(B\)</span> times as serious, where <span class="math inline">\(A \neq B\)</span>. This is nonsensical because the relative severities of different kinds of misclassifications of individual points is a property of the problem, not the classifiers which happen to have been chosen.</em>”</span> <a href="https://link.springer.com/article/10.1007/s10994-009-5119-5">David J. Hand - Measuring classifier performance</a></p>
 </section>
 <section id="auc---alguns-problemas-2" class="slide level2">
 <h2>AUC - alguns problemas</h2>

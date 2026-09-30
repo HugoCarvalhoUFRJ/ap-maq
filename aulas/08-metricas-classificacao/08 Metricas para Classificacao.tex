@@ -12,8 +12,9 @@ Ao final desta aula o aluno deve ser capaz de:
 \begin{itemize}[leftmargin=1.4cm]
   \item explicar por que a \emph{acurácia} é insuficiente, sobretudo em dados
         desbalanceados;
-  \item ler uma \textbf{matriz de confusão} e calcular sensibilidade,
-        especificidade, precisão, VPN e $F_1$;
+  \item ler uma \textbf{matriz de confusão}, calcular sensibilidade,
+        especificidade, precisão, VPN e $F_1$ e escrever o risco em termos das
+        taxas de erro de cada classe;
   \item formular \textbf{perdas assimétricas} e derivar o \emph{corte ótimo} de um
         classificador \emph{plug-in};
   \item construir e interpretar a \textbf{curva ROC} e a \textbf{AUC};
@@ -97,6 +98,32 @@ Todas essas quantidades devem ser calculadas no conjunto de \emph{validação/te
 nunca no treino (senão superestimam o desempenho --- Aula~03).
 \end{atencao}
 
+Na ROC e no \texttt{scikit-learn} (a \texttt{roc\_curve} devolve \texttt{fpr} e
+\texttt{tpr}), $S$ é a \textbf{taxa de verdadeiros positivos}, TPR, e $1-E$ é a
+\textbf{taxa de falsos positivos}, FPR. As duas dividem por total de coluna
+($n_1=\text{VP}+\text{FN}$ positivos e $n_0=\text{FP}+\text{VN}$ negativos
+verdadeiros, que os slides chamam de $P$ e $N$), e por isso, dados $n_1$ e $n_0$, o
+par $(\text{FPR},\text{TPR})$ reconstrói a matriz. Com $Y=0$ como hipótese nula e
+``$\ghat=1$'' como rejeição, são a probabilidade do erro do tipo I e o poder.
+
+Com $\pi_1=\Prob(Y=1)$ e $\pi_0=1-\pi_1$, pela probabilidade total,
+\[
+  \risco(g)=\pi_1\,\Prob\big(g(\X)=0\mid Y=1\big)+\pi_0\,\Prob\big(g(\X)=1\mid Y=0\big):
+\]
+o risco é a média das duas taxas de erro, ponderada pelas prevalências. Na amostra,
+a mesma conta é uma identidade exata:
+\[
+  \frac{\text{FP}+\text{FN}}{m}=\frac{n_1}{m}\,\text{FNR}+\frac{n_0}{m}\,\text{FPR}.
+\]
+
+\begin{emsala}
+O exemplo dos slides: 1000 pacientes, 10 doentes; o trivial $g_1\equiv0$ contra um
+$g_2$ com VP $8$, FN $2$, FP $40$ e VN $950$. Pergunte qual dos dois o risco
+prefere ($0{,}010$ contra $0{,}042$: prefere $g_1$) e deixe a turma achar o motivo
+na decomposição --- a sensibilidade que $g_1$ perde inteira entra com peso
+$\pi_1=0{,}01$.
+\end{emsala}
+
 %==============================================================================
 \section{Perdas assimétricas e o corte ótimo}
 %==============================================================================
@@ -134,18 +161,23 @@ em vez de $1/2$.
 %==============================================================================
 Um classificador \emph{plug-in} probabilístico gera uma \emph{família} de
 classificadores variando o corte $K$: $g_K(\x)=\1{\widehat\Prob(Y=1\mid\x)\ge K}$.
-Cada $K$ dá um par (sensibilidade, especificidade).
+Cada $K$ dá um par $(\text{FPR}(K),\text{TPR}(K))$, e as duas taxas são não
+crescentes em $K$.
 
-A \textbf{curva ROC} (\emph{Receiver Operating Characteristic}) traça a
-sensibilidade ($\Prob(\ghat=1\mid Y=1)$) contra $1-$especificidade (a taxa de falso
-positivo) à medida que $K$ varia de $1$ a $0$. Propriedades:
+A \textbf{curva ROC} (\emph{Receiver Operating Characteristic}) é o conjunto
+$\{(\text{FPR}(K),\text{TPR}(K)) : K\in[0,1]\}$: a sensibilidade
+($\Prob(\ghat=1\mid Y=1)$) contra $1-$especificidade (a taxa de falso positivo) à
+medida que $K$ varia de $1$ a $0$. Propriedades:
 \begin{itemize}[leftmargin=1.4cm,nosep]
+  \item vai de $(0,0)$ ($K$ acima de todas as probabilidades: ninguém é positivo) a
+        $(1,1)$ ($K=0$: todos são);
   \item o canto superior esquerdo $(0,1)$ é o classificador perfeito;
-  \item a diagonal é o ``palpite aleatório'';
+  \item a diagonal é o ``palpite aleatório'': sortear $\ghat=1$ com probabilidade
+        $q$, ignorando $\x$, dá $\text{TPR}=\text{FPR}=q$;
   \item a \textbf{AUC} (área sob a curva) resume o desempenho em um número:
-        $\text{AUC}=1$ é perfeito, $0{,}5$ é aleatório. Interpretação:
-        probabilidade de o modelo dar \emph{score} maior a um positivo sorteado do
-        que a um negativo sorteado.
+        $\text{AUC}=1$ é perfeito, $0{,}5$ é aleatório. Interpretação: com um
+        positivo e um negativo sorteados de forma independente, e escores $Z_1$ e
+        $Z_0$, $\text{AUC}=\Prob(Z_1>Z_0)+\tfrac12\,\Prob(Z_1=Z_0)$.
 \end{itemize}
 
 \begin{ideia}
