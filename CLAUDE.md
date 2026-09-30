@@ -64,9 +64,12 @@ de matemática (``constante em blocos'').
 Na mesma passada saíram três ponteiros que a renumeração de 31/08 deixou para trás, nas
 células que já estavam sendo editadas: ``as árvores da Aula 06'' (são da 05) e ``um
 método das Aulas 07 a 11'' na `Aula prática 10`, e ``a síntese das Aulas 07 a 11'' nos
-dois notebooks da `Lista prática 10`. Uma busca por ``Aula 11'' não acha mais nada;
-ponteiros deslocados para aulas que existem, como aquele ``Aula 06'', não foram
-varridos no resto do curso.
+dois notebooks da `Lista prática 10`. Uma busca por ``Aula 11'' não achava mais nada,
+mas deixava passar um `\texttt{Aula` / `prática 11}` quebrado entre duas linhas, nas
+notas do aluno da aula 10. Esse saiu em 30/09/2026, junto com um ``Figura~4 da
+Aula~09'' da mesma nota (a figura das perdas é a 3). Ao procurar remissão numa nota,
+procure também com a quebra de linha. Ponteiros deslocados para aulas que existem,
+como aquele ``Aula 06'', não foram varridos no resto do curso.
 
 ## Notas de aula (LaTeX)
 
@@ -159,6 +162,13 @@ derivar $\|y-\mathbb{X}\beta\|^2 + \lambda\sum_j|\beta_j|$, sem $\frac12$ no RSS
 a mesma convenção que dá $\hat\beta/(1+\lambda)$ para o Ridge. Notas, slide, lista
 teórica, `gerar-figuras.py` e notebook estão todos nela.
 
+**Entre o `alpha` do `Ridge` e o do `Lasso` do scikit-learn o fator é $2n$**, não
+$n$: o `Ridge` minimiza $\|y-\mathbb{X}\beta\|^2+\alpha\|\beta\|^2$ e o `Lasso`,
+$\frac1{2n}\|y-\mathbb{X}\beta\|^2+\alpha\|\beta\|_1$, que multiplicado por $2n$ vira
+a nossa convenção com $\lambda=2n\alpha$. A caixa ``um detalhe de escala'' das notas do
+aluno da aula 02 dizia ``um fator $n$'' até 30/09/2026; o roteiro do Trabalho Prático
+01, que pergunta isso no R3(d), já dizia $2n$.
+
 **`pgfplots` está em `compat=1.16`** porque é a versão do TeX Live desta máquina;
 valores mais novos fazem o pacote abortar com "compat=1.18 is unknown".
 
@@ -231,6 +241,11 @@ e da `Aula prática 04`. De quebra, as notas do docente chamavam de "Figura
 ``elefante'' do [AME] (§3.9)" algo que não existe: §3.9 tem a **Figura 3.8**
 (relação entre paramétricos penalizados e não paramétricos), e o elefante é a
 *epígrafe* do Capítulo 4. Corrigido para `Figura~3.8`.
+
+**A aula 04 não desenvolve RKHS**: só o menciona, ao falar de *smoothing splines*,
+como ``caso particular de RKHS, §4.6 do [AME]''. As notas da aula 09, nas duas
+versões, remetiam aos ``RKHS da Aula~04'' e a ``Aula~04, §4.6'' em quatro lugares cada;
+desde 30/09/2026 todas dizem ``[AME], §4.6'', que é onde o assunto está.
 
 ### A `Lista prática 04` reescrita
 
@@ -316,6 +331,17 @@ continuam nas notas, numa `observacao` da seção "Por que agregar?", e na
 `Lista teorica 05`, cujo Ex. 4 é "o piso da variância". O Ex. 2 da lista prática é
 o par medido desse exercício, e por isso ficou também. Se for cortar o $\rho$ um
 dia, são os três de uma vez.
+
+**Três notas de outras aulas continuaram tratando os três assuntos como vistos na aula
+05**, até 30/09/2026: a 03 (``florestas aleatórias (Aula~05), onde as observações OOB
+dão uma estimativa de risco'', nas duas versões), a 06 do aluno (``Árvores, florestas
+e \emph{boosting} (Aula~05)'') e a 10 (``Como em regressão, $B$ grande pode
+superajustar'' no item *Boosting*, nas duas versões, e ``transferir \dots boosting para
+classificação'' nos objetivos do aluno). Decisão do Gabriel naquele dia: **sai só o
+ponteiro**, como na saída da antiga aula 05. Os conceitos ficaram onde estavam --- a
+aula 10 segue apresentando o AdaBoost (a `Aula prática 10` e o TP01 o usam) e dizendo
+que as florestas dão ``OOB e importância de variáveis de graça'' ---, embora o deck da
+aula 10 não mencione nenhum dos três.
 
 ## A aula 06 encolheu a lista teórica e trocou de registro
 
@@ -748,6 +774,13 @@ medidas na 1.9 --- e a logística com a busca também saía ---; o $0{,}9724$ fo
 na 1.5.1. Antes de ser limpo, o arquivo tinha sido executado e salvo no VS Code, com
 14 células com saída, as chaves na ordem do Jupyter e o `kernelspec` como ``base'':
 o metadado voltou ao do HEAD.
+
+No mesmo dia, duas edições do Gabriel: as notas do aluno perderam o exemplo do spam
+na motivação da perda 0--1 (``não existe a diferença $Y-g(\X)$'') e a remissão à Aula
+03 na observação ``O que se transfere da regressão'' --- o roteiro do docente não tinha
+o spam e mantém o ``(Aula~03)'' ---, e o Ex. 4 da `Lista prática 07` passou a se chamar
+``Dados reais'', nos dois notebooks. A edição do enunciado, feita na IDE, deixou oito
+células na ordem de chaves do Jupyter; a ordem do repositório voltou em 30/09/2026.
 
 ## Figuras (`recursos/figuras/`)
 
@@ -1354,11 +1387,24 @@ esperado, com os números) e `criterio` (a distribuição dos pontos). O cabeça
 `\cabecalhotrabalho`, acrescentado ao `estilo-avaliacao.sty`.
 
 São 15 tarefas: R1--R8 no concreto e C1--C7 no crédito, 4,5 pontos cada parte e 1,0
-de qualidade do notebook. **Ao contrário da prova, o trabalho cita as aulas por
-número**, de propósito: ele é para consulta. **Decisões que ficaram com o Gabriel**:
-o prazo (a macro `\prazo`, hoje ``a definir pelo professor''), o valor (a macro
-`\valortotal`, hoje 10,0) e a política sobre assistentes de IA, que o enunciado não
-menciona.
+de qualidade do notebook. **Nada no trabalho cita aula pelo número** --- nem o
+enunciado, nem o roteiro de correção, nem a resolução ---, como na prova: as marcações
+``Aula NN'' e as remissões saíram em 29/09/2026, a pedido do Gabriel, e onde a aula
+era parte da frase entrou o assunto a que ela remetia (``a fórmula das notas de aula'',
+``o piso $\rho\,v$ da variância''). **Decisões que ficaram com o Gabriel**: o prazo (a
+macro `\prazo`, hoje ``a definir pelo professor''), o valor (a macro `\valortotal`,
+hoje 10,0) e a política sobre assistentes de IA, que o enunciado não menciona.
+
+**As regras de entrega** foram simplificadas pelo Gabriel em 28/09/2026: o arquivo é
+`TP01_<nome>.ipynb`, sem a matrícula, e saiu a exigência de entregar com as saídas (o
+critério de qualidade dá metade dos 0,3 de ``roda sem erro'' a quem para num erro
+pontual). A versão da scikit-learn saiu junto e **voltou em 30/09/2026**: o
+`GroupKFold(n_splits=5, shuffle=True, random_state=0)` que o R2 manda usar só existe a
+partir da **1.6**, e na 1.3 dá `TypeError` --- o ``$\ge 1.2$'' de antes já estava
+errado. A primeira célula de código do modelo confere a versão e para com mensagem
+clara (testado na 1.3 e na 1.9). Duas outras coisas dependem da versão e foram medidas
+na 1.9: a recusa do QDA sem `reg_param` (a 1.3 só avisa ``Variables are collinear'') e
+as probabilidades do AdaBoost.
 
 **Os dados** são dois do UCI, sob CC BY 4.0, em `recursos/dados/`:
 `concreto.csv` (Yeh, 1998; 1030 × 9) e `credito.csv` (Yeh & Lien, 2009; 30 000 ×
@@ -1367,8 +1413,9 @@ colunas do concreto foram traduzidos, e a resposta do crédito virou `default` -
 porque limpar faz parte das tarefas.
 
 **Os números das soluções saem de `Trabalho pratico 01 - resolucao.ipynb`**, rodado
-na sklearn 1.9 com as sementes do enunciado (10 a 13 minutos nesta máquina). Ao mexer
-numa semente, numa grade ou num dado, rode-o de novo e confira as caixas. O
+na sklearn 1.9 com as sementes do enunciado (uns 4 minutos e meio no `barennet_env`
+desta máquina). Ao mexer numa semente, numa grade ou num dado, rode-o de novo e confira
+as caixas. O
 `- modelo.ipynb` é o ponto de partida do aluno: carrega os dois `.csv` e tem uma
 seção por tarefa. Os dois procuram os dados em `../recursos/dados/` --- um nível só,
 como os `.tex` desta pasta.
@@ -1380,17 +1427,14 @@ O que o trabalho foi montado para fazer o aluno encontrar, todos medidos:
   com 9 (IC $31$--$215$) sem elas. O piso do risco existe, mas estes dados quase não
   o identificam;
 - **1005 linhas vêm de 428 traços** (a receita), ensaiados em várias idades. O teste
-  é separado por traço e a validação é `GroupKFold`. Validar por linha é o vazamento
-  grave da Aula 06 medido: a floresta vai de $35{,}5$ a $21{,}8$. **Mas o sinal não é
-  garantido** --- no 1-NN a validação por linha é pessimista ($77$ contra $57$),
-  porque o vizinho mais próximo vira o mesmo traço em outra idade;
+  é separado por traço e a validação é `GroupKFold`; o LOOCV do MQO ($49{,}36$) fica
+  abaixo da validação em grupo ($51{,}53$), porque deixa as outras idades do traço no
+  treino;
 - os sete ingredientes somam quase a mesma massa (2339 ± 64 kg/m³), e o número de
   condição do MQO é $10^{10}$: o coeficiente da água não é ``efeito da água'';
-- **os *splines* com nós uniformes são erráticos** (a idade vai a 365 dias com 90\%
-  abaixo de 100); com nós nos quantis a curva é plana e o modelo empata com a
-  floresta na validação. No teste ele perde para ela por causa de **um traço que
-  extrapola** o treino (menos água e mais areia do que qualquer outro) --- e a
-  resolução mantém a escolha, porque o teste mede, não escolhe;
+- **no teste, quem mais piora é a árvore podada**, e não por extrapolação (ver ``Os
+  cortes de 30/09'', adiante); a floresta, escolhida pela validação, piora na mesma
+  proporção que a variância da resistência;
 - no crédito, os `PAY_*` como número custam caro: com *dummies* a AUC da logística
   vai de $0{,}719$ a $0{,}765$. O QDA recusa o ajuste sem `reg_param`. O Bayes ingênuo
   ordena como a logística e tem Brier $0{,}335$ contra $0{,}137$. O corte de custo
@@ -1402,6 +1446,61 @@ O que o trabalho foi montado para fazer o aluno encontrar, todos medidos:
 
 A SVM roda numa subamostra de 5000 do treino, fixada no enunciado: com o treino
 inteiro a grade não caberia nos 20 minutos que as regras permitem.
+
+### Os cortes de 30/09, e o que eles mudaram
+
+Edições do Gabriel em 30/09/2026 no enunciado: saíram o R5(b), o modelo aditivo de
+*splines* com nós uniformes e nos quantis, e o R5(c), os suavizadores lineares e o
+atalho do LOOCV; saiu o R7(b), a validação por linha (`KFold`) contra a por grupo
+(`GroupKFold`); o R7(a) perdeu o ``Explique usando as três categorias'', e o R6(a), o
+``em linguagem de engenheiro''. R5 e R7 ficaram com um item e **continuam valendo 0,5**
+(o critério reparte 0,25 + 0,25). Títulos de hoje: R4 ``Validação cruzada, LOOCV e
+*bootstrap*'', R5 ``Métodos não paramétricos: KNN'', R7 ``Sensibilidade à escala''. O
+roteiro, o modelo e a resolução foram atrás no mesmo dia.
+
+**Os *splines* eram o modelo final do R8.** Sem eles fica a floresta com $m=5$
+($35{,}5\pm4{,}5$ na validação; o *bagging*, com $36{,}3$, empata), e o R8 foi
+reescrito sobre ela: no teste, EQM $45{,}8$, IC $(31{,}9;\ 59{,}7)$, $R^2=0{,}85$, e a
+razão teste/validação dela, $1{,}29$, é a das variâncias da resistência ($1{,}25$) e a
+do preditor constante ($1{,}27$) --- o teste é mais difícil, e só. Quem mais piora é a
+**árvore podada** ($55{,}9\to92{,}7$): os nove ensaios de dois traços do teste com a
+mesma receita-base (água 228, os mesmos agregados, cimento e escória somando 380) caem
+numa folha de três linhas do treino, de 28 dias e com cinza volante, que prevê
+$23{,}5$~MPa para concretos que resistem de 48 a 56; os traços irmãos do treino ficaram
+do outro lado de um corte em escória $\le97{,}5$. As covariáveis estão todas dentro do
+intervalo do treino: é instabilidade, não extrapolação.
+
+**E um erro que o R8 antigo carregava**: o roteiro e a resolução diziam que o traço que
+extrapola tinha ``menos água e mais areia do que qualquer outro''. A água dele,
+$126{,}6$, está dentro da faixa do treino ($121{,}75$ a $247$); só a areia, $992{,}6$
+contra máximo de $945$, passa. A floresta não sofre com ele ($46{,}5$ sem as suas 5
+linhas).
+
+**Nenhuma tarefa mede mais a validação por linha nos modelos flexíveis.** O R7(b)
+mostrava a floresta indo de $35{,}5$ a $21{,}8$ com o `KFold`, e o 1-NN, ao contrário,
+de $57$ a $77$. Sobraram o R4(b), com o MQO, e o R2(b), que pede para classificar o
+vazamento.
+
+### O que a revisão de 30/09 corrigiu no roteiro e na resolução
+
+- **Regra 1-EP**: a resolução usava o `std_test_score` (divisor 5) na regra e
+  reportava o erro-padrão com divisor 4. Hoje as duas coisas usam divisor 4 (a
+  `ep_dobras`), e o Lasso 1-EP vai a $\alpha\approx0{,}18$ ($49{,}6\pm3{,}6$, 23 não
+  nulos; antes $0{,}14$ e $48{,}4$). O critério aceita as duas convenções.
+- **QDA (C3c)**: o roteiro dizia ``a resolução usa 0,5, pelo *log-loss*'', mas o
+  *log-loss* caía até a borda da grade. Com a grade até 0,99 o mínimo é interior, em
+  **0,8** (*log-loss* $0{,}604$, AUC $0{,}714$); pela AUC seria 0,3. O C4(d) foi atrás
+  (QDA $0{,}690$ e $0{,}647$, melhor corte $0{,}31$).
+- **C6(a)**: ``plana de 150 a 600'' para uma grade que para em 401; a busca escolhe
+  $k=301$.
+- **C1(b)**: ``a inadimplência por decil do ID não mostra tendência''. Tendência não
+  há, mas os decis variam mais do que o acaso explicaria ($\chi^2=51{,}7$, 9 gl,
+  $p\approx5\times10^{-8}$). O `ID` sai por ser identificador.
+- Miúdos: R4(c) (os erros-padrão do *bootstrap* dos traços são de 1,4 a 1,6 vez os do
+  das linhas e de 1,4 a 2,1 vezes os da fórmula clássica), R5(a) (a curva do KNN
+  oscila em $k=14$), R6(a) (os três cortes nomeados: idade 21; cimento 386 e 357,5),
+  R7(a) (o KNN padronizado varia na terceira casa), C7(d) (46\%, não 47\%), e títulos
+  e legendas da resolução que não batiam com o enunciado.
 
 ## Dados
 

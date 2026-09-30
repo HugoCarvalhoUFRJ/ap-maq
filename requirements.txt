@@ -50,6 +50,13 @@ ipykernel>=6.0
 #   cost_complexity_pruning_path         aula 05  -> >= 0.22
 #   calibration_curve(strategy=...)      aula 08  -> >= 0.24
 #
+# O Trabalho Prático 01 (avaliacoes/) pede mais do que as aulas:
+#
+#   GroupKFold(shuffle=True, ...)        TP01, R2 -> >= 1.6
+#
+# O enunciado exige a 1.6, e o notebook modelo confere a versão na primeira célula
+# de código e para com uma mensagem clara. O piso das aulas continua em 1.2.
+#
 # =============================================================================
 # O que já quebrou em versão nova
 # =============================================================================
