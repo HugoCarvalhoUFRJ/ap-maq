@@ -1460,9 +1460,9 @@ roteiro, o modelo e a resolução foram atrás no mesmo dia.
 
 **Os *splines* eram o modelo final do R8.** Sem eles fica a floresta com $m=5$
 ($35{,}5\pm4{,}5$ na validação; o *bagging*, com $36{,}3$, empata), e o R8 foi
-reescrito sobre ela: no teste, EQM $45{,}8$, IC $(31{,}9;\ 59{,}7)$, $R^2=0{,}85$, e a
-razão teste/validação dela, $1{,}29$, é a das variâncias da resistência ($1{,}25$) e a
-do preditor constante ($1{,}27$) --- o teste é mais difícil, e só. Quem mais piora é a
+reescrito sobre ela: no teste, EQM $45{,}8$, IC $(31{,}9;\ 59{,}7)$, que contém a
+estimativa da validação ($35{,}5$), e a razão teste/validação dela, $1{,}29$, é a das
+variâncias da resistência ($1{,}25$) --- o teste é mais difícil, e só. Quem mais piora é a
 **árvore podada** ($55{,}9\to92{,}7$): os nove ensaios de dois traços do teste com a
 mesma receita-base (água 228, os mesmos agregados, cimento e escória somando 380) caem
 numa folha de três linhas do treino, de 28 dias e com cinza volante, que prevê
@@ -1480,6 +1480,19 @@ linhas).
 mostrava a floresta indo de $35{,}5$ a $21{,}8$ com o `KFold`, e o 1-NN, ao contrário,
 de $57$ a $77$. Sobraram o R4(b), com o MQO, e o R2(b), que pede para classificar o
 vazamento.
+
+**Mais três mudanças no mesmo dia.** O R7(a) foi reescrito a pedido do Gabriel, que o
+achou confuso: o texto antigo não dizia que o risco se estima duas vezes, em dias e em
+horas, nem com que validação, nem o $\lambda$ do Lasso. Hoje ele lista os seis modelos,
+todos nas oito covariáveis originais (MQO; Lasso com `alpha=1`, padronizado no
+*pipeline*; KNN com $k=5$ cru e padronizado; a árvore de R6(a); a floresta de R6(b)),
+manda usar a validação em grupo de R2(c) com os hiperparâmetros fixos e pede uma
+tabela. A resolução já estimava esses seis. Depois o Gabriel tirou do R8(b) o $R^2$ e a
+comparação das variâncias --- o roteiro passou a ler o EQM de teste pelo intervalo, e a
+variância virou justificativa opcional; o R8(c) compara a razão da árvore ($1{,}66$)
+com a dos outros finalistas ($1{,}01$ a $1{,}38$) --- e o R8(d) passou a ser ``para
+alguém que não fez este curso''. A Parte II ganhou ``de crédito'' no título, também no
+modelo.
 
 ### O que a revisão de 30/09 corrigiu no roteiro e na resolução
 
@@ -1501,6 +1514,28 @@ vazamento.
   oscila em $k=14$), R6(a) (os três cortes nomeados: idade 21; cimento 386 e 357,5),
   R7(a) (o KNN padronizado varia na terceira casa), C7(d) (46\%, não 47\%), e títulos
   e legendas da resolução que não batiam com o enunciado.
+
+Uma última conferência, no mesmo dia e a pedido do Gabriel, achou mais:
+- **R5(a) comparava dois modelos que diferiam em duas coisas**, o KNN padronizado com
+  $k=1$ e o cru com $k=5$, e a solução punha a diferença toda na padronização. Hoje o
+  cru usa o mesmo $k$: $74{,}1$ contra $57{,}3$ (no mesmo $k=5$, só $88{,}0$ contra
+  $85{,}4$). E a solução dizia que, sem padronizar, "a idade quase não pesa" na
+  distância: ela fica com 9,8\% do peso, perto dos 12,5\% de quando padronizada. Quem
+  quase some é a água (1\%) e o superplastificante (0,1\%); o cimento leva 29\%. A
+  resolução imprime esses pesos;
+- **R1(d) definia réplica como resistências diferentes**, mas o cálculo ``antes''
+  usava os 19 grupos com as mesmas covariáveis, 10 deles só de duplicatas. Hoje a
+  réplica é o grupo com as mesmas covariáveis, desde que cada linha seja um ensaio de
+  verdade;
+- enunciado mais preciso: o R1(c) diz como contar (as que repetem uma linha anterior;
+  o critério aceita 36 e 53 no lugar de 25 e 34), o R2(a) define `X` e `y` (sem o
+  `traco`), o R3(b) diz "troque a idade por log(idade)", o R6(a) e o C6(b) dizem "faça a
+  poda" (o "Pode" se lia como o verbo poder), o C6(b) fixa o log-loss e a árvore de
+  Gini, o C6(c) diz que a floresta de folhas cheias tem $m=\sqrt p$ e o C4(b) diz qual
+  logística;
+- no roteiro: 321 e 107 traços no R2(a) (a resolução passou a imprimir), o $\pm$ do
+  R8(c) é a meia largura do intervalo, a `EDUCATION` pode ser tratada como
+  ordinal no C1(b), e acertos de redação no R1(b), R4(b), C3(a), C4(e), C5(c) e C7(d).
 
 ## Dados
 
