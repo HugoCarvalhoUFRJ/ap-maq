@@ -75,7 +75,7 @@ $d(\x_i,\x_j)$. Exemplos:
 \toprule
 \textbf{Medida} & \textbf{$d(\x_i,\x_j)$} \\
 \midrule
-Euclidiana   & $\sum_{k=1}^p (x_{i,k}-x_{j,k})^2$ \\
+Euclidiana   & $\sqrt{\sum_{k=1}^p (x_{i,k}-x_{j,k})^2}$ \\
 Manhattan    & $\sum_{k=1}^p \abs{x_{i,k}-x_{j,k}}$ \\
 Cosseno      & $1-\dfrac{\x_i\cdot\x_j}{\norm{\x_i}\,\norm{\x_j}}$ \\
 Jaccard      & adequada a dados binários (presença/ausência) \\
@@ -99,7 +99,7 @@ antes de qualquer algoritmo.
 O $k$-médias usa a distância \textbf{euclidiana} e exige fixar $K$ de antemão. Busca
 a partição que minimiza a \textbf{soma de quadrados dentro dos grupos} (WCSS):
 \begin{equation}\label{eq:wcss}
-  \min_{C_1,\dots,C_K}\ \sum_{k=1}^{K} \frac{1}{\abs{C_k}}
+  \min_{C_1,\dots,C_K}\ \sum_{k=1}^{K} \frac{1}{2\abs{C_k}}
      \sum_{i,j\in C_k} d^2(\x_i,\x_j)
   \;=\; \min_{C_1,\dots,C_K}\ \sum_{k=1}^{K}\sum_{i\in C_k}\norm{\x_i-\bm{c}_k}^2,
 \end{equation}

@@ -133,11 +133,11 @@ informação redundante.
 
 \subsection{Quantos componentes? Variância explicada}
 Cada autovalor $\lambda_i$ é a variância capturada pelo $i$-ésimo componente. A
-\textbf{proporção de variância explicada} pelos $p$ primeiros é
+\textbf{proporção de variância explicada} pelos $k$ primeiros é
 \begin{equation}\label{eq:pve}
-  \text{PVE}(p) = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^p \lambda_i}.
+  \text{PVE}(k) = \frac{\sum_{i=1}^k \lambda_i}{\sum_{i=1}^p \lambda_i}.
 \end{equation}
-Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
+Escolhe-se $k$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
 ``cotovelo'') ou exigindo PVE acima de um limiar (ex.: 90\%).
 
 \begin{figure}[htbp]
@@ -155,12 +155,12 @@ Escolhe-se $p$ olhando o \emph{scree plot} ($\lambda_i$ vs.\ $i$, procurando o
 \section{Interpretação geométrica e compressão}
 %==============================================================================
 \subsection{PCA como escalonamento multidimensional}
-O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $m<p$ dimensões que
+O PCA também resolve: encontrar a projeção linear $\bm{Z}$ em $k<p$ dimensões que
 melhor \emph{preserva as distâncias} entre pares,
 \[
   \min_{\bm{Z}}\ \sum_{i,j}\big(\norm{\x_i-\x_j}^2 - \norm{\bm{z}_i-\bm{z}_j}^2\big).
 \]
-A solução são os $m$ primeiros componentes principais. Ou seja, PCA é a melhor
+A solução são os $k$ primeiros componentes principais. Ou seja, PCA é a melhor
 aproximação linear de baixa dimensão no sentido de distâncias --- daí ser tão útil
 para visualização. Note que são \emph{dois} problemas aparentemente diferentes
 (maximizar variância, preservar distâncias) com a \emph{mesma} solução; guarde isso,
@@ -168,9 +168,9 @@ porque o t-SNE vai atacar o segundo problema por outro caminho.
 
 \subsection{Compressão (SVD truncada)}
 Da decomposição $\bm{X}^\top\bm{X}=\bm{U}\bm{\Sigma}\bm{U}^\top$, reconstrói-se
-$\bm{X}\approx \bm{Z}_p\bm{U}_p^\top$, usando só as $p$ primeiras colunas. Se os
+$\bm{X}\approx \bm{Z}_k\bm{U}_k^\top$, usando só as $k$ primeiras colunas. Se os
 autovalores decaem rápido, a reconstrução é quase perfeita guardando apenas
-$(z_{i,1},\dots,z_{i,p})$ e as $p$ cargas $\bm{u}_1,\dots,\bm{u}_p$ --- uma
+$(z_{i,1},\dots,z_{i,k})$ e as $k$ cargas $\bm{u}_1,\dots,\bm{u}_k$ --- uma
 \textbf{compressão}.
 
 \begin{figure}[htbp]
@@ -200,7 +200,7 @@ que você acabou de descartar.
 %==============================================================================
 \subsection{Kernel PCA}
 PCA só captura estrutura \emph{linear}. Como o PCA pode ser escrito em termos de
-produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aulas~04 e~09):
+produtos internos, aplica-se o \textbf{truque do \emph{kernel}} (Aula~09):
 substituem-se os produtos internos por um kernel $K$, fazendo PCA num espaço de
 \emph{features} de alta dimensão. Resultado: componentes \textbf{não lineares}, que
 capturam subvariedades curvas. É literalmente o mesmo truque da Aula~09, aplicado a
@@ -272,7 +272,7 @@ Z = TSNE(n_components=2, perplexity=30, init="pca",
 \end{lstlisting}
 O truque do \texttt{n\_components=0.90} é útil: em vez de um número de componentes,
 passa-se a \emph{proporção de variância} desejada, e o \texttt{scikit-learn} escolhe
-$p$ sozinho.
+$k$ sozinho.
 
 \begin{atencao}[qual é, afinal, a gravidade desse vazamento]
 O PCA aprende direções a partir dos dados, então pela regra da Aula~06 ele é etapa
@@ -308,7 +308,7 @@ explicada em dados reais.
         $\bm{X}^\top\bm{X}$ em ordem de autovalor (Prop.~\ref{prop:pca}), obtidos de
         uma única decomposição (Fig.~\ref{fig:eixos}).
   \item \emph{Proporção de variância explicada} \eqref{eq:pve} guia a escolha de
-        $p$: no \texttt{superconductivity}, 12 dos 81 componentes dão 90\%
+        $k$: no \texttt{superconductivity}, 12 dos 81 componentes dão 90\%
         (Fig.~\ref{fig:variancia}).
   \item PCA $=$ melhor projeção linear no sentido de distâncias; a truncagem da SVD
         é compressão (Fig.~\ref{fig:compressao}).

@@ -1,6 +1,6 @@
 % !TeX program = pdflatex
 %==============================================================================
-%  Lista Teórica 10 --- Máquinas de Vetores de Suporte (SVM)
+%  Lista Teórica 09 --- Máquinas de Vetores de Suporte (SVM)
 %  O gabarito sai de "Lista teorica 09 - gabarito.tex".
 %==============================================================================
 \providecommand{\gabaritoopt}{}
@@ -201,9 +201,9 @@ Em $\R^2$, considere o kernel polinomial de grau 2
         $K(\x,\bm z)=\varphi(\x)^\top\varphi(\bm z)$. Qual é $m$?
   \item Conte as operações necessárias para calcular $K(\x,\bm z)$ pelos dois
         caminhos: pela fórmula fechada e via $\varphi$.
-  \item Em $\R^p$, o espaço de atributos do kernel polinomial de grau $p$ tem
-        $\binom{p+p}{p}$ dimensões. Calcule para $p=100$, $p=3$ e para
-        $p=1000$, $p=3$.
+  \item Em $\R^p$, o espaço de atributos do kernel polinomial de grau $q$ tem
+        $\binom{p+q}{q}$ dimensões. Calcule para $p=100$, $q=3$ e para
+        $p=1000$, $q=3$.
   \item Enuncie em uma frase o que é o ``truque do kernel'', usando os números
         do item (c).
 \end{enumerate}
@@ -234,7 +234,7 @@ produtos e multiplicações por $\sqrt2$) e depois fazer um produto interno em
 $\R^6$, ou seja 6 multiplicações e 5 somas. Cerca de \textbf{25 operações}, mais
 o armazenamento dos dois vetores de dimensão 6.
 
-Em $p=2$ e $p=2$ a diferença é pequena; o item (c) mostra o que acontece quando
+Em $p=2$ e $q=2$ a diferença é pequena; o item (c) mostra o que acontece quando
 não é.
 
 \smallskip
@@ -282,7 +282,7 @@ A SVM de margem suave é equivalente a minimizar
         \midrule
         $0$--$1$: $\1{m<0}$          & & & & & \\
         \emph{hinge}: $\max(0,1-m)$  & & & & & \\
-        logística: $\ln(1+e^{-m})$   & & & & & \\
+        logística: $\log_2(1+e^{-m})$ & & & & & \\
         \bottomrule
         \end{tabular}
         \end{center}
@@ -304,14 +304,14 @@ A SVM de margem suave é equivalente a minimizar
 \toprule
 $m=yf(\x)$ & $-1$ & $0$ & $0{,}5$ & $1$ & $2$ \\
 \midrule
-$0$--$1$    & $1$ & $1$ & $0$ & $0$ & $0$ \\
+$0$--$1$    & $1$ & $0$ & $0$ & $0$ & $0$ \\
 \emph{hinge}& $2$ & $1$ & $0{,}5$ & $\mathbf{0}$ & $\mathbf{0}$ \\
-logística   & $1{,}3133$ & $0{,}6931$ & $0{,}4741$ & $0{,}3133$ & $0{,}1269$ \\
+logística   & $1{,}8946$ & $1{,}0000$ & $0{,}6839$ & $0{,}4519$ & $0{,}1831$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-(Na perda $0$--$1$ o valor em $m=0$ é convenção; o ponto está exatamente sobre a
-fronteira.)
+(Com $\1{m<0}$, o ponto $m=0$, exatamente sobre a fronteira, conta como acerto. É
+uma convenção: com $\1{m\le 0}$ ele contaria como erro, e nada do que segue muda.)
 
 \smallskip
 \textbf{(b)} A \emph{hinge} vale zero exatamente quando $m\ge 1$, isto é
@@ -329,8 +329,8 @@ $\ell_1$ faz com os coeficientes no Lasso (Aula~02): um ``bico'' na função ger
 soluções exatamente nulas.
 
 \smallskip
-\textbf{(c)} \textbf{Nunca.} $\ln(1+e^{-m})>0$ para todo $m$ finito, por menor
-que seja --- em $m=2$ ainda vale $0{,}1269$, e só tende a zero quando
+\textbf{(c)} \textbf{Nunca.} $\log_2(1+e^{-m})>0$ para todo $m$ finito, por menor
+que seja --- em $m=2$ ainda vale $0{,}1831$, e só tende a zero quando
 $m\to\infty$.
 
 A consequência é que, na regressão logística, \textbf{todas as observações
@@ -348,8 +348,11 @@ exatamente é um problema NP-difícil em geral.
 
 Tanto a \emph{hinge} quanto a logística são \textbf{cotas superiores convexas} da
 perda $0$--$1$ --- confira na tabela: em cada coluna, as duas últimas linhas são
-$\ge$ a primeira. Minimizar uma cota superior convexa é tratável e controla o que
-interessa. É o mesmo movimento da Aula~02, em que a norma $\ell_1$ substitui a
+$\ge$ a primeira. (É por isso que a logística aparece aqui em base~$2$: em
+logaritmo natural ela vale $\ln 2\approx0{,}69$ em $m=0$, e fica abaixo de $1$ em
+todo o trecho $-0{,}54<m<0$, onde a $0$--$1$ vale $1$. Mudar a base só multiplica a
+perda por $1/\ln 2$, e não muda o minimizador.) Minimizar uma cota superior convexa
+é tratável e controla o que interessa. É o mesmo movimento da Aula~02, em que a norma $\ell_1$ substitui a
 $\ell_0$ por ser sua relaxação convexa: \emph{trocar o objetivo verdadeiro por
 uma aproximação convexa que se pode de fato otimizar}.
 \end{solucao}

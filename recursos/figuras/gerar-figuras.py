@@ -654,7 +654,8 @@ def _roc_metricas():
           f"acurácia com corte 0,5 = {((p >= 0.5) == y_te).mean():.3f}")
 
     fig, (ax1, ax2) = subplots(1, 2, figsize=(7.2, 3.0))
-    ax1.plot(fpr, tpr, color=VINHO, lw=1.6, label=f"logística (AUC $= {auc:.3f}$)")
+    ax1.plot(fpr, tpr, color=VINHO, lw=1.6,
+             label=f"logística (AUC $= {auc:.3f}$)".replace(".", "{,}"))
     ax1.plot([0, 1], [0, 1], color=CINZA, ls="--", lw=1.0,
              label="palpite aleatório (AUC $=0{,}5$)")
     for alvo, marca in [(0.5, "o"), (0.2, "s"), (0.08, "^")]:
@@ -688,7 +689,8 @@ def _roc_metricas():
     ax2.axvline(0.5, color=CINZA, ls="--", lw=1.0)
     ax2.text(0.52, 0.03, "corte 0,50\n(o padrão)", fontsize=7, color=CINZA)
     ax2.axvline(melhor_t, color=VERDE, ls=":", lw=1.2)
-    ax2.text(melhor_t - 0.02, 0.88, f"$F_1$ máx.\nem {melhor_t:.2f}".replace(".", ","),
+    ax2.text(melhor_t - 0.02, 0.88,
+             "$F_1$ máx.\nem " + f"{melhor_t:.2f}".replace(".", ","),
              fontsize=7, color=VERDE, ha="right")
     ax2.set_xlabel("corte aplicado a $\\widehat{P}(Y=1\\mid x)$")
     ax2.set_ylabel("valor da métrica")
@@ -723,7 +725,7 @@ def _calibracao():
         brier = brier_score_loss(y_te, p)
         print(f"     [conferência] {nome}: AUC = {auc:.3f}, Brier = {brier:.4f}")
         ax.plot(prev, obs, "o-", color=cor, ms=4,
-                label=f"{nome}\nAUC $={auc:.3f}$, Brier $={brier:.4f}$")
+                label=f"{nome}\nAUC $={auc:.3f}$, Brier $={brier:.4f}$".replace(".", "{,}"))
     ax.set_xlabel("probabilidade predita")
     ax.set_ylabel("frequência observada")
     ax.set_title("curva de calibração")

@@ -1,6 +1,6 @@
 % !TeX program = pdflatex
 %==============================================================================
-%  Lista Teórica 11 --- KNN e Árvores de Classificação
+%  Lista Teórica 10 --- KNN e Árvores de Classificação
 %  O gabarito sai de "Lista teorica 10 - gabarito.tex".
 %==============================================================================
 \providecommand{\gabaritoopt}{}
@@ -203,9 +203,9 @@ SVM com RBF         & & & \\
   \item Quais desses métodos produzem estimativas de $\Prob(Y=1\mid\X=\x)$
         diretamente? Quais delas você usaria numa conta de custo esperado, à luz
         da Aula~08?
-  \item Dois deles são \emph{invariantes} a transformações monótonas de cada
-        covariável separadamente (trocar $x_j$ por $\log x_j$, por exemplo). Quais
-        são, e por quê? Que consequência prática isso tem?
+  \item Um deles é \emph{invariante} a transformações crescentes de cada
+        covariável separadamente (trocar $x_j$ por $\log x_j$, por exemplo). Qual
+        é, e por quê? Que consequência prática isso tem?
 \end{enumerate}
 \end{exercicio}
 
@@ -237,23 +237,28 @@ probabilidade, e o \texttt{predict\_proba} do \texttt{scikit-learn} só existe c
 \texttt{probability=True}, que ajusta uma calibração de Platt \emph{por cima} do
 modelo, com validação cruzada interna.
 
-Numa conta de custo esperado (Exercício~2 da Lista Teórica~09) o que importa não
+Numa conta de custo esperado (Exercício~2 da Lista Teórica~08) o que importa não
 é ter um número entre 0 e 1, é ele ser \textbf{calibrado}. A logística é a mais
 confiável nesse quesito, por construção --- ela maximiza a verossimilhança de
 Bernoulli, que é uma regra de pontuação própria. O naive Bayes é o pior, pelo
-motivo medido na Lista prática~09. KNN e árvores dão probabilidades grosseiras,
+motivo medido na Lista prática~08. KNN e árvores dão probabilidades grosseiras,
 com granularidade $1/k$ e $1/n_{\text{folha}}$ respectivamente. Para qualquer um
 deles, vale conferir com uma curva de calibração antes de usar o número numa
 decisão de custo.
 
 \smallskip
-\textbf{(c)} São a \textbf{árvore} e (com uma ressalva) os \emph{ensembles} de
-árvores.
+\textbf{(c)} É a \textbf{árvore}. (Fora da tabela, os \emph{ensembles} de árvores
+herdam dela a mesma propriedade.)
 
 A razão é que a árvore só usa as covariáveis por meio de comparações
 $x_j < c$. Se $g$ é estritamente crescente, então $x_j < c \iff g(x_j) < g(c)$:
-o mesmo conjunto de partições continua disponível, e o corte ótimo é o mesmo com
-o limiar transformado. A árvore ajustada é \emph{idêntica}, ponto a ponto.
+o mesmo conjunto de partições continua disponível, e o corte ótimo separa as
+mesmas observações, com o limiar transformado. A árvore ajustada é a mesma: as
+mesmas folhas, com as mesmas observações de treino e as mesmas predições nelas. O
+único detalhe fica por conta da implementação: o \texttt{scikit-learn} põe cada
+limiar no meio do caminho entre os dois valores observados vizinhos, e o ponto
+médio não se transforma junto --- um ponto \emph{novo} que caia exatamente entre
+esses dois valores pode mudar de lado.
 
 A consequência prática é grande: \textbf{árvores não precisam de padronização},
 nem de correção de assimetria, nem de tratamento de escala. Compare com o LDA (a

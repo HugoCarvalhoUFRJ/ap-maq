@@ -229,7 +229,7 @@ $\{x_1,\dots,x_5\}$.
 
 \begin{atencao}
 Critérios como AIC/BIC ($\riscohat \approx \mathrm{EQM} + P(g)$, com
-$P(g)\propto p/\widehat\sigma^2$) estimam o risco \emph{corrigindo} o otimismo do
+$P(g)=2p\,\widehat\sigma^2/n$ no AIC) estimam o risco \emph{corrigindo} o otimismo do
 erro de treino. Mas seleção \emph{stepwise} é gananciosa (não examina todos os
 modelos) e a inferência clássica ``pós-seleção'' fica inválida: os $p$-valores
 reportados ignoram que o modelo foi escolhido olhando os dados. Um $p$-valor de
@@ -485,7 +485,7 @@ conhecido. Então:
   \item se $\bbeta\sim N(0,\sigma_\beta^2\mathbb{I})$, a \textbf{moda a posteriori} de
         $\bbeta$ é exatamente a solução Ridge \eqref{eq:ridge} com
         $\lambda=\sigma^2/\sigma_\beta^2$;
-  \item se $\beta_1,\dots,\beta_p\stackrel{\text{i.i.p.}}{\sim}
+  \item se $\beta_1,\dots,\beta_p\stackrel{\text{i.i.d.}}{\sim}
         \mathrm{Laplace}(0,\tau_\beta)$, a moda a posteriori é exatamente a solução
         Lasso \eqref{eq:lasso} com $\lambda=\sigma^2\tau_\beta$.
 \end{itemize}

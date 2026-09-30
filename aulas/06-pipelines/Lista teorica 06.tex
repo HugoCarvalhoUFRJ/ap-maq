@@ -108,8 +108,9 @@ número que você vai apresentar no fim saia otimista.
   \item Se a grade de $C$ tem seis valores, quantas vezes a mediana da
         \texttt{renda} acaba sendo calculada ao longo de toda a busca? Justifique,
         e compare com o que aconteceria se você a imputasse uma vez só, no começo.
-  \item Por que a ordem tem de ser imputar \emph{e depois} padronizar, e não o
-        contrário?
+  \item Se você trocar de lugar as duas etapas do ramo numérico --- padronizar
+        \emph{e depois} imputar ---, o código ainda roda? O que muda na coluna
+        \texttt{renda} que chega ao modelo, e qual das duas ordens você usaria?
 \end{enumerate}
 \end{exercicio}
 
@@ -180,19 +181,41 @@ o $Y$ ---, e o efeito numérico seria pequeno. A questão é que corrigi-lo cust
 zero: já estava escrito.
 
 \smallskip
-\textbf{(c)} Pelo motivo prosaico primeiro: se você padronizar antes, o
-\texttt{StandardScaler} encontra \texttt{NaN} na coluna \texttt{renda} e a média e
-o desvio saem \texttt{NaN} também, contaminando a coluna inteira. Na melhor das
-hipóteses o código quebra na sua frente; na pior ele segue em silêncio com uma
-coluna de \texttt{NaN}.
+\textbf{(c)} O código roda nas duas ordens, e o resultado quase não muda --- mas
+só imputando primeiro a coluna chega ao modelo padronizada de fato. É essa a ordem
+a usar.
 
-E há o motivo conceitual, que sobrevive mesmo se a implementação fosse esperta o
-bastante para ignorar os faltantes. Imputar depois de padronizar significa inserir
-a mediana \emph{da escala já padronizada}: você acabou de deixar a coluna com média
-$0$ e desvio $1$, e aí acrescenta um punhado de valores que desloca as duas coisas.
-A padronização que você fez deixa de valer para os dados que efetivamente chegam ao
-modelo. Imputando primeiro, a coluna chega completa ao \texttt{StandardScaler}, e a
-média e o desvio que ele calcula são os dos números que o modelo vai de fato ver.
+Primeiro, por que nada quebra. O \texttt{StandardScaler} calcula a média e o desvio
+\emph{ignorando} os \texttt{NaN}, e os devolve intactos no \texttt{transform}; o
+\texttt{SimpleImputer}, posto depois dele, preenche esses buracos com a mediana da
+coluna já padronizada. (O que quebraria é não imputar de jeito nenhum: a
+\texttt{LogisticRegression} recusa uma matriz com \texttt{NaN}.)
+
+A diferença está na coluna que o modelo recebe. Sejam $m$ e $s$ a média e o desvio
+dos valores \emph{observados} da renda, e $m_A$ e $s_A$ os da coluna já imputada.
+Imputando primeiro, o modelo vê $z_A=(x-m_A)/s_A$, com média $0$ e desvio $1$
+exatamente. Padronizando primeiro, ele vê $z_B=(x-m)/s$ --- a mediana padronizada é
+o valor padronizado da mediana ---, isto é,
+\[
+  z_B = \frac{s_A}{s}\,z_A + \frac{m_A-m}{s} ,
+\]
+uma transformação afim de $z_A$. Os valores imputados, todos iguais, encolhem o
+desvio: com uma fração $f$ de faltantes,
+$s_A^2=(1-f)s^2+f(1-f)(\mathrm{med}-m)^2$, que é menor que $s^2$ porque a mediana
+nunca dista da média mais que um desvio-padrão. E, como a mediana de uma variável
+assimétrica como a renda fica abaixo da média, eles puxam a média para baixo. A
+coluna $z_B$ não tem mais média $0$ nem desvio $1$.
+
+Quanto isso pesa? Pouco, e por um único canal. Uma transformação afim de uma
+covariável não muda o que um modelo linear consegue representar --- o coeficiente e
+o intercepto compensam ---, e só a penalização $\ell_2$, que enxerga o tamanho dos
+coeficientes, percebe a diferença de escala. Numa simulação com a renda lognormal e
+$30\%$ dela faltando, a coluna padronizada antes de imputar sai com média $-0{,}08$
+e desvio $0{,}85$, o coeficiente da renda passa de $0{,}60$ para $0{,}71$ (o fator
+$1/0{,}85$), e a AUC de validação cruzada muda na quinta casa decimal. Pelo critério
+do Exercício~1, é um deslize leve --- mas a ordem certa sai de graça, e com ela a
+média e o desvio que o \texttt{StandardScaler} calcula são os dos números que o
+modelo vai de fato ver.
 \end{solucao}
 
 

@@ -80,8 +80,9 @@ $j$-ésima covariável na $i$-ésima observação, $\X_i=(x_{i,1},\dots,x_{i,p})
 
 \begin{atencao}
 A suposição i.i.d.\ é forte e nem sempre razoável (séries temporais, dados
-espaciais, viés de seleção, \emph{dataset shift}). Voltaremos a isso na Aula~08;
-por ora ela é o nosso ``mundo ideal''. A distribuição $P$ é \emph{fixa} mas
+espaciais, viés de seleção, \emph{dataset shift}). A Aula~06 volta a ela, quando
+observações dependentes entre si aparecem como fonte de vazamento; por ora ela é o
+nosso ``mundo ideal''. A distribuição $P$ é \emph{fixa} mas
 \emph{desconhecida}: é a fonte de toda a incerteza.
 \end{atencao}
 
@@ -163,7 +164,7 @@ a perda esperada sobre uma observação \emph{nova} $(\X,Y)\sim P$.
 
 Em regressão usamos tipicamente a perda quadrática $L(y,\hat y)=(y-\hat y)^2$, e
 então $\risco(g)=\E[(Y-g(\X))^2]$. Pela Proposição~\ref{prop:r}, $r$ é o
-\emph{minimizador} do risco. A decomposição fundamental do risco de $r$ é
+\emph{minimizador} do risco. A decomposição fundamental do risco de $g$ é
 \begin{equation}\label{eq:decomprisco}
   \risco(g) \;=\; \underbrace{\E\big[(g(\X)-r(\X))^2\big]}_{\text{excesso de risco}}
               \;+\; \underbrace{\E\big[\Var(Y\mid\X)\big]}_{\text{erro irredutível}}.

@@ -2,7 +2,7 @@
 %==============================================================================
 %  Aula 08 --- Métricas para Classificação
 %  VERSÃO DO ALUNO: texto para leitura autônoma, fora da sala.
-%  (O roteiro de sala é "09 Metricas para Classificacao.tex".)
+%  (O roteiro de sala é "08 Metricas para Classificacao.tex".)
 %==============================================================================
 \documentclass[11pt,a4paper]{article}
 \usepackage[aluno]{../../recursos/latex/estilo-notas}
@@ -111,7 +111,9 @@ tipos de erro, e é dela que sai toda métrica desta aula.
   \caption{A matriz de confusão e as duas leituras que mais confundem. Precisão e
   sensibilidade têm o \emph{mesmo} numerador (VP) e denominadores diferentes: uma
   divide pela \emph{linha} (o que você previu), a outra pela \emph{coluna} (o que
-  de fato era). Saber qual é qual é metade da aula.}
+  de fato era). Saber qual é qual é metade da aula. Atenção ao ler a saída do
+  \texttt{confusion\_matrix} do \texttt{scikit-learn}: ela é a \emph{transposta}
+  desta tabela, com o verdadeiro nas linhas e o predito nas colunas.}
   \label{fig:confusao}
 \end{figure}
 
@@ -291,7 +293,7 @@ observações às quais ele deu $30\%$, cerca de $30\%$ devem ser positivas.
   \caption{Duas curvas de calibração num problema com covariáveis fortemente
   correlacionadas --- cenário em que a hipótese do Bayes ingênuo é falsa. Os dois
   modelos \emph{ordenam} as observações praticamente igual (AUC $0{,}774$ contra
-  $0{,}776$), mas o Bayes ingênuo chega a atribuir probabilidade $0{,}99$ a grupos
+  $0{,}776$), mas o Bayes ingênuo chega a atribuir probabilidade $0{,}98$ a grupos
   em que só $29\%$ são positivos. O score de Brier registra a diferença que a AUC
   não vê: $0{,}065$ contra $0{,}152$, quase três vezes pior.}
   \label{fig:calibracao}

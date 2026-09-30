@@ -67,8 +67,9 @@ $\times$ verdadeiro:
 \bottomrule
 \end{tabular}
 \end{center}
-A partir dela definem-se (cada uma estima uma probabilidade condicional
-populacional):
+(O \texttt{confusion\_matrix} do \texttt{scikit-learn} devolve a transposta desta
+tabela: verdadeiro nas linhas, predito nas colunas.) A partir dela definem-se (cada
+uma estima uma probabilidade condicional populacional):
 \begin{align*}
   \text{Sensibilidade (\emph{recall}):}\ & S=\frac{\text{VP}}{\text{VP}+\text{FN}}
     && \approx \Prob(\ghat=1\mid Y=1),\\

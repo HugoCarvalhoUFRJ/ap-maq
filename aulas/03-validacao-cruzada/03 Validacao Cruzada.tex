@@ -70,7 +70,7 @@ modelos nem reporte desempenho com o erro de treino.
 \begin{observacao}
 Penalização (AIC, BIC) é uma alternativa: estima-se
 $\risco(g)\approx \mathrm{EQM}(g)+P(g)$, com $P(g)$ crescente na complexidade
-(p.ex.\ $P(g)\propto p/\widehat\sigma^2$ no AIC). Funciona, mas exige um modelo
+(p.ex.\ $P(g)=2p\,\widehat\sigma^2/n$ no AIC). Funciona, mas exige um modelo
 probabilístico e contagem de ``parâmetros'' --- nem sempre disponível (KNN,
 florestas). A validação cruzada é \emph{agnóstica ao modelo} e por isso a
 preferimos.

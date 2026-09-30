@@ -118,7 +118,7 @@ subconjunto de covariáveis, ou \emph{encolhendo} os coeficientes (regularizaç�
 
 \begin{atencao}
 Critérios como AIC/BIC ($\riscohat \approx \mathrm{EQM} + P(g)$, com
-$P(g)\propto p/\widehat\sigma^2$) estimam o risco \emph{corrigindo} o otimismo do
+$P(g)=2p\,\widehat\sigma^2/n$ no AIC) estimam o risco \emph{corrigindo} o otimismo do
 erro de treino. Mas seleção \emph{stepwise} é gananciosa (não examina todos os
 modelos) e a inferência clássica ``pós-seleção'' fica inválida: os $p$-valores
 reportados ignoram que o modelo foi escolhido olhando os dados.

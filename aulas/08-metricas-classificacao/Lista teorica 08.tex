@@ -1,6 +1,6 @@
 % !TeX program = pdflatex
 %==============================================================================
-%  Lista Teórica 09 --- Métricas para Classificação
+%  Lista Teórica 08 --- Métricas para Classificação
 %  O gabarito sai de "Lista teorica 08 - gabarito.tex".
 %==============================================================================
 \providecommand{\gabaritoopt}{}
@@ -75,18 +75,25 @@ que qualquer classificador trivial também faria. A informação está nos $600$
 casos restantes, e a acurácia os dilui em dez mil.
 
 \smallskip
-\textbf{(d)} Baixando o corte, mais transações são chamadas de fraude, então
-$VP$ e $FP$ só podem subir e $FN$ e $VN$ só podem descer.
+\textbf{(d)} Baixando o corte, mais transações são chamadas de fraude: nenhuma
+que era chamada deixa de ser. Então $VP$ e $FP$ não podem descer, e $FN$ e $VN$ não
+podem subir. Rigorosamente, nenhuma das cinco métricas \emph{precisa} mudar --- se
+nenhuma transação nova passar do corte, fica tudo igual ---, mas duas só se movem
+num sentido:
 \begin{itemize}[leftmargin=1.4cm]
-  \item \textbf{Sobe necessariamente:} o \emph{recall} $VP/(VP+FN)$ --- o
-        numerador não desce e o denominador $VP+FN$ é fixo (o total de fraudes).
-  \item \textbf{Desce necessariamente:} a especificidade $VN/(VN+FP)$, pelo mesmo
-        argumento com o total de normais.
+  \item \textbf{Nunca desce:} o \emph{recall} $VP/(VP+FN)$ --- o numerador não
+        desce e o denominador $VP+FN$ é fixo (o total de fraudes). Ele sobe de fato
+        assim que o novo corte pega ao menos uma fraude a mais.
+  \item \textbf{Nunca sobe:} a especificidade $VN/(VN+FP)$, pelo mesmo argumento
+        com o total de normais. Ela cai assim que uma transação normal a mais é
+        marcada.
   \item \textbf{Pode ir para qualquer lado:} a precisão (tipicamente desce, mas
         pode subir se os casos recém-incluídos forem majoritariamente fraudes),
         a acurácia (troca $FN$ por $FP$, e o saldo depende de quantos de cada) e
-        o $F_1$ (é média harmônica de duas métricas que se movem em direções
-        opostas).
+        o $F_1$. Se o novo corte acrescenta $a$ fraudes e $b$ transações normais,
+        $F_1=2VP/(2VP+FP+FN)$ vira $2(VP+a)/(2VP+FP+FN+a+b)$: sobe quando os
+        casos novos têm fraudes o bastante e desce quando são quase só alarmes
+        falsos.
 \end{itemize}
 A moral: \emph{recall} e especificidade sozinhos são triviais de manipular ---
 corte $0$ dá \emph{recall} $1$, corte $1$ dá especificidade $1$. Só faz sentido
@@ -146,9 +153,11 @@ Isso é quase sempre errado em problema desbalanceado, e por dois motivos que se
 somam. Primeiro, o motivo substantivo: a classe rara costuma ser justamente a que
 importa (fraude, doença, falha de equipamento), e deixá-la passar custa muito mais
 caro que um alarme falso. Segundo, o motivo estatístico: com prevalência de 5\%,
-pouquíssimas observações têm $p(\x)>0{,}5$ --- o modelo pode estar ordenando as
-transações perfeitamente e ainda assim classificar \textbf{todas} como normais, porque
-nenhuma passa do corte.
+pouquíssimas observações têm $p(\x)>0{,}5$ --- o modelo pode ordenar muito bem as
+transações e ainda assim chamar de fraude só uma pequena parte das fraudes, porque
+quase nenhuma passa do corte. A \texttt{Lista prática 08} mede isso num banco com
+prevalência de 10\%: a logística tem AUC $0{,}85$ e, no corte $0{,}5$, chama de
+positivas só $484$ das $12\,000$ observações de teste, quando $1\,182$ o são.
 
 É por isso que a conduta correta é separar as duas decisões: \textbf{primeiro estime
 $p(\x)$ bem, depois escolha o corte}, e escolha-o pelo custo do problema, não
@@ -263,10 +272,10 @@ $y=(0,\,0,\,1,\,1)$, os escores
   \item Calcule o \textbf{escore de Brier}, $\frac1n\sum_i(p_i-y_i)^2$, dos dois.
   \item Interprete: o que cada uma das duas métricas está medindo, e qual delas
         você usaria para decidir se pode confiar nas probabilidades?
-  \item A Aula~08 relata a medição: naive Bayes e logística praticamente empatam
-        em AUC ($0{,}776$ contra $0{,}774$), e o Brier os separa ($0{,}1523$
+  \item As notas desta aula relatam a medição: naive Bayes e logística praticamente
+        empatam em AUC ($0{,}776$ contra $0{,}774$), e o Brier os separa ($0{,}1523$
         contra $0{,}0653$). Explique o que esse par de números diz sobre o naive
-        Bayes, ligando ao Exercício~4 da Lista Teórica~08.
+        Bayes, ligando-o à hipótese que dá nome ao método (Aula~07).
 \end{enumerate}
 \end{exercicio}
 
@@ -319,16 +328,33 @@ negativos com a mesma eficácia; o Brier $2{,}3$ vezes maior ($0{,}1523$ contra
 $0{,}0653$) mostra que os valores que ele imprime não são probabilidades
 confiáveis.
 
-O mecanismo é o do Exercício~4 da Lista Teórica~08: o naive Bayes multiplica as
-densidades marginais como se as covariáveis fossem independentes. Quando elas são
-correlacionadas --- e são --- ele conta a \emph{mesma} evidência várias vezes, e
-o produto de muitos fatores concordantes empurra a posteriori para $0$ ou $1$. O
-resultado são probabilidades sistematicamente extremas.
+O mecanismo é a hipótese que dá nome ao método (Aula~07): o naive Bayes multiplica
+as densidades marginais como se as covariáveis fossem independentes dentro de cada
+classe. Quando elas são correlacionadas --- e são --- ele conta a \emph{mesma}
+evidência várias vezes, e o produto de muitos fatores concordantes empurra a
+posteriori para $0$ ou $1$. O resultado são probabilidades sistematicamente
+extremas.
 
-Mas o excesso de confiança é \textbf{monótono}: ele exagera na mesma direção em
-que a evidência aponta, então preserva a ordem. Por isso a AUC não sofre. Numa
-frase: \emph{ordenar bem não é estimar bem} --- e escolher a métrica é escolher
-qual das duas coisas você precisa.
+E por que a AUC não sofre? Na população da figura das notas dá para fazer a conta: seis
+covariáveis de variância $1$ e correlação $0{,}85$ duas a duas dentro de cada
+classe, e classes que diferem só pela média, deslocada de $1{,}05$ em todas as
+coordenadas. O \emph{log-odds} verdadeiro é o do LDA,
+$(\bm\mu_1-\bm\mu_0)^\top\bm\Sigma^{-1}\x+\text{const}$, e como
+$\bm\Sigma^{-1}\bm 1=\bm 1/(0{,}15+0{,}85\cdot 6)=\bm 1/5{,}25$, ele vale
+$0{,}2\,(x_1+\dots+x_6)+\text{const}$. O do naive Bayes, que troca $\bm\Sigma$ pela
+sua diagonal --- aqui, a identidade ---, vale $1{,}05\,(x_1+\dots+x_6)+\text{const}$:
+a mesma soma, com inclinação
+$5{,}25$ vezes maior. Mesma direção, mais íngreme --- o escore do naive Bayes é uma
+função \textbf{crescente} do escore certo, e por isso ordena as observações
+exatamente como ele. A AUC empata; a probabilidade, que depende da inclinação, sai
+exagerada.
+
+Isso é uma propriedade desta população, simétrica, e não do método. Quando as
+correlações não pesam igual em todas as direções, ignorá-las também \emph{gira} a
+fronteira: na população de covariâncias iguais da \texttt{Aula prática 07}, a
+direção do naive Bayes forma quase $48$ graus com a do classificador de Bayes, e o
+excesso de erro dele sobre o de Bayes dobra. Numa frase: \emph{ordenar bem não é estimar bem} --- e escolher a
+métrica é escolher qual das duas coisas você precisa.
 \end{solucao}
 
 
