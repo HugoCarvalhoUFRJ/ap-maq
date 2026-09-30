@@ -222,22 +222,26 @@ Antes de ajustar um modelo, vamos olhar para os dados.
   \item Faça o histograma da resistência e os diagramas de dispersão da resistência
         contra a idade e contra a razão água/cimento. Qual das relações é mais
         visivelmente não linear? Em que idades os ensaios foram feitos?
-  \item Procure \textbf{linhas duplicadas}: linhas inteiramente idênticas a outra, e
-        linhas com as mesmas oito covariáveis. Quantas há de cada tipo? Uma
+  \item Procure \textbf{linhas duplicadas}, contando as que repetem uma linha anterior
+        (é o que o \cod{duplicated()} do \cod{pandas} conta): quantas repetem uma linha
+        anterior por inteiro, e quantas repetem só as oito covariáveis (estas incluem
+        aquelas)? Uma
         resistência medida em laboratório, igual a outra até a oitava casa decimal,
         é um segundo ensaio ou outra coisa? Decida o que fazer com as linhas
         inteiramente repetidas, \textbf{justifique}, e siga com essa decisão no resto
         da Parte~I.
-  \item Os grupos de linhas com as mesmas oito covariáveis e resistências
-        \emph{diferentes} são \textbf{réplicas}: o mesmo experimento repetido. Com
-        eles dá para estimar o erro irredutível $\sigma^2=\Var(Y\mid\X=\x)$ sem modelo
-        nenhum, pela variância combinada dentro dos grupos,
+  \item Um grupo de linhas com as mesmas oito covariáveis é um conjunto de
+        \textbf{réplicas} --- o mesmo experimento repetido ---, desde que cada linha seja
+        um ensaio de verdade. Com esses grupos dá para estimar o erro irredutível
+        $\sigma^2=\Var(Y\mid\X=\x)$ sem modelo nenhum, pela variância combinada dentro
+        dos grupos,
         \[
           \widehat\sigma^2=\frac{\sum_g\sum_{i\in g}(Y_i-\bar Y_g)^2}{\sum_g(n_g-1)},
         \]
-        em que $g$ percorre os grupos de réplicas, $n_g$ é o tamanho do grupo e $\bar
-        Y_g$ a sua média. Calcule $\widehat\sigma^2$ \emph{antes} e \emph{depois} da
-        decisão do item~(c), com os graus de liberdade $\sum_g(n_g-1)$ de cada caso, e
+        em que $g$ percorre os grupos, $n_g$ é o tamanho do grupo e $\bar Y_g$ a sua
+        média. Calcule $\widehat\sigma^2$ com todos os grupos de linhas com as mesmas
+        oito covariáveis, \emph{antes} e \emph{depois} da decisão do item~(c), com os
+        graus de liberdade $\sum_g(n_g-1)$ de cada caso, e
         um intervalo de 95\% para $\sigma^2$ supondo normalidade e variância
         constante. O que essa estimativa diz sobre o menor erro quadrático médio que
         \emph{qualquer} preditor poderia atingir?
@@ -260,7 +264,7 @@ quantitativa --- faz sentido uma ``resistência média'' ---, então é regress�
 \textbf{(b)} A idade é a relação mais não linear: sobe depressa nas primeiras semanas e
 quase estabiliza depois de 90 dias, o que sugere $\log(\text{idade})$. A razão
 água/cimento tem relação decrescente e razoavelmente monótona (Abrams). Os ensaios
-concentram-se em 14 idades; 28 dias tem 425 das 1030 linhas.
+foram feitos em só 14 idades, de 1 a 365 dias; 28 dias tem 425 das 1030 linhas.
 
 \textbf{(c)} 25 linhas são idênticas a uma anterior, e 34 repetem as oito
 covariáveis. Uma medida contínua repetida até a oitava casa não é réplica: é registro
@@ -286,7 +290,8 @@ unidade, a linha é uma medida repetida dela.
 
 \begin{criterio}
 0,1 por item, e 0,2 no (d). No (c), a nota vem da justificativa: remover sem dizer
-por quê vale metade. No (d), exigir os dois cálculos e a leitura de que 9 graus de
+por quê vale metade; contar todas as linhas envolvidas (36 e 53, em vez de 25 e 34),
+dizendo que contou assim, também vale. No (d), exigir os dois cálculos e a leitura de que 9 graus de
 liberdade não sustentam conclusão; o intervalo pode ser qualquer um corretamente
 justificado.
 \end{criterio}
@@ -301,11 +306,14 @@ resistência de um traço que ainda não foi ensaiado?}
   \item Separe o conjunto de teste \textbf{por traço}, exatamente assim:
 \begin{lstlisting}
 import sklearn.model_selection as skm
+X = concreto[componentes + ["idade"]]
+y = concreto["resistencia"]
 separa = skm.GroupShuffleSplit(n_splits=1, test_size=0.25, random_state=2026)
 i_tr, i_te = next(separa.split(X, y, groups=concreto["traco"]))
 \end{lstlisting}
-        Quantas linhas e quantos traços ficaram em cada lado? Confira que nenhum
-        traço aparece nos dois.
+        O \cod{X} tem só as oito covariáveis originais: a coluna \cod{traco} identifica
+        o grupo, não é covariável. Quantas linhas e quantos traços ficaram em cada lado?
+        Confira que nenhum traço aparece nos dois.
   \item Por que separar por traço, e não por linha com \cod{train\_test\_split}? Que
         tipo de vazamento --- grave ou leve --- a separação por linha produziria,
         e para qual pergunta ela seria, ao contrário, a separação certa?
@@ -321,8 +329,8 @@ dobras = skm.GroupKFold(n_splits=5, shuffle=True, random_state=0)
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} 756 linhas no treino e 249 no teste (a proporção de 25\% é de traços,
-não de linhas); nenhum traço em comum.
+\textbf{(a)} 321 traços e 756 linhas no treino, 107 traços e 249 linhas no teste (a
+proporção de 25\% é de traços, não de linhas); nenhum traço em comum.
 
 \textbf{(b)} Com a separação por linha, o mesmo traço, ensaiado em outra idade, ficaria
 no treino e no teste --- ``a mesma unidade dos dois lados'', um vazamento
@@ -356,14 +364,15 @@ resposta sem a ressalva da dependência entre dobras, desde que diga o que o EP 
         escalas original e padronizada. Com isso em mente, faz sentido ler o
         coeficiente da água como ``o efeito de aumentar a água em 1~kg/m$^3$
         mantendo as outras covariáveis fixas''?
-  \item Acrescente duas covariáveis construídas, $\log(\text{idade})$ no lugar da
-        idade e a razão água/cimento, e reestime o risco do MQO. Por que o modelo
+  \item Troque a idade por $\log(\text{idade})$ e acrescente a razão água/cimento ---
+        duas covariáveis construídas, nove ao todo --- e reestime o risco do MQO. Por
+        que o modelo
         continua sendo uma regressão \emph{linear}? De onde veio o ganho, em termos
         de viés e variância?
   \item Sobre as covariáveis de (b), faça a expansão polinomial de grau~2
         (\cod{PolynomialFeatures}) e ajuste MQO, Ridge e Lasso, com a padronização
-        \emph{dentro} do \emph{pipeline}. Escolha o $\lambda$ de cada um por validação
-        cruzada numa grade logarítmica e mostre a curva do risco estimado contra
+        \emph{dentro} do \emph{pipeline}. Escolha o $\lambda$ do Ridge e o do Lasso por
+        validação cruzada numa grade logarítmica e mostre a curva do risco estimado contra
         $\lambda$, com barras de um erro-padrão. Aplique também a \textbf{regra de um
         erro-padrão}. Quantos coeficientes o Lasso zera em cada escolha? Faça o
         gráfico do caminho de regularização do Lasso.
@@ -446,7 +455,8 @@ diferentes. Média simples $51{,}526$ (igual ao \cod{cross\_val\_score}, que faz
 média não ponderada); ponderada $51{,}429$. A diferença é pequena, e existe porque
 as duas fórmulas só coincidem quando as dobras têm o mesmo tamanho.
 
-\textbf{(b)} Atalho e explícito dão $49{,}3603$ até a sexta casa. O LOOCV fica
+\textbf{(b)} Atalho e explícito coincidem até a sexta casa decimal: $49{,}360332$. O
+LOOCV fica
 \emph{abaixo} da validação em grupo ($51{,}53$): ao deixar uma linha de fora, as outras
 idades do mesmo traço continuam no treino, e o modelo ``já conhece'' aquela receita.
 O LOOCV responde a ``prever um ensaio novo de um traço conhecido''; a pergunta de R2 é
@@ -477,18 +487,21 @@ vale metade do (c) se a leitura estiver certa.
 \begin{itens}
   \item Ajuste o KNN com as covariáveis padronizadas, escolhendo $k$ de 1 a 30 por
         validação cruzada, e mostre a curva do risco estimado contra $k$. Qual $k$
-        foi escolhido? Ajuste também o KNN \emph{sem} padronizar, com $k=5$, e
-        explique a diferença.
+        foi escolhido? Ajuste também o KNN \emph{sem} padronizar, com o mesmo $k$, e
+        explique a diferença (pense em quanto cada covariável pesa na distância, com e
+        sem padronização).
 \end{itens}
 
 \begin{solucao}
 \textbf{(a)} A validação escolhe $k=1$ ($57{,}3\pm4{,}1$), e a curva cresce com $k$
 (a menos de uma oscilação desprezível em $k=14$) --- com poucos traços parecidos entre
 si, o vizinho mais próximo é o único que ajuda. (O mesmo acontece com as covariáveis
-construídas: $55{,}4$.) Sem padronizar, $k=5$ dá $88{,}0\pm2{,}0$: a distância
-euclidiana passa a ser dominada pelas colunas de maior amplitude (agregados, cimento,
-escória, em centenas de kg), e a idade --- que é a covariável mais informativa ---
-quase não pesa.
+construídas: $55{,}4$.) Sem padronizar, com o mesmo $k=1$, o risco sobe para
+$74{,}1\pm3{,}2$. Sem padronização, cada covariável pesa na distância em proporção à
+sua variância: o cimento responde por 29\% dela, e a água e o superplastificante, que
+variam poucas dezenas de kg, por 1\% e 0,1\% --- a água, que a lei de Abrams põe no
+centro, quase some da distância. Padronizadas, as oito pesam o mesmo. (Com $k=5$ a
+diferença é bem menor, $88{,}0$ contra $85{,}4$, como mostra a tabela de R7.)
 \end{solucao}
 
 \begin{criterio}
@@ -502,8 +515,8 @@ muda na distância.
 
 \begin{itens}
   \item Ajuste uma árvore de regressão cheia e calcule o seu erro de treino e o seu
-        risco estimado. Pode por custo--complexidade, escolhendo \cod{ccp\_alpha}
-        por validação cruzada. Desenhe a árvore com profundidade~3
+        risco estimado. Depois, faça a poda por custo--complexidade, escolhendo o
+        \cod{ccp\_alpha} por validação cruzada. Desenhe a árvore com profundidade~3
         (\cod{plot\_tree}) e interprete os três primeiros cortes.
   \item Ajuste o \emph{bagging} e florestas aleatórias com $m$ (\cod{max\_features})
         de 1 a 8. Mostre o risco estimado contra $m$. Qual é o padrão de
@@ -547,14 +560,29 @@ $(1-\rho)v/B$, e não há superajuste em $B$: basta um $B$ grande o bastante.
 %------------------------------------------------------------------------------
 
 \begin{itens}
-  \item Troque a unidade da idade de dias para horas (multiplique por 24) e
-        reestime o risco do MQO, de um Lasso padronizado com $\lambda$ fixo, do KNN
-        com $k=5$ com e sem padronização, da árvore podada e da floresta. Quem muda?
+  \item Suponha que os mesmos dados chegassem com a idade em \textbf{horas}, e não em
+        dias: crie uma cópia das covariáveis de treino com a coluna \cod{idade}
+        multiplicada por 24, sem mexer em mais nada. Estime o risco dos seis modelos
+        abaixo, todos nas oito covariáveis originais, \emph{duas vezes}: com a idade em
+        dias e com a idade em horas. Use a validação cruzada em grupo de R2(c) e
+        mantenha fixos os hiperparâmetros --- nada é reescolhido na segunda estimativa.
+        \begin{itemize}[nosep]
+          \item o MQO;
+          \item o Lasso com \cod{alpha=1}, com as covariáveis padronizadas dentro do
+                \emph{pipeline};
+          \item o KNN com $k=5$, sem padronizar;
+          \item o mesmo KNN, com as covariáveis padronizadas dentro do \emph{pipeline};
+          \item a árvore podada de R6(a), com o \cod{ccp\_alpha} escolhido lá;
+          \item a floresta de R6(b), com o $m$ escolhido lá.
+        \end{itemize}
+        Monte uma tabela com uma linha por modelo e uma coluna para cada unidade. Quais
+        riscos mudaram com a troca de unidade, e quais ficaram iguais? Explique, modelo a
+        modelo, por que a unidade da idade afeta ou não o resultado.
 \end{itens}
 
 \begin{solucao}
 \textbf{(a)} Só o KNN sem padronizar muda: de $88{,}0$ para $63{,}4$. MQO
-($105{,}4$), Lasso padronizado ($119{,}3$), KNN padronizado ($85{,}4$), árvore e floresta
+($105{,}4$), Lasso com \cod{alpha=1} ($119{,}3$), KNN padronizado ($85{,}4$), árvore e floresta
 ficam praticamente idênticos (o KNN padronizado oscila na terceira casa decimal, de
 $85{,}352$ para $85{,}351$). O MQO é equivariante à escala; o Lasso e o KNN
 padronizados absorvem a mudança no \cod{StandardScaler}; árvore e floresta comparam
@@ -564,9 +592,9 @@ dominar a distância. Quem decidiu foi a unidade de medida, não o analista.
 \end{solucao}
 
 \begin{criterio}
-0,25 pelos números; 0,25 pela explicação de quem muda e por quê. Não é preciso usar
-nenhuma classificação dos métodos: basta dizer, de cada um, por que a unidade não o
-afeta (ou afeta).
+0,25 pela tabela dos doze riscos; 0,25 pela explicação, modelo a modelo, de quem muda e
+por quê. Não é preciso usar nenhuma classificação dos métodos: basta dizer, de cada um,
+por que a unidade não o afeta (ou afeta).
 \end{criterio}
 
 %------------------------------------------------------------------------------
@@ -579,14 +607,13 @@ afeta (ou afeta).
         floresta. Escolha \textbf{um} modelo final e
         justifique --- a regra de um erro-padrão pode entrar no argumento.
   \item Reajuste o modelo escolhido em \emph{todo} o treino e meça, \textbf{uma
-        vez}, o EQM no teste, com um intervalo de 95\% para o risco e o $R^2$. O EQM de
-        teste ficou acima ou abaixo da estimativa da validação cruzada? Compare a
-        variância da resistência no treino e no teste antes de concluir.
+        vez}, o EQM no teste, com um intervalo de 95\% para o risco. O EQM de
+        teste ficou acima ou abaixo da estimativa da validação cruzada?
   \item Só agora, calcule o EQM de teste dos outros finalistas --- para leitura, sem
         trocar a escolha. Os intervalos se sobrepõem? Algum modelo foi muito pior no
         teste do que a validação previa? Investigue os maiores erros dele: as
         covariáveis dessas observações estão dentro do intervalo visto no treino?
-  \item Em um parágrafo, para uma engenheira que não fez este curso: o que o modelo
+  \item Em um parágrafo, tente explicar para alguém que não fez este curso: o que o modelo
         consegue prever, com que erro típico (em MPa), e em que situação você não
         confiaria nele.
 \end{itens}
@@ -601,18 +628,19 @@ $35{,}5+4{,}5=40{,}0$): a regra de um erro-padrão não troca a escolha. A resol
 fica com a floresta, o menor risco estimado; o \emph{bagging}, bem justificado, também
 é aceitável.
 
-\textbf{(b)} Floresta no teste: EQM $45{,}8$, IC~$(31{,}9;\ 59{,}7)$, $R^2=0{,}85$. O
-EQM ficou acima da validação ($35{,}5$), e a razão é que o teste é mais difícil: a
-variância da resistência é $310{,}6$ no teste contra $248{,}2$ no treino (razão
-$1{,}25$), e o preditor constante vai de $250$ na validação para $317$ no teste (razão
-$1{,}27$). A floresta piora na mesma proporção, $1{,}29$. É a variabilidade de sortear
-107 traços, não sinal de superajuste.
+\textbf{(b)} Floresta no teste: EQM $45{,}8$, IC~$(31{,}9;\ 59{,}7)$. O EQM ficou
+\emph{acima} da estimativa da validação cruzada ($35{,}5$), mas o intervalo contém o
+$35{,}5$: o teste não desmente a validação, e a diferença cabe na variabilidade de
+sortear 107 traços. Quem quiser ir além acha a causa na variância da resistência,
+$310{,}6$ no teste contra $248{,}2$ no treino: uma razão de $1{,}25$, quase a mesma com
+que a floresta piora ($1{,}29$). O teste é mais difícil, e não há sinal de superajuste.
 
-\textbf{(c)} \emph{Bagging} $50{,}0\pm14{,}8$, Lasso 1-EP $50{,}0\pm11{,}8$, MQO
+\textbf{(c)} No teste, com a meia largura do intervalo de 95\% depois do $\pm$:
+\emph{bagging} $50{,}0\pm14{,}8$, Lasso 1-EP $50{,}0\pm11{,}8$, MQO
 construído $56{,}4\pm12{,}3$, KNN $65{,}4\pm15{,}6$, árvore $92{,}7\pm25{,}0$: os
 intervalos dos bons modelos se sobrepõem, e o teste não os distingue. Quem foi muito
 pior do que a validação previa é a árvore podada: $55{,}9$ na validação e $92{,}7$ no
-teste, uma razão de $1{,}66$, contra os $1{,}25$ que a variância explica. Os seis
+teste, uma razão de $1{,}66$, contra $1{,}01$ a $1{,}38$ dos outros finalistas. Os seis
 maiores erros dela, que somam 24\% do EQM, são de dois traços do teste com a mesma
 receita-base (água 228, os mesmos agregados, cimento e escória somando
 380~kg/m$^3$), ensaiados de 180 a 365 dias --- e as covariáveis estão todas
@@ -626,14 +654,17 @@ vizinhança. A única extrapolação do teste é um traço (5 linhas) com agrega
 ($992{,}6$) acima do máximo do treino ($945$), e a floresta não sofre com ele: sem essas
 5 linhas, o EQM dela é $46{,}5$, praticamente o mesmo.
 
-\textbf{(d)} Algo como: ``prevê a resistência de um traço novo com erro típico de uns
-7~MPa (a raiz do EQM de teste), explicando 85\% da variação entre ensaios; não
-confiaria para traços fora da faixa de dosagens dos dados --- por exemplo, com mais
-areia do que qualquer mistura ensaiada ---, nem para idades fora de 1 a 365 dias.''
+\textbf{(d)} Algo como: ``o modelo prevê a resistência de um concreto com uma receita
+que ainda não foi ensaiada, e erra tipicamente uns 7~MPa, para mais ou para menos (a
+raiz do EQM de teste); não confiaria nele para receitas fora da faixa das que foram
+ensaiadas --- por exemplo, com mais areia do que qualquer mistura dos dados ---, nem
+para idades fora de 1 a 365 dias.''
 \end{solucao}
 
 \begin{criterio}
-(a) 0,15; (b) 0,15 --- a comparação das variâncias é o que se quer; (c) 0,1 ---
+(a) 0,15; (b) 0,15 --- o EQM com o intervalo, e a comparação com a validação lida
+à luz do intervalo, não só ``ficou acima''; comparar as variâncias não é exigido, mas
+vale como justificativa; (c) 0,1 ---
 exigir que o aluno identifique o modelo que mais piorou da validação para o teste e
 \emph{investigue} os maiores erros dele; concluir, com os números, que as covariáveis
 estão dentro do intervalo do treino e que o problema é outro vale a nota cheia;
@@ -641,7 +672,7 @@ estão dentro do intervalo do treino e que o problema é outro vale a nota cheia
 \end{criterio}
 
 %==============================================================================
-\section{Parte II --- Classificação: inadimplência no cartão \hfill (4,5 pontos)}
+\section{Parte II --- Classificação: inadimplência no cartão de crédito \hfill (4,5 pontos)}
 %==============================================================================
 
 %------------------------------------------------------------------------------
@@ -675,9 +706,12 @@ acurácia (C4).
 \textbf{(b)} \cod{EDUCATION} tem 0, 5 e 6 (345 clientes) e \cod{MARRIAGE} tem 0 (54),
 não documentados; \cod{PAY\_0} tem $-2$ e $0$, também não documentados. Juntar os
 códigos desconhecidos em ``outros'' é a escolha mais simples e defensável; tratá-los
-como faltantes também. \cod{SEX}, \cod{EDUCATION} e \cod{MARRIAGE} são nominais e
-precisam de \emph{dummies} (\cod{OneHotEncoder} num \cod{ColumnTransformer});
-usá-las como número impõe uma ordem e distâncias que não existem. O \cod{ID} é
+como faltantes também. \cod{SEX} e \cod{MARRIAGE} são nominais; \cod{EDUCATION} tem
+ordem nos códigos 1 a 3, mas o ``outros'' a quebra, e tratá-la também como nominal é o
+mais simples (tratá-la como ordinal, dizendo o que se fez com o ``outros'', também
+vale). As nominais precisam de \emph{dummies} (\cod{OneHotEncoder} num
+\cod{ColumnTransformer}); usá-las como número impõe uma ordem e distâncias que não
+existem. O \cod{ID} é
 identificador e sai: para um cliente novo ele não quer dizer nada. (A inadimplência
 varia entre os decis do \cod{ID} mais do que o acaso explicaria --- qui-quadrado
 $51{,}7$ com 9 graus de liberdade ---, mas sem tendência. O \cod{ID} é a posição no
@@ -776,8 +810,8 @@ numéricas, \emph{dummies} das nominais) mora dentro do \emph{pipeline}.
 \begin{solucao}
 \textbf{(a)} $C\approx0{,}32$. Com as numéricas padronizadas, $e^{\beta_j}$ é o fator
 na chance por \textbf{um desvio-padrão} a mais: \cod{PAY\_0}, $1{,}85$ por DP
-($\approx1{,}12$ ``unidades'' de código) --- quem atrasa mais tem chance quase o dobro
-maior; \cod{LIMIT\_BAL}, $0{,}92$ por DP ($\approx$ NT\$130 mil) --- limite maior,
+($\approx1{,}12$ ``unidades'' de código) --- quem atrasa mais tem uma chance quase duas
+vezes maior; \cod{LIMIT\_BAL}, $0{,}92$ por DP ($\approx$ NT\$130 mil) --- limite maior,
 chance um pouco menor, com o resto fixo. \cod{BILL\_AMT1} tem razão $0{,}64$ e
 \cod{BILL\_AMT2}, $1{,}25$: sinais opostos em duas colunas com correlação $0{,}95$. É o
 efeito da colinearidade --- o modelo contrasta as duas faturas, e ``aumentar uma
@@ -827,8 +861,8 @@ p = skm.cross_val_predict(modelo, Xc_tr, yc_tr, cv=dobras_c,
   \item Para a logística com \cod{PAY\_*} em \emph{dummies}, no corte $0{,}5$: a matriz
         de confusão, a acurácia, a sensibilidade, a especificidade, a precisão, o VPN
         e o $F_1$. Compare a acurácia com a de C1(a). Qual erro o modelo comete mais?
-  \item Sobreponha as curvas ROC e as curvas precisão--\emph{recall} da logística, do
-        Bayes ingênuo e do LDA, com a AUC e a precisão média de cada um.
+  \item Sobreponha as curvas ROC e as curvas precisão--\emph{recall} da logística de
+        (a), do Bayes ingênuo e do LDA, com a AUC e a precisão média de cada um.
   \item Compare a \textbf{calibração}: o score de Brier e a curva de calibração da
         logística e do Bayes ingênuo. Que fração das probabilidades do Bayes ingênuo
         passa de $0{,}99$? Calibre-o com \cod{CalibratedClassifierCV}
@@ -877,7 +911,7 @@ descalibra.
 \textbf{(e)} Brier $0{,}186$ (piora) e custo em $1/6$ de $0{,}755$ --- quase o de
 ``contatar todos''. Com $n_0/n_1=3{,}52$, a chance $1/5$ vira $0{,}704$ e o corte
 equivalente é $0{,}413$; o melhor corte medido é $0{,}40$, com custo $0{,}579$ ---
-igual ao da logística sem peso no corte $1/6$. Reponderar é mover o corte por outro
+praticamente o da logística sem peso no corte $1/6$, $0{,}580$. Reponderar é mover o corte por outro
 caminho, e ao preço de estragar as probabilidades.
 \end{solucao}
 
@@ -923,8 +957,8 @@ com sinal à fronteira) serve.
 
 \textbf{(c)} No \cod{scikit-learn} \cod{C} é o peso da penalidade: \cod{C} maior
 tolera menos violações, a margem estreita, e espera-se \emph{menos} vetores de
-suporte. Aqui eles ficam em torno de 2200--2300 de 5000 para qualquer
-\cod{C}. As classes se sobrepõem muito (o erro de Bayes aqui não é pequeno): todo ponto
+suporte. Aqui eles ficam entre 2235 e 2336 de 5000 para qualquer \cod{C}, e chegam a
+subir de \cod{C}$=0{,}1$ para \cod{C}$=10$. As classes se sobrepõem muito (o erro de Bayes aqui não é pequeno): todo ponto
 mal classificado é vetor de suporte, e os pontos dentro da margem também; com tanta
 sobreposição, quase metade da amostra está sempre nessa situação.
 
@@ -948,12 +982,15 @@ ter caído; (d) 0,1.
         validação cruzada pela AUC. Por que o $k$ escolhido é tão maior do que o da
         Parte~I?
   \item Ajuste árvores de classificação com Gini e com entropia, de profundidade 3:
-        os cortes coincidem? Pode uma árvore cheia por custo--complexidade e desenhe a
-        de profundidade~3, interpretando o primeiro corte.
+        os cortes coincidem? Depois, faça a poda de uma árvore cheia por
+        custo--complexidade, escolhendo o \cod{ccp\_alpha} por validação cruzada com
+        \cod{scoring="neg\_log\_loss"}. Desenhe a árvore de Gini de profundidade~3 e
+        interprete o primeiro corte.
   \item Ajuste florestas com $m=\sqrt p$ (o padrão do \cod{RandomForestClassifier}),
         $m\approx p/3$ e $m=p$ (\emph{bagging}), com \cod{min\_samples\_leaf=5}, e uma
-        com folhas cheias. Compare AUC e Brier. (Opcional: o \cod{AdaBoostClassifier}
-        --- e o custo dele no corte $1/6$.)
+        com $m=\sqrt p$ e folhas cheias, isto é, com o \cod{min\_samples\_leaf} padrão.
+        Compare AUC e Brier. Opcional: o \cod{AdaBoostClassifier} e o custo dele no
+        corte $1/6$.
 \end{itens}
 
 \begin{solucao}
@@ -1030,8 +1067,8 @@ os erros são correlacionados (clientes difíceis são difíceis para os dois), 
 diferença tem variância muito menor do que a soma das variâncias. Reamostrar cada modelo
 separadamente jogaria fora essa correlação e produziria intervalos largos demais.
 
-\textbf{(d)} ``Contatando os clientes com probabilidade estimada acima de 17\% --- cerca
-de 46\% da carteira ---, pegamos três de cada quatro que vão ficar inadimplentes, e o
+\textbf{(d)} ``Contatando os clientes com probabilidade estimada de inadimplência acima
+de 1 em 6 (cerca de 17\%) --- uns 46\% da carteira ---, pegamos três de cada quatro que vão ficar inadimplentes, e o
 custo total cai cerca de 30\% em relação a contatar todos. Um modelo mais simples, a
 regressão logística, faz praticamente o mesmo.''
 \end{solucao}
