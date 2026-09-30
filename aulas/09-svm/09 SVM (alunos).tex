@@ -2,7 +2,7 @@
 %==============================================================================
 %  Aula 09 --- Máquinas de Vetores de Suporte (SVM)
 %  VERSÃO DO ALUNO: texto para leitura autônoma, fora da sala.
-%  (O roteiro de sala é "10 SVM.tex".)
+%  (O roteiro de sala é "09 SVM.tex".)
 %==============================================================================
 \documentclass[11pt,a4paper]{article}
 \usepackage[aluno]{../../recursos/latex/estilo-notas}
@@ -34,7 +34,7 @@ Mudança de perspectiva em relação à Aula~07. Lá, todo método passava por m
 $\Prob(Y\mid\x)$ e depois aplicar o Teorema de Bayes. A SVM ignora probabilidades e
 ataca a fronteira \emph{geometricamente}, procurando a separação mais folgada
 possível. É um dos métodos mais elegantes do curso --- liga geometria, otimização e
-os RKHS da Aula~04. Comece pela pergunta:
+os RKHS (§4.6 do [AME]). Comece pela pergunta:
 
 \begin{center}\itshape
   se há infinitos hiperplanos que separam as classes, qual é o melhor?
@@ -170,7 +170,7 @@ $\binom{p+p}{p}$, e com o RBF ele é \emph{de dimensão infinita} --- e o custo
 continua sendo uma conta com $p$ termos. É esse o negócio.
 \end{exemplo}
 
-\noindent \emph{Kernels} de Mercer comuns (cf.\ Aula~04, §4.6):
+\noindent \emph{Kernels} de Mercer comuns (cf.\ [AME], §4.6):
 \begin{center}\small
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{@{}ll@{}}
@@ -204,7 +204,7 @@ por validação cruzada.
 \section{SVM como perda \emph{hinge} regularizada}\label{sec:hinge}
 %==============================================================================
 Há uma leitura que conecta a SVM a tudo o que vimos. Dado um kernel de Mercer $K$
-com RKHS $\mathcal{H}_K$ (Aula~04), o classificador da SVM minimiza
+com RKHS $\mathcal{H}_K$ ([AME], §4.6), o classificador da SVM minimiza
 \begin{equation}\label{eq:hinge}
   \min_{g\in\mathcal{H}_K}\ \sum_{k=1}^n \underbrace{\big(1-y_k\,g(\X_k)\big)_+}_{\text{perda \emph{hinge}}}
   + \lambda\,\norm{g}_{\mathcal{H}_K}^2 ,
@@ -309,7 +309,7 @@ $\gamma$ e da escolha do kernel sobre a fronteira de decisão.
         \eqref{eq:dual}; trocá-los por $K$ dá fronteiras não lineares
         (Fig.~\ref{fig:kernel}), e $\gamma$ do RBF é mais um botão de flexibilidade.
   \item SVM $=$ \textbf{perda \emph{hinge}} $+$ regularização \eqref{eq:hinge}
-        (RKHS, Aula~04); a hinge zera longe da margem, e é daí que vem a esparsidade
+        (RKHS, [AME] §4.6); a hinge zera longe da margem, e é daí que vem a esparsidade
         (Fig.~\ref{fig:perdas}).
   \item Relação com a logística (perda de margem $+$ $\ell_2$); SVM não dá
         probabilidades de imediato.

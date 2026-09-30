@@ -574,7 +574,7 @@ print("coeficientes nao-nulos:", (lasso.coef_ != 0).sum(), "de", X.shape[1])
 As classes do \texttt{scikit-learn} \textbf{não} usam a mesma normalização.
 \texttt{Ridge} minimiza $\norm{\bm{y}-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}^2$, enquanto
 \texttt{Lasso} e \texttt{ElasticNet} minimizam
-$\tfrac{1}{2n}\norm{\bm{y}-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$. Há um fator $n$ de
+$\tfrac{1}{2n}\norm{\bm{y}-\mathbb{X}\bbeta}^2+\alpha\norm{\bbeta}_1$. Há um fator $2n$ de
 diferença: um $\alpha$ que é forte num é desprezível no outro. Ao comparar as duas
 famílias na mesma grade, converta.
 \end{atencao}

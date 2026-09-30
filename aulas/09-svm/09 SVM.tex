@@ -24,8 +24,8 @@ Ao final desta aula o aluno deve ser capaz de:
 \begin{emsala}
 Mudança de perspectiva em relação à Aula~07: lá modelávamos $\Prob(Y\mid\x)$; a SVM
 ataca a fronteira \emph{geometricamente}, buscando a separação ``mais folgada''. É
-um dos métodos mais elegantes do curso --- liga geometria, otimização e os RKHS da
-Aula~04. Pergunta de abertura: \emph{``se há infinitos hiperplanos que separam as
+um dos métodos mais elegantes do curso --- liga geometria, otimização e os RKHS
+(§4.6 do [AME]). Pergunta de abertura: \emph{``se há infinitos hiperplanos que separam as
 classes, qual é o melhor?''}
 \end{emsala}
 
@@ -122,7 +122,7 @@ interno num espaço de \emph{features} de dimensão muito maior (ou infinita), s
 lineares num espaço ampliado.
 \end{ideia}
 
-\noindent \emph{Kernels} de Mercer comuns (cf.\ Aula~04, §4.6):
+\noindent \emph{Kernels} de Mercer comuns (cf.\ [AME], §4.6):
 \begin{center}\small
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{@{}ll@{}}
@@ -144,7 +144,7 @@ por validação cruzada.
 \section{SVM como perda \emph{hinge} regularizada}
 %==============================================================================
 Há uma leitura que conecta a SVM a tudo o que vimos. Dado um kernel de Mercer $K$
-com RKHS $\mathcal{H}_K$ (Aula~04), o classificador da SVM minimiza
+com RKHS $\mathcal{H}_K$ ([AME], §4.6), o classificador da SVM minimiza
 \begin{equation}\label{eq:hinge}
   \min_{g\in\mathcal{H}_K}\ \sum_{k=1}^n \underbrace{\big(1-y_k\,g(\X_k)\big)_+}_{\text{perda \emph{hinge}}}
   + \lambda\,\norm{g}_{\mathcal{H}_K}^2 ,
@@ -225,7 +225,7 @@ distâncias) --- \emph{sempre} padronize dentro do \emph{pipeline} (Aula~06).
         \eqref{eq:dual}; trocá-los por $K$ dá fronteiras não lineares (polinomial,
         RBF com $\gamma$).
   \item SVM $=$ \textbf{perda \emph{hinge}} $+$ regularização \eqref{eq:hinge}
-        (RKHS, Aula~04); esparsa em vetores de suporte.
+        (RKHS, [AME] §4.6); esparsa em vetores de suporte.
   \item Relação com a logística (perda de margem $+$ $\ell_2$); SVM não dá
         probabilidades de imediato.
   \item Multiclasse por OvO/OvA; \emph{padronize} sempre.

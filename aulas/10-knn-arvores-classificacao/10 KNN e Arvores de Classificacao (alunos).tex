@@ -2,7 +2,7 @@
 %==============================================================================
 %  Aula 10 --- KNN e Árvores de Classificação
 %  VERSÃO DO ALUNO: texto para leitura autônoma, fora da sala.
-%  (O roteiro de sala é "11 KNN e Arvores de Classificacao.tex".)
+%  (O roteiro de sala é "10 KNN e Arvores de Classificacao.tex".)
 %==============================================================================
 \documentclass[11pt,a4paper]{article}
 \usepackage[aluno]{../../recursos/latex/estilo-notas}
@@ -24,7 +24,7 @@ Ao final desta aula você deve ser capaz de:
         folha;
   \item definir \textbf{Gini} e \textbf{entropia} como medidas de impureza e
         explicar por que não se usa a taxa de erro para dividir;
-  \item transferir \emph{bagging}, florestas e \emph{boosting} para classificação;
+  \item usar \emph{bagging}, florestas e \emph{boosting} em classificação;
   \item comparar todos os classificadores do curso e escolher segundo a estrutura
         dos dados e o objetivo.
 \end{itemize}
@@ -175,7 +175,7 @@ Toda a Aula~05 se transfere; as árvores individuais agora classificam:
   \item[Boosting] ajuste sequencial. A variante clássica para classificação é o
         \textbf{AdaBoost}: a cada rodada, reponderam-se as observações dando mais
         peso às mal classificadas, e o classificador final é um voto ponderado dos
-        aprendizes fracos. Como em regressão, $B$ grande pode superajustar (use
+        aprendizes fracos. $B$ grande pode superajustar (use
         \emph{early stopping}); XGBoost é a implementação de referência.
 \end{description}
 
@@ -183,7 +183,7 @@ Toda a Aula~05 se transfere; as árvores individuais agora classificam:
 Vale registrar a ponte teórica: o AdaBoost, apesar de ter sido inventado por outro
 caminho, equivale a fazer \emph{boosting} com a \textbf{perda exponencial}
 $e^{-y\,g(\x)}$ --- mais uma perda de margem, no mesmo eixo horizontal da
-Figura~4 da Aula~09. Vista assim, ela é ainda mais agressiva que a \emph{hinge} com
+Figura~3 da Aula~09. Vista assim, ela é ainda mais agressiva que a \emph{hinge} com
 os pontos mal classificados, o que explica a sensibilidade conhecida do AdaBoost a
 rótulos errados.
 \end{observacao}
@@ -230,7 +230,7 @@ adequada ao problema.
 \begin{atencao}[o que a tabela acima não mostra: probabilidade não é escore]
 A primeira pergunta da lista --- \emph{``preciso de probabilidades calibradas?''} ---
 parece uma preferência de estilo, e é uma restrição dura. A §7 da \texttt{Aula
-prática 11} compara os sete métodos numa base de classe rara ($10\%$ de positivos) e
+prática 10} compara os sete métodos numa base de classe rara ($10\%$ de positivos) e
 mede duas coisas que valem ser guardadas.
 
 \textbf{A acurácia deixa de distinguir os métodos.} Ela varia de $0{,}8989$ a
@@ -280,7 +280,7 @@ paramétricos} e
 \texttt{Exemplo - KNN e árvores em dados artificiais} desenham as fronteiras de
 decisão de todos esses métodos lado a lado, nos mesmos dados. É o melhor jeito de
 fixar a intuição de ``flexível $\times$ rígido'' que percorreu o curso inteiro ---
-vale rodar os dois.
+vale rodar os três.
 
 %==============================================================================
 \section*{Resumo}
