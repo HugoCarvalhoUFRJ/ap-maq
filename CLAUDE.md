@@ -69,7 +69,9 @@ mas deixava passar um `\texttt{Aula` / `prática 11}` quebrado entre duas linhas
 notas do aluno da aula 10. Esse saiu em 30/09/2026, junto com um ``Figura~4 da
 Aula~09'' da mesma nota (a figura das perdas é a 3). Ao procurar remissão numa nota,
 procure também com a quebra de linha. Ponteiros deslocados para aulas que existem,
-como aquele ``Aula 06'', não foram varridos no resto do curso.
+como aquele ``Aula 06'', foram varridos nas notas, nas listas e nos laboratórios na
+leitura de 30/09/2026, que achou mais uma família deles: os de ``Lista Teórica NN'' e
+``Lista prática NN'' (ver ``A leitura de 30/09/2026, e a aula 08'').
 
 ## Notas de aula (LaTeX)
 
@@ -105,12 +107,27 @@ notebooks e figuras. A migração do `d` terminou em 12/08/2026 e são 629 troca
 54 arquivos. (Duas tinham escapado, no deck da aula 01, e foram feitas em
 21/09/2026 --- item 12 do histórico de correções nos HTMLs.)
 
+**E ela trocou `d` demais em três lugares**, achados na leitura de 30/09/2026 e
+desfeitos no mesmo dia:
+
+- o **grau do kernel polinomial**, que virou `p` e produzia ``grau $p$ em $\R^p$'',
+  $\binom{p+p}{p}$ e ``$p=100$, $p=3$'' (notas da 09, as duas, e o enunciado da
+  `Lista teorica 09` Ex. 3(c)). **O grau agora é `q`**, e a tabela de *kernels* diz
+  ``Polinomial (grau $q$)'';
+- o **número de componentes retidos** na E2, que dava
+  $\mathrm{PVE}(p)=\sum_1^p\lambda_i/\sum_1^p\lambda_i$, igual a $1$ sempre. **Agora
+  é `k`**, nas duas versões das notas, também no MDS e na compressão (o MDS usava
+  `m`);
+- palavras e o documento: ``i.i.p.'' nas notas do aluno da 02, ``pá''/``pão''/``pá''
+  nas da E3, e o $\text{tf-idf}(t,p)$ das notas da E3 e da `Aula prática E3`, que
+  voltou a ser $(t,d)$.
+
 Três papéis do `d` **sobreviveram de propósito**, e nenhum deles é dimensão:
 
 - **distância** `d(\X_i,\x)` na aula 04 e `d^2(\x_i,\x_j)` na E1. (A
   versão ao quadrado saiu da 04 em 24/08/2026, junto com a tabela de núcleos.);
-- **índice**: `d_j` é valor singular na E2, `d_1` é documento na E3, `d^k_{\x}` é a
-  k-ésima distância na 04;
+- **índice**: `d_j` é valor singular na E2, `d_1` é documento na E3 (e o `d` do
+  $\text{tf-idf}(t,d)$), `d^k_{\x}` é a k-ésima distância na 04;
 - **diferencial** `\,d\x`, na aula 07.
 
 Nas **notas da aula 02** vale, além disso, uma convenção de forma que as outras
@@ -295,6 +312,19 @@ partir da lista prática da SVM.
 E3 --- saiu o ponteiro, não a afirmação. Hoje são vocabulário sem aula dedicada, como
 a *descida dupla* na aula 01. **Não as remova** achando que são resíduo, e **não
 reintroduza a aula**.
+
+**A renumeração acertou ``Aula NN'', mas não ``Lista Teórica NN'' nem ``Lista prática
+NN''.** Achado na leitura de 30/09/2026 e corrigido no mesmo dia: da aula 07 em diante,
+as remissões às listas tinham ficado um número acima. A `Lista prática 08` mandava à
+fórmula da ``Lista Teórica 09''; a `Lista prática 09` citava a ``Lista Teórica 10''
+três vezes, e a `Lista prática 10`, a ``Lista Teórica 11'' outras três; a
+`Lista teorica 10` mandava às listas 09, e a `Lista teorica E3` e o gabarito da
+`Lista prática E3`, à ``Lista prática 09''. A `Lista teorica 08` Ex. 4(d) chegava a
+citar a si mesma: o ``Exercício 4 da Lista Teórica 08'' era o da antiga 08, hoje 07,
+que saiu em 23/09 --- e virou uma remissão à hipótese do Bayes ingênuo (Aula~07). Até
+os comentários de cabeçalho estavam na numeração velha, nos três `.tex` e nos três
+invólucros de gabarito das listas 08 a 10. **Ao renumerar, procure `Lista` junto com
+`Aula`.**
 
 ## A aula 05 perdeu boosting, OOB e importância de variáveis
 
@@ -782,6 +812,158 @@ o spam e mantém o ``(Aula~03)'' ---, e o Ex. 4 da `Lista prática 07` passou a 
 ``Dados reais'', nos dois notebooks. A edição do enunciado, feita na IDE, deixou oito
 células na ordem de chaves do Jupyter; a ordem do repositório voltou em 30/09/2026.
 
+## A leitura de 30/09/2026, e a aula 08
+
+Pedido do Gabriel em 30/09/2026: ler o repositório inteiro, para preparar o trabalho
+na aula 08, e depois corrigir os ponteiros e os erros que a leitura achasse. Foram
+lidas por inteiro as 26 notas, as 13 listas teóricas, os 13 laboratórios, as listas
+práticas 08 a 10, o enunciado do TP01, o deck e o `MatConf.pdf` da 08; das outras
+listas práticas, a estrutura e as remissões. **Não** foram lidos os outros dez decks
+HTML, o Beamer da 09, os cinco notebooks herdados, o roteiro e a resolução do TP01, nem
+a lista de revisão e a prova.
+
+Os ponteiros de lista que a renumeração deixou estão na seção da saída da aula 05, e o
+`d` trocado demais, em ``A notação''. Tudo o que segue foi corrigido no mesmo dia, com
+os PDFs recompilados; os dois notebooks com código novo ou alterado (o laboratório 08 e
+a `Lista prática 10`) rodaram inteiros no `barennet_env`.
+
+### Fora da aula 08
+
+**Ponteiros para o que mudou ou saiu:**
+
+- notas da 01, as duas: ``Voltaremos a isso na Aula~08'', sobre a hipótese i.i.d.,
+  mas a 08 não trata de *dataset shift*. Virou a Aula~06, que trata observações
+  dependentes como fonte de vazamento;
+- numeração de proposição: nas notas do aluno da 04, o atalho do LOOCV é a Prop.~3.2
+  das notas do aluno da 03, não a 3.1; nas notas do aluno da E3, o corte de custo é a
+  Proposição~3.1 da Aula~08, não a 4.1;
+- notas da E2, as duas: ``truque do \emph{kernel} (Aulas~04 e~09)'' ficou só com a
+  09 --- a 04 não desenvolve RKHS;
+- ``as onze aulas anteriores'' no laboratório E1 (são dez) e ``os onze encontros
+  anteriores'' nas notas do aluno da E3 (são doze);
+- ``AME §4.8--4.10'' no cabeçalho das notas da 05 e no planejamento virou §4.8--4.9
+  (o §4.10 é *boosting*); o planejamento dizia também slides ``de 01 a 11'';
+- a nota do docente da 06 dizia que os dois vazamentos graves ``ficam por conta destas
+  notas'', mas quem os ordena (e mede o da seleção, na Figura~1) é a versão do aluno;
+- laboratórios: a abertura do 05 ainda prometia *boosting* e o piso $\rho\,v$, e a
+  lista de objetivos acabava num ``;''; o 10 comparava com ``a Aula 04 sobre a janela
+  $h$'' (Nadaraya--Watson); o E2 citava ``Fuga 2: redundância'', da antiga aula 05, e
+  passou a remeter à Aula 04, cuja prática faz o mesmo argumento no
+  `superconductivity.csv` (§6); o E3 mandava à ``Aula 05, Seção 10'', e o laboratório
+  05 vai até a §7.
+
+**Erros de conteúdo:**
+
+- **AIC**: as notas da 02 e da 03, nas quatro versões, escreviam
+  $P(g)\propto p/\widehat\sigma^2$. É $P(g)=2p\,\widehat\sigma^2/n$, como no [AME] e na
+  aula 01. E o roteiro da 01 chamava de ``risco de $r$'' a decomposição do risco de $g$;
+- **`Lista teorica 06` Ex. 2(c)**: dizia que, padronizando antes de imputar, o
+  `StandardScaler` encontra `NaN` e contamina a coluna. Na 1.9 ele calcula média e
+  desvio ignorando os `NaN` e os devolve intactos, e nada quebra. O item passou a
+  perguntar se o código roda e o que muda na coluna, e a solução faz a conta: o modelo
+  recebe $z_B=(s_A/s)\,z_A+(m_A-m)/s$, sem média $0$ nem desvio $1$. Simulado (renda
+  lognormal, $30\%$ faltando): média $-0{,}08$, desvio $0{,}85$, o coeficiente da renda
+  de $0{,}60$ a $0{,}71$ e a AUC de validação cruzada mexendo na quinta casa --- um
+  deslize leve. O gabarito foi de 3 para 4 páginas;
+- **`Lista teorica 09` Ex. 4**: definia a 0--1 como $\mathbf 1\{m<0\}$ e punha $1$ em
+  $m=0$. E a solução dizia que a logística é cota superior da 0--1, o que em logaritmo
+  natural falha em $-0{,}54<m<0$ ($\ln 2\approx0{,}69$ em $m=0$). O enunciado passou a
+  usar $\log_2(1+e^{-m})$, e a tabela da solução foi refeita;
+- **`Lista teorica 10` Ex. 3(c)**: ``dois deles são invariantes a transformações
+  monótonas'', mas na tabela só a árvore é --- os *ensembles* não estão nela. Virou
+  ``um deles'' e ``crescentes'', e a solução ganhou a ressalva da implementação: o
+  `scikit-learn` põe o limiar no ponto médio entre dois valores observados, que não se
+  transforma junto, e um ponto novo que caia entre eles pode mudar de lado;
+- **notas da E1, as duas**: a linha ``Euclidiana'' da tabela era a distância ao
+  quadrado, e o $\frac1{\abs{C_k}}$ da WCSS tornava falsa, por um fator $2$, a
+  igualdade entre os dois mínimos da equação. Hoje são $\sqrt{\cdot}$ e
+  $\frac1{2\abs{C_k}}$;
+- **laboratórios**: o 02 escrevia o `ElasticNet` com `l1_ratio=0` sem o $\frac12$ do
+  termo $\ell_2$ --- o fator até o `Ridge` é $n$, o `len(y)` que o código já usava ---,
+  e o 03 anunciava ``A lição, em três partes'' e tinha quatro;
+- **`Lista prática 10`**: o AdaBoost descalibrado ao contrário (ver ``Notebooks''), e
+  ``por uma ordem de grandeza'' virou ``com seis vezes o Brier da logística''.
+
+### Na aula 08
+
+- **`Lista teorica 08`**: o Ex. 1(d) dizia que o *recall* ``sobe necessariamente'' ao
+  baixar o corte; ``nunca desce'' é o certo (se nenhuma transação nova passa do corte,
+  nada muda), e o $F_1$ ganhou a conta, $2(VP+a)/(2VP+FP+FN+a+b)$. O Ex. 2(d) dizia que
+  um modelo pode ``ordenar perfeitamente e classificar todas como normais'', o que é
+  impossível se $p(\x)$ é a probabilidade verdadeira, a premissa do exercício; hoje cita
+  o medido na `Lista prática 08` (AUC $0{,}85$ e, no corte $0{,}5$, 484 positivos
+  preditos entre 12\,000, quando 1\,182 o são). No Ex. 4(d), além da remissão a si
+  mesma, a solução dizia que o excesso de confiança do Bayes ingênuo ``é monótono'' e
+  por isso preserva a ordem. Na população da figura das notas (seis covariáveis,
+  correlação $0{,}85$, médias deslocadas de $1{,}05$) a conta é exata: o *log-odds*
+  verdadeiro é $0{,}2\sum_j x_j$ e o do ingênuo, $1{,}05\sum_j x_j$ --- inclinação
+  $5{,}25$ vezes maior (medido: $5{,}27$ contra a logística). Mas isso vem da simetria
+  da população, não do método: na da `Aula prática 07`, a direção do ingênuo gira
+  $48$ graus;
+- **notas**: a Figura~1 do aluno e a tabela do docente põem o predito nas linhas, e o
+  `confusion_matrix` do `scikit-learn` devolve a transposta --- as duas versões
+  passaram a avisar. A legenda da calibração dizia que o Bayes ingênuo chega a $0{,}99$;
+  o medido é $0{,}98$;
+- **laboratório** (46 células, uns 10 segundos na 1.9), texto contra o que as células
+  imprimem:
+  - §5: a distância entre o corte medido e o teórico era posta na ``granularidade da
+    grade'', mas no cenário 1:5 são onze passos de $0{,}0025$. A célula imprime agora
+    o passo e o custo do corte teórico sobre o mínimo (no máximo $+1{,}6\%$): perto do
+    ótimo, a curva de custo é plana;
+  - §2 e §7: ``90\% de acurácia'' é $91{,}6\%$, contra $90{,}2\%$ do trivial; ``36 mil
+    negativos'' são os $10\,818$ do teste; e a AP é $0{,}49$, não ``0,3 contra 0,1''
+    --- 5 vezes a prevalência, contra 1,7 vez da AUC sobre $0{,}5$;
+  - §10: a grade de $C$ ia de $10^{-4}$ a $10^2$, e o ótimo da AUC e da AP caía na
+    borda, o que o TP01 cobra do aluno. Ela desce hoje a $10^{-8}$, e a célula imprime
+    a curva: de $10^{-8}$ a $10^{-4}$ a AUC de validação fica entre $0{,}8396$ e
+    $0{,}8397$. A acurácia escolhe $C=1$, a AUC $10^{-5}$ e a AP $10^{-7}$; no teste,
+    o da acurácia ordena pior (AUC $0{,}8460$ contra $0{,}8511$);
+  - remissões: ``o assunto da próxima seção'', para a calibração, que é a §9, e ``a
+    limpeza que a Aula 06 diagnosticou'' --- a `Aula prática 06` não lê mais essa base;
+- **figuras e deck**: ver ``Figuras'' e o item 16 do histórico de correções nos HTMLs.
+
+### O que a aula 08 espera do Gabriel
+
+Levantado na leitura e nos slides novos, e deixado com ele:
+
+1. **O escopo, que vem antes de tudo.** Desde 30/09/2026 o deck tem 24 slides: a
+   motivação, a matriz de confusão e as taxas da ROC (item 17 do histórico dos HTMLs),
+   o corte ótimo por custo, a ROC, a AUC e as críticas a ela. Não tem curva
+   precisão--revocação, AP, `class_weight`, calibração, Brier nem `scoring` na
+   validação cruzada --- que as notas, o laboratório, as listas e a tarefa C4 do TP01
+   usam, e para onde as aulas 07, 09, 10 e E3 apontam (``a Aula 08 mede'' a
+   descalibração do Bayes ingênuo, ``meça o Brier''). Aplicar o ``o deck manda''
+   quebraria essas remissões: ou o deck cresce, ou o conteúdo sai e elas são
+   redirecionadas.
+2. **O laboratório** está no registro que o Gabriel achou artificial na 07 (blocos
+   ``A lição.'', aforismos, negrito e travessão em excesso) e não reproduz a figura
+   `08-roc-metricas`. Os laboratórios 09, 10 e E3 remetem a ele (o 10, à ``Aula 08,
+   Seção 5'').
+3. **O `MatConf.pdf`**, um PowerPoint de 2022: chama a acurácia de ``Risco'', repete o
+   título ``Exemplo 1'' nas páginas 4 e 5 e põe o verdadeiro nas linhas, como o
+   `scikit-learn` e ao contrário da Figura~1 das notas. O deck deixou de apontar para
+   ele em 30/09/2026; as notas, nas duas versões, e o laboratório ainda apontam.
+4. **A notação**: o corte é $K$ nas notas, $p_0$ no deck e $t$ ou $p^*$ no
+   laboratório; os custos são $l_0$ e $l_1$ nas notas e $c_{FP}$ e $c_{FN}$ no
+   laboratório, nas listas, na aula 10 e no TP01. Os totais de positivos e negativos
+   verdadeiros são $P$ e $N$ no deck (como no [ISLP]) e $n_1$ e $n_0$ nas notas, onde
+   $P$ já é a precisão; pelo mesmo motivo os escores da AUC são $S_1$ e $S_0$ no deck
+   e $Z_1$ e $Z_0$ nas notas, onde $S$ é a sensibilidade.
+5. **As notas do aluno** ainda têm ``Prática em Python'' e ``Para praticar'', que
+   saíram da 05 e da 07.
+
+**O que o deck ganhou em 30/09/2026 foi às notas no mesmo dia**, pelo ``o deck
+manda'' e a pedido do Gabriel, nas duas versões e na notação delas: TPR e FPR como
+nomes da sensibilidade e de $1-E$ (com a `roc_curve`), o par
+$(\text{FPR},\text{TPR})$ reconstruindo a matriz, a leitura como erro do tipo I e
+poder, a decomposição
+$\risco(g)=\pi_1\,\Prob(g(\X)=0\mid Y=1)+\pi_0\,\Prob(g(\X)=1\mid Y=0)$ com a identidade
+na amostra, o exemplo da doença rara (no aluno, um `exemplo` com as duas matrizes; no
+docente, uma `emsala`), a ROC como conjunto de pontos, com a monotonicidade em $K$, os
+extremos e a diagonal, e o empate na AUC. Tudo em fórmula sem número, para não mudar
+a numeração: a Proposição~3.1 (o corte ótimo), citada pela E3, continua 3.1. A versão
+do aluno foi de 7 para 8 páginas; a do docente segue com 5.
+
 ## Figuras (`recursos/figuras/`)
 
 As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
@@ -802,7 +984,11 @@ Três coisas a respeitar:
 2. **Não use as macros do curso nos rótulos do matplotlib.** `$\x$` é `\x` do
    `estilo-notas.sty`, e o mathtext do matplotlib não a conhece — quebra com
    `ParseFatalException`. Pelo mesmo motivo, nada de `\%`, `\,` ou `\emph{}` em
-   strings do matplotlib: eles saem impressos literalmente.
+   strings do matplotlib: eles saem impressos literalmente. A vírgula decimal vai
+   como `{,}` dentro de `$...$` e como `,` fora --- e o `.replace(".", ",")` deve
+   pegar **só o número**: aplicado ao rótulo inteiro, ele fez o ``$F_1$ máx.'' da
+   `08-roc-metricas` sair ``máx,'' (corrigido em 30/09/2026, junto com as legendas das
+   duas figuras da 08, que usavam ponto decimal).
 3. **Os parâmetros da população sintética são os mesmos dos notebooks das aulas
    práticas** (`r(x)=sin(1.5x)+0.3x`, `σ=0,7`, `n=50`, `B=500`). Mudá-los
    dessincroniza figura e prática.
@@ -838,6 +1024,12 @@ Três armadilhas ao editar esses HTMLs:
    tem 453); um slide novo com 525 teve o fim invisível, sem aviso nenhum. O escape
    do próprio Quarto é `class="slide level2 scrollable"`, que os decks usam nos
    slides com tabela grande — mas para lista de tópicos, encurtar é melhor que rolar.
+   **O mesmo vale para a largura**, e ali há dois agravantes, medidos no deck 08 em
+   30/09/2026. No reveal o `<ul>` é `inline-block`: uma fórmula em `display` mais larga
+   que a coluna alarga a lista inteira, e o *texto* dos outros itens sai pela direita
+   junto. E a largura que o MathJax 2.7 dá a uma fórmula varia de um render para outro:
+   a mesma $R(g)$ numa linha só sobrava 4 px num e passava 27 px da borda noutro, na
+   mesma escala. Fórmula que ocupa a linha toda é frágil: quebre em `aligned`.
 
 ## Notebooks
 
@@ -994,7 +1186,11 @@ E uma terceira, em 21/09/2026: o **`AdaBoostClassifier` perdeu o `algorithm`**. 
 `breast_cancer` da `Lista prática 10`, $0{,}9935 \to 0{,}9948$ e
 $0{,}1480 \to 0{,}1264$. Não levanta erro nenhum — só aparece rodando. (A §7 da
 `Aula prática 10`, que também usa AdaBoost, já estava medida numa versão recente e
-confere na 1.9 até a quarta casa.)
+confere na 1.9 até a quarta casa.) O texto da lista, porém, lia esse Brier ao
+contrário até 30/09/2026: dizia que o AdaBoost empurra as probabilidades para $0$ e
+$1$. Com o `SAMME` elas vão só de $0{,}21$ a $0{,}81$, com média $0{,}65$ na classe 1
+e $0{,}34$ na 0 --- o defeito é de **pouca** confiança ---, e os dois notebooks da
+lista ganharam uma célula que imprime isso.
 
 Uma varredura dos argumentos de **todas** as chamadas do scikit-learn em **todos**
 os notebooks contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas
@@ -1753,6 +1949,71 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
     segue nas notas (as duas versões), e a penalização nas notas e na leitura do
     Ex. 4 do gabarito da `Lista prática 07`. Pelo ``o deck manda'', alinhar é decisão
     do Gabriel.
+16. Em 30/09/2026, dois erros no deck da aula 08, achados na leitura daquele dia. No
+    segundo slide ``Área sob a curva ROC (AUC)'', o do teorema
+    $\mathrm{AUC}=\mathbb{P}(S_1>S_0)$, $\mathbf{X}_0$ e $\mathbf{X}_1$ eram
+    ``instâncias positiva e negativa, respectivamente'': lido assim, o teorema dá
+    $1-\mathrm{AUC}$. Virou ``negativa e positiva''. E ``varirar'' virou ``variar'', no
+    slide que pergunta o que acontece ao variar $p_0$. Trocas em modo binário, uma
+    ocorrência cada, com o CRLF preservado (2478 quebras antes e depois, nenhum LF
+    solto).
+17. Em 30/09/2026, a pedido do Gabriel (``o deck da aula 08 está muito cru''), o slide
+    ``A matriz de confusão e métricas dela derivadas'', que só dizia ``Veja arquivo
+    `MatConf.pdf`'', deu lugar a nove slides no padrão do deck (`<li class="fragment">`,
+    MathJax, $\mathbb{P}(\cdot|\cdot)$ com a barra reta, como no resto dele):
+    - ``A matriz de confusão'', dois slides: o predito nas linhas e o verdadeiro nas
+      colunas, como as notas, a Tabela 7.1 do [AME] e a 4.6 do [ISLP], com a linha
+      dos totais $N$ e $P$; as contagens definidas
+      ($\mathrm{VP}=\#\{i : g(\mathbf{X}_i)=1 \text{ e } Y_i=1\}$) e o aviso de que o
+      `confusion_matrix` devolve a transposta;
+    - ``Voltando à doença rara'': os 1000 pacientes e 10 doentes do [AME] §7.4, com
+      $g_1\equiv0$ e um $g_2$ hipotético (VN 950, FN 2, FP 40, VP 8). A taxa de erro
+      prefere $g_1$, $0{,}010$ contra $0{,}042$;
+    - ``Taxa de verdadeiros positivos'' e ``Taxa de falsos positivos'', as duas da ROC,
+      com TNR e FNR só como complementos --- o pedido foi destacar as métricas da ROC,
+      não todas;
+    - ``Por que essas duas taxas?'', dois slides: dividem por total de coluna; dados
+      $P$ e $N$, o par $(\mathrm{FPR},\mathrm{TPR})$ determina a matriz; não dependem
+      da prevalência, mantida a distribuição de $\mathbf{X}$ em cada classe; e, com
+      $Y=0$ no papel de $H_0$, são o erro do tipo I e o poder;
+    - ``O risco em termos das taxas'', dois slides:
+      $R(g)=\pi_1\,\mathbb{P}(g(\mathbf{X})=0|Y=1)+\pi_0\,\mathbb{P}(g(\mathbf{X})=1|Y=0)$
+      e a identidade exata na amostra, conferida nos dois classificadores do exemplo.
+
+    Os dois slides da ROC que definiam TPR/TNR e FPR/FNR em fórmula solta saíram,
+    absorvidos pelo bloco. O de variar $p_0$ trocou as setas por ``não aumentam'' e
+    ``não diminuem'', e entraram mais dois: a curva como o conjunto
+    $\{(\mathrm{FPR}(p_0),\mathrm{TPR}(p_0)) : p_0\in[0,1]\}$, com $(0,0)$, $(1,1)$ e o
+    canto ideal, e a diagonal (sortear com probabilidade $q$ dá
+    $\mathrm{TPR}=\mathrm{FPR}=q$), com o lembrete de que na prática a probabilidade é
+    estimada e as taxas vêm da amostra de teste. E três ajustes de rigor: no teorema do
+    custo, $g(\mathbf{x})$ virou $g(\mathbf{X})$ dentro das probabilidades e os custos
+    ganharam nome ($\ell_1$ é o do falso positivo, $\ell_0$ o do falso negativo); na
+    AUC, $\mathbf{X}_0$ e $\mathbf{X}_1$ passaram a ser independentes, e o teorema
+    ganhou a hipótese $\mathbb{P}(S_1=S_0)=0$, com
+    $\mathrm{AUC}=\mathbb{P}(S_1>S_0)+\frac12\mathbb{P}(S_1=S_0)$ no caso geral.
+
+    O deck foi de 16 para 24 slides (2478 → 2551 quebras CRLF, nenhum LF solto). Os
+    `id` seguem a regra do Quarto (título repetido ganha `-1`, `-2`), a figura continua
+    `a-curva-roc-4`, e nenhum `id` removido era referenciado. Conferido em Chrome
+    *headless*, de 1280×800 a 3840×2160: zero `MathJax_Error`, todo slide novo com
+    pelo menos 34 px de folga no pé e nada passando da borda direita. Os três slides
+    antigos que já passavam do fim foram acertados em seguida (item 18).
+18. Em 30/09/2026, no mesmo passo, três slides originais do deck 08 que passavam do
+    fim do slide --- a medição do item 17 os achou --- foram acertados só no layout,
+    sem mudar uma palavra:
+    - ``Avaliando a qualidade de $g$'' ($-16$ px): a fórmula
+      $R(g)=\mathbb{P}(Y\neq g(\mathbf{X}))=\mathbb{P}(Y=1)$ do classificador trivial
+      saiu do `display` e ficou no texto do item;
+    - o primeiro ``Melhorando o classificador de Bayes'' ($-21$): o item ``Contexto de
+      classificação binária'' virou o começo do seguinte (``Contexto de classificação
+      binária: comparar as quantidades\dots''), um *fragment* a menos;
+    - o segundo ``AUC - alguns problemas'' ($-24$): a citação de Hand, inteira, dentro
+      de `<span style="font-size: 90%;">` --- o que o Quarto gera de
+      `[...]{style="font-size: 90%;"}` no `.qmd`.
+
+    Hoje os três deixam 48, 47 e 91 px de folga, e nenhum slide do deck passa do fim
+    (medido de 1167×865 a 3840×2247). O deck tem 2550 quebras CRLF.
 
 ## O slide de SVM, o único em Beamer
 
