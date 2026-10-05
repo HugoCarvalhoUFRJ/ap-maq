@@ -926,9 +926,10 @@ a `Lista prática 10`) rodaram inteiros no `barennet_env`.
 
 Levantado na leitura e nos slides novos, e deixado com ele:
 
-1. **O escopo, que vem antes de tudo.** Desde 30/09/2026 o deck tem 24 slides: a
-   motivação, a matriz de confusão e as taxas da ROC (item 17 do histórico dos HTMLs),
-   o corte ótimo por custo, a ROC, a AUC e as críticas a ela. Não tem curva
+1. **O escopo, que vem antes de tudo.** Desde 05/10/2026 o deck tem 18 slides: a
+   motivação, a matriz de confusão e as taxas da ROC (itens 17 a 21 do histórico dos
+   HTMLs), o corte ótimo por custo, a ROC e a definição da AUC --- sem o que ela mede
+   nem as críticas a ela, que saíram (item 21). Não tem curva
    precisão--revocação, AP, `class_weight`, calibração, Brier nem `scoring` na
    validação cruzada --- que as notas, o laboratório, as listas e a tarefa C4 do TP01
    usam, e para onde as aulas 07, 09, 10 e E3 apontam (``a Aula 08 mede'' a
@@ -941,16 +942,18 @@ Levantado na leitura e nos slides novos, e deixado com ele:
    Seção 5'').
 3. **O `MatConf.pdf`**, um PowerPoint de 2022: chama a acurácia de ``Risco'', repete o
    título ``Exemplo 1'' nas páginas 4 e 5 e põe o verdadeiro nas linhas, como o
-   `scikit-learn` e ao contrário da Figura~1 das notas. O deck deixou de apontar para
-   ele em 30/09/2026; as notas, nas duas versões, e o laboratório ainda apontam.
-4. **A notação**: o corte é $K$ nas notas, $p_0$ no deck e $t$ ou $p^*$ no
-   laboratório; os custos são $l_0$ e $l_1$ nas notas e $c_{FP}$ e $c_{FN}$ no
-   laboratório, nas listas, na aula 10 e no TP01. Os totais de positivos e negativos
-   verdadeiros são $P$ e $N$ no deck (como no [ISLP]) e $n_1$ e $n_0$ nas notas, onde
-   $P$ já é a precisão; pelo mesmo motivo os escores da AUC são $S_1$ e $S_0$ no deck
-   e $Z_1$ e $Z_0$ nas notas, onde $S$ é a sensibilidade.
-5. **As notas do aluno** ainda têm ``Prática em Python'' e ``Para praticar'', que
-   saíram da 05 e da 07.
+   `scikit-learn` e ao contrário da Figura~1 das notas. Só o laboratório ainda aponta
+   para ele: o deck deixou de apontar em 30/09/2026, e as notas em 05/10/2026, com a
+   seção de Python.
+4. **A notação**: o corte é $K$ nas notas (como no [AME] §9.1), $p_0$ no deck e $t$
+   ou $p^*$ no laboratório; os custos são $l_0$ e $l_1$ nas notas (como no [AME]),
+   $\ell_0$ e $\ell_1$ no deck e $c_{FP}$ e $c_{FN}$ no laboratório, nas listas, na aula
+   10 e no TP01. Desde a reescrita de 05/10/2026 as notas chamam a precisão de VPP,
+   como o [AME], e os totais de positivos e negativos verdadeiros de $P$ e $N$, como o
+   deck e o [ISLP]; os escores da AUC são $Z_1$ e $Z_0$, porque $S$ é a sensibilidade.
+5. **As notas do aluno** ainda têm o ``Para praticar'', que saiu da 05 e da 07 (diz
+   ``nesta mesma pasta'' e ``com gabarito''). A ``Prática em Python'' saiu das duas
+   versões em 05/10/2026.
 
 **O que o deck ganhou em 30/09/2026 foi às notas no mesmo dia**, pelo ``o deck
 manda'' e a pedido do Gabriel, nas duas versões e na notação delas: TPR e FPR como
@@ -963,6 +966,127 @@ docente, uma `emsala`), a ROC como conjunto de pontos, com a monotonicidade em $
 extremos e a diagonal, e o empate na AUC. Tudo em fórmula sem número, para não mudar
 a numeração: a Proposição~3.1 (o corte ótimo), citada pela E3, continua 3.1. A versão
 do aluno foi de 7 para 8 páginas; a do docente segue com 5.
+
+**Em 05/10/2026 saíram do deck a decomposição do risco (item 19) e o que a AUC mede,
+com as críticas a ela (item 21), mas as notas continuam com:**
+- **a decomposição**: o parágrafo ``O risco em termos das taxas'' e a identidade na
+  amostra, o `exemplo` da doença rara, que a usa para explicar por que o risco prefere
+  $g_1$, a linha do Resumo e o objetivo ``escrever o risco em termos das taxas'', no
+  aluno; o parágrafo com a identidade e a `emsala`, que manda a turma achar o motivo
+  ``na decomposição'', no docente;
+- **a interpretação da AUC** como probabilidade de o positivo receber escore maior,
+  nas duas versões. Ela já estava nas notas antes do deck; só a independência e o
+  empate, $\text{AUC}=\Prob(Z_1>Z_0)+\frac12\Prob(Z_1=Z_0)$, vieram dele em 30/09. As
+  críticas do deck (a AUC ruidosa, o argumento de Hand sobre custos, ROC e AUC como
+  variáveis aleatórias) nunca estiveram nas notas.
+
+Tirar das notas também, pelo ``o deck manda'', é decisão do Gabriel. A reescrita de
+05/10/2026 (adiante) manteve as duas e apoiou nelas a Observação~3.2, que justifica o
+critério ``maximizar $S+E$''.
+
+### As notas reescritas em 05/10/2026
+
+Pedido do Gabriel: reescrever as duas versões ``como um professor universitário de
+matemática, ao mesmo tempo didático e rigoroso'', avaliando o quanto mudar, e tirar a
+seção de Python. A estrutura e a numeração ficaram --- seis seções, a
+Proposição~3.1 (o corte ótimo) continua 3.1, como a E3 cita, e os rótulos
+(`fig:confusao`, `eq:f1`, `prop:corte`, `sec:roc`...) não mudaram. O que mudou:
+
+- **cada medida passou a ser uma probabilidade com o seu estimador**:
+  $S=\Prob(g(\X)=1\mid Y=1)$ e $\widehat S=\text{VP}/P$, e assim por diante, com a amostra
+  de teste i.i.d.\ e independente do treino dita no começo e as contagens definidas
+  como $\#\{i:\dots\}$;
+- **as afirmações que vinham sem prova ganharam a conta**: que a precisão depende da
+  prevalência, pelo teorema de Bayes, com o exemplo de um teste com $S=E=99\%$ numa
+  doença de prevalência $1\%$ (precisão exatamente $1/2$; com $0{,}1\%$, cerca de $9\%$);
+  a forma amostral $\widehat F_1=2\text{VP}/(2\text{VP}+\text{FP}+\text{FN})$, que mostra
+  que o $F_1$ ignora os VN; a demonstração completa da Proposição~3.1, com o empate; a
+  Observação~3.2, em que custos inversamente proporcionais às prevalências
+  ($l_0=1-\pi_1$, $l_1=\pi_1$) dão o corte $\pi_1$ e o custo
+  $\pi_1(1-\pi_1)(2-S-E)$ --- o que justifica o critério ``maximizar $S+E$'' da ROC;
+  que reponderar e reamostrar codificam custos, agora em conta: o ajuste reponderado
+  estima $p_w$, com as chances multiplicadas por $w_1/w_0$, o que equivale ao corte
+  $w_0/(w_0+w_1)$ em $\eta$ (com `class_weight="balanced"`, a prevalência da
+  amostra), e reamostrar para $\pi_1'$ multiplica as chances por
+  $\frac{\pi_1'/(1-\pi_1')}{\pi_1/(1-\pi_1)}$;
+- **a seção de calibração ganhou definições**: a calibração como
+  $\Prob(Y=1\mid\widehat\eta(\X)=p)=p$, a regra de pontuação própria, a verificação
+  $\E[(p-Y)^2]=(p-\eta)^2+\eta(1-\eta)$ e a decomposição do risco de Brier como a da
+  Aula~01, além do porquê de acurácia e AUC não serem próprias. O conselho de escolher
+  hiperparâmetros por Brier ou entropia cruzada, que estava na caixa de
+  `scoring` da seção de Python, ficou no texto, sem código;
+- **erros corrigidos**: a legenda da calibração dizia que o Brier do Bayes ingênuo é
+  ``quase três vezes pior'' que o da logística, e é $2{,}3$ vezes ($0{,}1523$ contra
+  $0{,}0653$, conferido rodando a geradora numa cópia, no `barennet_env`); a leitura
+  recomendada mandava a ROC para o [ISLP] §4.4.3, que é a QDA --- a matriz do
+  `Default`, a ROC (Figura~4.8) e as Tabelas~4.6--4.7 estão todas no §4.4.2;
+  ``$\text{AUC}=0{,}5$ é aleatório'' virou ``o sorteio tem AUC $1/2$''; ``os métodos
+  tendem ao classificador inútil'' virou o fato do [AME] §9.1 (se
+  $\Prob(Y=1\mid\x)<1/2$ em todo $\x$, o classificador de Bayes é $g\equiv0$); e
+  ``reamostrar destrói a calibração'' virou ``desloca as probabilidades por um fator
+  conhecido'';
+- **o registro**: saíram os aforismos (``Eis a mensagem operacional'', ``Saber qual é
+  qual é metade da aula'', ``a demonstração literal do título'') e o excesso de negrito
+  e travessão; as leituras da figura da matriz passaram à terceira pessoa;
+- **a seção ``Prática em Python'' saiu das duas versões**, e com ela o parágrafo que
+  apontava o laboratório e o `MatConf.pdf`. Os números das legendas foram todos
+  reconferidos na geradora; a legenda da calibração ganhou a entropia cruzada
+  ($0{,}237$ contra $0{,}698$), medida no mesmo passo.
+
+A versão do aluno foi de 8 para 9 páginas e a do docente segue com 5, que ganhou três
+caixas `emsala` (a precisão numa doença rara, o corte de $1/11$ e a AUC que não serve
+para custo esperado). As duas compilam sem erro, sem referência indefinida e sem
+`Overfull`. O ``Para praticar'' do aluno ficou como estava (item 5 acima).
+
+### A `Lista teorica 08` perdeu os Ex. 3 e 4
+
+Decisão do Gabriel em 05/10/2026: o Ex. 1 passa a pedir só as métricas introduzidas em
+aula, e os Ex. 3 e 4 saem inteiros. A lista fica com **dois exercícios**, como a 04 e a
+06; o enunciado foi de 2 para 1 página, e o gabarito, de 5 para 3.
+
+- **``Introduzidas em aula'' quer dizer ``no deck''.** Nas notas estão também a
+  acurácia, a precisão, o VPN e o $F_1$, e nenhuma delas aparece nos slides; o deck tem
+  a taxa de erro $(FP+FN)/n$, a sensibilidade (TPR), a taxa de falsos positivos (FPR) e
+  a especificidade, com a FNR como complemento. O Ex. 1 virou ``uma matriz de confusão,
+  quatro taxas'': (a) pede essas quatro; (b) compara a taxa de erro com a do
+  classificador que responde sempre ``normal'' ($0{,}0400$ contra $0{,}0500$); (c)
+  reescreve ``o sistema erra em apenas 4\% das transações'', no lugar dos ``96\% de
+  acurácia'', e a versão honesta da solução usa a sensibilidade e a FPR, sem a
+  precisão; e (d) pergunta quais taxas não podem descer (TPR e FPR), qual não pode subir
+  (a especificidade) e qual vai para qualquer lado (a taxa de erro, que muda de
+  $(b-a)/n$ se o corte novo pega $a$ fraudes e $b$ normais). O (d) bate com o segundo
+  slide da ROC (item 20 do histórico dos HTMLs).
+- **O que saiu com os Ex. 3 e 4**: a AUC calculada à mão pelos pares, a invariância a
+  transformações crescentes, a AUC do acaso e da ordem invertida, e a melhor acurácia
+  contra a AUC (Ex. 3); a mesma AUC com Brier 29 vezes maior, e a conta da inclinação
+  $5{,}25$ do Bayes ingênuo, de 30/09 (Ex. 4). Essa conta não está mais em material
+  nenhum.
+- **A única remissão de fora** era a solução do Ex. 2(d) da `Lista teorica E3`
+  (``Funciona mesmo assim pela razão do Exercício~4 da Lista Teórica~08''): saiu só a
+  remissão, e a frase se sustenta. Só o gabarito da E3 foi recompilado. O Ex. 2 da 08
+  continua citado pelas listas práticas 08 e 10 e pela `Lista teorica 10`.
+
+**No mesmo dia, a lista foi reescrita** no registro de professor rigoroso e didático,
+como as notas (a orientação de estilo está na memória do Claude), sem mudar o que cada
+exercício pede. No enunciado: a matriz do Ex. 1 passou à orientação da aula, com o
+previsto nas linhas e o real nas colunas (antes estava como a do `scikit-learn`); o
+(a) pergunta também que probabilidade cada taxa estima; o Ex. 2 diz que acertar não
+custa nada e chama os custos de ``os $l_1$ e $l_0$ das notas''; o (b) pede também por
+que decidir em cada $\x$ minimiza o custo total; e o (c) fixa o modelo de custos ---
+``cada alarme falso custa R\$ 10, o preço de investigar uma transação honesta'', no
+lugar de ``investigar um alerta custa R\$ 10'', que não dizia se investigar uma fraude
+verdadeira também custa. Nas soluções: a tabela do (a) ganhou a coluna da
+probabilidade estimada e os erros-padrão binomiais das duas taxas de classe ($0{,}022$
+para a sensibilidade, com $500$ fraudes, contra $0{,}001$ para a FPR, com $9\,500$
+normais); o (d) do Ex. 1 escreve a regra com corte $K$ e dá os dois sentidos da taxa
+de erro com números ($50$ fraudes e $10$ normais a mais: $0{,}0360$; $5$ e $200$:
+$0{,}0595$); o (b) do Ex. 2 prova a otimalidade global pela lei da esperança total e
+remete à Prop.~3.1 das notas; o (c) interpreta o corte $1/51$ (cerca de $50$
+investigações honestas por fraude encontrada) e mostra que, se investigar uma fraude
+verdadeira também custa R\$ 10, o corte vira $10/(10+490)=0{,}02$; e o (d) lembra que
+$0{,}5$ é o corte de Bayes, ótimo para o risco $0$--$1$, e cita os números da
+`Lista prática 08` (AUC $0{,}8529$, $484$ previstos contra $1\,182$ positivos em
+$12\,000$), conferidos no gabarito dela. O enunciado tem 1 página e o gabarito, 4.
 
 ## Figuras (`recursos/figuras/`)
 
@@ -1266,8 +1390,8 @@ convenções acima. Os quatro `Aula prática` herdados foram aposentados; contin
 
 Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, na
 pasta da própria aula e sempre com gabarito: `Lista teorica NN.tex` (3–4
-exercícios, nenhum marcado como opcional; **duas exceções, com 2**: a 04 desde
-24/08/2026 e a 06 desde 11/09/2026) e `Lista prática NN.ipynb` (lacunas marcadas
+exercícios, nenhum marcado como opcional; **três exceções, com 2**: a 04 desde
+24/08/2026, a 06 desde 11/09/2026 e a 08 desde 05/10/2026) e `Lista prática NN.ipynb` (lacunas marcadas
 por `...`), cada uma com seu `- gabarito`. O gabarito teórico é o
 **mesmo conteúdo**, com as soluções ligadas por uma opção.
 
@@ -2014,6 +2138,46 @@ dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
 
     Hoje os três deixam 48, 47 e 91 px de folga, e nenhum slide do deck passa do fim
     (medido de 1167×865 a 3840×2247). O deck tem 2550 quebras CRLF.
+19. Em 05/10/2026, a pedido do Gabriel, saíram os dois slides ``O risco em termos das
+    taxas'' do item 17: a decomposição
+    $R(g)=\pi_1\,\mathbb{P}(g(\mathbf{X})=0|Y=1)+\pi_0\,\mathbb{P}(g(\mathbf{X})=1|Y=0)$,
+    a identidade na amostra com os números do exemplo e, com eles, a ponte para os
+    custos (``Se um falso negativo custar mais que um falso positivo, os pesos deveriam
+    ser outros: é o que vem a seguir''). O segundo ``Por que essas duas taxas?'' passa
+    direto ao ``Melhorando o classificador de Bayes''. Nenhum `id` dos dois era
+    referenciado. O deck foi de 24 para 22 slides (2550 → 2533 quebras CRLF, nenhum LF
+    solto); conferido em Chrome *headless*: zero `MathJax_Error` e nenhum slide
+    passando do fim. O mesmo arquivo trazia, ainda não commitada, uma edição do Gabriel
+    no ``Recapitulando'' (``Porém, $R(g)=\dots$ é uma boa forma de avaliar\dots'', no
+    lugar de ``Porém, é $R(g)=\dots$ uma boa forma\dots''), preservada.
+20. Em 05/10/2026, o Gabriel achou obscuro o ``$\mathrm{TPR}$ e $\mathrm{FPR}$ não
+    aumentam / não diminuem'' do segundo slide ``A curva ROC'' (item 17): a
+    desigualdade fraca, sozinha, não dizia o que se move nem por quê. Os subitens
+    passaram a dar o mecanismo e o efeito por extenso --- sob ``$\uparrow p_0$'',
+    ``$\mathrm{VP}$ e $\mathrm{FP}$ diminuem ou ficam iguais; como $P$ e $N$ não mudam,
+    $\mathrm{TPR}$ e $\mathrm{FPR}$ também''; sob ``$\downarrow p_0$'', ``o contrário:
+    $\mathrm{TPR}$ e $\mathrm{FPR}$ aumentam ou ficam iguais'' ---, e o último item virou
+    ``Em geral, aumentar a $\mathrm{TPR}$ custa aumentar a $\mathrm{FPR}$: a curva ROC
+    mostra essa troca''. Uma primeira redação do último item, mais longa, passava 14 px
+    do fim; a atual deixa 38 px. As notas não mudaram: lá o ``não crescentes'' vem com o
+    motivo na mesma frase (``subir o corte só tira observações do grupo dos classificados
+    como positivos'').
+21. Em 05/10/2026, a pedido do Gabriel (``tire as explicações do que a AUC mede e seus
+    problemas''), saíram os quatro últimos slides: o segundo ``Área sob a curva ROC
+    (AUC)'', com $\mathbf{X}_0$, $\mathbf{X}_1$, os escores e o teorema
+    $\mathrm{AUC}=\mathbb{P}(S_1>S_0)+\frac12\mathbb{P}(S_1=S_0)$, e os três ``AUC - alguns
+    problemas'' (a AUC ruidosa, pela Wikipedia; a citação de Hand sobre custos; a curva
+    reduzida a um número; e o aviso de que ROC e AUC são variáveis aleatórias, a
+    conferir com validação cruzada). Do primeiro ``Área sob a curva ROC (AUC)'', que
+    virou o último slide, saiu o item ``Mas o que ela mede, exatamente?'', que levava ao
+    teorema; ficam a definição e o ``usualmente associada a quão bom pode ser o
+    classificador''. O rodapé que o Quarto gera dentro do último slide
+    (`<div class="quarto-auto-generated-content">`, com o `footer` vazio) foi para o novo
+    último. Com os slides saíram também os acertos dos itens 16 (os $\mathbf{X}_0$ e
+    $\mathbf{X}_1$ trocados), 17 (independência e empate na AUC) e 18 (a citação em 90\%):
+    quem replicar este histórico no `.qmd` pode pular essas partes. O deck foi de 22 para
+    18 slides (2533 → 2506 quebras CRLF, nenhum LF solto); conferido em Chrome
+    *headless*, sem `MathJax_Error` e sem slide passando do fim.
 
 ## O slide de SVM, o único em Beamer
 
