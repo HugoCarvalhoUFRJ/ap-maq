@@ -1153,7 +1153,7 @@ margin-right: 0; }
 <h2>Recapitulando</h2>
 <p><strong>Teorema</strong> (Classificador de Bayes): A função <span class="math inline">\(g: \mathbb{R}^p \to \mathcal{C}\)</span> que minimiza o risco <span class="math display">\[R(g) = \mathbb{E}[\mathbb{I}(Y \neq g(\mathbf{X}))] = \mathbb{P}(Y \neq g(\mathbf{X}))\]</span> é o <em>classificador de Bayes</em>, dado por <span class="math display">\[g(\mathbf{x}) = \mathop{\mathrm{argmax}}_{d \in \mathcal{C}} \mathbb{P}(Y = d | \mathbf{X} = \mathbf{x})\]</span></p>
 <ul>
-<li class="fragment">Porém, é <span class="math inline">\(R(g) = \mathbb{P}(Y \neq g(\mathbf{X}))\)</span> uma boa forma de avaliar a qualidade de <span class="math inline">\(g\)</span>?</li>
+<li class="fragment">Porém, <span class="math inline">\(R(g) = \mathbb{P}(Y \neq g(\mathbf{X}))\)</span> é uma boa forma de avaliar a qualidade de <span class="math inline">\(g\)</span>?</li>
 </ul>
 </section>
 <section id="avaliando-a-qualidade-de-g" class="slide level2">
@@ -1225,23 +1225,6 @@ margin-right: 0; }
 <li class="fragment">Para quem vem de testes de hipóteses: com <span class="math inline">\(Y = 0\)</span> no papel de <span class="math inline">\(H_0\)</span>, a FPR estima a probabilidade do erro do tipo I, e a TPR, o poder do teste</li>
 </ul>
 </section>
-<section id="o-risco-em-termos-das-taxas" class="slide level2">
-<h2>O risco em termos das taxas</h2>
-<ul>
-<li class="fragment">Com <span class="math inline">\(\pi_1 = \mathbb{P}(Y = 1)\)</span> e <span class="math inline">\(\pi_0 = 1 - \pi_1\)</span>, pela lei da probabilidade total, <span class="math display">\[\begin{aligned} R(g) &amp;= \pi_1\, \mathbb{P}(g(\mathbf{X}) = 0 | Y = 1) \\ &amp;\quad + \pi_0\, \mathbb{P}(g(\mathbf{X}) = 1 | Y = 0) \end{aligned}\]</span></li>
-<li class="fragment">O risco é uma média das taxas de erro das duas classes, ponderada pelas prevalências</li>
-<li class="fragment">Numa doença rara, <span class="math inline">\(\pi_1 \approx 0\)</span>: o risco quase não enxerga os falsos negativos</li>
-</ul>
-</section>
-<section id="o-risco-em-termos-das-taxas-1" class="slide level2">
-<h2>O risco em termos das taxas</h2>
-<ul>
-<li class="fragment">Na amostra de teste, a mesma conta é uma identidade exata: <span class="math display">\[\frac{\mathrm{FP} + \mathrm{FN}}{m} = \frac{P}{m}\, \mathrm{FNR} + \frac{N}{m}\, \mathrm{FPR}\]</span></li>
-<li class="fragment">Para <span class="math inline">\(g_1\)</span>: <span class="math inline">\(0,\!01 \cdot 1 + 0,\!99 \cdot 0 = 0,\!010\)</span></li>
-<li class="fragment">Para <span class="math inline">\(g_2\)</span>: <span class="math inline">\(0,\!01 \cdot 0,\!2 + 0,\!99 \cdot 0,\!040 \approx 0,\!042\)</span></li>
-<li class="fragment">Se um falso negativo custar mais que um falso positivo, os pesos deveriam ser outros: é o que vem a seguir</li>
-</ul>
-</section>
 <section id="melhorando-o-classificador-de-bayes" class="slide level2">
 <h2>Melhorando o classificador de Bayes</h2>
 <ul>
@@ -1269,13 +1252,13 @@ margin-right: 0; }
 <li class="fragment">O que acontece ao variar <span class="math inline">\(p_0\)</span> no classificador <span class="math inline">\(g_{p_0}(\mathbf{x}) = 1 \iff \mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{x}) &gt; p_0\)</span>?</li>
 <li class="fragment"><span class="math inline">\(\uparrow p_0 \implies\)</span> mais raro classificar <span class="math inline">\(Y = 1\)</span>
 <ul>
-<li class="fragment"><span class="math inline">\(\mathrm{TPR}\)</span> e <span class="math inline">\(\mathrm{FPR}\)</span> não aumentam</li>
+<li class="fragment"><span class="math inline">\(\mathrm{VP}\)</span> e <span class="math inline">\(\mathrm{FP}\)</span> diminuem ou ficam iguais; como <span class="math inline">\(P\)</span> e <span class="math inline">\(N\)</span> não mudam, <span class="math inline">\(\mathrm{TPR}\)</span> e <span class="math inline">\(\mathrm{FPR}\)</span> também</li>
 </ul></li>
 <li class="fragment"><span class="math inline">\(\downarrow p_0 \implies\)</span> mais comum classificar <span class="math inline">\(Y = 1\)</span>
 <ul>
-<li class="fragment"><span class="math inline">\(\mathrm{TPR}\)</span> e <span class="math inline">\(\mathrm{FPR}\)</span> não diminuem</li>
+<li class="fragment">o contrário: <span class="math inline">\(\mathrm{TPR}\)</span> e <span class="math inline">\(\mathrm{FPR}\)</span> aumentam ou ficam iguais</li>
 </ul></li>
-<li class="fragment">Para detectar mais positivos, em geral acusamos mais negativos: a curva ROC mostra esse comportamento conjunto</li>
+<li class="fragment">Em geral, aumentar a <span class="math inline">\(\mathrm{TPR}\)</span> custa aumentar a <span class="math inline">\(\mathrm{FPR}\)</span>: a curva ROC mostra essa troca</li>
 </ul>
 </section>
 <section id="a-curva-roc-2" class="slide level2">
@@ -1303,33 +1286,6 @@ margin-right: 0; }
 <ul>
 <li class="fragment">Área entre o eixo <span class="math inline">\(x\)</span> e uma curva ROC - AUC (<em>area under the curve</em>)</li>
 <li class="fragment">Usualmente associada a quão “bom” pode ser aquele classificador, variando <span class="math inline">\(p_0\)</span></li>
-<li class="fragment">Mas o que ela mede, exatamente?</li>
-</ul>
-</section>
-<section id="área-sob-a-curva-roc-auc-1" class="slide level2">
-<h2>Área sob a curva ROC (AUC)</h2>
-<ul>
-<li class="fragment">Sejam <span class="math inline">\(\mathbf{X}_0\)</span> e <span class="math inline">\(\mathbf{X}_1\)</span> instâncias negativa e positiva, respectivamente, escolhidas ao acaso e de forma independente</li>
-<li class="fragment">Sejam <span class="math inline">\(S_0\)</span> e <span class="math inline">\(S_1\)</span> seus respectivos <em>scores</em>
-<ul>
-<li class="fragment">No caso dos classificadores que estamos tratando, são <span class="math inline">\(\mathbb{P}(Y = 1 | \mathbf{X} = \mathbf{X}_i)\)</span>, para <span class="math inline">\(i = 0, 1\)</span>, respectivamente</li>
-</ul></li>
-<li class="fragment"><strong>Teorema</strong>: Se <span class="math inline">\(\mathbb{P}(S_1 = S_0) = 0\)</span>, a AUC é igual à probabilidade <span class="math inline">\(\mathbb{P}(S_1 &gt; S_0)\)</span>. Em geral, <span class="math inline">\(\mathrm{AUC} = \mathbb{P}(S_1 &gt; S_0) + \tfrac{1}{2}\,\mathbb{P}(S_1 = S_0)\)</span></li>
-</ul>
-</section>
-<section id="auc---alguns-problemas" class="slide level2">
-<h2>AUC - alguns problemas</h2>
-<p>“<em>The machine learning community most often uses the ROC AUC statistic for model comparison. This practice has been questioned because AUC estimates are quite noisy and suffer from other problems.</em>” <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve">Wikipedia</a></p>
-</section>
-<section id="auc---alguns-problemas-1" class="slide level2">
-<h2>AUC - alguns problemas</h2>
-<p><span style="font-size: 90%;">“<em>[…] the AUC uses different misclassification cost distributions for different classifiers. This means that using the AUC is equivalent to using different metrics to evaluate different classification rules. It is equivalent to saying that, using one classifier, misclassifying a class 1 point is <span class="math inline">\(A\)</span> times as serious as misclassifying a class 0 point, but, using another classifier, misclassifying a class 1 point is <span class="math inline">\(B\)</span> times as serious, where <span class="math inline">\(A \neq B\)</span>. This is nonsensical because the relative severities of different kinds of misclassifications of individual points is a property of the problem, not the classifiers which happen to have been chosen.</em>”</span> <a href="https://link.springer.com/article/10.1007/s10994-009-5119-5">David J. Hand - Measuring classifier performance</a></p>
-</section>
-<section id="auc---alguns-problemas-2" class="slide level2">
-<h2>AUC - alguns problemas</h2>
-<ul>
-<li class="fragment">“<em>Another problem with ROC AUC is that reducing the ROC Curve to a single number ignores the fact that it is about the tradeoffs between the different systems or performance points plotted and not the performance of an individual system […]</em>” <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve">Wikipedia</a></li>
-<li class="fragment">Finalmente, tanto a curva ROC quanto a AUC são variáveis aleatórias, ou seja, dependem do conjunto de dados! No mínimo uma validação cruzada deve ser utilizada para entendê-las melhor.</li>
 </ul>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
