@@ -11,351 +11,231 @@
 \cabecalholista{08}{Métricas para Classificação}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[uma matriz de confusão, cinco métricas]
-Um sistema de detecção de fraude foi aplicado a $10\,000$ transações, das quais
-$500$ eram fraudulentas. O resultado:
+\begin{exercicio}[uma matriz de confusão, quatro taxas]
+Um sistema de detecção de fraude, já construído, foi aplicado a uma amostra de teste
+de $n=10\,000$ transações, independente dos dados usados para construí-lo; $500$
+delas eram fraudes. Tome a fraude como a classe positiva, $Y=1$. A matriz de
+confusão, com o previsto nas linhas e o real nas colunas, como em aula, é
 \begin{center}\small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}ll cc@{}}
 \toprule
- & & \multicolumn{2}{c}{\textbf{previsto}} \\
- & & fraude & normal \\
+ & & \multicolumn{2}{c}{\textbf{real}} \\
+ & & normal & fraude \\
 \midrule
-\multirow{2}{*}{\textbf{real}} & fraude & $200$ & $300$ \\
-                               & normal & $100$ & $9\,400$ \\
+\multirow{2}{*}{\textbf{previsto}} & normal & $9\,400$ & $300$ \\
+                                   & fraude & $100$    & $200$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Calcule acurácia, precisão, \emph{recall} (sensibilidade),
-        especificidade e $F_1$.
-  \item Calcule a acurácia do classificador que responde \emph{sempre}
+  \item Calcule a taxa de erro, a sensibilidade (taxa de verdadeiros positivos), a
+        taxa de falsos positivos e a especificidade. Que probabilidade cada uma das
+        quatro estima?
+  \item Calcule a taxa de erro do classificador que responde \emph{sempre}
         ``normal''. Compare com a do item (a).
-  \item Um relatório afirma: ``o sistema tem 96\% de acurácia''. Reescreva essa
-        frase de modo que ela informe o leitor em vez de enganá-lo.
-  \item Se o banco decidir baixar o corte para capturar mais fraudes, quais das
-        cinco métricas do item (a) necessariamente \emph{sobem}, quais
-        necessariamente \emph{descem}, e quais podem ir para qualquer lado?
+  \item Um relatório afirma: ``o sistema erra em apenas 4\% das transações''.
+        Reescreva essa frase de modo que ela informe o leitor em vez de enganá-lo.
+  \item O banco decide baixar o corte do sistema para capturar mais fraudes. Quais
+        das quatro taxas do item (a) não podem diminuir, quais não podem aumentar e
+        quais podem mudar em qualquer sentido? Justifique.
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Com $VP=200$, $FN=300$, $FP=100$, $VN=9\,400$:
+\textbf{(a)} Lendo a tabela, $VN=9\,400$, $FN=300$, $FP=100$ e $VP=200$. Os totais das
+colunas são os $P=VP+FN=500$ positivos e os $N=FP+VN=9\,500$ negativos verdadeiros,
+e $n=P+N=10\,000$. Escrevendo $g$ para o sistema e $(\X,Y)$ para uma transação nova,
 \begin{center}\small
 \renewcommand{\arraystretch}{1.4}
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}llll@{}}
 \toprule
-métrica & fórmula & valor \\
+taxa & na amostra & valor & estima \\
 \midrule
-acurácia        & $(VP+VN)/n = 9\,600/10\,000$      & $0{,}9600$ \\
-precisão        & $VP/(VP+FP) = 200/300$            & $0{,}6667$ \\
-\emph{recall}   & $VP/(VP+FN) = 200/500$            & $0{,}4000$ \\
-especificidade  & $VN/(VN+FP) = 9\,400/9\,500$      & $0{,}9895$ \\
-$F_1$           & $2VP/(2VP+FP+FN) = 400/800$       & $0{,}5000$ \\
+taxa de erro                   & $(FP+FN)/n=400/10\,000$ & $0{,}0400$ & $\Prob\big(g(\X)\neq Y\big)$ \\
+sensibilidade (TPR)            & $VP/P=200/500$          & $0{,}4000$ & $\Prob\big(g(\X)=1\mid Y=1\big)$ \\
+taxa de falsos positivos (FPR) & $FP/N=100/9\,500$       & $0{,}0105$ & $\Prob\big(g(\X)=1\mid Y=0\big)$ \\
+especificidade                 & $VN/N=9\,400/9\,500$    & $0{,}9895$ & $\Prob\big(g(\X)=0\mid Y=0\big)$ \\
 \bottomrule
 \end{tabular}
 \end{center}
+Cada taxa é a proporção, na amostra de teste, do evento correspondente: a taxa de
+erro conta os erros entre todas as transações; a sensibilidade, os acertos entre as
+fraudes; a taxa de falsos positivos, os alarmes entre as transações normais. Como a
+amostra de teste não foi usada para construir $g$, essas proporções estimam as
+probabilidades da última coluna, que são as de uma transação nova. A especificidade
+é o complemento da taxa de falsos positivos, $0{,}9895=1-0{,}0105$, porque as duas
+dividem pelo mesmo total $N$; do mesmo modo, $1-\text{TPR}=FN/P=0{,}6$ é a taxa de
+falsos negativos.
+
+Em palavras: o sistema encontra $40\%$ das fraudes e acusa cerca de $1\%$ das
+transações normais.
+
+Repare ainda que as duas taxas de classe são estimadas com quantidades de dados muito
+diferentes. Dadas as classes, cada fraude é detectada independentemente com a mesma
+probabilidade, de modo que $VP$ é binomial com $P=500$ ensaios; o erro-padrão da
+sensibilidade estimada é $\sqrt{0{,}4\cdot0{,}6/500}\approx0{,}022$. O da taxa de falsos
+positivos, com $N=9\,500$ ensaios, é $\sqrt{0{,}0105\cdot0{,}9895/9\,500}\approx0{,}001$.
+Numa classe rara, a taxa que mais interessa é justamente a estimada com menos dados.
 
 \smallskip
-\textbf{(b)} Ele acerta todas as $9\,500$ transações normais e erra todas as
-fraudes: acurácia $=9\,500/10\,000=\mathbf{0{,}9500}$.
+\textbf{(b)} O classificador trivial erra $\mathbf{0{,}0500}$ das transações, um ponto
+percentual a mais que o sistema. Ele acerta as $9\,500$ transações normais e erra as
+$500$ fraudes, de modo que a sua taxa de erro é exatamente a proporção de fraudes,
+$500/10\,000$; a sua sensibilidade e a sua taxa de falsos positivos são ambas $0$.
 
-O sistema de verdade tem $0{,}9600$. \textbf{Um ponto percentual} separa um
-detector que encontra 40\% das fraudes de um programa que não faz nada.
-
-\smallskip
-\textbf{(c)} Uma versão honesta seria: \emph{``o sistema detecta 40\% das fraudes
-(\emph{recall}); dois em cada três alertas que ele emite são fraudes de verdade
-(precisão); e ele marca indevidamente 1\% das transações normais''}.
-
-O que torna a frase original enganosa não é a acurácia estar errada --- ela está
-certa --- e sim ela ser \textbf{quase toda determinada pela prevalência}: dos
-$9\,600$ acertos, $9\,400$ são transações normais classificadas como normais, o
-que qualquer classificador trivial também faria. A informação está nos $600$
-casos restantes, e a acurácia os dilui em dez mil.
+A comparação mostra a escala da taxa de erro neste problema. Responder sempre a
+classe majoritária, sem olhar a transação, já erra só $5\%$; um classificador útil
+precisa ficar abaixo disso, e o sistema fica em $4\%$. Um ponto percentual de taxa de
+erro separa, aqui, um detector que encontra $40\%$ das fraudes de um classificador
+que não encontra nenhuma.
 
 \smallskip
-\textbf{(d)} Baixando o corte, mais transações são chamadas de fraude: nenhuma
-que era chamada deixa de ser. Então $VP$ e $FP$ não podem descer, e $FN$ e $VN$ não
-podem subir. Rigorosamente, nenhuma das cinco métricas \emph{precisa} mudar --- se
-nenhuma transação nova passar do corte, fica tudo igual ---, mas duas só se movem
-num sentido:
+\textbf{(c)} A frase é verdadeira, mas engana, porque soma numa conta só dois erros
+de natureza muito diferente. Dos $400$ erros, $300$ são fraudes não detectadas, isto
+é, $60\%$ das $500$ fraudes, e $100$ são alarmes falsos, cerca de $1\%$ das $9\,500$
+transações normais. Como as fraudes são só $5\%$ das transações, a taxa de erro é
+quase toda determinada pela classe normal: até o classificador do item (b), que não
+detecta nada, erra apenas $5\%$. Uma versão que informa:
+\begin{center}
+\emph{``o sistema detecta $40\%$ das fraudes e acusa indevidamente cerca de $1\%$ das
+transações normais, o que aqui significou $100$ alarmes falsos''},
+\end{center}
+isto é, a sensibilidade e a taxa de falsos positivos, ditas por extenso.
+
+\smallskip
+\textbf{(d)} A sensibilidade e a taxa de falsos positivos não podem diminuir, a
+especificidade não pode aumentar, e a taxa de erro pode mudar em qualquer sentido.
+
+Suponha que o sistema acuse uma transação quando $\widehat p(\x)\ge K$, sendo
+$\widehat p$ a probabilidade de fraude que ele estima, e que o corte passe de $K$ a
+$K'<K$. Toda transação com $\widehat p(\x)\ge K$ também tem $\widehat p(\x)\ge K'$:
+o conjunto das transações acusadas só cresce. Logo $VP$ e $FP$ não diminuem, $FN$ e
+$VN$ não aumentam, e os totais $P=500$ e $N=9\,500$ não dependem do corte.
 \begin{itemize}[leftmargin=1.4cm]
-  \item \textbf{Nunca desce:} o \emph{recall} $VP/(VP+FN)$ --- o numerador não
-        desce e o denominador $VP+FN$ é fixo (o total de fraudes). Ele sobe de fato
-        assim que o novo corte pega ao menos uma fraude a mais.
-  \item \textbf{Nunca sobe:} a especificidade $VN/(VN+FP)$, pelo mesmo argumento
-        com o total de normais. Ela cai assim que uma transação normal a mais é
-        marcada.
-  \item \textbf{Pode ir para qualquer lado:} a precisão (tipicamente desce, mas
-        pode subir se os casos recém-incluídos forem majoritariamente fraudes),
-        a acurácia (troca $FN$ por $FP$, e o saldo depende de quantos de cada) e
-        o $F_1$. Se o novo corte acrescenta $a$ fraudes e $b$ transações normais,
-        $F_1=2VP/(2VP+FP+FN)$ vira $2(VP+a)/(2VP+FP+FN+a+b)$: sobe quando os
-        casos novos têm fraudes o bastante e desce quando são quase só alarmes
-        falsos.
+  \item A sensibilidade, $VP/P$, e a taxa de falsos positivos, $FP/N$, têm numerador
+        que não diminui e denominador fixo; não podem diminuir. A primeira aumenta de
+        fato assim que o novo corte acusa ao menos uma fraude a mais, e a segunda,
+        assim que acusa ao menos uma transação normal a mais.
+  \item A especificidade, $VN/N=1-FP/N$, não pode aumentar.
+  \item A taxa de erro pode ir para os dois lados. Se o novo corte acusa $a$ fraudes e
+        $b$ transações normais que antes passavam, então $FN$ diminui de $a$, $FP$
+        aumenta de $b$, e a taxa de erro muda de $(b-a)/n$. Se forem $50$ fraudes e
+        $10$ normais, ela cai de $0{,}0400$ para $0{,}0360$; se forem $5$ fraudes e
+        $200$ normais, sobe para $0{,}0595$.
 \end{itemize}
-A moral: \emph{recall} e especificidade sozinhos são triviais de manipular ---
-corte $0$ dá \emph{recall} $1$, corte $1$ dá especificidade $1$. Só faz sentido
-olhá-los \textbf{aos pares}, e é isso que a curva ROC faz.
+Nenhuma das quatro precisa mudar: se nenhuma transação tiver $\widehat p(\x)$ entre
+$K'$ e $K$, nada se altera.
+
+A sensibilidade e a taxa de falsos positivos andam, portanto, juntas: baixar o corte
+compra sensibilidade pagando com falsos positivos. Cada uma, sozinha, é trivial de
+manipular, porque o corte $0$ dá sensibilidade $1$, com taxa de falsos positivos $1$,
+e um corte acima de todas as probabilidades dá taxa de falsos positivos $0$, com
+sensibilidade $0$. Por isso as duas só informam aos pares, e é esse par que a curva
+ROC acompanha.
 \end{solucao}
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[o corte que minimiza o custo]
-Nem todo erro custa o mesmo. Seja $c_{FP}$ o custo de um falso positivo e
-$c_{FN}$ o de um falso negativo, e suponha que o classificador forneça
-$p(\x) = \Prob(Y=1\mid \X=\x)$.
+Nem todo erro custa o mesmo. Seja $c_{FP}>0$ o custo de um falso positivo e
+$c_{FN}>0$ o de um falso negativo (os $l_1$ e $l_0$ das notas), e suponha que
+acertar não custe nada. Suponha também que o classificador conheça
+$p(\x)=\Prob(Y=1\mid\X=\x)$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Escreva o custo esperado de decidir $\widehat y=1$ e o de decidir
-        $\widehat y=0$, num ponto $\x$ com probabilidade $p$.
-  \item Conclua que a decisão ótima é $\widehat y=1$ quando
-        $p > \dfrac{c_{FP}}{c_{FP}+c_{FN}}$.
-  \item No sistema do Exercício~1, investigar um alerta custa R\$~10 e uma fraude
-        não detectada custa R\$~500. Qual o corte ótimo?
-  \item O corte padrão do \texttt{scikit-learn} é $0{,}5$. Que razão de custos
-        ele supõe implicitamente? Por que isso é quase sempre errado num problema
+  \item Num ponto $\x$ com $p=p(\x)$, escreva o custo esperado de decidir
+        $\widehat y=1$ e o de decidir $\widehat y=0$.
+  \item Conclua que a decisão ótima em $\x$ é $\widehat y=1$ quando
+        \[
+          p > \frac{c_{FP}}{c_{FP}+c_{FN}},
+        \]
+        e explique por que decidir assim em cada $\x$ minimiza também o custo
+        esperado total.
+  \item No sistema do Exercício~1, cada alarme falso custa R\$~10, o preço de
+        investigar uma transação honesta, e cada fraude não detectada custa
+        R\$~500. Qual é o corte ótimo? Interprete o número.
+  \item O corte padrão do \texttt{scikit-learn} é $0{,}5$. Que razão de custos ele
+        supõe implicitamente? Por que isso é quase sempre inadequado num problema
         desbalanceado?
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Se decidimos $\widehat y=1$, erramos quando $Y=0$, o que acontece
-com probabilidade $1-p$; o custo esperado é $(1-p)\,c_{FP}$. Se decidimos
-$\widehat y=0$, erramos quando $Y=1$, com probabilidade $p$; o custo esperado é
-$p\,c_{FN}$. (Acertar custa zero.)
+\textbf{(a)} Dado $\X=\x$, a decisão está fixada e só $Y$ é aleatório, com
+$Y\mid\X=\x\sim\text{Bernoulli}(p)$. Decidindo $\widehat y=1$, paga-se $c_{FP}$ se
+$Y=0$ e nada se $Y=1$; decidindo $\widehat y=0$, paga-se $c_{FN}$ se $Y=1$ e nada se
+$Y=0$. Os custos esperados são
+\[
+  \E\big[\text{custo}\mid\X=\x,\ \widehat y=1\big]=c_{FP}\,(1-p),
+  \qquad
+  \E\big[\text{custo}\mid\X=\x,\ \widehat y=0\big]=c_{FN}\,p .
+\]
 
 \smallskip
-\textbf{(b)} Decidimos $\widehat y=1$ quando o custo esperado dessa decisão é
+\textbf{(b)} Decidir $\widehat y=1$ é melhor exatamente quando o seu custo esperado é
 menor:
 \[
-  (1-p)\,c_{FP} < p\,c_{FN}
+  c_{FP}\,(1-p) < c_{FN}\,p
   \iff c_{FP} < p\,(c_{FP}+c_{FN})
-  \iff p > \frac{c_{FP}}{c_{FP}+c_{FN}} .
+  \iff p > \frac{c_{FP}}{c_{FP}+c_{FN}},
 \]
-Note que o corte depende \textbf{apenas da razão} entre os custos: multiplicar os
-dois por uma constante não muda nada, o que é tranquilizador --- a decisão não
-depende da moeda.
+em que a última passagem divide por $c_{FP}+c_{FN}>0$. Na igualdade as duas decisões
+custam o mesmo, e qualquer uma é ótima.
+
+Para o custo total, seja $g$ a regra acima e $h$ um classificador qualquer. Pela lei
+da esperança total, o custo esperado de um classificador é
+$\E[\text{custo}]=\E\big[\,\E[\text{custo}\mid\X]\,\big]$, a média, sobre a
+distribuição de $\X$, do custo esperado condicional. Em cada $\x$, o custo
+condicional de $g$ é o menor dos dois valores do item (a), e portanto não supera o de
+$h$; tomando a média em $\X$, o custo esperado de $g$ não supera o de $h$. Como $h$ é
+arbitrário, $g$ minimiza o custo esperado total. É a Proposição~3.1 das notas, com
+$l_1=c_{FP}$ e $l_0=c_{FN}$.
+
+Duas consequências. O corte se escreve $1/(1+c_{FN}/c_{FP})$ e depende só da razão
+entre os custos: multiplicar os dois pela mesma constante, por exemplo mudar de moeda,
+não altera a decisão. E, com $c_{FP}=c_{FN}$, o corte é $1/2$ e a regra é o
+classificador de Bayes da Aula~07.
 
 \smallskip
-\textbf{(c)} Com $c_{FP}=10$ e $c_{FN}=500$:
+\textbf{(c)} Com $c_{FP}=10$ e $c_{FN}=500$,
 \[
-  p^\ast = \frac{10}{10+500} = \frac{10}{510} \approx \mathbf{0{,}0196}.
+  p^\ast=\frac{10}{10+500}=\frac{1}{51}\approx\mathbf{0{,}0196}.
 \]
-Ou seja: vale a pena investigar qualquer transação com \textbf{2\% de chance} de
-ser fraude. Faz sentido --- investigar é 50 vezes mais barato que deixar passar.
+Vale a pena investigar toda transação com probabilidade de fraude acima de cerca de
+$2\%$. Em $p=1/51$ os dois custos esperados empatam,
+$10\cdot\tfrac{50}{51}=500\cdot\tfrac{1}{51}$; acima disso, o custo esperado de deixar
+passar, $500\,p$, supera o de investigar, $10\,(1-p)$. Em outras palavras, como uma
+fraude perdida custa $50$ alarmes falsos, aceita-se investigar cerca de $50$
+transações honestas para encontrar uma fraude.
+
+Um cuidado com o modelo de custos. O enunciado cobra R\$~10 só dos alarmes falsos; se
+investigar uma fraude verdadeira também custar R\$~10, os acertos deixam de ser
+gratuitos. Refazendo a conta do item (a) com custos para as quatro células, o que
+importa são as diferenças entre decidir certo e decidir errado em cada classe, e o
+corte vira
+\[
+  \frac{10-0}{(10-0)+(500-10)}=\frac{10}{500}=0{,}02 ,
+\]
+muito perto do anterior. A conclusão não muda, mas o exemplo mostra que vale escrever
+os custos das quatro situações antes de calcular.
 
 \smallskip
-\textbf{(d)} O corte $0{,}5$ corresponde a
-$\tfrac{c_{FP}}{c_{FP}+c_{FN}}=\tfrac12$, isto é $\mathbf{c_{FP}=c_{FN}}$: ele
-supõe que os dois erros custam o mesmo.
+\textbf{(d)} O corte $0{,}5$ corresponde a $c_{FP}/(c_{FP}+c_{FN})=1/2$, isto é, a
+$c_{FP}=c_{FN}$: ele supõe que os dois erros custam o mesmo. É o corte do classificador
+de Bayes, ótimo para o risco $0$--$1$; o problema não está nele, e sim em usá-lo
+quando os custos são outros.
 
-Isso é quase sempre errado em problema desbalanceado, e por dois motivos que se
-somam. Primeiro, o motivo substantivo: a classe rara costuma ser justamente a que
-importa (fraude, doença, falha de equipamento), e deixá-la passar custa muito mais
-caro que um alarme falso. Segundo, o motivo estatístico: com prevalência de 5\%,
-pouquíssimas observações têm $p(\x)>0{,}5$ --- o modelo pode ordenar muito bem as
-transações e ainda assim chamar de fraude só uma pequena parte das fraudes, porque
-quase nenhuma passa do corte. A \texttt{Lista prática 08} mede isso num banco com
-prevalência de 10\%: a logística tem AUC $0{,}85$ e, no corte $0{,}5$, chama de
-positivas só $484$ das $12\,000$ observações de teste, quando $1\,182$ o são.
+Num problema desbalanceado ele quase sempre é inadequado, por dois motivos que se
+somam. O primeiro é substantivo: a classe rara costuma ser a que importa (a fraude, a
+doença, a falha de um equipamento), e deixá-la passar custa muito mais que um alarme
+falso. O segundo é estatístico: com prevalência pequena, $p(\x)$ raramente passa de
+$1/2$, e, se $p(\x)<1/2$ em todo $\x$, a regra com corte $0{,}5$ não acusa ninguém, por
+melhor que o modelo ordene as transações. A \texttt{Lista prática 08} mede isso num
+banco com prevalência de $10\%$: a regressão logística tem AUC $0{,}85$ e, no corte
+$0{,}5$, classifica como positivas só $484$ das $12\,000$ observações de teste, quando
+$1\,182$ o são.
 
-É por isso que a conduta correta é separar as duas decisões: \textbf{primeiro estime
-$p(\x)$ bem, depois escolha o corte}, e escolha-o pelo custo do problema, não
-pelo padrão da biblioteca.
+A conduta que decorre do exercício é separar as duas tarefas: primeiro estimar bem
+$p(\x)$, depois escolher o corte pelos custos do problema.
 \end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[AUC na mão]
-A AUC tem uma interpretação probabilística exata:
-\[
-  \mathrm{AUC} = \Prob\big(\text{escore de um positivo} > \text{escore de um negativo}\big),
-\]
-com sorteio independente e uniforme entre positivos e entre negativos. Considere
-cinco observações:
-\begin{center}\small
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-observação & A & B & C & D & E \\
-escore     & $0{,}9$ & $0{,}8$ & $0{,}6$ & $0{,}4$ & $0{,}1$ \\
-$y$        & $1$ & $0$ & $1$ & $1$ & $0$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Liste todos os pares (positivo, negativo) e calcule a AUC diretamente
-        pela definição.
-  \item Se você somar $0{,}3$ a todos os escores, a AUC muda? E se você elevar
-        todos ao quadrado? Justifique.
-  \item Qual é a AUC de um classificador que atribui escores completamente ao
-        acaso? E de um que ordena \emph{perfeitamente ao contrário}?
-  \item Nesta amostra, qual é a maior acurácia atingível escolhendo bem o corte?
-        Compare com a AUC e comente.
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)} Positivos: A ($0{,}9$), C ($0{,}6$), D ($0{,}4$). Negativos: B
-($0{,}8$), E ($0{,}1$). São $3\times 2=6$ pares:
-\begin{center}\small
-\begin{tabular}{@{}lcl@{}}
-\toprule
-par & comparação & positivo ganha? \\
-\midrule
-A,B & $0{,}9>0{,}8$ & sim \\
-A,E & $0{,}9>0{,}1$ & sim \\
-C,B & $0{,}6>0{,}8$ & \textbf{não} \\
-C,E & $0{,}6>0{,}1$ & sim \\
-D,B & $0{,}4>0{,}8$ & \textbf{não} \\
-D,E & $0{,}4>0{,}1$ & sim \\
-\bottomrule
-\end{tabular}
-\end{center}
-\[
-  \mathrm{AUC} = \frac{4}{6} = \frac23 \approx \mathbf{0{,}6667}.
-\]
-
-\smallskip
-\textbf{(b)} \textbf{Não muda em nenhum dos dois casos.} A AUC depende só das
-comparações ``$>$'' entre escores, e qualquer transformação
-\textbf{estritamente crescente} preserva todas elas. Somar $0{,}3$ é crescente;
-elevar ao quadrado também é, no intervalo $[0,1]$ em que os escores estão.
-
-Essa é a virtude e o defeito da AUC ao mesmo tempo: ela mede \emph{ordenação} e
-é cega a \emph{calibração}. Um modelo cujos escores estão todos entre $0{,}49$ e
-$0{,}51$ pode ter AUC $1{,}0$ --- e nenhuma das probabilidades ser utilizável.
-(Cuidado com o caso não estritamente crescente: elevar ao quadrado escores
-\emph{negativos} inverteria comparações e mudaria a AUC.)
-
-\smallskip
-\textbf{(c)} Ao acaso: $\mathrm{AUC}=\mathbf{0{,}5}$, porque com escores
-independentes dos rótulos a probabilidade de o positivo ganhar é $1/2$ por
-simetria. Perfeitamente ao contrário: $\mathrm{AUC}=\mathbf{0}$.
-
-E note que AUC $0$ é ótimo disfarçado: basta inverter o sinal do escore para obter
-$1$. Um modelo com AUC bem abaixo de $0{,}5$ não é inútil --- é um bug de sinal.
-
-\smallskip
-\textbf{(d)} Percorrendo os cortes possíveis:
-\begin{center}\small
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-corte acima de & --- & $0{,}1$ & $0{,}4$ & $0{,}6$ & $0{,}8$ \\
-prevê 1 para   & todos & A,B,C,D & A,B,C & A,B & A \\
-acertos        & $3$ & $4$ & $3$ & $2$ & $3$ \\
-acurácia       & $0{,}6$ & $\mathbf{0{,}8}$ & $0{,}6$ & $0{,}4$ & $0{,}6$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-A melhor acurácia é $\mathbf{0{,}8}$, com o corte logo acima de $0{,}1$: os três
-positivos são capturados e o único erro é B, um negativo chamado de positivo.
-
-O contraste com a AUC de $0{,}667$ é o ponto do exercício: as duas medem coisas
-diferentes. A acurácia avalia \textbf{uma} decisão, tomada num corte específico; a
-AUC resume o desempenho \textbf{sobre todos os cortes}, e por isso não depende de
-nenhum. Com cinco observações e classes quase equilibradas as duas ainda são
-comparáveis; com prevalência de 5\%, como no Exercício~1, a acurácia se cola na
-prevalência e a AUC continua informativa.
-\end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[mesma AUC, calibrações diferentes]
-Dois modelos produzem, para as mesmas quatro observações
-$y=(0,\,0,\,1,\,1)$, os escores
-\[
-  p = (0{,}40,\ 0{,}45,\ 0{,}55,\ 0{,}60),
-  \qquad
-  q = (0{,}05,\ 0{,}10,\ 0{,}90,\ 0{,}95).
-\]
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Calcule a AUC dos dois.
-  \item Calcule o \textbf{escore de Brier}, $\frac1n\sum_i(p_i-y_i)^2$, dos dois.
-  \item Interprete: o que cada uma das duas métricas está medindo, e qual delas
-        você usaria para decidir se pode confiar nas probabilidades?
-  \item As notas desta aula relatam a medição: naive Bayes e logística praticamente
-        empatam em AUC ($0{,}776$ contra $0{,}774$), e o Brier os separa ($0{,}1523$
-        contra $0{,}0653$). Explique o que esse par de números diz sobre o naive
-        Bayes, ligando-o à hipótese que dá nome ao método (Aula~07).
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)} Nos dois casos os dois positivos têm escores maiores que os dois
-negativos, então todos os $2\times2=4$ pares são vencidos pelo positivo:
-\[
-  \mathrm{AUC}(p) = \mathrm{AUC}(q) = \mathbf{1{,}0}.
-\]
-Aliás, $q$ é uma função estritamente crescente de $p$, então o item (b) do
-Exercício~3 já garantia a igualdade.
-
-\smallskip
-\textbf{(b)}
-\[
-  \mathrm{Brier}(p) = \tfrac14\big[0{,}40^2+0{,}45^2+0{,}45^2+0{,}40^2\big]
-   = \tfrac14\big[0{,}16+0{,}2025+0{,}2025+0{,}16\big] = \mathbf{0{,}18125},
-\]
-\[
-  \mathrm{Brier}(q) = \tfrac14\big[0{,}05^2+0{,}10^2+0{,}10^2+0{,}05^2\big]
-   = \tfrac14\big[0{,}0025+0{,}01+0{,}01+0{,}0025\big] = \mathbf{0{,}00625}.
-\]
-O Brier de $p$ é \textbf{29 vezes} o de $q$, com AUC idêntica.
-
-\smallskip
-\textbf{(c)} A \textbf{AUC} mede \emph{ordenação}: com que confiabilidade o modelo
-coloca positivos acima de negativos. É a métrica certa quando a decisão final
-será tomada por um corte que você ainda vai escolher --- e é insensível a
-qualquer reescala monótona dos escores.
-
-O \textbf{Brier} é um erro quadrático entre a probabilidade prevista e o rótulo
-observado, e mede \emph{calibração} além de ordenação: ele pune tanto ordenar mal
-quanto acertar a ordem com probabilidades tímidas ou exageradas. O modelo $p$
-ordena perfeitamente, mas todas as suas probabilidades ficam entre $0{,}40$ e
-$0{,}60$; se alguém tomar $p_i=0{,}55$ ao pé da letra, vai agir como se houvesse
-$45\%$ de chance de erro onde não há nenhuma.
-
-Para decidir se \emph{pode confiar nas probabilidades}, use o \textbf{Brier} (ou
-uma curva de calibração). A AUC não responde a essa pergunta, por construção.
-
-E a distinção não é acadêmica: sempre que a probabilidade entra numa conta ---
-custo esperado (Exercício~2), preço de um seguro, priorização de uma fila de
-espera --- é calibração que importa, não ordenação.
-
-\smallskip
-\textbf{(d)} O par de números diz que \textbf{o naive Bayes ordena tão bem quanto
-a logística e estima probabilidades muito pior}. A AUC praticamente empatada
-($0{,}776$ contra $0{,}774$) mostra que ele coloca os positivos acima dos
-negativos com a mesma eficácia; o Brier $2{,}3$ vezes maior ($0{,}1523$ contra
-$0{,}0653$) mostra que os valores que ele imprime não são probabilidades
-confiáveis.
-
-O mecanismo é a hipótese que dá nome ao método (Aula~07): o naive Bayes multiplica
-as densidades marginais como se as covariáveis fossem independentes dentro de cada
-classe. Quando elas são correlacionadas --- e são --- ele conta a \emph{mesma}
-evidência várias vezes, e o produto de muitos fatores concordantes empurra a
-posteriori para $0$ ou $1$. O resultado são probabilidades sistematicamente
-extremas.
-
-E por que a AUC não sofre? Na população da figura das notas dá para fazer a conta: seis
-covariáveis de variância $1$ e correlação $0{,}85$ duas a duas dentro de cada
-classe, e classes que diferem só pela média, deslocada de $1{,}05$ em todas as
-coordenadas. O \emph{log-odds} verdadeiro é o do LDA,
-$(\bm\mu_1-\bm\mu_0)^\top\bm\Sigma^{-1}\x+\text{const}$, e como
-$\bm\Sigma^{-1}\bm 1=\bm 1/(0{,}15+0{,}85\cdot 6)=\bm 1/5{,}25$, ele vale
-$0{,}2\,(x_1+\dots+x_6)+\text{const}$. O do naive Bayes, que troca $\bm\Sigma$ pela
-sua diagonal --- aqui, a identidade ---, vale $1{,}05\,(x_1+\dots+x_6)+\text{const}$:
-a mesma soma, com inclinação
-$5{,}25$ vezes maior. Mesma direção, mais íngreme --- o escore do naive Bayes é uma
-função \textbf{crescente} do escore certo, e por isso ordena as observações
-exatamente como ele. A AUC empata; a probabilidade, que depende da inclinação, sai
-exagerada.
-
-Isso é uma propriedade desta população, simétrica, e não do método. Quando as
-correlações não pesam igual em todas as direções, ignorá-las também \emph{gira} a
-fronteira: na população de covariâncias iguais da \texttt{Aula prática 07}, a
-direção do naive Bayes forma quase $48$ graus com a do classificador de Bayes, e o
-excesso de erro dele sobre o de Bayes dobra. Numa frase: \emph{ordenar bem não é estimar bem} --- e escolher a
-métrica é escolher qual das duas coisas você precisa.
-\end{solucao}
-
 
 \end{document}
