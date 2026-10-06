@@ -936,15 +936,16 @@ Levantado na leitura e nos slides novos, e deixado com ele:
    descalibração do Bayes ingênuo, ``meça o Brier''). Aplicar o ``o deck manda''
    quebraria essas remissões: ou o deck cresce, ou o conteúdo sai e elas são
    redirecionadas.
-2. **O laboratório** está no registro que o Gabriel achou artificial na 07 (blocos
-   ``A lição.'', aforismos, negrito e travessão em excesso) e não reproduz a figura
-   `08-roc-metricas`. Os laboratórios 09, 10 e E3 remetem a ele (o 10, à ``Aula 08,
-   Seção 5'').
+2. **O laboratório** foi reescrito em 05/10/2026 (adiante), mas continua sem
+   reproduzir a figura `08-roc-metricas`: as Seções 4 e 6 usam o
+   `bank_train_redux.csv`, não a população sintética da figura. Os laboratórios 09, 10
+   e E3 remetem a ele (o 10, à ``Aula 08, Seção 5''), e a numeração das seções não
+   mudou.
 3. **O `MatConf.pdf`**, um PowerPoint de 2022: chama a acurácia de ``Risco'', repete o
    título ``Exemplo 1'' nas páginas 4 e 5 e põe o verdadeiro nas linhas, como o
-   `scikit-learn` e ao contrário da Figura~1 das notas. Só o laboratório ainda aponta
-   para ele: o deck deixou de apontar em 30/09/2026, e as notas em 05/10/2026, com a
-   seção de Python.
+   `scikit-learn` e ao contrário da Figura~1 das notas. Nenhum material aponta mais
+   para ele: o deck deixou de apontar em 30/09/2026, e as notas e o laboratório em
+   05/10/2026. O arquivo continua na pasta.
 4. **A notação**: o corte é $K$ nas notas (como no [AME] §9.1), $p_0$ no deck e $t$
    ou $p^*$ no laboratório; os custos são $l_0$ e $l_1$ nas notas (como no [AME]),
    $\ell_0$ e $\ell_1$ no deck e $c_{FP}$ e $c_{FN}$ no laboratório, nas listas, na aula
@@ -1037,6 +1038,52 @@ A versão do aluno foi de 8 para 9 páginas e a do docente segue com 5, que ganh
 caixas `emsala` (a precisão numa doença rara, o corte de $1/11$ e a AUC que não serve
 para custo esperado). As duas compilam sem erro, sem referência indefinida e sem
 `Overfull`. O ``Para praticar'' do aluno ficou como estava (item 5 acima).
+
+### A `Aula prática 08` reescrita em 05/10/2026
+
+Pedido do Gabriel: reescrever o laboratório ``como um professor universitário que
+precisa ser ao mesmo tempo didático e rigoroso''. O escopo e a numeração das dez
+seções ficaram (o laboratório 10 cita a Seção 5; o 09 e o E3, a calibração da Seção 9),
+e todo o markdown foi reescrito no registro das notas: saíram as caixas ``A lição.'',
+a frase de efeito em destaque da abertura e o excesso de negrito e travessão. De 46
+para 53 células, 20 de código. O que mudou além do texto:
+
+- **a matriz de confusão aparece na orientação da aula**, a transposta do que o
+  `confusion_matrix` devolve, e a Seção 3 confere que a acurácia é a média das taxas de
+  acerto ponderada pelas classes ($0{,}9015\times0{,}9854+0{,}0985\times0{,}2809=0{,}9160$);
+  o `classification_report` é lido linha a linha (o `recall` da classe 0 é a
+  especificidade; a `precision` da classe 0, o VPN);
+- **a Seção 4 mede também a taxa de erro** ao longo do corte: ela é mínima em $0{,}506$,
+  perto do $1/2$ que a teoria prevê para probabilidades bem estimadas;
+- **a Seção 5 separa o corte teórico do medido**: o exemplo em reais passou a usar o
+  corte teórico ($0{,}0323$: R\$ 20,07 por cliente, contra R\$ 64,14 no corte $0{,}5$), e
+  o texto diz que o melhor corte da grade (R\$ 19,82) foi escolhido com os rótulos do
+  teste e tem custo otimista. O `R$` do markdown virou `R\$`: os dois cifrões soltos
+  faziam o MathJax tratar o trecho entre eles como fórmula;
+- **a conferência da AUC por sorteio ganhou erro-padrão e empates**:
+  $\Prob(Z_1>Z_0)+\frac12\Prob(Z_1=Z_0)=0{,}8531$ contra $0{,}8532$, erro-padrão
+  $0{,}0008$, nenhum empate;
+- **a Seção 8 verifica a conta das notas sobre o `class_weight`**: o log-odds se desloca
+  em média $2{,}226$, contra $\log(w_1/w_0)=2{,}214$, e a regra reponderada concorda com
+  ``$\widehat p\ge0{,}0985$'' (a prevalência do treino) em $97{,}35\%$ do teste;
+- **a Seção 9 usa as dez faixas da Figura~3 das notas** (antes eram doze), e reproduz os
+  números da legenda (o Bayes ingênuo prevê $0{,}984$ na faixa mais alta, onde há
+  $28{,}7\%$ de positivos), com a entropia cruzada ao lado do Brier. A calibração
+  isotônica passou a `ensemble=False`, para ser de fato uma função crescente de um único
+  Bayes ingênuo: o Brier vai de $0{,}1523$ a $0{,}0655$, e a AUC, de $0{,}7762$ a
+  $0{,}7725$, só por empates (os $20\,000$ valores viram $140$). Com o `ensemble=True`
+  de antes, a média de cinco calibradores não era uma transformação monótona do modelo,
+  e o texto afirmava que era;
+- **a Seção 10 imprime os positivos previstos**: os dois modelos muito penalizados não
+  chamam ninguém de positivo (0 de 12\,000), o que o texto afirmava sem célula;
+- **convenções**: `import sklearn.linear_model as skl`; a leitura recomendada manda a
+  ROC ao [ISLP] §4.4.2 (dizia §4.4.3, que é a QDA) e não aponta mais o `MatConf.pdf`.
+
+Rodado inteiro no `barennet_env` (sklearn 1.9), sem erro, e cada número do markdown
+conferido contra a célula que o imprime. O arquivo tinha sido aberto e executado na IDE
+antes da reescrita (cinco células com `execution_count`, 19 com as chaves na ordem do
+Jupyter e o `kernelspec` como ``barennet_env'', Python 3.11.5), sem mudança de texto: a
+reescrita partiu da versão commitada, e os metadados voltaram a ``Python 3'' e 3.12.7.
 
 ### A `Lista teorica 08` perdeu os Ex. 3 e 4
 
