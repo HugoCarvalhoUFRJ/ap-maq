@@ -937,10 +937,10 @@ Levantado na leitura e nos slides novos, e deixado com ele:
    quebraria essas remissões: ou o deck cresce, ou o conteúdo sai e elas são
    redirecionadas.
 2. **O laboratório** foi reescrito em 05/10/2026 (adiante), mas continua sem
-   reproduzir a figura `08-roc-metricas`: as Seções 4 e 6 usam o
-   `bank_train_redux.csv`, não a população sintética da figura. Os laboratórios 09, 10
-   e E3 remetem a ele (o 10, à ``Aula 08, Seção 5''), e a numeração das seções não
-   mudou.
+   reproduzir a figura `08-roc-metricas`: as Seções 4 e 5 usam o
+   `bank_train_redux.csv`, não a população sintética da figura. Em 07/10/2026 ele perdeu
+   a Seção 5, a dos custos, e as seguintes subiram uma posição; os laboratórios 09, 10 e
+   E3 remetem a ele sem número de seção.
 3. **O `MatConf.pdf`**, um PowerPoint de 2022: chama a acurácia de ``Risco'', repete o
    título ``Exemplo 1'' nas páginas 4 e 5 e põe o verdadeiro nas linhas, como o
    `scikit-learn` e ao contrário da Figura~1 das notas. Nenhum material aponta mais
@@ -955,6 +955,9 @@ Levantado na leitura e nos slides novos, e deixado com ele:
 5. **As notas do aluno** ainda têm o ``Para praticar'', que saiu da 05 e da 07 (diz
    ``nesta mesma pasta'' e ``com gabarito''). A ``Prática em Python'' saiu das duas
    versões em 05/10/2026.
+6. **O $F_1$** saiu do laboratório em 07/10/2026, a pedido do Gabriel, e o deck nunca o
+   teve. Continua nas notas (as duas versões), na `Lista prática 08`, na E3, no
+   planejamento e na tarefa C4(a) do TP01 (ver ``O laboratório em 07/10/2026'').
 
 **O que o deck ganhou em 30/09/2026 foi às notas no mesmo dia**, pelo ``o deck
 manda'' e a pedido do Gabriel, nas duas versões e na notação delas: TPR e FPR como
@@ -1084,6 +1087,100 @@ conferido contra a célula que o imprime. O arquivo tinha sido aberto e executad
 antes da reescrita (cinco células com `execution_count`, 19 com as chaves na ordem do
 Jupyter e o `kernelspec` como ``barennet_env'', Python 3.11.5), sem mudança de texto: a
 reescrita partiu da versão commitada, e os metadados voltaram a ``Python 3'' e 3.12.7.
+
+### O laboratório em 07/10/2026: os dados, o modelo, as figuras, o fim do $F_1$ e da Seção 5
+
+Quatro pedidos do Gabriel no mesmo dia. Na Seção 2: mostrar algumas linhas da base logo
+depois da leitura, ``com algumas covariáveis importantes incluindo o default'', e
+relembrar a fórmula da regressão logística antes do ajuste; entraram quatro células,
+entre a leitura e o ajuste. Na Seção 3: trocar as duas saídas em texto por ``um gráfico
+bonitinho com as métricas''. Depois, ``esqueça o F1, retire ele do notebook todo''. E,
+por fim, ``retire a seção 5''. O laboratório foi de 53 para **49 células**, 18 de
+código, e tem hoje nove seções: **as antigas 6 a 10 são as 5 a 9**. Toda menção a
+§6--§10 deste laboratório anterior a 07/10/2026, neste arquivo, é a §5--§9 de hoje; nesta
+subseção, os números já são os de hoje.
+
+- **A base não tem coluna `default`.** O `bank_train_redux.csv` é da competição
+  *Santander Customer Transaction Prediction* (ver ``Dados''): `target` vale 1 para o
+  cliente que fez uma certa transação, e as 200 covariáveis são anônimas. A célula nova
+  diz isso ao aluno e mostra o `target` ao lado de cinco covariáveis escolhidas por um
+  critério dito no texto: $\delta_j=(\bar x_{1j}-\bar x_{0j})/s_j$, a diferença entre
+  as médias das classes em desvios-padrão, calculada só no treino. As cinco são
+  `var_139` ($-0{,}264$), `var_146`, `var_81`, `var_26` e `var_165` ($-0{,}223$); a
+  mediana de $\abs{\delta_j}$ é $0{,}083$, e os desvios-padrão das covariáveis vão de
+  $0{,}007$ (`var_68`) a $21{,}5$ (`var_45`). A tabela mostra os quatro primeiros
+  clientes de cada classe (`groupby("target").head(4)`), porque as dez primeiras linhas
+  do arquivo são todas negativas: o primeiro positivo é o `train_13`.
+- **A recordação do modelo** segue as notas do aluno da 07 (a $\sigma$, o *log-odds*, a
+  verossimilhança, o ``não se supõe que isso seja exatamente verdade''), lembra que
+  $-\ell/n$ é a entropia cruzada da Seção 8 e fecha com a regra
+  $\widehat p\ge1/2\iff\widehat\beta_0+\widehat{\bm\beta}{}^\top\x\ge0$, uma fronteira
+  de hiperplano. **Inclui a penalização, com o aval do Gabriel**, embora o slide dela
+  tenha saído do deck da 07 (item 15 do histórico dos HTMLs): o modelo que a célula
+  ajusta é o penalizado, e as Seções 7 e 9 dependem disso. O objetivo foi conferido na
+  sklearn 1.9, com `tol=1e-12`: o `LogisticRegression` maximiza
+  $\ell(\beta_0,\bm\beta)-\frac1{2C}\norm{\bm\beta}^2$, com o intercepto fora da
+  penalização (o gradiente fica na ordem de $10^{-5}$ nos dois).
+- **Uma frase da Seção 7 estava errada** e foi corrigida no mesmo passo. Ela atribuía à
+  penalização parte da variação do deslocamento do *log-odds* entre clientes (quartis
+  $2{,}112$ e $2{,}340$). Sem penalização ($C=\infty$) o deslocamento é o mesmo até a
+  terceira casa (média $2{,}227$, quartis $2{,}113$ e $2{,}341$): a variação vem de a
+  reponderação mudar também os coeficientes das covariáveis, porque a forma logística só
+  aproxima a probabilidade verdadeira e a amostra é finita. É o que o texto diz hoje.
+- **A Seção 3 desenha a matriz e as medidas.** A matriz de confusão virou figura, na
+  orientação da aula ($\widehat Y$ nas linhas, $Y$ nas colunas), com os acertos em verde e
+  os erros em vinho nos tons da Figura~1 das notas (`verdeesc!16` e `vinho!20`), e $N$ e
+  $P$ abaixo das colunas. As medidas viraram barras horizontais com o valor na ponta, em
+  quatro casas: em verde as que dividem por um total de coluna (sensibilidade, taxa de
+  falsos positivos, especificidade), em vinho a que divide por um total de linha (a
+  precisão) e em cinza a taxa de erro, que divide pelo total da tabela --- o verde e o
+  vinho são as cores das setas da mesma figura das notas. Os números citados no texto
+  não mudaram.
+- **O $F_1$ saiu do laboratório inteiro**: do objetivo, da Seção 3 (a barra, a média
+  harmônica e a conferência das duas fórmulas), da Seção 4 (a varredura de cortes
+  desenha agora precisão, sensibilidade e taxa de erro, com o mínimo desta marcado em
+  $0{,}506$; o texto não cita mais o $F_1$ máximo de $0{,}487$ no corte $0{,}27$), da
+  Seção 7 (a tabela perdeu a linha da logística no corte do $F_1$ e compara só a original
+  e a reponderada), do `scoring` da Seção 9 e do Resumo. O `classification_report` saiu
+  junto, porque imprime uma coluna `f1-score`, e com ele a leitura das suas linhas: que o
+  `recall` da classe 0 é a especificidade e a `precision` da classe 0, o VPN ($0{,}926$),
+  o único lugar do laboratório que citava o VPN. A identidade da acurácia e o parágrafo
+  da precisão contra a sensibilidade passaram para a leitura do gráfico. **O deck nunca
+  teve o $F_1$**, mas ele continua nas notas (as duas versões, com a `eq:f1`), na
+  `Lista prática 08` (Ex. 2 e ``O que ficou''), nas notas e na lista prática da E3, no
+  planejamento e na tarefa C4(a) do Trabalho Prático 01, que pede o $F_1$ no corte $0{,}5$
+  (o roteiro dá $0{,}461$). Tirar de lá é decisão do Gabriel.
+- **A Seção 5, ``Custos assimétricos e o corte ótimo'', saiu inteira**: as oito células
+  com a fórmula $c_{FP}/(c_{FP}+c_{FN})$, a tabela que comparava o corte teórico com o
+  medido em quatro razões de custo, a curva de custo no caso 1:20 e o exemplo em reais
+  (R\$ 30 por investigação, R\$ 900 por positivo perdido: R\$ 20,07 por cliente no corte
+  teórico, contra R\$ 64,14 no corte $0{,}5$). Nenhuma variável dela era usada depois, e as
+  saídas das 18 células de código que ficaram são idênticas às de antes. Foram junto o
+  objetivo ``verificar numericamente o corte que minimiza o custo esperado'', a linha
+  ``custo assimétrico'' do Resumo e o ``de onde sai a fórmula da Seção 5'' da leitura
+  recomendada. Duas remissões foram reescritas: a leitura da Seção 4, que anunciava os
+  custos na seção seguinte, passou a apontar a Proposição~3.1 das notas; e a calibração,
+  que dizia ``como na Seção 5'', diz ``como num custo esperado''. **O corte ótimo por
+  custo continua no deck e nas notas**, e o laboratório 10, que remetia à ``Aula 08,
+  Seção 5'', remete hoje só à ``Aula 08''. Era a única remissão de fora com número de
+  seção; os laboratórios 09 e E3 citam a Aula 08 sem número.
+
+Medido e deixado fora do notebook: com $C=1$ e 28 mil clientes de treino, a penalização
+quase não age (as probabilidades de teste mudam no máximo $0{,}0005$ em relação a
+$C=\infty$); o `max_iter=2000` também não (o L-BFGS converge em 8 iterações, e com o
+padrão de 100 as probabilidades saem idênticas); e os coeficientes da logística
+padronizada quase coincidem com os $\delta_j$ (correlação $0{,}994$; a `var_139` tem
+$\delta=-0{,}264$ e coeficiente $-0{,}264$), o que se espera de covariáveis quase
+independentes, como no LDA com covariância diagonal.
+
+Fora das células mexidas, as saídas saem idênticas às da versão anterior, a não ser pelo
+endereço de memória dos `Legend` do `matplotlib`, e as 101 fórmulas do notebook
+renderizam sem erro no MathJax 2.7 do `nbconvert`. A IDE executou e salvou o arquivo
+quatro vezes durante o trabalho, sempre sem mudar texto: antes da Seção 2 (o
+`kernelspec` como ``barennet_env''), e a edição partiu da versão commitada; e três vezes
+depois, com até nove células com saída e as chaves na ordem do Jupyter. Os scripts de edição, que leem o
+arquivo e o regravam, levaram essas saídas adiante até a limpeza final. Limpe **depois**
+da última edição, e confira as fontes contra a sua última versão antes de cada passo.
 
 ### A `Lista teorica 08` perdeu os Ex. 3 e 4
 
@@ -1959,7 +2056,11 @@ segundo conjunto, depois do `breast_cancer`, com os nomes sufixados (`_nome_b`,
 
 `bank_train_redux.csv` é um excerto reduzido da base do Kaggle, por limite de
 espaço do GitHub — atenção ao teto de 100 MiB por arquivo se alguma conversão for
-duplicá-lo.
+duplicá-lo. A base é a da competição *Santander Customer Transaction Prediction* (o
+`README.md` dá o endereço): `ID_code`, a resposta `target` --- 1 para o cliente que fez
+uma certa transação, **não** inadimplência --- e 200 covariáveis anônimas, `var_0` a
+`var_199`, quase independentes entre si (correlação absoluta média $0{,}0048$, medida na
+`Lista prática 08`). A competição avaliava os modelos pela AUC.
 
 ## Convenções
 
