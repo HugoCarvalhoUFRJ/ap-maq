@@ -1,2383 +1,376 @@
 # Notas para o Claude Code
 
-Material didático do curso de Aprendizado de Máquina (Estatística, Ciências
-Atuariais, Matemática Aplicada e Engenharia Matemática). Na branch
-`refactoring-baby` o curso é o do **Prof. Gabriel Sanfins, na UFF**; a `main`
-guarda a versão do Prof. Hugo Tremonte de Carvalho, na UFRJ. **Não é um
-projeto de software**: é um repositório de conteúdo — notas em LaTeX, slides em
-HTML, notebooks e dados. Ver `README.md` para a organização geral e `recursos/README.md`
-para os materiais transversais.
+Material didático do curso de Aprendizado de Máquina do **Prof. Gabriel Sanfins, na UFF**
+(Estatística, Ciências Atuariais, Matemática Aplicada e Engenharia Matemática): notas em
+LaTeX, slides, notebooks e dados. **Não é um projeto de software.** A organização está em
+`README.md` e `recursos/README.md`; aqui fica o que eles não dizem.
 
-## Branches
+**Este arquivo não é changelog.** Guarda decisões em vigor, convenções, acoplamentos entre
+peças e armadilhas. O que foi feito numa sessão vai na mensagem do commit (o `git log` é
+detalhado); ao atualizar, substitua o texto em vez de empilhar. A versão longa e datada que
+existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
 
-As duas branches são materiais **paralelos e permanentes**, de docentes
-diferentes — não etapas de um refactor:
+## Regras do jogo
 
-- **`main`** — as aulas do **Prof. Hugo Tremonte de Carvalho**, na estrutura
-  antiga, com tudo numa única pasta `materiais-didaticos/`;
-- **`refactoring-baby`** — as aulas do **Gabriel Sanfins**, com a reorganização em
-  `aulas/` + `recursos/`. É onde o trabalho acontece, e o nome é enganoso: não é
-  uma branch temporária.
-
-**Não há plano de merge**, e a divergência é deliberada. Não proponha fundir,
-rebasear ou "sincronizar com a `main`", nem trate as diferenças entre as duas como
-pendência.
-
-## O repositório não é entregue aos alunos
-
-Decisão do Gabriel em 23/09/2026. O repositório serve **só para guardar** o
-material das aulas; não é por ele que o material chega aos alunos. Eles não têm
-acesso ao repositório completo e recebem apenas o que o Gabriel escolhe
-disponibilizar, quando ele escolhe.
-
-Por isso os gabaritos, a prova e o gabarito dela, e os roteiros do docente
-convivem aqui com o material dos alunos, de propósito. **O que liberar, e quando, é
-decisão dele, e não é pendência**: um fato como "o gabarito da lista de revisão
-resolve as três questões da prova" é informação para essa escolha, não um alerta a
-repetir no fim de cada sessão.
-
-**Mas o remote é público.** Conferido em 23/09/2026 pela API do GitHub, sem
-autenticação: `HugoCarvalhoUFRJ/ap-maq` tem `"visibility": "public"`, a
-`refactoring-baby` está lá no mesmo commit que a local, e
-`avaliacoes/Avaliacao teorica 01 - gabarito.pdf` baixa anonimamente (HTTP 200). A
-prova chegou ao GitHub no push de 14/09/2026, às 15:58, que levou o `32a5cab`, e
-está exposta desde então. Enquanto for assim, a decisão vale como política --- o
-repositório não é *entregue* aos alunos ---, mas não como garantia: quem tiver o
-endereço lê tudo. Mudar a visibilidade é com quem administra o repositório no
-GitHub (o dono é a conta `HugoCarvalhoUFRJ`), e a `main` do Hugo iria junto.
-
-## Os alunos não conhecem os blocos
-
-Decisão do Gabriel em 23/09/2026. A divisão do curso em Blocos I, II e III é do
-planejamento (`00 Planejamento.tex`, `README.md`) e não chega aos alunos. No material
-que eles leem, diz-se **regressão** e **classificação**: ``começa aqui o estudo da
-classificação'', ``o que vimos em regressão''. ``Parte~I'' no sentido de parte do
-curso cai junto; ``Parte~I do [AME]'', que é a parte do livro (aula 01), fica.
-
-A troca foi feita no mesmo dia em todo o material, roteiros do docente incluídos: as
-notas das aulas 07, 10 e E1 (as duas versões) e E2 (a do aluno), as aulas práticas 06,
-07, 09 e 10 e os notebooks das listas práticas 06, 09 e 10. O ``Bloco~III'' da E1
-virou ``o aprendizado não supervisionado''. Uma varredura depois disso não achou mais
-nenhum: os ``bloco'' que sobram são de código (o `Pipeline` como ``um único bloco'') ou
-de matemática (``constante em blocos'').
-
-Na mesma passada saíram três ponteiros que a renumeração de 31/08 deixou para trás, nas
-células que já estavam sendo editadas: ``as árvores da Aula 06'' (são da 05) e ``um
-método das Aulas 07 a 11'' na `Aula prática 10`, e ``a síntese das Aulas 07 a 11'' nos
-dois notebooks da `Lista prática 10`. Uma busca por ``Aula 11'' não achava mais nada,
-mas deixava passar um `\texttt{Aula` / `prática 11}` quebrado entre duas linhas, nas
-notas do aluno da aula 10. Esse saiu em 30/09/2026, junto com um ``Figura~4 da
-Aula~09'' da mesma nota (a figura das perdas é a 3). Ao procurar remissão numa nota,
-procure também com a quebra de linha. Ponteiros deslocados para aulas que existem,
-como aquele ``Aula 06'', foram varridos nas notas, nas listas e nos laboratórios na
-leitura de 30/09/2026, que achou mais uma família deles: os de ``Lista Teórica NN'' e
-``Lista prática NN'' (ver ``A leitura de 30/09/2026, e a aula 08'').
+- **Branches.** `refactoring-baby` é o curso do Gabriel e é onde se trabalha; `main` é o do
+  Prof. Hugo Tremonte de Carvalho (UFRJ), na estrutura antiga. São paralelas e permanentes:
+  não proponha merge, rebase nem "sincronizar", e não trate a diferença como pendência.
+- **O repositório não é entregue aos alunos.** Eles recebem só o que o Gabriel escolhe,
+  quando escolhe; por isso gabaritos, prova, roteiros de correção e roteiros do docente
+  convivem aqui de propósito. O que liberar é decisão dele: informe, não alerte (ex.: o
+  gabarito da lista de revisão resolve as três questões da prova). **Mas o remote é
+  público** (`HugoCarvalhoUFRJ/ap-maq`, conferido em 08/10/2026): quem tem o endereço lê
+  tudo. Mudar a visibilidade é com o dono da conta, e levaria a `main` junto.
+- **Os alunos não conhecem os blocos.** Blocos I, II e III são do planejamento e do README.
+  No material deles diz-se "regressão" e "classificação" ("Parte I do [AME]" é do livro e
+  fica). Do mesmo modo, a prova e o Trabalho Prático 01 não citam aula pelo número.
+- **O deck manda.** Os slides são o que os alunos veem. Assunto que não está no deck não
+  entra nas notas, no laboratório nem nas listas sem falar com o Gabriel; se entra no deck,
+  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07 e (em parte) 08;
+  nas outras não corte por conta própria. Se uma medição contradiz o deck, o que fazer é
+  decisão dele.
+- **Meça antes de afirmar.** Os números do material foram medidos rodando o código, e várias
+  afirmações de livro não se reproduziram. Medição nova é afirmação nova: confira-a contra
+  as notas (as duas versões), as listas, os gabaritos e o deck.
+- **Leia os livros, não cite de memória.** Estão em `recursos/livros/`: [AME] (Izbicki &
+  Mendonça dos Santos) é o esqueleto teórico; [ISLP] (James et al.), intuição e Python.
+  `pdftotext -f A -l B recursos/livros/AME.pdf -`; no AME, página do PDF = página do livro
+  + 18; no ISLP o offset é instável, localize pelo título da seção.
+- **Registro.** Texto novo ou reescrito sai como o de um professor universitário de
+  matemática, didático e rigoroso: hipóteses explícitas, cada passo justificado, a leitura
+  do resultado depois da conta. Sem aforismos nem frases de efeito, sem caixas "A lição.",
+  pouco negrito e pouco travessão. Em exercício, uma pessoa e uma situação em cena, não
+  enumeração abstrata. O notebook explica estatística, não as próprias escolhas de estilo.
+- **Commits** em português, estilo *conventional commits* (`fix:`, `docs:`, `refactor:`).
 
 ## Notas de aula (LaTeX)
 
-**Cada aula tem duas versões, e elas não são rascunho e versão final** — são dois
-públicos:
+Cada aula tem duas notas, para dois públicos (não são rascunho e versão final):
+`NN Título.tex` é o **roteiro do docente** (enxuto, com caixas `emsala`) e
+`NN Título (alunos).tex` é a **versão do aluno** (leitura autônoma, com figuras; carrega o
+estilo com `[aluno]`). Ao mexer em conteúdo, pergunte-se qual das duas o pedido atinge; na
+dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teoremas e as caixas
+`emsala`, `ideia`, `atencao`; o `00 Planejamento.tex` tem preâmbulo próprio.
 
-- `NN Título.tex` — **roteiro do docente**: enxuto, com caixas `emsala` que trazem
-  as perguntas a fazer à turma e o que dizer. Foi o que existia primeiro.
-- `NN Título (alunos).tex` — **versão dos estudantes**: leitura autônoma. Sem
-  `emsala`, em tratamento direto ao leitor, com exemplos resolvidos, figuras e as
-  passagens que o docente preencheria no quadro.
+- **Compile de dentro da pasta** (o caminho do estilo é relativo): `pdflatex "NN ....tex"`.
+  O planejamento e o Beamer da 09 pedem duas passadas. Pacotes: `texlive-latex-base`,
+  `-latex-recommended`, `-latex-extra`, `texlive-fonts-recommended`, `texlive-pictures`,
+  `lmodern`. Sem `babel` de propósito (rótulos em português à mão) e `pgfplots` em
+  `compat=1.16`: não "modernize" nenhum dos dois.
+- **Ao editar um `.tex`, recompile o `.pdf` e versione os dois.** Mas não recompile em massa:
+  os PDFs versionados vieram de outro TeX Live, e recompilar sem mudança já gera diff
+  (desfaça com `git checkout --`). Para comparar, use `pdftotext` de duas compilações
+  **locais**. `pdftotext -layout` acusa diferenças de espaçamento que não existem; para
+  conferir texto, compare por multiconjunto de caracteres ou use `-bbox`.
+- **Numeração citada de fora:** a Prop. 3.2 das notas do aluno da 03 (atalho do LOOCV) é
+  citada pelas da 04; a Prop. 3.1 da 08 (corte ótimo) é citada pela E3. Fórmula nova
+  nessas notas entra sem número. Ao procurar remissão num `.tex`, procure também com
+  quebra de linha no meio (`Aula` / `prática 11`).
 
-Ao editar conteúdo pedagógico, pergunte-se qual das duas o pedido atinge — na
-dúvida, as duas. As `(alunos)` carregam o estilo com a opção `aluno`:
+### Notação
 
-```latex
-\usepackage[aluno]{../../recursos/latex/estilo-notas}   % versão do aluno
-\usepackage{../../recursos/latex/estilo-notas}          % roteiro do docente
-```
+- **`p` é o número de covariáveis**, em notas, listas, slides, figuras e no markdown dos
+  notebooks. No **código** dos notebooks a dimensão é `d` (lá `p` é probabilidade); as
+  exceções são as Aulas práticas 02 e 04 e a Lista prática 06, que usam `p`.
+- `d` continua valendo como distância (`d(\X_i,\x)`), índice (`d_j`, o `d` de
+  tf-idf$(t,d)$) e diferencial. O grau do *kernel* polinomial é `q` e o número de
+  componentes retidos na E2 é `k`. Colisões toleradas: `p` também é *p*-valor, densidade
+  `p(\bbeta)` e, na aula 04, o número de nós do *spline* (como no [AME]).
+- **Só nas notas da aula 02:** matriz em `\mathbb` (`\mathbb{X}`, `\mathbb{I}`), vetor em
+  minúscula negrito, escalar sem negrito. Não estenda: nas outras aulas a maiúscula `\X`
+  distingue vetor aleatório de realização.
+- **Indicadora é `\mathbf{1}`** (macro `\1`). `\mathbb{1}` compila sem aviso e imprime ⊮, e
+  `dsfont`/`bbm` não estão instalados.
+- **Lasso no caso ortonormal: limiar $\lambda/2$** (RSS sem $\frac12$; a mesma convenção dá
+  $\hat\beta/(1+\lambda)$ no Ridge). No scikit-learn o `Lasso` minimiza
+  $\frac1{2n}$RSS $+\,\alpha\|\beta\|_1$: é a nossa convenção com $\lambda=2n\alpha$, e o
+  fator até o `alpha` do `Ridge` é $2n$ (é $n$ no `ElasticNet` com `l1_ratio=0`).
+- **Matriz de confusão: previsto nas linhas, real nas colunas** (como [AME] e [ISLP]); o
+  `confusion_matrix` devolve a transposta, e o material avisa.
 
-A opção carrega `tikz`/`pgfplots` e troca o cabeçalho para "Notas de Aula ---
-versão do aluno"; sem ela o `.sty` se comporta como antes.
+## O que cada aula cobre, e o que não volta
 
-A exceção é `aulas/00-planejamento/00 Planejamento.tex`, que tem preâmbulo próprio
-e completo e não tem versão para alunos. O `estilo-notas.sty` define a notação do
-curso (`\x`, `\X`, `\E`, `\rhat`, `\risco`, `\Dados`, ...), os ambientes de teorema
-em português e as três caixas pedagógicas: `emsala`, `ideia` e `atencao`.
+A numeração é a de hoje: 10 aulas oficiais (01 a 10) e três extras (E1 a E3). Commits
+anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
 
-### A notação
+- **Antiga aula 05** (aspectos teóricos dos não paramétricos: taxas, maldição, esparsidade,
+  redundância): saiu inteira e não volta. As menções ao conceito nas aulas 04, 07, 10, E2 e
+  E3 ficam de propósito, como vocabulário sem aula dedicada. Ao renumerar qualquer coisa,
+  procure `Lista` junto com `Aula`.
+- **03.** O material segue o argumento clássico do deck sobre a escolha de $k$ (LOOCV:
+  pouco viés, variância alta). A medição que o contradizia saiu; a figura `03-escolha-k`
+  mostra só viés e custo.
+- **04.** Vai de bases e *splines* a KNN e suavizadores lineares. Não reintroduza
+  Nadaraya–Watson, regressão polinomial local nem a citação do elefante de Von Neumann. Não
+  desenvolve RKHS: remeta a [AME] §4.6. O título de [AME] §5.2 contém "Regressão Linear
+  Local": glose a parte que interessa em vez de reescrever o título.
+- **05.** Árvore, poda, agregação, *bagging* e florestas. Não reintroduza *boosting*, OOB nem
+  importância de variáveis. Ficam de propósito a correlação $\rho$ e o piso $\rho v$: nas
+  notas, na Lista teorica 05 (Ex. 4) e na Lista prática 05 (Ex. 2); se sair, saem os três.
+  Outras aulas citam OOB e *boosting* como conceito, sem ponteiro para a 05.
+- **06.** O laboratório e a lista prática cobrem só o que o deck cobre: sensibilidade à
+  escala, $\mu$ e $\sigma$ aprendidos, o `Pipeline` e `Pipeline` + `GridSearchCV`. Não
+  reintroduza neles vazamento por seleção, agrupamento, `ColumnTransformer` nem busca no
+  pré-processamento. Os dois vazamentos graves vivem nas notas (texto e Figura 1, que mede
+  o da seleção) e no Ex. 1 da Lista teorica 06; nenhum notebook de aula os mede.
+- **07.** Notas, laboratório e listas seguem o deck, na ordem dele (Bayes ingênuo, LDA, QDA,
+  logística). Fora de propósito: regressão sobre indicadores, a comparação de escala no
+  laboratório e o `C` (nenhum material do aluno da 07 o define). Nas notas sem estar no
+  deck, de propósito: as caixas "a acurácia engana" e "o preço do ingênuo" (a 08 as cita) e
+  a observação do que se transfere da regressão.
+- **08.** Laboratório com nove seções, sem $F_1$ e sem a seção de custos (o corte ótimo
+  segue no deck e nas notas). A Lista teorica 08 pede só as métricas do deck. O deck e o
+  resto da aula ainda não coincidem: ver "Pendências".
+- **09.** O deck é o único em Beamer (adiante).
+- As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
+  notas 04 a 08.
 
-**O número de covariáveis é `p`**, em todo o curso — notas, listas, slides,
-notebooks e figuras. A migração do `d` terminou em 12/08/2026 e são 629 trocas em
-54 arquivos. (Duas tinham escapado, no deck da aula 01, e foram feitas em
-21/09/2026 --- item 12 do histórico de correções nos HTMLs.)
+## Figuras, notebooks e os acoplamentos entre eles
 
-**E ela trocou `d` demais em três lugares**, achados na leitura de 30/09/2026 e
-desfeitos no mesmo dia:
+`recursos/figuras/gerar-figuras.py` gera todas as figuras das notas (uma função por figura,
+`@figura("nome", "aula")`; `python3 recursos/figuras/gerar-figuras.py 03 06` roda só essas
+aulas). Ele imprime linhas `[conferência]` com os números que as legendas afirmam: se mudar
+uma simulação, releia a legenda no `.tex`. Nos rótulos do matplotlib não use macro do curso
+(`$\x$`), nem `\%`, `\,`, `\emph{}`; vírgula decimal é `{,}` dentro de `$...$`, e
+`.replace(".", ",")` só no número.
 
-- o **grau do kernel polinomial**, que virou `p` e produzia ``grau $p$ em $\R^p$'',
-  $\binom{p+p}{p}$ e ``$p=100$, $p=3$'' (notas da 09, as duas, e o enunciado da
-  `Lista teorica 09` Ex. 3(c)). **O grau agora é `q`**, e a tabela de *kernels* diz
-  ``Polinomial (grau $q$)'';
-- o **número de componentes retidos** na E2, que dava
-  $\mathrm{PVE}(p)=\sum_1^p\lambda_i/\sum_1^p\lambda_i$, igual a $1$ sempre. **Agora
-  é `k`**, nas duas versões das notas, também no MDS e na compressão (o MDS usava
-  `m`);
-- palavras e o documento: ``i.i.p.'' nas notas do aluno da 02, ``pá''/``pão''/``pá''
-  nas da E3, e o $\text{tf-idf}(t,p)$ das notas da E3 e da `Aula prática E3`, que
-  voltou a ser $(t,d)$.
+**Cada laboratório reproduz as simulações da figura da sua aula, com os mesmos parâmetros e
+a mesma semente** (população comum: $r(x)=\operatorname{sen}(1{,}5x)+0{,}3x$ em $[-3,3]$,
+$\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Casos que enganam:
 
-Três papéis do `d` **sobreviveram de propósito**, e nenhum deles é dimensão:
+- **06:** a figura e as notas dizem $0{,}8466$ e $R^2=+0{,}40$ (este, citado também na
+  Lista teorica 06 e nos notebooks da E2); o laboratório roda com semente própria e mede
+  $0{,}8342$ contra $0{,}8341$. São duas amostras do mesmo experimento, e a nota do aluno
+  diz isso. Não "conserte". A §5 do laboratório reproduz a saída do slide "Um exemplo".
+- **05:** a `05-numero-arvores` só tem o painel da floresta, e o Ex. 3 da Lista prática 05 a
+  reproduz com a **mesma** semente (12), de propósito.
+- **07:** a §6 do laboratório reproduz a `07-lda-qda` até a quarta casa; o caso $p=2$, $n=20$
+  é citado pela Lista teorica 07 3(d).
+- **08:** a seção de calibração do laboratório reproduz a legenda da Figura 3 das notas; a
+  `08-roc-metricas` não é reproduzida (o laboratório usa o `bank_train_redux.csv`).
+- As **listas práticas usam semente diferente** da do laboratório (salvo o Ex. 3 da 05): todo
+  número de gabarito é medido, não previsto.
 
-- **distância** `d(\X_i,\x)` na aula 04 e `d^2(\x_i,\x_j)` na E1. (A
-  versão ao quadrado saiu da 04 em 24/08/2026, junto com a tabela de núcleos.);
-- **índice**: `d_j` é valor singular na E2, `d_1` é documento na E3 (e o `d` do
-  $\text{tf-idf}(t,d)$), `d^k_{\x}` é a k-ésima distância na 04;
-- **diferencial** `\,d\x`, na aula 07.
+### Convenções dos notebooks
 
-Nas **notas da aula 02** vale, além disso, uma convenção de forma que as outras
-aulas não seguem:
+Um laboratório guiado por aula (`Aula prática NN.ipynb`), na conduta dos labs do [ISLP] mas
+sem o pacote `ISLP`:
 
-- **matriz** — maiúscula, sem negrito, em `\mathbb`: `\mathbb{X}` (delineamento),
-  `\mathbb{I}` (identidade). É o que os slides já faziam;
-- **vetor** — **minúscula**, em negrito: `\x`, `\bm{y}`, `\bbeta`, `\bm{\alpha}`;
-- **escalar** — sem negrito: `y_i`, `\beta_j`, `\lambda`, `p`, `n`.
+- `from matplotlib.pyplot import subplots` e API orientada a objeto, nunca `plt.figure()`;
+  `import sklearn.linear_model as skl`, `import sklearn.model_selection as skm`;
+  `rng = np.random.default_rng(semente)`; nomes `X_tr`, `X_te`, `y_tr`, `y_te`, `modelo`;
+- markdown antes de cada célula dizendo por que aquilo vem agora; nada de macro do curso
+  (`\x`, `\bm`, `\rhat`, `\1`), que o MathJax não conhece: use `\mathbf{}`. `R$` vira `R\$`;
+- o laboratório **mostra**: não escreva `Sua vez` nele. As listas práticas têm blocos
+  `Sua vez`, e ali ficam (não converta sem perguntar);
+- tempo de relógio só em ordem de grandeza, com aviso de que varia;
+- versionados **sem saída**, sem `execution_count`, com `kernelspec` "Python 3" e
+  `language_info.version` 3.12.7.
 
-O motivo do arranjo não era estética: a macro `\X` é `\bm{X}`, e a matriz de
-delineamento também era escrita `\bm{X}` — vetor e matriz saíam com o mesmo glifo,
-lado a lado na mesma equação da §1.1.
+Cinco notebooks herdados de demonstração (`Exemplo - ...`, `EXTRA K-medias (exemplo)`,
+`Comparação entre classificadores paramétricos`) não seguem nada disso e ficam como estão.
 
-**Ela não foi estendida às outras aulas, e não deve ser.** Nas aulas 04 e 07 a
-maiúscula distingue **vetor aleatório de realização** — `\E[(\rhat(\X)-r(\X))^2]`
-contra `d(\X_i,\x)` —, e "maiúscula só para matriz" apagaria essa distinção. A macro
-`\X` do estilo existe para isso, e é usada em 25 arquivos.
-
-**A indicadora é `\mathbf{1}`, não `\mathbb{1}`.** A fonte blackboard-bold da AMS
-(`msbm10`) só tem as maiúsculas A–Z: o dígito `1` não existe nela, e o slot
-correspondente guarda o `\nVdash`. Escrever `\mathbb{1}` compila **sem aviso** e
-imprime **⊮**, que não denota indicadora nenhuma. A macro `\1` do estilo carregava
-esse defeito e foi corrigida em 24/08/2026; a troca atingiu 11 arquivos das aulas
-02, 04, 07, 08, 09 e 10.
-
-Duas alternativas foram descartadas por colisão: `\mathbb{I}` é a matriz identidade
-na aula 02, e `I(\cdot)` --- que é justamente o que **AME e ISLP usam** --- colidiria
-com o `I` do número de funções da base, na §2 da aula 04. O 1 vazado de verdade
-(`\mathds{1}` do `dsfont`, `\mathbbm{1}` do `bbm`) exigiria `texlive-fonts-extra`,
-que não está na lista de pacotes desta página --- e nenhum dos dois está instalado.
-
-Duas colisões que a convenção cria, ambas correntes na literatura e toleradas:
-`p` também aparece como *p*-valor e como densidade `p(\bbeta)`; e `\mathbb` serve
-tanto para matriz (`\mathbb{X}`) quanto para conjunto ou operador (`\R`, `\E`).
-
-**No código dos notebooks, a dimensão continua sendo `d`.** Ali o nome `p` já é
-probabilidade — o que `predict_proba` devolve, o argumento `p=` do `rng.choice`, o
-`gini(p)` da aula 10 —, em 14 dos 23 notebooks que têm uma variável de dimensão.
-Renomear exigiria mexer em 116 usos de `p` para abrir espaço, e trocaria uma
-colisão por outra. Decisão do Gabriel em 12/08/2026: o markdown diz `p`, a célula
-diz `d`. As exceções são a `Aula prática 02` e a `Aula prática 04`, onde não há
-probabilidade nenhuma e o código já usa `p`, igual ao texto. (A 04 entrou na lista
-quando foi reescrita, em 24/08/2026: `experimento_dimensao(p, ks, ...)`,
-`size=(n_tr, p)`, `f"p = {p}"`.)
-
-**O limiar do lasso no caso ortonormal é $\lambda/2$**, não $\lambda$. Sai de
-derivar $\|y-\mathbb{X}\beta\|^2 + \lambda\sum_j|\beta_j|$, sem $\frac12$ no RSS —
-a mesma convenção que dá $\hat\beta/(1+\lambda)$ para o Ridge. Notas, slide, lista
-teórica, `gerar-figuras.py` e notebook estão todos nela.
-
-**Entre o `alpha` do `Ridge` e o do `Lasso` do scikit-learn o fator é $2n$**, não
-$n$: o `Ridge` minimiza $\|y-\mathbb{X}\beta\|^2+\alpha\|\beta\|^2$ e o `Lasso`,
-$\frac1{2n}\|y-\mathbb{X}\beta\|^2+\alpha\|\beta\|_1$, que multiplicado por $2n$ vira
-a nossa convenção com $\lambda=2n\alpha$. A caixa ``um detalhe de escala'' das notas do
-aluno da aula 02 dizia ``um fator $n$'' até 30/09/2026; o roteiro do Trabalho Prático
-01, que pergunta isso no R3(d), já dizia $2n$.
-
-**`pgfplots` está em `compat=1.16`** porque é a versão do TeX Live desta máquina;
-valores mais novos fazem o pacote abortar com "compat=1.18 is unknown".
-
-Como o caminho do estilo é relativo, **compile de dentro da pasta da aula**:
+**Antes de versionar, rode o notebook inteiro fora do repositório** e confira cada afirmação
+do texto contra o que as células imprimem:
 
 ```bash
-cd aulas/01-introducao
-pdflatex "01 Introducao.tex"
-```
-
-O `00 Planejamento.tex` precisa de **duas passadas** (usa `longtable` + `hyperref`).
-
-Pacotes necessários (Debian/Ubuntu) — o `-extra` é o que traz `tcolorbox`, das
-caixas pedagógicas:
-
-```bash
-sudo apt install -y texlive-latex-base texlive-latex-recommended \
-  texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
-```
-
-O estilo **não** carrega `babel`/`portugues` — os rótulos em português são
-definidos à mão, conforme comentário no `.sty`. Isso é deliberado; não há
-hifenização portuguesa.
-
-**Ao editar um `.tex`, recompile o `.pdf` correspondente** e commite os dois: o
-`.gitignore` mantém apenas `.tex` e `.pdf`, descartando `.aux`, `.log`, `.out` etc.
-
-**Armadilha:** os `.pdf` commitados foram gerados com uma
-versão de TeX Live diferente da local. Recompilar qualquer nota — mesmo sem tocar
-no `.tex` — produz um PDF com quebras de linha ligeiramente diferentes e, portanto,
-um diff. Consequência prática: **não recompile em massa para "conferir"**. Se
-precisar (por exemplo, para testar uma mudança no `.sty`), restaure depois com
-`git checkout --` os PDFs que você não pretendia alterar. Para comparar duas
-compilações, compare o texto extraído (`pdftotext`) de duas compilações **locais**,
-nunca uma local contra o PDF commitado.
-
-## A aula 04 perdeu Nadaraya--Watson e a regressão polinomial local
-
-Decisão do Gabriel em 24/08/2026. A aula 04 vai de "o que é um método não
-paramétrico" a *splines*, KNN e suavizadores lineares --- e para aí. **Não
-reintroduza o Nadaraya--Watson nem a regressão local**, nem "para completar" uma
-referência do AME que os cite.
-
-O corte não foi só nas notas, porque o assunto estava espalhado:
-
-| onde | o que saiu |
-| --- | --- |
-| notas, as duas versões | §4 (NW, tabela de núcleos, leitura como MQ ponderado) e §5 (polinomial local, viés de fronteira); 5→3 e 7→4 páginas |
-| `Aula prática 04.ipynb` | §5, §6 e §7 --- 26 células; as antigas §8 e §9 viraram §5 e §6 |
-| `Lista teorica 04.tex` | os exercícios 2 e 3; sobraram 2 |
-| `Lista prática 04.ipynb` | reescrita inteira --- ver adiante |
-| `gerar-figuras.py` | `_nucleos`, `_fronteira` e os auxiliares `_nucleo_gauss`, `_nadaraya_watson`, `_linear_local` |
-| `recursos/figuras/` | `04-nucleos.pdf` e `04-fronteira.pdf`, apagadas --- a aula 04 tem **uma** figura, `04-knn-k` |
-
-E em sete lugares fora da aula 04, que citavam o método de passagem ou dependiam
-dele: as notas da E2 e a `Aula prática 03` --- os outros quatro estavam na antiga
-aula 05 de aspectos teóricos, que saiu do curso em 31/08/2026. O `00 Planejamento.tex` teve a ementa da aula 04 reescrita.
-
-**O deck nunca teve o assunto** --- ele vai de KNN direto para a maldição da
-dimensionalidade ---, então lá não havia o que remover. Cuidado com o inverso: um
-slide novo sobre `weights='distance'` chegou a apontar para o Nadaraya--Watson como
-continuação natural, e teve de ser desfeito.
-
-Ao citar o AME, lembre que **§5.2 se chama literalmente "k Vizinhos Mais Próximos e
-Regressão Linear Local"**. As leituras recomendadas passaram a glosar a parte que
-interessa ("o KNN sob redundância") em vez de reescrever o título do livro.
-
-**A citação de Von Neumann sobre o elefante saiu junto**, das duas versões das notas
-e da `Aula prática 04`. De quebra, as notas do docente chamavam de "Figura
-``elefante'' do [AME] (§3.9)" algo que não existe: §3.9 tem a **Figura 3.8**
-(relação entre paramétricos penalizados e não paramétricos), e o elefante é a
-*epígrafe* do Capítulo 4. Corrigido para `Figura~3.8`.
-
-**A aula 04 não desenvolve RKHS**: só o menciona, ao falar de *smoothing splines*,
-como ``caso particular de RKHS, §4.6 do [AME]''. As notas da aula 09, nas duas
-versões, remetiam aos ``RKHS da Aula~04'' e a ``Aula~04, §4.6'' em quatro lugares cada;
-desde 30/09/2026 todas dizem ``[AME], §4.6'', que é onde o assunto está.
-
-### A `Lista prática 04` reescrita
-
-Três exercícios, cobrindo o que sobrou (§2, §3 e §4 das notas), todo número medido
-na semente 2026:
-
-1. **cada nó compra um grau de liberdade** --- base truncada contra uma cúbica
-   *independente* por pedaço: 7 parâmetros contra 16, saltos de $g$, $g'$ e $g''$
-   nos nós de $10^{-9}$ contra até $160$, e a irrestrita ajusta **melhor o treino**
-   (0,4111 × 0,5444) e é **16× pior contra $r$** (3,5712 × 0,2233);
-2. **o $k$ por validação cruzada** --- o único exercício que sobreviveu ao corte,
-   sem a comparação com o NW. A CV escolhe $k=5$; contra $r$, $0{,}1236$;
-3. **o KNN é um suavizador linear (e o que isso não garante)** --- monta $\bm H$,
-   confere $\operatorname{tr}(\bm H)=n/k$, e mede que **o atalho do LOOCV da Aula 03
-   não vale para o KNN**: erra 27% em $k=2$, e para lados opostos conforme $k$
-   (razão $1{,}274$ em $k=2$, $0{,}989$ em $k=10$), então nem como cota serve. O
-   motivo é que tirar $x_i$ muda *quem são* os $k$ vizinhos --- entra o
-   $(k{+}1)$-ésimo ---, e não só reescala pesos. É o par prático do exercício
-   teórico que sobreviveu na `Lista teorica 04`.
-
-**O script que gera o par enunciado/gabarito não está no repositório**, como o das
-outras listas e os `.qmd` dos slides. Se for mexer nos dois `.ipynb`, faça no mesmo
-passo e confira que só divergem nas lacunas.
-
-## A aula 05 saiu do curso, e as seguintes desceram uma posição
-
-Decisão do Gabriel em 31/08/2026. A antiga aula 05 --- *Métodos Não Paramétricos:
-Aspectos Teóricos* --- trazia taxas de convergência, maldição da dimensionalidade,
-esparsidade e redundância. São conceitos que ele não quer abordar, e a aula saiu
-**inteira**: as duas versões das notas, o deck, a `Aula prática 05`, a
-`Lista teorica 05`, a `Lista prática 05`, os dois gabaritos, as figuras `05-taxas` e
-`05-vizinho-longe` e as duas funções que as geravam.
-
-**As aulas 06 a 11 viraram 05 a 10.** O curso tem hoje **10 aulas oficiais** mais as
-três extras; as pastas vão de `00-planejamento` a `10-knn-arvores-classificacao`, e
-E1--E3 não mudaram. `Aula 05` significa agora **Árvores de Regressão e Ensembles**.
-
-O caro não foi apagar: foram as **62 referências à aula 05 vindas de outras 12
-aulas**. Delas, 33 eram ponteiro puro e saíram sozinhas; 27 tinham a aula 05 como
-**sujeito da frase** (``**A seguir.** A Aula 05 explica com teoria...'', ``## 6. E o
-KNN? A Aula 05, confirmada'', ``\begin{atencao}[Eis a Aula~05 em ação]''), e nessas
-**apagou-se o mínimo, sem escrever nada novo**; e 2 mandavam à `Lista prática 05` a
-partir da lista prática da SVM.
-
-**As menções ao conceito ficaram, de propósito.** ``Maldição da dimensionalidade'',
-``esparsidade'' e ``redundância'' continuam nomeadas nas aulas 04, 07 e 10 e nas E2 e
-E3 --- saiu o ponteiro, não a afirmação. Hoje são vocabulário sem aula dedicada, como
-a *descida dupla* na aula 01. **Não as remova** achando que são resíduo, e **não
-reintroduza a aula**.
-
-**A renumeração acertou ``Aula NN'', mas não ``Lista Teórica NN'' nem ``Lista prática
-NN''.** Achado na leitura de 30/09/2026 e corrigido no mesmo dia: da aula 07 em diante,
-as remissões às listas tinham ficado um número acima. A `Lista prática 08` mandava à
-fórmula da ``Lista Teórica 09''; a `Lista prática 09` citava a ``Lista Teórica 10''
-três vezes, e a `Lista prática 10`, a ``Lista Teórica 11'' outras três; a
-`Lista teorica 10` mandava às listas 09, e a `Lista teorica E3` e o gabarito da
-`Lista prática E3`, à ``Lista prática 09''. A `Lista teorica 08` Ex. 4(d) chegava a
-citar a si mesma: o ``Exercício 4 da Lista Teórica 08'' era o da antiga 08, hoje 07,
-que saiu em 23/09 --- e virou uma remissão à hipótese do Bayes ingênuo (Aula~07). Até
-os comentários de cabeçalho estavam na numeração velha, nos três `.tex` e nos três
-invólucros de gabarito das listas 08 a 10. **Ao renumerar, procure `Lista` junto com
-`Aula`.**
-
-## A aula 05 perdeu boosting, OOB e importância de variáveis
-
-Decisão do Gabriel em 09/09/2026, aplicada em quatro passos numa sessão. A aula 05
---- *Árvores de Regressão e Ensembles* --- vai hoje de árvore a poda, agregação,
-*bagging* e florestas aleatórias, e para aí. **Não reintroduza os três**, nem para
-"fechar" o Capítulo 8 do [ISLP], que cobre os três.
-
-| onde | o que saiu |
-| --- | --- |
-| notas, as duas versões | a seção *Boosting* inteira e as subseções *out-of-bag* e *Importância de variáveis*; 258→190 e 431→337 linhas |
-| `Aula prática 05` | as seções de *boosting* e de importância, a análise de importância do caso real, e a coluna `R^2 OOB` da escolha de $m$ |
-| `Lista prática 05` | o Ex. 4 inteiro e a metade de *boosting* do Ex. 3; 18→13 e 23→16 células |
-| `Lista teorica 05` | o item (b) do Ex. 3, que pedia "uma quantidade que o *bagging* fornece de graça" |
-| deck | um tópico, no slide "Fechando o *bagging*" |
-
-**O deck quase não tinha o assunto, e isso engana.** Uma busca por `oob` acha 156
-ocorrências --- e **todas** estão em JavaScript minificado e em base64 de imagem.
-No texto visível, 10.699 caracteres, não há menção nenhuma a OOB, *boosting* ou
-XGBoost. Ao auditar um deck, filtre `<script>` e `<img>` antes de contar; a busca
-crua mente por duas ordens de grandeza.
-
-**A figura sobreviveu pela metade certa.** A `05-numero-arvores` tinha dois painéis
---- floresta e *boosting* --- e era citada **dentro da seção de Boosting**, então o
-corte a levaria inteira. Mas o painel da floresta é o que o Ex. 3 da
-`Lista prática 05` reproduz, e esse vínculo é deliberado (ver "Listas de
-exercícios"). A geradora foi reduzida a esse painel, a figura regerada, e a citação
-**movida para a seção *Florestas aleatórias***, que já afirmava "o risco é robusto
-a $B$" sem nada que mostrasse. Os números não se moveram.
-
-**O que ficou, de propósito: a correlação $\rho$ e o piso $\rho\,v$.** Eles saíram
-do laboratório --- a §5 dele passou a medir risco contra $B$, direto --- mas
-continuam nas notas, numa `observacao` da seção "Por que agregar?", e na
-`Lista teorica 05`, cujo Ex. 4 é "o piso da variância". O Ex. 2 da lista prática é
-o par medido desse exercício, e por isso ficou também. Se for cortar o $\rho$ um
-dia, são os três de uma vez.
-
-**Três notas de outras aulas continuaram tratando os três assuntos como vistos na aula
-05**, até 30/09/2026: a 03 (``florestas aleatórias (Aula~05), onde as observações OOB
-dão uma estimativa de risco'', nas duas versões), a 06 do aluno (``Árvores, florestas
-e \emph{boosting} (Aula~05)'') e a 10 (``Como em regressão, $B$ grande pode
-superajustar'' no item *Boosting*, nas duas versões, e ``transferir \dots boosting para
-classificação'' nos objetivos do aluno). Decisão do Gabriel naquele dia: **sai só o
-ponteiro**, como na saída da antiga aula 05. Os conceitos ficaram onde estavam --- a
-aula 10 segue apresentando o AdaBoost (a `Aula prática 10` e o TP01 o usam) e dizendo
-que as florestas dão ``OOB e importância de variáveis de graça'' ---, embora o deck da
-aula 10 não mencione nenhum dos três.
-
-## A aula 06 encolheu a lista teórica e trocou de registro
-
-Decisão do Gabriel em 11/09/2026. A `Lista teorica 06` foi de **quatro exercícios
-para dois**, e os dois que ficaram foram reescritos num registro mais próximo do
-leitor --- com uma pessoa e uma situação em cena, no lugar de uma enumeração
-abstrata. A `Aula prática 06` passou pela mesma reescrita.
-
-| onde | o que mudou |
-| --- | --- |
-| `Lista teorica 06.tex` | saíram os Ex. 2 (``por que um custa 0,40 e o outro custa nada'') e 4 (``a divisão que nenhum pipeline conserta''); 297→199 linhas, 2→1 página de enunciado e 5→3 de gabarito |
-| os dois que ficaram | o Ex. 1 virou a revisão do notebook de um colega; o antigo Ex. 3 virou o Ex. 2, e o banco dele ganhou contexto |
-| `Aula prática 06.ipynb` | as 31 células de texto reescritas, as 20 de código **intactas**; markdown de 20 para 23 KB |
-| `Lista prática 06` (os dois) | quatro ponteiros para os exercícios que saíram, redirecionados |
-
-**Os ponteiros são a parte cara**, como sempre. A lista prática citava o Ex. 2(b),
-o Ex. 2(c), o Ex. 3 e o Ex. 4(b) da teórica. Os dois primeiros passaram a apontar
-para os itens *leves* do Ex. 1, que é onde o argumento passou a morar; o terceiro
-virou Ex. 2 pela renumeração; e o quarto --- a conta de probabilidade do vazamento
-por grupo --- ficou sem destino, então a menção saiu e a conta ficou escrita inline
-no próprio notebook.
-
-**A tabela ``O que ficou'' existe nos dois `.ipynb` da lista prática.** Ela não é
-lacuna, e por isso é fácil corrigir num e esquecer no outro --- foi o que
-aconteceu, e o enunciado ficou uma rodada com números que o gabarito já não tinha.
-A conferência que pega isso é comparar as duas fontes célula a célula, descartando
-as de leitura (as que começam com ``Deve imprimir''), e exigir que **só** difiram
-onde há `...`.
-
-### O `GroupKFold` mudou entre versões, e havia número defasado
-
-Achado em 11/09/2026, conferindo o Ex. 3 da `Lista prática 06`. Com grupos de
-tamanho igual, o `GroupKFold` atribui grupos a dobras de um jeito na sklearn 1.3 e
-de outro na 1.9 --- a 1.9 faz o rodízio limpo, a 1.3 embaralhava. Os dados saem
-byte-idênticos; o que muda é a partição, e um $R^2$ perto de zero **troca de
-sinal**:
-
-| | KFold | GroupKFold |
-| --- | --- | --- |
-| o que o gabarito afirmava | $+0{,}6665$ | $+0{,}0341$ |
-| sklearn 1.3 (o `python3` do sistema) | $+0{,}6721$ | $+0{,}0372$ |
-| sklearn 1.9 (o `barennet_env`) | $+0{,}6697$ | $\mathbf{-0{,}0866}$ |
-
-Corrigido para os valores da 1.9, junto com a narrativa (``o valor honesto é
-$-0{,}09$'') e com a afirmação de que as dez dobras mostram ``16 ou 17 pacientes
-nos dois lados'' --- uma delas mostra 13. Os Ex. 1, 2 e 4 da mesma lista
-reproduzem exatamente, e a `Aula prática 06` §5, que também usa `GroupKFold`,
-confere com a 1.9 até a quarta casa. **As outras aulas não foram auditadas.**
-
-### Dois números que o relógio não sustenta
-
-A §8 da `Aula prática 06` afirmava que a busca com `SelectKBest` leva **9,1
-segundos** e que a `RandomizedSearchCV` é **45 vezes** mais rápida. Em quatro
-rodadas na mesma máquina, a busca variou de $7{,}2$ a $10{,}6$ s e a razão, de
-$26\times$ a $48\times$. Viraram ``cerca de dez segundos'' e ``dezenas de vezes'',
-com uma linha avisando que tempo de relógio varia. O resto da seção ---
-$0{,}8592$, $0{,}8736$, $0{,}8620$, os 1,6% e os 0,3% --- é estável e ficou.
-
-### O `penalty` da `LogisticRegression` foi depreciado
-
-Terceiro caso da família do `n_alphas` e do `QDA`/`LinAlgError`: roda sem erro
-hoje e some numa versão futura. O argumento `penalty` foi **depreciado na 1.8 e
-sai na 1.10**. Eram quatro ocorrências, todas corrigidas em 11/09/2026:
-
-- `penalty="l2"` é o padrão, então basta **omitir** --- nas duas versões das notas
-  da 07, e no gabarito do Ex. 2 da `Lista teorica 06`, que agora explica isso ao
-  aluno;
-- `penalty=None` vira **`C=np.inf`**, na §7 da `Aula prática 07`. Os coeficientes
-  saem bit-idênticos (diferença absoluta máxima $0$), e a leitura da seção ---
-  ``$C=1$ encolhe os coeficientes cerca de 10%'' --- continua valendo: $10{,}2\%$.
-
-As três ocorrências da aula 07 saíram em 16/09/2026, junto com a logística, e ela
-voltou em 21/09/2026 **sem** o `penalty`: o laboratório usava `C=np.inf` na §7 e as
-notas, `C=1.0` --- até a seção de Python das notas sair, em 23/09/2026, e a §7 do
-laboratório, em 28/09/2026. Ver ``A aula 07 segue o deck (e o deck mudou)'', adiante. Sobrou a
-ocorrência da `Lista teorica 06`.
-
-**Cuidado ao procurar por este:** os notebooks chamam
-`warnings.filterwarnings("ignore")`, então executá-los **não** mostra o aviso. Só
-`python -W error::FutureWarning`, fora do notebook, denuncia.
-
-### E depois a `Aula prática 06` encolheu para seguir o deck
-
-Decisão do Gabriel em 14/09/2026, três dias depois da reescrita acima. O
-laboratório passou a cobrir **o que o deck cobre, e só isso**: 52 → **23 células**,
-de nove seções para cinco. (Toda numeração citada até aqui é a de *antes* deste
-corte --- a §5 do `GroupKFold` e a §8 do relógio no laboratório, o Ex. 3 do
-`GroupKFold` na lista prática. A correspondência com a de hoje está nas duas
-tabelas abaixo.)
-
-| § de hoje | o que faz | de onde veio |
-| --- | --- | --- |
-| 1 | pacotes | — |
-| 2 | quem é sensível à escala | a antiga §2, intacta |
-| 3 | $\mu$ e $\sigma$ são aprendidos: o custo de padronizar fora da dobra | a antiga §4, com laço próprio |
-| 4 | o `Pipeline` por dentro | a antiga §6 |
-| 5 | `Pipeline` $+$ `GridSearchCV` | **nova**, é o slide ``Um exemplo'' |
-
-Saíram a §3 (vazamento por seleção), a §5 (agrupamento e a hierarquia), a §7
-(`ColumnTransformer`), a §8 (busca no pré-processamento) e a §9 (o arquivo
-quebrado). **Não as reintroduza no laboratório** --- o deck não tem nenhuma delas.
-
-**A `Lista prática 06` foi atrás, no mesmo dia.** Ela espelhava o laboratório
-antigo, então foi reescrita para espelhar o novo: 20→**14 células** no enunciado e
-25→18 no gabarito, de quatro exercícios para **três**, um por seção do laboratório.
-
-| Ex. de hoje | espelha | mede |
-| --- | --- | --- |
-| 1 --- quem muda quando a régua muda | §2 | cinco métodos, uma coluna $\times 500$: MQO $0{,}2762$ e árvore $0{,}9384$ nos dois; KNN $0{,}8668 \to 1{,}4527$ |
-| 2 --- o custo de padronizar fora da dobra | §3 | $0{,}8594$ contra $0{,}8593$ (o antigo Ex. 2, mantido) |
-| 3 --- o `Pipeline` inteiro, e o `GridSearchCV` | §4 e §5 | o scaler bate com o treino e não com o todo; `lasso__alpha` $=0{,}1$, 9 coeficientes de 60 |
-
-Saíram os exercícios de **seleção**, de **agrupamento** e de `ColumnTransformer`.
-Com isso, **nenhum notebook do curso mede mais esses dois vazamentos** --- eles
-vivem nas notas (texto e Figura~1) e no Ex. 1 da `Lista teorica 06`, onde entram
-como caso a classificar. A geradora da figura, essa sim, continua medindo os dois.
-As duas versões das notas dizem isso ao aluno com todas as letras, em vez de
-mandá-lo a um laboratório que não existe.
-
-**O bloco `Sua vez` foi preservado** (a lista tinha um, no exercício de seleção que
-saiu). O novo mede o contraste que o laboratório só afirma em prosa: reescalar a
-coluna **relevante** faz o Lasso melhorar $3{,}4\%$; reescalar uma **irrelevante**
-faz piorar $3{,}8\%$ --- quem decidiu foi a unidade de medida, não você.
-
-**A armadilha do laço compartilhado.** As antigas §3 e §4 mediam dentro do
-**mesmo `for`**, com o mesmo `default_rng(21)` --- que é o que faz o notebook
-reproduzir os dois painéis da figura. Tirar a §3 muda o que a §4 sorteia: o
-$0{,}8466$ da figura vira $0{,}8436$. Separar os geradores tampouco resolve, porque
-aí muda o painel *esquerdo* também ($+0{,}403$ vira $+0{,}446$, $-0{,}693$ vira
-$-0{,}740$) --- e o $+0{,}40$ é citado em **sete arquivos**, incluindo as notas da
-E2 e este `CLAUDE.md`. Decisão: **a figura e as notas ficam como estão**, e o
-laboratório roda com semente própria (`6`), medindo $0{,}8342$ contra $0{,}8341$.
-São duas amostras do mesmo experimento, não uma contradição, e a nota do aluno diz
-isso com todas as letras.
-
-**A §5 nova reproduz o slide literalmente.** Com `make_regression(n_samples=1000,
-n_features=100, n_informative=10, noise=1.0, random_state=0)`, a busca devolve
-`Lasso(alpha=0.1)` e `ElasticNet(alpha=0.1, l1_ratio=1)` --- exatamente a saída
-impressa no slide ``Um exemplo''. O `l1_ratio=1` colapsa o ElasticNet em Lasso, e os
-dois empatam em EQM de CV ($1{,}1293$) e no teste ($1{,}2110$); o teste é pior que a
-CV porque o `best_score_` é o melhor de 56 estimativas ruidosas.
-
-## A aula 07 segue o deck (e o deck mudou)
-
-Duas decisões, com cinco dias entre elas, e é preciso ler as duas juntas.
-
-**Em 16/09/2026** o Gabriel decidiu que a aula 07 passaria a cobrir o que o deck
-cobre --- no espírito da aula 06 e indo além dela, porque aqui **as notas também**
-foram atrás, não só o laboratório e as listas. O deck cobria a formulação com perda
-0--1, o classificador de Bayes, o *plug-in*, o Bayes ingênuo (contínuo e discreto,
-com as variantes do `scikit-learn`), a normal multivariada, LDA, QDA e a escolha
-entre os dois; a regressão logística aparecia nele só como exemplo de *plug-in*, e
-por isso saiu de tudo. É o corte que a tabela abaixo registra.
-
-**Em 21/09/2026** ele pediu slides de regressão logística **para o deck** (item 11
-do histórico de correções nos HTMLs), e com isso a premissa do corte caiu. A
-logística voltou no mesmo dia para as notas, o laboratório, a lista prática e a
-figura, alinhada aos slides novos. O que **não** voltou, de propósito: a subseção
-``via regressão sobre indicadores'' das notas, que o deck não tem, e a comparação
-de escala da antiga §8 do laboratório, que não media nada (adiante) e é assunto da
-aula 06.
-
-O princípio continua valendo: **o deck manda**. Se um assunto não estiver nele, não
-entre nas notas sem falar com o Gabriel --- e, se ele entrar no deck, o resto da
-aula vai atrás.
-
-| onde | o corte de 16/09 | como está hoje |
-| --- | --- | --- |
-| notas, as duas versões | saíram a seção da logística (MV, separação perfeita, multiclasse), a regressão sobre indicadores e a comparação discriminativo $\times$ generativo; entraram a motivação da perda 0--1, o Bayes ingênuo discreto com as variantes do `scikit-learn`, a densidade normal multivariada, os estimadores de MV, o discriminante do QDA e a conta de parâmetros com $K$ classes | o que entrou ficou; a logística e a comparação voltaram em 21/09. **Só a regressão sobre indicadores continua fora** --- o deck não a tem |
-| `Aula prática 07` | saíram a logística das §3, §4 e §8, a §7 inteira (a pegadinha do `C`) e a comparação de escala da §8; 40→34 células | a logística e a §7 voltaram, com o caso real de novo na §8; o texto foi reescrito na mesma tarde, e eram **49 células** até a §7 sair, em 28/09/2026; hoje são **46** (adiante). A comparação de escala continua fora |
-| `Lista prática 07` | saiu a logística dos Ex. 2 e 4; entraram o `reg_param` no QDA do Ex. 4 (com lacuna) e um `Sua vez` sobre a covariância comum, no lugar do de AUC, que é aula 08 | a logística voltou aos dois exercícios; o `reg_param` e o `Sua vez` novo ficaram |
-| `07-fronteiras` | o painel da logística: 4→3 painéis | de volta a **quatro**, com a legenda de antes |
-| fora da aula | saíram os ponteiros à logística ``da aula 07'' na `Lista prática 09`, nas notas da E3 (docente), no planejamento e no `requirements.txt` | os quatro voltaram |
-
-A `Lista teorica 07` não tinha logística e não perdeu exercício, mas foi corrigida
-junto. A logística é usada também nas aulas 08, 09, 10, E2 e E3, notas e notebooks;
-antes de 21/09/2026 **nenhum deck a desenvolvia**, e ela era usada como ferramenta
-já conhecida. Agora o deck da 07 a apresenta.
-
-**O que voltou em 21/09/2026**, alinhado aos slides: a seção das notas (as duas
-versões, com o modelo, a interpretação em razão de chances, a MV, a separação
-perfeita e o caso multiclasse), a seção ``Discriminativo $\times$ generativo'', o
-painel da logística na `07-fronteiras` (de volta a quatro), as §3, §4 e §8 do
-laboratório e a §7 inteira (a pegadinha do `C`), os Ex. 2 e 4 da `Lista prática 07`
-e os ponteiros do planejamento, da E3 e da `Lista prática 09`. Os números medidos
-são os de antes do corte, reconferidos na 1.9: logística $0{,}1230$ de erro na §3,
-$+0{,}0032$ na §4, $10{,}2\%$ de encolhimento em $C=1$ na §7 e $0{,}9591$ no teste
-da §8.
-
-O que ficou nas notas sem estar no deck, de propósito: a caixa de que a acurácia
-engana (a aula 08 abre citando ``o aviso da Aula 07''), a caixa do preço do
-``ingênuo'' (a aula 08 cita o motivo do descalibramento) e a observação do que se
-transfere da regressão.
-
-### O que a reescrita derrubou
-
-Tudo medido em 16/09/2026, no `barennet_env`:
-
-- **A `Lista prática 07` quebrava na sklearn 1.9.** O Ex. 4 chamava
-  `QuadraticDiscriminantAnalysis()` sem `reg_param` no `breast_cancer`, e os cinco
-  ajustes da CV falhavam --- a quebra que o laboratório corrigiu em 12/08, e da qual a
-  lista tinha escapado. Com `reg_param=1e-4` o QDA dá $0{,}9508$ (o gabarito dizia
-  $0{,}9561$) e segue atrás do LDA. A `Lista prática 10` tinha a mesma chamada, no
-  mesmo banco, e foi corrigida em 21/09/2026 (o QDA dela vai de $0{,}9561$ a
-  $0{,}9508$ de acurácia, de $0{,}9912$ a $0{,}9894$ de AUC e de $0{,}0398$ a
-  $0{,}0434$ de Brier).
-- **O QDA da 1.9 recusa classe pequena.** O `fit` compara os autovalores da
-  covariância de cada classe com `tol=1e-4` **absoluto** e levanta `LinAlgError`
-  quando a classe tem no máximo $p$ observações ou colunas quase colineares. Com
-  **menos** observações que covariáveis, nenhum `reg_param` resolve; com
-  exatamente $p$, um `reg_param` de $0{,}1$ resolve e um de $10^{-4}$ não. No Ex. 3
-  da lista, o `try` transforma a recusa em `nan` em $n=20$, $p=10$, e o laboratório
-  mostra a própria mensagem de erro numa célula da §6 --- e o gabarito afirmava $0{,}5475$ e ``16 pontos abaixo do LDA'', número da
-  sklearn antiga, repetido na tabela da `Lista teorica 07` 3(d). Hoje os três dizem
-  que ali o QDA não ajusta, e usam $n=30$ ($+0{,}0392$ para o LDA) para a vantagem.
-- **A comparação de escala da antiga §8 do laboratório comparava cada modelo com ele
-  mesmo.** Só a logística estava num `Pipeline` com `StandardScaler`; a coluna ``com
-  scaler'' de LDA, QDA e Bayes ingênuo era o modelo cru. Medindo de verdade, na mesma
-  divisão: o LDA é invariante (o solver `svd` padroniza por dentro), mas o
-  `QDA(reg_param=1e-4)` vai de $0{,}9415$ a $0{,}9532$ com o scaler, e o
-  `GaussianNB` de $0{,}9240$ a $0{,}9123$ --- o `var_smoothing` é proporcional à maior
-  variância, e com `var_smoothing=0` a invariância volta. A caixa das ``três
-  categorias'' das notas da aula 06 citava essa medição: a citação saiu e a caixa
-  ganhou a ressalva de implementação.
-- **Afirmações do laboratório que as próprias células desmentiam:** o Bayes ingênuo
-  ``não é o pior da tabela'' (é, com $0{,}1320$, nas sklearn 1.3 e 1.9); a correlação
-  ``$-0{,}82$'' (a verdadeira é $-0{,}803$, e a própria célula a imprime; $-0{,}83$ é a
-  estimativa do QDA), também no gabarito da lista; ``um centésimo e meio de ponto
-  percentual'' para $+0{,}0015$ (são 0,15 p.p.); e o Bayes ingênuo que ``continua onde
-  estava'' com covariâncias iguais --- o excesso dele dobra, de $+0{,}0355$ para
-  $+0{,}0737$, porque zerar a correlação comum desvia a direção da fronteira em
-  $47{,}8$ graus.
-- **O caso $p=2$ parecia mudar de uma peça para outra.** O laboratório mede o QDA
-  ganhando desde $n=20$; as listas mediam empate. São populações diferentes: a do
-  laboratório (e dos Ex. 1--2 da lista) tem correlações $+0{,}75$ e $-0{,}80$ nas
-  duas classes; a do Ex. 3 da lista, $-0{,}47$ e $-0{,}45$. A conclusão antiga das
-  listas, ``em dimensão baixa a escolha não importa'', era falsa --- o próprio Ex. 2
-  mostra o QDA 4 pontos à frente em $p=2$ ---, e a do laboratório, ``é a razão
-  $n/p^2$ que governa'', generalizava demais. As peças dizem hoje a mesma coisa:
-  $n$ contra $p(p+1)/2$ governa o que o QDA tem a **perder**; e o que ele tem a
-  **ganhar** é o quanto a fronteira de Bayes se afasta de uma reta onde há dados.
-  As duas listas dizem isso assim desde 23/09/2026 (ver adiante); as notas e o
-  laboratório dizem ``o quanto as covariâncias diferem'', que é a condição
-  necessária --- covariâncias diferentes não bastam, e a população do Ex. 3 mostra
-  isso.
-- **No breast_cancer, LDA e QDA empatam dentro do ruído.** O laboratório lia a
-  vantagem do LDA no teste ($0{,}0117$, que são **dois** tumores em 171) como ``a conta
-  de parâmetros cobrando''; na CV da mesma tabela o QDA fica à frente
-  ($0{,}9623$ contra $0{,}9598$). O texto passou a dizer isso.
-- **O AME omite o $\tfrac12$ do expoente** nas duas densidades normais da §8.1.4
-  (p. 147 e 149 do livro; conferido com `pdftotext -layout`). As notas do aluno
-  avisam na leitura recomendada.
-
-### O laboratório reescrito, e as notas na ordem do deck
-
-Pedido do Gabriel na tarde de 21/09/2026: o texto da `Aula prática 07` estava
-``artificial demais'', e ele pediu uma reescrita ``mais didática e humana'', junto com
-a correção de seis problemas levantados numa leitura do material. A orientação de
-estilo está na memória do Claude, não aqui.
-
-**O laboratório.** Todo o markdown foi reescrito; as seções e a numeração (§1 a §8)
-ficaram, porque as notas e a `Lista teorica 07` apontam para elas. De 37 para **49
-células**. O que mudou além do texto:
-
-- a §2 ganhou uma figura da população com a fronteira de Bayes, que é uma
-  **hipérbole**: o ramo de cima atravessa uma região quase sem dados, e o QDA o
-  reproduz --- ali quem desenha a fronteira é a suposição de normalidade;
-- `amostra` e `prob_bayes` aceitam `S1=`, e a população de covariâncias iguais da
-  §4 deixou de ser uma cópia do código; as figuras e tabelas das §3 e §4 saem de
-  duas funções, `desenhar_fronteiras` e `erros_no_teste`;
-- a ordem dos métodos é a do deck (Bayes ingênuo, LDA, QDA, logística). A
-  `07-fronteiras` continua com a logística primeiro; os números são os mesmos;
-- a §4 imprime as correlações estimadas pelo QDA ($+0{,}790$ e $-0{,}829$), que o
-  texto cita;
-- a recusa do QDA aparece com a mensagem do próprio `scikit-learn`, em $n=20$,
-  $p=10$ (§6) e no `breast_cancer` sem `reg_param` (§8). Na sklearn 1.3 o ajuste da
-  §6 passa em silêncio (o aviso é abafado pelo `filterwarnings`), e a célula diz isso
-  em vez de fingir que houve recusa;
-- `import sklearn.linear_model as skl`, como pede a convenção. Os outros treze
-  notebooks que usam a logística a importam direto (`from sklearn.linear_model
-  import LogisticRegression`) e ficaram como estavam.
-
-**A §6 agora reproduz a Figura `07-lda-qda` até a quarta casa** ($0{,}7480$ contra
-$0{,}6919$ em $n=30$, \dots, $0{,}8250$ contra $0{,}8932$ em $n=4000$). Antes ela usava
-60 repetições e incluía $n=20$ no mesmo laço, o que desloca o gerador: a célula dava
-$0{,}7502$ contra $0{,}6972$, e a legenda, $0{,}748$ contra $0{,}692$. Hoje o $p=10$
-usa os `ns` e as 120 repetições da figura, e o $n=20$ virou a célula da recusa. O
-$p=2$ continua com $n=20$ e 60 repetições, e com os números de antes: é ele que a
-`Lista teorica 07` 3(d) cita (``o QDA ganha desde $n=20$'').
-
-**As notas seguem a ordem do deck.** Nas duas versões, a logística foi para depois de
-LDA e QDA, com uma abertura como a do deck (``e se estimássemos $\Prob(Y\mid\x)$
-diretamente?''); objetivos, famílias do *plug-in*, resumo e código de exemplo
-seguiram a mesma ordem, e ``a outra família'' virou ``a primeira''. Na versão do aluno,
-a `07-fronteiras`, que mostra a logística, foi para a seção ``Discriminativo $\times$
-generativo'' e virou a Figura~2 (a `07-lda-qda` é hoje a Figura~1). O `\newpage` antes
-de ``Prática em Python'' saiu: com a nova ordem ele deixava a página 8 quase vazia.
-(Em 23/09/2026 a própria seção saiu; ver adiante.)
-
-**O que mais foi corrigido no mesmo passo:**
-
-- o gabarito da `Lista prática 07`, Ex. 4, dizia que LDA, QDA e Bayes ingênuo são
-  invariantes à escala. No próprio exercício, só o LDA é: com `StandardScaler` o
-  `QDA(reg_param=1e-4)` vai de $0{,}9508$ a $0{,}9561$ e o `GaussianNB` de $0{,}9385$ a
-  $0{,}9315$ (com `var_smoothing=0` a invariância volta), e a ordem dos quatro não
-  muda. A mesma célula dizia ``correlação acima de $0{,}99$'' entre raio, perímetro e
-  área (nas versões médias, vai de $0{,}987$ a $0{,}997$) e dava `area` e `perimeter`
-  como ``claramente assimétricas'', mas o perímetro dos benignos tem assimetria
-  $-0{,}06$. Medido: 19 das 30 medidas passam de 1 em alguma classe, e as de
-  erro-padrão (`area error`, `concavity error`) passam de 4. A célula só existe no
-  gabarito;
-- as duas versões das notas diziam que o notebook `Comparação entre classificadores
-  paramétricos` ``confronta esses métodos'': ele não tem logística e tem três SVMs.
-  O texto passou a dizer isso, e em 23/09/2026 o parágrafo saiu com a seção de
-  Python;
-- a `Lista teorica 07` 4(c) escrevia ``$4p+1$ parâmetros em vez de $2\,651$'', uma
-  fórmula contra o número de $p=50$. Só o gabarito foi recompilado. (O Ex. 4 inteiro
-  saiu em 23/09/2026; ver adiante.);
-- o deck dizia que o `MultinomialNB` ``não assume independência'' (item 14 do
-  histórico de correções nos HTMLs).
-
-**Conferido e correto, para não reabrir:** mesmo com os dados padronizados, o QDA sem
-`reg_param` recusa o `breast_cancer` (menor autovalor da correlação intraclasse,
-$1{,}6\times10^{-4}$), então a recusa vem mesmo da colinearidade, e não só da escala
-contra o `tol` absoluto. E a logística bate o LDA na população da §2 em 96 de 100
-amostras de treino: a explicação do texto (o LDA paga pela covariância comum, que é
-falsa ali) não depende da amostra sorteada.
-
-### As notas perderam os blocos e a seção de Python
-
-Pedido do Gabriel em 23/09/2026, nas duas versões das notas:
-
-- **os blocos** (ver ``Os alunos não conhecem os blocos'', no início deste arquivo):
-  a abertura ``Começa aqui o Bloco~II [...] do Bloco~I'' virou ``Começa aqui o estudo
-  da classificação [...] o que vimos em regressão'', e a observação ``O que se
-  transfere da Parte~I'' virou ``da regressão''. No docente, a `emsala` de abertura
-  seguiu a mesma troca;
-- **a seção ``Prática em Python''**, como nas aulas 04 e 05: saíram o código, o
-  parágrafo que apontava a `Aula prática 07` e o notebook herdado e, na versão do
-  aluno, a caixa das ``três pegadinhas'' que comentava o código --- o `C` como inverso
-  da penalização, o `score` que devolve acurácia e a recusa do QDA, com o remédio do
-  `reg_param`. Nada foi realocado. O `C` invertido ficou no deck e no §7 do
-  laboratório, e os dois saíram em 28/09/2026 (ver ``O laboratório perdeu a §7 e a
-  busca do `C`'', adiante); a recusa do QDA segue nos §6 e §7 do laboratório --- esta era a §8 --- e
-  numa `emsala` do docente;
-- **o ``Para praticar''** saiu da versão do aluno, como na 05 (a 04 o manteve): dizia
-  ``nesta mesma pasta'' e ``com gabarito'', o que pressupõe o repositório que o aluno
-  não recebe. A 05 e a 07 são hoje as duas notas sem ele.
-
-A versão do aluno foi de 9 para 8 páginas, e a do docente ficou com 6. O texto
-extraído de duas compilações locais, antes e depois, difere só nesses trechos.
-
-### A `Lista teorica 07` perdeu o Ex. 4, e o resto ganhou rigor
-
-Decisão do Gabriel em 23/09/2026: saiu o Ex. 4, ``naive Bayes gaussiano é QDA com as
-mãos amarradas'', e a lista fica com três exercícios. Foram junto a conta $4p+1$ do
-Bayes ingênuo, a função discriminante dele, a explicação de por que ele classifica bem
-e calibra mal (com a AUC e o Brier da aula 08) e as elipses cruzadas com $\rho=\pm0{,}9$
-(`GaussianNB` $0{,}5104$, LDA $0{,}4949$, QDA $0{,}8575$). O único ponteiro de fora,
-``o cenário do Exercício 4 da Lista Teórica 07'' no gabarito do Ex. 2 da
-`Lista prática 07`, saiu --- só a remissão; a frase se sustenta.
-
-A pedido dele, os três que ficaram passaram por uma revisão de rigor, sem mudar o
-registro:
-
-- **Ex. 1**: a equivalência com $\pi_1f_1>\pi_0f_0$ passou a vir do Teorema de Bayes,
-  com o denominador comum; o empate em $x=0$ ganhou uma frase ($\Prob(X=0)=0$, não
-  altera o risco); o risco é decomposto pela probabilidade total, com as duas
-  parcelas calculadas; e, no (d), ``acertar mais positivos custaria muitos falsos
-  positivos'' virou a conta: mover o corte para $t<x^\ast$ muda o risco de
-  $\int_t^{x^\ast}(0{,}9f_0-0{,}1f_1)\,dx>0$;
-- **Ex. 2**: o enunciado ganhou as $K$ classes, $\bm\Sigma$ positiva definida, $f_k$
-  definida e $\X$ em negrito, e o título diz ``linear'' em vez de ``reta''. A solução
-  diz por que se maximiza o log, usa a simetria de $\bm\Sigma^{-1}$ nos termos
-  cruzados, troca $|\bm\Sigma|$ por $\det\bm\Sigma$, escreve a constante do
-  hiperplano, exige $\bm\mu_k\ne\bm\mu_\ell$, diz o que muda com $K>2$, chama a
-  fronteira do QDA de quádrica (cônica só em $\R^2$) e restringe o ``a linearidade vem
-  da covariância comum'' ao modelo gaussiano. O (d) ganhou o caso de prioris
-  diferentes, $x=\frac{\sigma^2}{2}\ln\frac{\pi_0}{\pi_1}$, que reencontra o $x^\ast$
-  do Ex. 1(c);
-- **Ex. 3**: o enunciado do (d) diz que o QDA é o modelo correto nas duas populações
-  e que a virada cai entre $n=30$ e $n=50$, porque a grade é grossa. A solução
-  justifica o posto no máximo $9$, diz que sem regularização o QDA não está definido e
-  troca ``as duas classes têm quase a mesma correlação, então ele tem pouco a ganhar''
-  pelo medido.
-
-**O medido, porque a explicação antiga não se sustentava.** Na população de $p=2$ do
-Ex. 3 --- a da `Lista prática 07` --- as correlações são mesmo parecidas ($-0{,}47$ e
-$-0{,}45$), mas as variâncias não: a de $X_2$ é $3{,}85$ numa classe e $1{,}83$ na
-outra. O que limita o ganho do QDA é a distância entre o erro de Bayes e o do LDA com
-dados infinitos. Medido em dois milhões de pontos: Bayes $0{,}8841$, LDA ajustado com
-um milhão $0{,}8805$, a melhor reta (varrendo ângulo e corte) $0{,}8806$ --- nem com
-infinitos dados o QDA abriria mais que $0{,}4$ ponto. Em $p=10$, Bayes $0{,}8964$,
-contra $0{,}8239$ do LDA-limite. O gabarito do Ex. 3 da `Lista prática 07`, que dava
-a correlação parecida como a razão, foi acertado no mesmo dia, e mede também o outro
-lado: na população dos Ex. 1 e 2, com correlações de sinais opostos, Bayes
-$0{,}9036$ contra $0{,}8693$ do LDA-limite --- $3{,}4$ pontos.
-
-O enunciado segue com 2 páginas; o gabarito foi de 6 para 5.
-
-### O laboratório perdeu a §7 e a busca do `C`
-
-Decisão do Gabriel em 28/09/2026, no mesmo dia em que o deck perdeu os slides de
-penalização e de interpretação dos coeficientes (item 15 do histórico de correções
-nos HTMLs). Saiu a §7 da `Aula prática 07`, ``A `LogisticRegression` já vem
-regularizada'': as três células que variavam o `C` (a norma dos coeficientes
-$2{,}198$ em $C=1$ contra $2{,}448$ sem penalidade, o encolhimento de $10{,}2\%$, o
-`C=np.inf`). O caso real, que era a §8, **virou a §7** --- toda menção a ``§8 do
-laboratório'' anterior a esta data, neste arquivo, é a §7 de hoje. Nenhum outro
-arquivo cita as §7 ou §8 do laboratório pelo número; as notas do docente citam o §6,
-que não mudou.
-
-Foram junto o objetivo ``saber o que o parâmetro `C` controla'', a linha 7 do Resumo
-e o ``como recomendado na seção anterior'' do caso real.
-
-**O caso real perdeu também a busca do `C`**, no mesmo dia e pelo mesmo motivo: sem
-o slide e sem a §7, o `C` não era mais definido em nenhum material do aluno da aula
-07. A logística segue num `Pipeline` com `StandardScaler`, agora com o `C` padrão, e
-saiu o parágrafo que descrevia a busca e a validação aninhada que ela criava. O teste
-não se mexe --- $0{,}9591$, porque o $C=1$ acerta os mesmos tumores que o
-$C\approx0{,}316$ que a busca escolhia ---, e a CV cai de $0{,}9799$ para $0{,}9724$; a
-logística continua a melhor nas duas colunas, e o Resumo não mudou. O `C` não aparece
-mais em nenhum material do aluno da aula 07. As notas seguem dizendo que a logística
-se penaliza e que o `scikit-learn` aplica $\ell_2$ por padrão, o que ainda justifica o
-`StandardScaler` (aula 06).
-
-O laboratório tem 46 células e roda inteiro, conferido com a sklearn 1.5.1 desta
-máquina e sem gravar saída. As outras quatro linhas da tabela saem idênticas às
-medidas na 1.9 --- e a logística com a busca também saía ---; o $0{,}9724$ foi medido
-na 1.5.1. Antes de ser limpo, o arquivo tinha sido executado e salvo no VS Code, com
-14 células com saída, as chaves na ordem do Jupyter e o `kernelspec` como ``base'':
-o metadado voltou ao do HEAD.
-
-No mesmo dia, duas edições do Gabriel: as notas do aluno perderam o exemplo do spam
-na motivação da perda 0--1 (``não existe a diferença $Y-g(\X)$'') e a remissão à Aula
-03 na observação ``O que se transfere da regressão'' --- o roteiro do docente não tinha
-o spam e mantém o ``(Aula~03)'' ---, e o Ex. 4 da `Lista prática 07` passou a se chamar
-``Dados reais'', nos dois notebooks. A edição do enunciado, feita na IDE, deixou oito
-células na ordem de chaves do Jupyter; a ordem do repositório voltou em 30/09/2026.
-
-## A leitura de 30/09/2026, e a aula 08
-
-Pedido do Gabriel em 30/09/2026: ler o repositório inteiro, para preparar o trabalho
-na aula 08, e depois corrigir os ponteiros e os erros que a leitura achasse. Foram
-lidas por inteiro as 26 notas, as 13 listas teóricas, os 13 laboratórios, as listas
-práticas 08 a 10, o enunciado do TP01, o deck e o `MatConf.pdf` da 08; das outras
-listas práticas, a estrutura e as remissões. **Não** foram lidos os outros dez decks
-HTML, o Beamer da 09, os cinco notebooks herdados, o roteiro e a resolução do TP01, nem
-a lista de revisão e a prova.
-
-Os ponteiros de lista que a renumeração deixou estão na seção da saída da aula 05, e o
-`d` trocado demais, em ``A notação''. Tudo o que segue foi corrigido no mesmo dia, com
-os PDFs recompilados; os dois notebooks com código novo ou alterado (o laboratório 08 e
-a `Lista prática 10`) rodaram inteiros no `barennet_env`.
-
-### Fora da aula 08
-
-**Ponteiros para o que mudou ou saiu:**
-
-- notas da 01, as duas: ``Voltaremos a isso na Aula~08'', sobre a hipótese i.i.d.,
-  mas a 08 não trata de *dataset shift*. Virou a Aula~06, que trata observações
-  dependentes como fonte de vazamento;
-- numeração de proposição: nas notas do aluno da 04, o atalho do LOOCV é a Prop.~3.2
-  das notas do aluno da 03, não a 3.1; nas notas do aluno da E3, o corte de custo é a
-  Proposição~3.1 da Aula~08, não a 4.1;
-- notas da E2, as duas: ``truque do \emph{kernel} (Aulas~04 e~09)'' ficou só com a
-  09 --- a 04 não desenvolve RKHS;
-- ``as onze aulas anteriores'' no laboratório E1 (são dez) e ``os onze encontros
-  anteriores'' nas notas do aluno da E3 (são doze);
-- ``AME §4.8--4.10'' no cabeçalho das notas da 05 e no planejamento virou §4.8--4.9
-  (o §4.10 é *boosting*); o planejamento dizia também slides ``de 01 a 11'';
-- a nota do docente da 06 dizia que os dois vazamentos graves ``ficam por conta destas
-  notas'', mas quem os ordena (e mede o da seleção, na Figura~1) é a versão do aluno;
-- laboratórios: a abertura do 05 ainda prometia *boosting* e o piso $\rho\,v$, e a
-  lista de objetivos acabava num ``;''; o 10 comparava com ``a Aula 04 sobre a janela
-  $h$'' (Nadaraya--Watson); o E2 citava ``Fuga 2: redundância'', da antiga aula 05, e
-  passou a remeter à Aula 04, cuja prática faz o mesmo argumento no
-  `superconductivity.csv` (§6); o E3 mandava à ``Aula 05, Seção 10'', e o laboratório
-  05 vai até a §7.
-
-**Erros de conteúdo:**
-
-- **AIC**: as notas da 02 e da 03, nas quatro versões, escreviam
-  $P(g)\propto p/\widehat\sigma^2$. É $P(g)=2p\,\widehat\sigma^2/n$, como no [AME] e na
-  aula 01. E o roteiro da 01 chamava de ``risco de $r$'' a decomposição do risco de $g$;
-- **`Lista teorica 06` Ex. 2(c)**: dizia que, padronizando antes de imputar, o
-  `StandardScaler` encontra `NaN` e contamina a coluna. Na 1.9 ele calcula média e
-  desvio ignorando os `NaN` e os devolve intactos, e nada quebra. O item passou a
-  perguntar se o código roda e o que muda na coluna, e a solução faz a conta: o modelo
-  recebe $z_B=(s_A/s)\,z_A+(m_A-m)/s$, sem média $0$ nem desvio $1$. Simulado (renda
-  lognormal, $30\%$ faltando): média $-0{,}08$, desvio $0{,}85$, o coeficiente da renda
-  de $0{,}60$ a $0{,}71$ e a AUC de validação cruzada mexendo na quinta casa --- um
-  deslize leve. O gabarito foi de 3 para 4 páginas;
-- **`Lista teorica 09` Ex. 4**: definia a 0--1 como $\mathbf 1\{m<0\}$ e punha $1$ em
-  $m=0$. E a solução dizia que a logística é cota superior da 0--1, o que em logaritmo
-  natural falha em $-0{,}54<m<0$ ($\ln 2\approx0{,}69$ em $m=0$). O enunciado passou a
-  usar $\log_2(1+e^{-m})$, e a tabela da solução foi refeita;
-- **`Lista teorica 10` Ex. 3(c)**: ``dois deles são invariantes a transformações
-  monótonas'', mas na tabela só a árvore é --- os *ensembles* não estão nela. Virou
-  ``um deles'' e ``crescentes'', e a solução ganhou a ressalva da implementação: o
-  `scikit-learn` põe o limiar no ponto médio entre dois valores observados, que não se
-  transforma junto, e um ponto novo que caia entre eles pode mudar de lado;
-- **notas da E1, as duas**: a linha ``Euclidiana'' da tabela era a distância ao
-  quadrado, e o $\frac1{\abs{C_k}}$ da WCSS tornava falsa, por um fator $2$, a
-  igualdade entre os dois mínimos da equação. Hoje são $\sqrt{\cdot}$ e
-  $\frac1{2\abs{C_k}}$;
-- **laboratórios**: o 02 escrevia o `ElasticNet` com `l1_ratio=0` sem o $\frac12$ do
-  termo $\ell_2$ --- o fator até o `Ridge` é $n$, o `len(y)` que o código já usava ---,
-  e o 03 anunciava ``A lição, em três partes'' e tinha quatro;
-- **`Lista prática 10`**: o AdaBoost descalibrado ao contrário (ver ``Notebooks''), e
-  ``por uma ordem de grandeza'' virou ``com seis vezes o Brier da logística''.
-
-### Na aula 08
-
-- **`Lista teorica 08`**: o Ex. 1(d) dizia que o *recall* ``sobe necessariamente'' ao
-  baixar o corte; ``nunca desce'' é o certo (se nenhuma transação nova passa do corte,
-  nada muda), e o $F_1$ ganhou a conta, $2(VP+a)/(2VP+FP+FN+a+b)$. O Ex. 2(d) dizia que
-  um modelo pode ``ordenar perfeitamente e classificar todas como normais'', o que é
-  impossível se $p(\x)$ é a probabilidade verdadeira, a premissa do exercício; hoje cita
-  o medido na `Lista prática 08` (AUC $0{,}85$ e, no corte $0{,}5$, 484 positivos
-  preditos entre 12\,000, quando 1\,182 o são). No Ex. 4(d), além da remissão a si
-  mesma, a solução dizia que o excesso de confiança do Bayes ingênuo ``é monótono'' e
-  por isso preserva a ordem. Na população da figura das notas (seis covariáveis,
-  correlação $0{,}85$, médias deslocadas de $1{,}05$) a conta é exata: o *log-odds*
-  verdadeiro é $0{,}2\sum_j x_j$ e o do ingênuo, $1{,}05\sum_j x_j$ --- inclinação
-  $5{,}25$ vezes maior (medido: $5{,}27$ contra a logística). Mas isso vem da simetria
-  da população, não do método: na da `Aula prática 07`, a direção do ingênuo gira
-  $48$ graus;
-- **notas**: a Figura~1 do aluno e a tabela do docente põem o predito nas linhas, e o
-  `confusion_matrix` do `scikit-learn` devolve a transposta --- as duas versões
-  passaram a avisar. A legenda da calibração dizia que o Bayes ingênuo chega a $0{,}99$;
-  o medido é $0{,}98$;
-- **laboratório** (46 células, uns 10 segundos na 1.9), texto contra o que as células
-  imprimem:
-  - §5: a distância entre o corte medido e o teórico era posta na ``granularidade da
-    grade'', mas no cenário 1:5 são onze passos de $0{,}0025$. A célula imprime agora
-    o passo e o custo do corte teórico sobre o mínimo (no máximo $+1{,}6\%$): perto do
-    ótimo, a curva de custo é plana;
-  - §2 e §7: ``90\% de acurácia'' é $91{,}6\%$, contra $90{,}2\%$ do trivial; ``36 mil
-    negativos'' são os $10\,818$ do teste; e a AP é $0{,}49$, não ``0,3 contra 0,1''
-    --- 5 vezes a prevalência, contra 1,7 vez da AUC sobre $0{,}5$;
-  - §10: a grade de $C$ ia de $10^{-4}$ a $10^2$, e o ótimo da AUC e da AP caía na
-    borda, o que o TP01 cobra do aluno. Ela desce hoje a $10^{-8}$, e a célula imprime
-    a curva: de $10^{-8}$ a $10^{-4}$ a AUC de validação fica entre $0{,}8396$ e
-    $0{,}8397$. A acurácia escolhe $C=1$, a AUC $10^{-5}$ e a AP $10^{-7}$; no teste,
-    o da acurácia ordena pior (AUC $0{,}8460$ contra $0{,}8511$);
-  - remissões: ``o assunto da próxima seção'', para a calibração, que é a §9, e ``a
-    limpeza que a Aula 06 diagnosticou'' --- a `Aula prática 06` não lê mais essa base;
-- **figuras e deck**: ver ``Figuras'' e o item 16 do histórico de correções nos HTMLs.
-
-### O que a aula 08 espera do Gabriel
-
-Levantado na leitura e nos slides novos, e deixado com ele:
-
-1. **O escopo, que vem antes de tudo.** Desde 05/10/2026 o deck tem 18 slides: a
-   motivação, a matriz de confusão e as taxas da ROC (itens 17 a 21 do histórico dos
-   HTMLs), o corte ótimo por custo, a ROC e a definição da AUC --- sem o que ela mede
-   nem as críticas a ela, que saíram (item 21). Não tem curva
-   precisão--revocação, AP, `class_weight`, calibração, Brier nem `scoring` na
-   validação cruzada --- que as notas, o laboratório, as listas e a tarefa C4 do TP01
-   usam, e para onde as aulas 07, 09, 10 e E3 apontam (``a Aula 08 mede'' a
-   descalibração do Bayes ingênuo, ``meça o Brier''). Aplicar o ``o deck manda''
-   quebraria essas remissões: ou o deck cresce, ou o conteúdo sai e elas são
-   redirecionadas.
-2. **O laboratório** foi reescrito em 05/10/2026 (adiante), mas continua sem
-   reproduzir a figura `08-roc-metricas`: as Seções 4 e 5 usam o
-   `bank_train_redux.csv`, não a população sintética da figura. Em 07/10/2026 ele perdeu
-   a Seção 5, a dos custos, e as seguintes subiram uma posição; os laboratórios 09, 10 e
-   E3 remetem a ele sem número de seção.
-3. **O `MatConf.pdf`**, um PowerPoint de 2022: chama a acurácia de ``Risco'', repete o
-   título ``Exemplo 1'' nas páginas 4 e 5 e põe o verdadeiro nas linhas, como o
-   `scikit-learn` e ao contrário da Figura~1 das notas. Nenhum material aponta mais
-   para ele: o deck deixou de apontar em 30/09/2026, e as notas e o laboratório em
-   05/10/2026. O arquivo continua na pasta.
-4. **A notação**: o corte é $K$ nas notas (como no [AME] §9.1), $p_0$ no deck e $t$
-   ou $p^*$ no laboratório; os custos são $l_0$ e $l_1$ nas notas (como no [AME]),
-   $\ell_0$ e $\ell_1$ no deck e $c_{FP}$ e $c_{FN}$ no laboratório, nas listas, na aula
-   10 e no TP01. Desde a reescrita de 05/10/2026 as notas chamam a precisão de VPP,
-   como o [AME], e os totais de positivos e negativos verdadeiros de $P$ e $N$, como o
-   deck e o [ISLP]; os escores da AUC são $Z_1$ e $Z_0$, porque $S$ é a sensibilidade.
-5. **As notas do aluno** ainda têm o ``Para praticar'', que saiu da 05 e da 07 (diz
-   ``nesta mesma pasta'' e ``com gabarito''). A ``Prática em Python'' saiu das duas
-   versões em 05/10/2026.
-6. **O $F_1$** saiu do laboratório em 07/10/2026, a pedido do Gabriel, e o deck nunca o
-   teve. Continua nas notas (as duas versões), na `Lista prática 08`, na E3, no
-   planejamento e na tarefa C4(a) do TP01 (ver ``O laboratório em 07/10/2026'').
-
-**O que o deck ganhou em 30/09/2026 foi às notas no mesmo dia**, pelo ``o deck
-manda'' e a pedido do Gabriel, nas duas versões e na notação delas: TPR e FPR como
-nomes da sensibilidade e de $1-E$ (com a `roc_curve`), o par
-$(\text{FPR},\text{TPR})$ reconstruindo a matriz, a leitura como erro do tipo I e
-poder, a decomposição
-$\risco(g)=\pi_1\,\Prob(g(\X)=0\mid Y=1)+\pi_0\,\Prob(g(\X)=1\mid Y=0)$ com a identidade
-na amostra, o exemplo da doença rara (no aluno, um `exemplo` com as duas matrizes; no
-docente, uma `emsala`), a ROC como conjunto de pontos, com a monotonicidade em $K$, os
-extremos e a diagonal, e o empate na AUC. Tudo em fórmula sem número, para não mudar
-a numeração: a Proposição~3.1 (o corte ótimo), citada pela E3, continua 3.1. A versão
-do aluno foi de 7 para 8 páginas; a do docente segue com 5.
-
-**Em 05/10/2026 saíram do deck a decomposição do risco (item 19) e o que a AUC mede,
-com as críticas a ela (item 21), mas as notas continuam com:**
-- **a decomposição**: o parágrafo ``O risco em termos das taxas'' e a identidade na
-  amostra, o `exemplo` da doença rara, que a usa para explicar por que o risco prefere
-  $g_1$, a linha do Resumo e o objetivo ``escrever o risco em termos das taxas'', no
-  aluno; o parágrafo com a identidade e a `emsala`, que manda a turma achar o motivo
-  ``na decomposição'', no docente;
-- **a interpretação da AUC** como probabilidade de o positivo receber escore maior,
-  nas duas versões. Ela já estava nas notas antes do deck; só a independência e o
-  empate, $\text{AUC}=\Prob(Z_1>Z_0)+\frac12\Prob(Z_1=Z_0)$, vieram dele em 30/09. As
-  críticas do deck (a AUC ruidosa, o argumento de Hand sobre custos, ROC e AUC como
-  variáveis aleatórias) nunca estiveram nas notas.
-
-Tirar das notas também, pelo ``o deck manda'', é decisão do Gabriel. A reescrita de
-05/10/2026 (adiante) manteve as duas e apoiou nelas a Observação~3.2, que justifica o
-critério ``maximizar $S+E$''.
-
-### As notas reescritas em 05/10/2026
-
-Pedido do Gabriel: reescrever as duas versões ``como um professor universitário de
-matemática, ao mesmo tempo didático e rigoroso'', avaliando o quanto mudar, e tirar a
-seção de Python. A estrutura e a numeração ficaram --- seis seções, a
-Proposição~3.1 (o corte ótimo) continua 3.1, como a E3 cita, e os rótulos
-(`fig:confusao`, `eq:f1`, `prop:corte`, `sec:roc`...) não mudaram. O que mudou:
-
-- **cada medida passou a ser uma probabilidade com o seu estimador**:
-  $S=\Prob(g(\X)=1\mid Y=1)$ e $\widehat S=\text{VP}/P$, e assim por diante, com a amostra
-  de teste i.i.d.\ e independente do treino dita no começo e as contagens definidas
-  como $\#\{i:\dots\}$;
-- **as afirmações que vinham sem prova ganharam a conta**: que a precisão depende da
-  prevalência, pelo teorema de Bayes, com o exemplo de um teste com $S=E=99\%$ numa
-  doença de prevalência $1\%$ (precisão exatamente $1/2$; com $0{,}1\%$, cerca de $9\%$);
-  a forma amostral $\widehat F_1=2\text{VP}/(2\text{VP}+\text{FP}+\text{FN})$, que mostra
-  que o $F_1$ ignora os VN; a demonstração completa da Proposição~3.1, com o empate; a
-  Observação~3.2, em que custos inversamente proporcionais às prevalências
-  ($l_0=1-\pi_1$, $l_1=\pi_1$) dão o corte $\pi_1$ e o custo
-  $\pi_1(1-\pi_1)(2-S-E)$ --- o que justifica o critério ``maximizar $S+E$'' da ROC;
-  que reponderar e reamostrar codificam custos, agora em conta: o ajuste reponderado
-  estima $p_w$, com as chances multiplicadas por $w_1/w_0$, o que equivale ao corte
-  $w_0/(w_0+w_1)$ em $\eta$ (com `class_weight="balanced"`, a prevalência da
-  amostra), e reamostrar para $\pi_1'$ multiplica as chances por
-  $\frac{\pi_1'/(1-\pi_1')}{\pi_1/(1-\pi_1)}$;
-- **a seção de calibração ganhou definições**: a calibração como
-  $\Prob(Y=1\mid\widehat\eta(\X)=p)=p$, a regra de pontuação própria, a verificação
-  $\E[(p-Y)^2]=(p-\eta)^2+\eta(1-\eta)$ e a decomposição do risco de Brier como a da
-  Aula~01, além do porquê de acurácia e AUC não serem próprias. O conselho de escolher
-  hiperparâmetros por Brier ou entropia cruzada, que estava na caixa de
-  `scoring` da seção de Python, ficou no texto, sem código;
-- **erros corrigidos**: a legenda da calibração dizia que o Brier do Bayes ingênuo é
-  ``quase três vezes pior'' que o da logística, e é $2{,}3$ vezes ($0{,}1523$ contra
-  $0{,}0653$, conferido rodando a geradora numa cópia, no `barennet_env`); a leitura
-  recomendada mandava a ROC para o [ISLP] §4.4.3, que é a QDA --- a matriz do
-  `Default`, a ROC (Figura~4.8) e as Tabelas~4.6--4.7 estão todas no §4.4.2;
-  ``$\text{AUC}=0{,}5$ é aleatório'' virou ``o sorteio tem AUC $1/2$''; ``os métodos
-  tendem ao classificador inútil'' virou o fato do [AME] §9.1 (se
-  $\Prob(Y=1\mid\x)<1/2$ em todo $\x$, o classificador de Bayes é $g\equiv0$); e
-  ``reamostrar destrói a calibração'' virou ``desloca as probabilidades por um fator
-  conhecido'';
-- **o registro**: saíram os aforismos (``Eis a mensagem operacional'', ``Saber qual é
-  qual é metade da aula'', ``a demonstração literal do título'') e o excesso de negrito
-  e travessão; as leituras da figura da matriz passaram à terceira pessoa;
-- **a seção ``Prática em Python'' saiu das duas versões**, e com ela o parágrafo que
-  apontava o laboratório e o `MatConf.pdf`. Os números das legendas foram todos
-  reconferidos na geradora; a legenda da calibração ganhou a entropia cruzada
-  ($0{,}237$ contra $0{,}698$), medida no mesmo passo.
-
-A versão do aluno foi de 8 para 9 páginas e a do docente segue com 5, que ganhou três
-caixas `emsala` (a precisão numa doença rara, o corte de $1/11$ e a AUC que não serve
-para custo esperado). As duas compilam sem erro, sem referência indefinida e sem
-`Overfull`. O ``Para praticar'' do aluno ficou como estava (item 5 acima).
-
-### A `Aula prática 08` reescrita em 05/10/2026
-
-Pedido do Gabriel: reescrever o laboratório ``como um professor universitário que
-precisa ser ao mesmo tempo didático e rigoroso''. O escopo e a numeração das dez
-seções ficaram (o laboratório 10 cita a Seção 5; o 09 e o E3, a calibração da Seção 9),
-e todo o markdown foi reescrito no registro das notas: saíram as caixas ``A lição.'',
-a frase de efeito em destaque da abertura e o excesso de negrito e travessão. De 46
-para 53 células, 20 de código. O que mudou além do texto:
-
-- **a matriz de confusão aparece na orientação da aula**, a transposta do que o
-  `confusion_matrix` devolve, e a Seção 3 confere que a acurácia é a média das taxas de
-  acerto ponderada pelas classes ($0{,}9015\times0{,}9854+0{,}0985\times0{,}2809=0{,}9160$);
-  o `classification_report` é lido linha a linha (o `recall` da classe 0 é a
-  especificidade; a `precision` da classe 0, o VPN);
-- **a Seção 4 mede também a taxa de erro** ao longo do corte: ela é mínima em $0{,}506$,
-  perto do $1/2$ que a teoria prevê para probabilidades bem estimadas;
-- **a Seção 5 separa o corte teórico do medido**: o exemplo em reais passou a usar o
-  corte teórico ($0{,}0323$: R\$ 20,07 por cliente, contra R\$ 64,14 no corte $0{,}5$), e
-  o texto diz que o melhor corte da grade (R\$ 19,82) foi escolhido com os rótulos do
-  teste e tem custo otimista. O `R$` do markdown virou `R\$`: os dois cifrões soltos
-  faziam o MathJax tratar o trecho entre eles como fórmula;
-- **a conferência da AUC por sorteio ganhou erro-padrão e empates**:
-  $\Prob(Z_1>Z_0)+\frac12\Prob(Z_1=Z_0)=0{,}8531$ contra $0{,}8532$, erro-padrão
-  $0{,}0008$, nenhum empate;
-- **a Seção 8 verifica a conta das notas sobre o `class_weight`**: o log-odds se desloca
-  em média $2{,}226$, contra $\log(w_1/w_0)=2{,}214$, e a regra reponderada concorda com
-  ``$\widehat p\ge0{,}0985$'' (a prevalência do treino) em $97{,}35\%$ do teste;
-- **a Seção 9 usa as dez faixas da Figura~3 das notas** (antes eram doze), e reproduz os
-  números da legenda (o Bayes ingênuo prevê $0{,}984$ na faixa mais alta, onde há
-  $28{,}7\%$ de positivos), com a entropia cruzada ao lado do Brier. A calibração
-  isotônica passou a `ensemble=False`, para ser de fato uma função crescente de um único
-  Bayes ingênuo: o Brier vai de $0{,}1523$ a $0{,}0655$, e a AUC, de $0{,}7762$ a
-  $0{,}7725$, só por empates (os $20\,000$ valores viram $140$). Com o `ensemble=True`
-  de antes, a média de cinco calibradores não era uma transformação monótona do modelo,
-  e o texto afirmava que era;
-- **a Seção 10 imprime os positivos previstos**: os dois modelos muito penalizados não
-  chamam ninguém de positivo (0 de 12\,000), o que o texto afirmava sem célula;
-- **convenções**: `import sklearn.linear_model as skl`; a leitura recomendada manda a
-  ROC ao [ISLP] §4.4.2 (dizia §4.4.3, que é a QDA) e não aponta mais o `MatConf.pdf`.
-
-Rodado inteiro no `barennet_env` (sklearn 1.9), sem erro, e cada número do markdown
-conferido contra a célula que o imprime. O arquivo tinha sido aberto e executado na IDE
-antes da reescrita (cinco células com `execution_count`, 19 com as chaves na ordem do
-Jupyter e o `kernelspec` como ``barennet_env'', Python 3.11.5), sem mudança de texto: a
-reescrita partiu da versão commitada, e os metadados voltaram a ``Python 3'' e 3.12.7.
-
-### O laboratório em 07/10/2026: os dados, o modelo, as figuras, o fim do $F_1$ e da Seção 5
-
-Quatro pedidos do Gabriel no mesmo dia. Na Seção 2: mostrar algumas linhas da base logo
-depois da leitura, ``com algumas covariáveis importantes incluindo o default'', e
-relembrar a fórmula da regressão logística antes do ajuste; entraram quatro células,
-entre a leitura e o ajuste. Na Seção 3: trocar as duas saídas em texto por ``um gráfico
-bonitinho com as métricas''. Depois, ``esqueça o F1, retire ele do notebook todo''. E,
-por fim, ``retire a seção 5''. O laboratório foi de 53 para **49 células**, 18 de
-código, e tem hoje nove seções: **as antigas 6 a 10 são as 5 a 9**. Toda menção a
-§6--§10 deste laboratório anterior a 07/10/2026, neste arquivo, é a §5--§9 de hoje; nesta
-subseção, os números já são os de hoje.
-
-- **A base não tem coluna `default`.** O `bank_train_redux.csv` é da competição
-  *Santander Customer Transaction Prediction* (ver ``Dados''): `target` vale 1 para o
-  cliente que fez uma certa transação, e as 200 covariáveis são anônimas. A célula nova
-  diz isso ao aluno e mostra o `target` ao lado de cinco covariáveis escolhidas por um
-  critério dito no texto: $\delta_j=(\bar x_{1j}-\bar x_{0j})/s_j$, a diferença entre
-  as médias das classes em desvios-padrão, calculada só no treino. As cinco são
-  `var_139` ($-0{,}264$), `var_146`, `var_81`, `var_26` e `var_165` ($-0{,}223$); a
-  mediana de $\abs{\delta_j}$ é $0{,}083$, e os desvios-padrão das covariáveis vão de
-  $0{,}007$ (`var_68`) a $21{,}5$ (`var_45`). A tabela mostra os quatro primeiros
-  clientes de cada classe (`groupby("target").head(4)`), porque as dez primeiras linhas
-  do arquivo são todas negativas: o primeiro positivo é o `train_13`.
-- **A recordação do modelo** segue as notas do aluno da 07 (a $\sigma$, o *log-odds*, a
-  verossimilhança, o ``não se supõe que isso seja exatamente verdade''), lembra que
-  $-\ell/n$ é a entropia cruzada da Seção 8 e fecha com a regra
-  $\widehat p\ge1/2\iff\widehat\beta_0+\widehat{\bm\beta}{}^\top\x\ge0$, uma fronteira
-  de hiperplano. **Inclui a penalização, com o aval do Gabriel**, embora o slide dela
-  tenha saído do deck da 07 (item 15 do histórico dos HTMLs): o modelo que a célula
-  ajusta é o penalizado, e as Seções 7 e 9 dependem disso. O objetivo foi conferido na
-  sklearn 1.9, com `tol=1e-12`: o `LogisticRegression` maximiza
-  $\ell(\beta_0,\bm\beta)-\frac1{2C}\norm{\bm\beta}^2$, com o intercepto fora da
-  penalização (o gradiente fica na ordem de $10^{-5}$ nos dois).
-- **Uma frase da Seção 7 estava errada** e foi corrigida no mesmo passo. Ela atribuía à
-  penalização parte da variação do deslocamento do *log-odds* entre clientes (quartis
-  $2{,}112$ e $2{,}340$). Sem penalização ($C=\infty$) o deslocamento é o mesmo até a
-  terceira casa (média $2{,}227$, quartis $2{,}113$ e $2{,}341$): a variação vem de a
-  reponderação mudar também os coeficientes das covariáveis, porque a forma logística só
-  aproxima a probabilidade verdadeira e a amostra é finita. É o que o texto diz hoje.
-- **A Seção 3 desenha a matriz e as medidas.** A matriz de confusão virou figura, na
-  orientação da aula ($\widehat Y$ nas linhas, $Y$ nas colunas), com os acertos em verde e
-  os erros em vinho nos tons da Figura~1 das notas (`verdeesc!16` e `vinho!20`), e $N$ e
-  $P$ abaixo das colunas. As medidas viraram barras horizontais com o valor na ponta, em
-  quatro casas: em verde as que dividem por um total de coluna (sensibilidade, taxa de
-  falsos positivos, especificidade), em vinho a que divide por um total de linha (a
-  precisão) e em cinza a taxa de erro, que divide pelo total da tabela --- o verde e o
-  vinho são as cores das setas da mesma figura das notas. Os números citados no texto
-  não mudaram.
-- **O $F_1$ saiu do laboratório inteiro**: do objetivo, da Seção 3 (a barra, a média
-  harmônica e a conferência das duas fórmulas), da Seção 4 (a varredura de cortes
-  desenha agora precisão, sensibilidade e taxa de erro, com o mínimo desta marcado em
-  $0{,}506$; o texto não cita mais o $F_1$ máximo de $0{,}487$ no corte $0{,}27$), da
-  Seção 7 (a tabela perdeu a linha da logística no corte do $F_1$ e compara só a original
-  e a reponderada), do `scoring` da Seção 9 e do Resumo. O `classification_report` saiu
-  junto, porque imprime uma coluna `f1-score`, e com ele a leitura das suas linhas: que o
-  `recall` da classe 0 é a especificidade e a `precision` da classe 0, o VPN ($0{,}926$),
-  o único lugar do laboratório que citava o VPN. A identidade da acurácia e o parágrafo
-  da precisão contra a sensibilidade passaram para a leitura do gráfico. **O deck nunca
-  teve o $F_1$**, mas ele continua nas notas (as duas versões, com a `eq:f1`), na
-  `Lista prática 08` (Ex. 2 e ``O que ficou''), nas notas e na lista prática da E3, no
-  planejamento e na tarefa C4(a) do Trabalho Prático 01, que pede o $F_1$ no corte $0{,}5$
-  (o roteiro dá $0{,}461$). Tirar de lá é decisão do Gabriel.
-- **A Seção 5, ``Custos assimétricos e o corte ótimo'', saiu inteira**: as oito células
-  com a fórmula $c_{FP}/(c_{FP}+c_{FN})$, a tabela que comparava o corte teórico com o
-  medido em quatro razões de custo, a curva de custo no caso 1:20 e o exemplo em reais
-  (R\$ 30 por investigação, R\$ 900 por positivo perdido: R\$ 20,07 por cliente no corte
-  teórico, contra R\$ 64,14 no corte $0{,}5$). Nenhuma variável dela era usada depois, e as
-  saídas das 18 células de código que ficaram são idênticas às de antes. Foram junto o
-  objetivo ``verificar numericamente o corte que minimiza o custo esperado'', a linha
-  ``custo assimétrico'' do Resumo e o ``de onde sai a fórmula da Seção 5'' da leitura
-  recomendada. Duas remissões foram reescritas: a leitura da Seção 4, que anunciava os
-  custos na seção seguinte, passou a apontar a Proposição~3.1 das notas; e a calibração,
-  que dizia ``como na Seção 5'', diz ``como num custo esperado''. **O corte ótimo por
-  custo continua no deck e nas notas**, e o laboratório 10, que remetia à ``Aula 08,
-  Seção 5'', remete hoje só à ``Aula 08''. Era a única remissão de fora com número de
-  seção; os laboratórios 09 e E3 citam a Aula 08 sem número.
-
-Medido e deixado fora do notebook: com $C=1$ e 28 mil clientes de treino, a penalização
-quase não age (as probabilidades de teste mudam no máximo $0{,}0005$ em relação a
-$C=\infty$); o `max_iter=2000` também não (o L-BFGS converge em 8 iterações, e com o
-padrão de 100 as probabilidades saem idênticas); e os coeficientes da logística
-padronizada quase coincidem com os $\delta_j$ (correlação $0{,}994$; a `var_139` tem
-$\delta=-0{,}264$ e coeficiente $-0{,}264$), o que se espera de covariáveis quase
-independentes, como no LDA com covariância diagonal.
-
-Fora das células mexidas, as saídas saem idênticas às da versão anterior, a não ser pelo
-endereço de memória dos `Legend` do `matplotlib`, e as 101 fórmulas do notebook
-renderizam sem erro no MathJax 2.7 do `nbconvert`. A IDE executou e salvou o arquivo
-quatro vezes durante o trabalho, sempre sem mudar texto: antes da Seção 2 (o
-`kernelspec` como ``barennet_env''), e a edição partiu da versão commitada; e três vezes
-depois, com até nove células com saída e as chaves na ordem do Jupyter. Os scripts de edição, que leem o
-arquivo e o regravam, levaram essas saídas adiante até a limpeza final. Limpe **depois**
-da última edição, e confira as fontes contra a sua última versão antes de cada passo.
-
-### A `Lista teorica 08` perdeu os Ex. 3 e 4
-
-Decisão do Gabriel em 05/10/2026: o Ex. 1 passa a pedir só as métricas introduzidas em
-aula, e os Ex. 3 e 4 saem inteiros. A lista fica com **dois exercícios**, como a 04 e a
-06; o enunciado foi de 2 para 1 página, e o gabarito, de 5 para 3.
-
-- **``Introduzidas em aula'' quer dizer ``no deck''.** Nas notas estão também a
-  acurácia, a precisão, o VPN e o $F_1$, e nenhuma delas aparece nos slides; o deck tem
-  a taxa de erro $(FP+FN)/n$, a sensibilidade (TPR), a taxa de falsos positivos (FPR) e
-  a especificidade, com a FNR como complemento. O Ex. 1 virou ``uma matriz de confusão,
-  quatro taxas'': (a) pede essas quatro; (b) compara a taxa de erro com a do
-  classificador que responde sempre ``normal'' ($0{,}0400$ contra $0{,}0500$); (c)
-  reescreve ``o sistema erra em apenas 4\% das transações'', no lugar dos ``96\% de
-  acurácia'', e a versão honesta da solução usa a sensibilidade e a FPR, sem a
-  precisão; e (d) pergunta quais taxas não podem descer (TPR e FPR), qual não pode subir
-  (a especificidade) e qual vai para qualquer lado (a taxa de erro, que muda de
-  $(b-a)/n$ se o corte novo pega $a$ fraudes e $b$ normais). O (d) bate com o segundo
-  slide da ROC (item 20 do histórico dos HTMLs).
-- **O que saiu com os Ex. 3 e 4**: a AUC calculada à mão pelos pares, a invariância a
-  transformações crescentes, a AUC do acaso e da ordem invertida, e a melhor acurácia
-  contra a AUC (Ex. 3); a mesma AUC com Brier 29 vezes maior, e a conta da inclinação
-  $5{,}25$ do Bayes ingênuo, de 30/09 (Ex. 4). Essa conta não está mais em material
-  nenhum.
-- **A única remissão de fora** era a solução do Ex. 2(d) da `Lista teorica E3`
-  (``Funciona mesmo assim pela razão do Exercício~4 da Lista Teórica~08''): saiu só a
-  remissão, e a frase se sustenta. Só o gabarito da E3 foi recompilado. O Ex. 2 da 08
-  continua citado pelas listas práticas 08 e 10 e pela `Lista teorica 10`.
-
-**No mesmo dia, a lista foi reescrita** no registro de professor rigoroso e didático,
-como as notas (a orientação de estilo está na memória do Claude), sem mudar o que cada
-exercício pede. No enunciado: a matriz do Ex. 1 passou à orientação da aula, com o
-previsto nas linhas e o real nas colunas (antes estava como a do `scikit-learn`); o
-(a) pergunta também que probabilidade cada taxa estima; o Ex. 2 diz que acertar não
-custa nada e chama os custos de ``os $l_1$ e $l_0$ das notas''; o (b) pede também por
-que decidir em cada $\x$ minimiza o custo total; e o (c) fixa o modelo de custos ---
-``cada alarme falso custa R\$ 10, o preço de investigar uma transação honesta'', no
-lugar de ``investigar um alerta custa R\$ 10'', que não dizia se investigar uma fraude
-verdadeira também custa. Nas soluções: a tabela do (a) ganhou a coluna da
-probabilidade estimada e os erros-padrão binomiais das duas taxas de classe ($0{,}022$
-para a sensibilidade, com $500$ fraudes, contra $0{,}001$ para a FPR, com $9\,500$
-normais); o (d) do Ex. 1 escreve a regra com corte $K$ e dá os dois sentidos da taxa
-de erro com números ($50$ fraudes e $10$ normais a mais: $0{,}0360$; $5$ e $200$:
-$0{,}0595$); o (b) do Ex. 2 prova a otimalidade global pela lei da esperança total e
-remete à Prop.~3.1 das notas; o (c) interpreta o corte $1/51$ (cerca de $50$
-investigações honestas por fraude encontrada) e mostra que, se investigar uma fraude
-verdadeira também custa R\$ 10, o corte vira $10/(10+490)=0{,}02$; e o (d) lembra que
-$0{,}5$ é o corte de Bayes, ótimo para o risco $0$--$1$, e cita os números da
-`Lista prática 08` (AUC $0{,}8529$, $484$ previstos contra $1\,182$ positivos em
-$12\,000$), conferidos no gabarito dela. O enunciado tem 1 página e o gabarito, 4.
-
-## Figuras (`recursos/figuras/`)
-
-As figuras das notas dos alunos são geradas por `gerar-figuras.py`; nenhuma foi
-copiada dos livros. Uma função por figura, registrada com `@figura("nome", "aula")`:
-
-```bash
-python3 recursos/figuras/gerar-figuras.py         # todas (~5 min)
-python3 recursos/figuras/gerar-figuras.py 03 06   # só as aulas 03 e 06
-```
-
-Três coisas a respeitar:
-
-1. **O script confere os números que as legendas afirmam.** Ele imprime linhas
-   `[conferência]` com o que foi medido (a decomposição viés--variância fechando na
-   precisão de máquina, o ganho do QDA sobre o LDA, a floresta estabilizando com
-   $B$...). Se você mudar uma simulação, releia a legenda correspondente: vários
-   números estão escritos no `.tex`.
-2. **Não use as macros do curso nos rótulos do matplotlib.** `$\x$` é `\x` do
-   `estilo-notas.sty`, e o mathtext do matplotlib não a conhece — quebra com
-   `ParseFatalException`. Pelo mesmo motivo, nada de `\%`, `\,` ou `\emph{}` em
-   strings do matplotlib: eles saem impressos literalmente. A vírgula decimal vai
-   como `{,}` dentro de `$...$` e como `,` fora --- e o `.replace(".", ",")` deve
-   pegar **só o número**: aplicado ao rótulo inteiro, ele fez o ``$F_1$ máx.'' da
-   `08-roc-metricas` sair ``máx,'' (corrigido em 30/09/2026, junto com as legendas das
-   duas figuras da 08, que usavam ponto decimal).
-3. **Os parâmetros da população sintética são os mesmos dos notebooks das aulas
-   práticas** (`r(x)=sin(1.5x)+0.3x`, `σ=0,7`, `n=50`, `B=500`). Mudá-los
-   dessincroniza figura e prática.
-
-## Slides (HTML) — leia antes de editar
-
-Os 11 arquivos `.html` em `aulas/*/` **não foram escritos à mão**. São
-apresentações reveal.js geradas pelo **Quarto 1.4.549** (todas na mesma versão),
-com as bibliotecas JavaScript embutidas — daí os 3–8 MB por arquivo.
-
-**Os arquivos-fonte `.qmd` não estão no repositório**, nem em nenhuma branch ou
-commit do histórico. Ficaram na máquina de quem produziu o material. Consequência
-prática: qualquer edição feita diretamente no HTML **é perdida se alguém
-recompilar a apresentação a partir do fonte**. Ao alterar um slide, avise quem
-mantém os `.qmd` para replicar a mudança lá.
-
-Três armadilhas ao editar esses HTMLs:
-
-1. **Os 11 HTMLs usam CRLF.** Todo o resto do repositório (`.tex`, `.sty`, `.md`,
-   `.ipynb`) usa LF. Ao editar por script, preserve as quebras — abra em modo
-   binário, ou use `newline=''` em Python. Uma escrita em modo texto converte as
-   ~2.700 linhas para LF e transforma uma mudança de uma linha num diff do arquivo
-   inteiro.
-2. **O conteúdo legível começa por volta da linha 1140.** Tudo antes é CSS e
-   JavaScript minificado. Os slides são elementos `<section>`; ler o arquivo
-   inteiro estoura o limite de contexto, então busque por trecho.
-3. **Os `id` das headings são slugs gerados pelo Quarto** a partir do texto. Ao
-   mudar o texto de um título, atualize o `id` junto — mas verifique antes se algum
-   link ou índice aponta para o `id` antigo. O menu lateral (`slide-menu`) é montado
-   em tempo de execução a partir do DOM, então um slide novo entra nele sozinho.
-4. **O slide não rola, e o que passa do fim é cortado em silêncio.** Nos decks os
-   slides de tópicos vão até ~450 caracteres de texto visível (o campeão do deck 04
-   tem 453); um slide novo com 525 teve o fim invisível, sem aviso nenhum. O escape
-   do próprio Quarto é `class="slide level2 scrollable"`, que os decks usam nos
-   slides com tabela grande — mas para lista de tópicos, encurtar é melhor que rolar.
-   **O mesmo vale para a largura**, e ali há dois agravantes, medidos no deck 08 em
-   30/09/2026. No reveal o `<ul>` é `inline-block`: uma fórmula em `display` mais larga
-   que a coluna alarga a lista inteira, e o *texto* dos outros itens sai pela direita
-   junto. E a largura que o MathJax 2.7 dá a uma fórmula varia de um render para outro:
-   a mesma $R(g)$ numa linha só sobrava 4 px num e passava 27 px da borda noutro, na
-   mesma escala. Fórmula que ocupa a linha toda é frágil: quebre em `aligned`.
-
-## Notebooks
-
-**Há um laboratório guiado por aula**, `aulas/NN-*/Aula prática NN.ipynb`, das 13
-aulas. Eles seguem a conduta pedagógica dos labs do **[ISLP]** mas *não* usam o
-pacote `ISLP` (que não está instalado e não é dependência do curso). Convenções, a
-respeitar em qualquer notebook novo:
-
-- `from matplotlib.pyplot import subplots` e API orientada a objeto — **nunca**
-  `plt.figure()`;
-- `import sklearn.linear_model as skl`, `import sklearn.model_selection as skm`
-  (o módulo, não função a função);
-- `rng = np.random.default_rng(semente)` em toda simulação;
-- nomes iguais aos das notas: `X_tr`, `X_te`, `y_tr`, `y_te`, `modelo`;
-- markdown antes de cada célula dizendo **por que** aquilo vem agora;
-- **nada de macro do curso no markdown**: `\x`, `\bm`, `\rhat` e `\1` são do
-  `estilo-notas.sty`, e o MathJax do Jupyter não as conhece --- use `\mathbf{}` e
-  escreva o resto por extenso. É a armadilha do mathtext do matplotlib um andar
-  acima, e ela é silenciosa: o `.tex` compila, o notebook renderiza torto;
-- commitados **sem outputs** e sem `execution_count`;
-- **o notebook explica estatística, não explica as próprias escolhas de estilo** —
-  meta-comentário do tipo "seguimos a conduta do [ISLP]" foi explicitamente
-  removido pelo Gabriel da versão que ele leu.
-
-**Os blocos `> **Sua vez.**` acabaram nas aulas práticas** (12/08/2026). Eles
-eram um enunciado seguido de célula de código vazia, e faziam sentido quando a aula
-prática era o único material de exercício. Com uma lista prática por aula, o
-laboratório guiado **mostra** em vez de deixar em aberto: cada bloco virou markdown
-+ código + leitura do resultado. Não escreva `Sua vez` em notebook novo.
-
-Foram 40 blocos ao todo, e **meça antes de escrever** não é conselho de estilo: em
-mais de um terço deles o resultado contrariou o que o enunciado sugeria. A árvore
-gananciosa precisa de profundidade 6, não 3, para o `sinal(x1x2x3)`; o desvio-padrão
-da CV continuava caindo com $k$ mesmo em $n=200$ (medição removida do material em
-19/08/2026 — ver adiante); ficar com as 5 colunas mais correlacionadas piora o KNN
-*e* a Ridge; o t-SNE com `init="pca"` é reprodutível; e
-acrescentar comprimento e dígitos ao filtro de spam melhora a AUC e **piora** a AP.
-Um bloco precisou de repetições e erro-padrão para não afirmar bobagem.
-
-### As medições dos 40 blocos, e o que elas cobraram do resto do material
-
-Em 17/08/2026 as 40 medições foram conferidas contra as notas (as duas versões), as
-listas teóricas e seus gabaritos, as listas práticas e os 11 decks. **Toda medição
-nova é uma afirmação nova sobre o curso, e ela precisa passar por aí** — o notebook
-corrigido ao lado de uma nota que diz outra coisa é pior que os dois errados juntos.
-
-Três colisões saíram dessa varredura e estão corrigidas:
-
-- a `Lista teorica E2` dizia que o t-SNE "nem sequer é determinado de forma única
-  (rodar de novo com outra semente dá outro mapa)". **O `init` padrão do `TSNE`
-  virou `"pca"` na versão 1.2 do scikit-learn**, e os trechos de código das notas
-  omitem o `init` — então recebem `"pca"` e ficam determinísticos. Só com
-  `init="random"` a frase vale, e mesmo aí 92,6% das vizinhanças se preservam. Os
-  `lstlisting` passaram a trazer o `init` explícito;
-- quatro lugares afirmavam que um modelo com $n$ parâmetros para $n$ pontos
-  interpola com resíduo nulo. É verdade em aritmética exata, e a `Lista teorica 03`
-  nomeia justamente o caso que a `Aula prática 03` §3 mede — grau 49 em 50 pontos —
-  onde o medido é $0{,}1029$: a matriz perde posto numérico e o `lstsq` devolve a
-  solução de norma mínima. Só a analogia com o polinômio precisou de ressalva; o RSS
-  zero da árvore com uma observação por folha é exato também no computador;
-- a caixa da aula 06 dividia os métodos em duas categorias e são **três**: LDA, QDA
-  e Bayes ingênuo também são invariantes por reescala, e justamente *porque* estimam
-  a covariância. (Em 16/09/2026 descobriu-se que a medição que sustentava isso, na
-  §8 da `Aula prática 07`, comparava cada modelo com ele mesmo. A invariância vale
-  para os estimadores de MV; o `var_smoothing` do `GaussianNB` e o `reg_param` do
-  QDA a quebram --- ver ``A aula 07 segue o deck (e o deck mudou)''.)
-
-**O grau 49 da aula 03 não tem um número, tem uma faixa** (medido em 19/08/2026). Os
-três valores que o §3 afirmava — erro de treino $0{,}3049$, EQM de teste $25{,}5$ e
-mergulho a $-109$ — vieram todos de uma execução coerente, mas em uma instalação que
-truncava o posto em $10^{-6}$ relativo. No ambiente atual (scikit-learn 1.5.1, scipy
-1.13.1) o `lstsq` trunca na precisão da máquina, enxerga posto 39 em vez de 21, e os
-mesmos três números viram $0{,}1029$, $2{,}5\times10^{13}$ e $-1{,}05\times10^{8}$ —
-o do teste, doze ordens de grandeza acima. **Não trate nenhum deles como estável**:
-variando só o corte de posto de $10^{-6}$ à precisão da máquina, o EQM de teste
-percorre de $25$ a $2{,}5\times10^{13}$. O que sobrevive a qualquer corte, e é o que o
-texto deve sustentar, são as três leituras: o erro de treino não é zero, é menor que o
-do grau 5, e o ajuste é catastrófico fora dos pontos. O notebook, as notas do aluno e
-a `Lista teorica 03` já trazem a ressalva.
-
-**A variância da CV contra $k$ saiu do material** (19/08/2026). O deck da aula 03 ---
-que é o que os alunos veem --- ensina o argumento clássico: $k$ grande dá dobras
-muito correlacionadas e portanto estimativa de variância alta. As notas o
-contradiziam com medição (o desvio-padrão caía de $2{,}20$ em $k=2$ a $0{,}13$ na
-LOOCV, e continuava caindo com $n=200$), e a `Aula prática 03` media isso numa seção
-própria. **Decisão do Gabriel: alinhar ao deck.** Saíram a caixa
-`o que a medição mostra` das duas versões das notas, a `emsala` que encenava a
-contradição em aula, a seção do notebook e a curva de desvio-padrão da figura
-`03-escolha-k` --- que hoje mostra só o viés e o custo. O que ficou é o viés, que
-não contradiz nada: $0{,}427$ em $k=2$, $0{,}0064$ em $k=10$. A medição antiga está
-no histórico do git, não no material.
-
-E cinco resultados que só existiam no notebook viraram caixa nas notas: a
-profundidade que a miopia gananciosa cobra (06), o expoente empírico depender da
-janela de $n$ (05), o corte por custo não cortar nada em modelo descalibrado (11), a
-silhueta e a compressão discordarem por um fator de dez (E1), e a AP descer enquanto
-a AUC sobe (E3).
-
-**Conferido e correto — não reabra:** o `C` da aula 09 (as notas já trazem a
-convenção de orçamento do [ISLP] e a inversão do scikit-learn em caixas vizinhas), o
-PCA e o KNN na E2 (as notas já dizem que o KNN se adapta sozinho à dimensão
-intrínseca) e o Gini contra o erro na 10. Nesses o errado era só o enunciado antigo
-do bloco. (O viés de fronteira da 04 também estava conferido, mas o assunto saiu do
-curso em 24/08/2026 --- ver a seção da aula 04, adiante.)
-
-As **listas práticas e seus gabaritos** têm outros **40 blocos** `Sua vez`, em 24
-notebooks (eram 46 em 28 até a `Lista prática 04` ser reescrita, em 24/08/2026, e
-44 em 26 até a aula 05 sair do curso, em 31/08/2026).
-Ali eles talvez façam sentido, já que a lista é o material de exercício — não os
-converta sem perguntar ao Gabriel.
-
-Cada notebook reproduz as simulações da figura correspondente em
-`recursos/figuras/gerar-figuras.py`, **com os mesmos parâmetros e a mesma semente**,
-para que o número que o aluno lê na nota seja o número que ele obtém na célula. Ao
-mexer num dos dois, confira o outro.
-
-Antes de commitar um notebook, rode-o inteiro e confira as afirmações do texto
-contra o que as células imprimem — mas **num diretório de saída separado**, para
-não gravar as saídas no arquivo do repositório:
-
-```bash
-cd aulas/03-validacao-cruzada
 jupyter nbconvert --to notebook --execute "Aula prática 03.ipynb" --output-dir /tmp
 ```
 
-**Rode no ambiente do Gabriel, não no `python3` do sistema.** O interpretador
-padrão desta máquina tem scikit-learn 1.3; o dele é o conda `barennet_env`, com
-1.9 — e a versão velha esconde quebras que os alunos veriam:
+**Rode com scikit-learn 1.9**, a versão do Gabriel (conda `barennet_env`, na máquina
+`/home/exxon-lp-003`; nas outras, um venv com `scikit-learn==1.9.0`). Versões antigas
+escondem quebras, e rodar é a única varredura que as pega. O `requirements.txt` lista as que
+já apareceram; em resumo:
 
-```bash
-/home/exxon-lp-003/anaconda3/envs/barennet_env/bin/jupyter nbconvert \
-  --to notebook --execute "Aula prática 02.ipynb" --output-dir /tmp
-```
+- `LassoCV`/`ElasticNetCV` perderam `n_alphas` (omita; `Lasso.path` ainda aceita);
+- `QuadraticDiscriminantAnalysis()` levanta `LinAlgError` com covariância mal condicionada
+  (o `breast_cancer`): use `reg_param=1e-4`, que muda o resultado. Com menos observações que
+  covariáveis numa classe nada resolve. Até a 1.5, pelo menos, ele ajusta calado;
+- `AdaBoostClassifier` perdeu `algorithm`; com o `SAMME` as probabilidades ficam entre
+  $0{,}2$ e $0{,}8$ (pouca confiança, não demais);
+- `LogisticRegression(penalty=...)` sai na 1.10: omita, ou use `C=np.inf`;
+- `GroupKFold` reparte grupos de tamanho igual de outro jeito conforme a versão, e
+  `GroupKFold(shuffle=True)` exige 1.6 (o TP01 usa);
+- os notebooks chamam `warnings.filterwarnings("ignore")`: depreciação só aparece com
+  `python -W error::FutureWarning`, fora do notebook.
 
-Isso já pegou uma quebra real: `LassoCV` e `ElasticNetCV` perderam o parâmetro
-`n_alphas` no scikit-learn 1.7, e a aula prática 02 parava no meio. Omitir o
-parâmetro usa o padrão de 100 alphas e funciona em qualquer versão. Cuidado para
-não "corrigir" demais: o `Lasso.path` é outra função, ainda aceita `n_alphas`, e a
-aula 02 o usa na §5.
-
-E pegou uma segunda, em 12/08/2026: o **`QuadraticDiscriminantAnalysis` levanta
-`LinAlgError`** em vez de avisar quando a covariância de uma classe fica mal
-condicionada, e a `Aula prática 07` morria da §8 em diante — as 30 medidas do
-`breast_cancer` são colineares o bastante. A correção é `QDA(reg_param=1e-4)`, um
-ridge minúsculo na covariância, e ela **muda o resultado**: o QDA sai de empatado
-na frente para trás do LDA no teste. O texto foi reescrito sobre o medido. (O caso
-real era a §8 do laboratório, e é a §7 desde 28/09/2026; a `Lista prática 07`, com a
-mesma chamada, só foi
-corrigida em 16/09/2026, e a `Lista prática 10` em 21/09/2026.)
-
-E uma terceira, em 21/09/2026: o **`AdaBoostClassifier` perdeu o `algorithm`**. O
-`SAMME.R` foi depreciado na 1.4 e removido na 1.6, e o `SAMME` que ficou produz
-**outras probabilidades**. A acurácia não se mexe; AUC e Brier, sim: no
-`breast_cancer` da `Lista prática 10`, $0{,}9935 \to 0{,}9948$ e
-$0{,}1480 \to 0{,}1264$. Não levanta erro nenhum — só aparece rodando. (A §7 da
-`Aula prática 10`, que também usa AdaBoost, já estava medida numa versão recente e
-confere na 1.9 até a quarta casa.) O texto da lista, porém, lia esse Brier ao
-contrário até 30/09/2026: dizia que o AdaBoost empurra as probabilidades para $0$ e
-$1$. Com o `SAMME` elas vão só de $0{,}21$ a $0{,}81$, com média $0{,}65$ na classe 1
-e $0{,}34$ na 0 --- o defeito é de **pouca** confiança ---, e os dois notebooks da
-lista ganharam uma célula que imprime isso.
-
-Uma varredura dos argumentos de **todas** as chamadas do scikit-learn em **todos**
-os notebooks contra as assinaturas da 1.9 não achou outro caso (10/08/2026) — mas
-ela cobre nome de parâmetro, não exceção nova nem mudança de comportamento padrão,
-que é justamente a classe destas duas. Rodar é a única varredura que pega.
-O `requirements.txt` registra as duas.
-
-**Armadilha ao abrir um notebook no Jupyter:** salvar grava as saídas e os
-`execution_count`, e ainda **reordena as chaves de cada célula** para a ordem
-canônica do `nbformat` (`cell_type, execution_count, id, metadata, outputs,
-source`). Os notebooks do repositório estão em outra ordem (`cell_type, id,
-metadata, source, execution_count, outputs`), então uma abertura sem edição
-nenhuma já produz um diff do arquivo inteiro. Antes de commitar, limpe **e
-restaure a ordem** --- os treze laboratórios guiados estão uniformes desde
-24/08/2026, e vale manter:
-
-```python
-import json
-
-ORDEM_COD = ("cell_type", "id", "metadata", "source", "execution_count", "outputs")
-ORDEM_MD  = ("cell_type", "id", "metadata", "source")
-
-p = "aulas/01-introducao/Aula prática 01.ipynb"
-nb = json.load(open(p, encoding="utf-8"))
-novas = []
-for c in nb["cells"]:
-    if c["cell_type"] == "code":
-        c["outputs"], c["execution_count"] = [], None
-        chaves = ORDEM_COD
-    else:
-        chaves = ORDEM_MD
-    nova = {k: c[k] for k in chaves if k in c}
-    nova.update({k: v for k, v in c.items() if k not in chaves})   # nada se perde
-    novas.append(nova)
-nb["cells"] = novas
-open(p, "w", encoding="utf-8").write(json.dumps(nb, ensure_ascii=False, indent=1) + "\n")
-```
-
-A reordenação é semanticamente inócua (o JSON é equivalente), mas desfazê-la é o
-que mantém o diff legível. Confira com `nb == original` antes de gravar: a
-igualdade de dicionários em Python ignora ordem, então ela prova que só a ordem
-mudou.
-
-O Jupyter carimba também `metadata.language_info.version` com a versão do kernel
-que rodou. Como os notebooks são commitados **sem saída**, esse campo não
-registra nada de real --- é só ruído de diff. O valor da casa é o Python desta
-máquina, **3.12.7**, em 39 dos 44 notebooks. As cinco exceções são exatamente os
-cinco herdados de demonstração (adiante), e ficam como estão: três em 3.11.7, um
-em 3.9.15, e o `Exemplo - PCA`, que é do Colab e cujo `language_info` só traz o
-nome da linguagem --- inventar versão ali seria fabricar metadado.
-
-**Um laboratório escapou dessa limpeza.** A `Aula prática 06` foi commitada **com
-saídas** no `ced60e1` (14/09/2026): cinco células com saída, os `execution_count`, as
-chaves na ordem do Jupyter e o `kernelspec` e o `language_info` do `barennet_env`
-(Python 3.11.5). Ficou assim uma semana, e só apareceu numa varredura. Foi limpa em
-21/09/2026, com o metadado da versão anterior (`4045219`); as saídas de uma execução
-nova conferiram, uma a uma, com as que estavam commitadas. A varredura que pega isso
-é barata: para cada `.ipynb`, contar saídas, `execution_count` e células fora da
-ordem de chaves, e conferir o `kernelspec` e o `language_info`. Ela também mostrou
-cinco notebooks com o `display_name` do `kernelspec` em `barennet_env` --- as aulas
-práticas 02, 03 e 05 e os dois arquivos da `Lista prática 03` ---, sem saída e com as
-chaves em ordem. Foram acertados no mesmo dia, uma linha por arquivo, e hoje os 39
-notebooks que seguem as convenções dizem `Python 3` no `kernelspec` e 3.12.7 no
-`language_info`.
-
-Sobraram cinco notebooks herdados de demonstração (`Exemplo - ...`,
-`EXTRA K-medias (exemplo)`, `Comparação entre classificadores paramétricos`). Eles
-são curtos, estão em estilo antigo e as notas os citam — mas **não** seguem as
-convenções acima. Os quatro `Aula prática` herdados foram aposentados; continuam na
-`main` e no histórico.
+**Abrir no Jupyter ou na IDE suja o arquivo:** grava saídas e `execution_count`, reordena as
+chaves das células e carimba `kernelspec`/`language_info`. Limpe depois da última edição:
+`outputs=[]`, `execution_count=None`, chaves na ordem `cell_type, id, metadata, source`
+(e depois `execution_count, outputs` nas de código), metadado como acima, e grave com
+`json.dumps(nb, ensure_ascii=False, indent=1) + "\n"`. `nb == original` (a igualdade de
+dicionários ignora ordem) prova que só a ordem mudou. Se a IDE salvou durante o trabalho,
+confira as fontes contra a sua última versão antes de continuar.
 
 ## Listas de exercícios
 
-Além do laboratório guiado, **cada aula tem uma lista para depois da aula**, na
-pasta da própria aula e sempre com gabarito: `Lista teorica NN.tex` (3–4
-exercícios, nenhum marcado como opcional; **três exceções, com 2**: a 04 desde
-24/08/2026, a 06 desde 11/09/2026 e a 08 desde 05/10/2026) e `Lista prática NN.ipynb` (lacunas marcadas
-por `...`), cada uma com seu `- gabarito`. O gabarito teórico é o
-**mesmo conteúdo**, com as soluções ligadas por uma opção.
-
-O estilo é `recursos/latex/estilo-lista.sty`, que **carrega** o
-`estilo-notas.sty` em vez de duplicá-lo — por isso mexer nas listas não obriga a
-recompilar nenhuma nota. Ele define `\cabecalholista`, o ambiente `exercicio` e o
-ambiente `solucao`.
-
-Quatro armadilhas, todas já pagas uma vez:
-
-1. **Os `.tex` das listas não têm acento no nome, de propósito.** O invólucro do
-   gabarito é literalmente `\def\gabaritoopt{gabarito}` seguido de
-   `\input{Lista teorica NN.tex}`, e esse `\input` é lido **antes** do
-   `\documentclass` — quando o kernel do LaTeX já tratou os bytes UTF-8 como
-   ativos mas o `fontenc` ainda não os definiu. Um nome acentuado ali quebra a
-   compilação com `Undefined control sequence` em `\UseTextAccent`. Os `.ipynb`
-   podem ter acento (não passam por `\input`).
-2. **`\begin{solucao}` e `\end{solucao}` precisam ficar sozinhos na linha.** Sem
-   a opção `[gabarito]`, quem descarta o corpo é o `comment.sty`, que trabalha
-   por linha.
-3. **As listas práticas usam semente diferente da aula prática correspondente**,
-   para o aluno não copiar o número do laboratório. Consequência: todo número do
-   gabarito precisa ser **medido**, não previsto.
-   **Uma exceção, deliberada: o Ex. 3 da `Lista prática 05`**, que usa a semente
-   `12` --- a mesma da figura `05-numero-arvores` --- porque o exercício existe
-   justamente para o aluno reproduzir os números que a legenda da nota afirma
-   ($8{,}0399$ em $B=1$ e $3{,}3510$ em $B=100$), e o gabarito diz isso com todas as
-   letras. Os dados saem **byte-idênticos** (conferido). Não "conserte" trocando a
-   semente: quebraria o vínculo com a nota, que é o ponto do exercício. (Até
-   09/09/2026 a `Aula prática 05` usava essa mesma população, e o número era
-   copiável de lá; a seção que a usava saiu com o *boosting*.)
-4. **Enunciado e gabarito são gerados da mesma fonte** (um script com as lacunas
-   marcadas), **e esse script não está no repositório** — como os `.qmd` dos
-   slides, ficou na máquina de quem produziu o material. Mexer nos dois `.ipynb`
-   à mão exige fazê-lo no mesmo passo e conferir que só divergem nas lacunas.
-
-Como compilar, de dentro da pasta da aula:
-
-```bash
-cd aulas/03-validacao-cruzada
-pdflatex "Lista teorica 03.tex"
-pdflatex "Lista teorica 03 - gabarito.tex"
-```
-
-**As 8 listas herdadas saíram desta branch** (seguem na `main` e no histórico):
-creditavam o docente anterior, não tinham fonte `.tex` e estavam numeradas pela
-ordem antiga dos slides. Com uma lista por aula, a numeração é 1:1.
-
-## Avaliações (`avaliacoes/`, na raiz)
-
-Criada em 14/09/2026, decisão do Gabriel. É **irmã** de `aulas/` e `recursos/`, e
-guarda as avaliações do curso atual. As duas Avaliações Presenciais de 2025-02
-continuam em `recursos/avaliacoes/`: são herdadas do Prof. Hugo e não se misturam
-com estas.
-
-```
-avaliacoes/
-├── Lista de revisao 01-06.tex            11 exercícios, Bloco I
-├── Lista de revisao 01-06 - gabarito.tex invólucro de 3 linhas
-├── Avaliacao teorica 01.tex              3 questões sorteadas
-├── Avaliacao teorica 01 - gabarito.tex   invólucro de 3 linhas
-├── Trabalho pratico 01.tex               o trabalho prático, aulas 01 a 10
-├── Trabalho pratico 01 - gabarito.tex    invólucro: o roteiro de correção
-├── Trabalho pratico 01 - modelo.ipynb    ponto de partida do aluno
-├── Trabalho pratico 01 - resolucao.ipynb resolução de referência (docente)
-└── exercicios/
-    └── ex-NN-slug.tex                    o corpo de cada exercício, 11 arquivos
-```
-
-O trabalho prático tem seção própria, adiante: ``O Trabalho Prático 01''.
-
-**Os 11 exercícios são inéditos**, e não repetem nenhum dos 20 das
-`Lista teorica 01`--`06`. O critério que os tornou inéditos por construção: boa
-parte deles pede que o aluno **demonstre resultados que as notas enunciam sem
-demonstrar** --- o atalho do LOOCV (aula 03), as fórmulas do lasso no caso
-ortonormal (aula 02), as duas formas da fórmula de $k$ dobras (aula 03, numa
-`atencao`). São 2+3+2+1+2+1 por aula.
-
-**A aula 06 tem só um exercício, de propósito.** Ela não tem teorema, proposição
-nem demonstração, e tem uma única equação numerada --- só sustenta questão
-conceitual, e os dois ângulos bons já são os dois exercícios da
-`Lista teorica 06`.
-
-**Dois exercícios saíram em 16/09/2026**, por decisão do Gabriel: o do viés da
-validação cruzada (aula 03) e o dos nós de *splines* (aula 04), que eram os Ex. 8
-e 9. A aula 04 também ficou com um exercício só, e os antigos Ex. 10 a 13 viraram
-8 a 11, com os arquivos renomeados junto (`ex-13-escala.tex` virou
-`ex-11-escala.tex`). **O `NN` no nome dos arquivos de `exercicios/` é o número do
-exercício na lista**, e mantê-lo assim é manual: a numeração impressa é automática,
-a dos arquivos não. Ao tirar ou pôr um exercício, renomeie os seguintes e atualize
-os `\input` da lista **e da prova**.
-
-### O `estilo-avaliacao.sty` duplica o `estilo-lista.sty`, e é de propósito
-
-O `estilo-lista.sty` alcança o `estilo-notas` por
-`\RequirePackage[aluno]{../../recursos/latex/estilo-notas}` --- caminho relativo
-ao **diretório de compilação**, não ao `.sty`. Funciona porque todo documento do
-repositório está exatamente dois níveis abaixo da raiz (`aulas/NN-tema/`). A
-pasta `avaliacoes/` está a **um** nível, e ali aquele `../../` sai do
-repositório.
-
-Por isso o `estilo-avaliacao.sty` carrega o `estilo-notas` com um `..` só e
-**duplica** as ~30 linhas de que precisa: a opção `[gabarito]`, o ambiente
-`exercicio` e o ambiente `solucao`. Se um dia mexerem num dos dois arquivos, o
-outro precisa acompanhar --- está anotado no cabeçalho do `.sty`.
-
-Ele acrescenta `\cabecalhorevisao`, `\cabecalhoprova` (título e caixa de
-instruções, que no gabarito dá lugar a um aviso ao professor), `\questao` (que
-incrementa o mesmo contador do `exercicio` e aceita título vazio), a caixa `criterio`, e o par
-`\ifprova`/`\pts` com o ambiente `itens` --- estes três explicados adiante.
-
-### O sorteio da prova
-
-Reproduzível, com a semente registrada em comentário no topo do
-`Avaliacao teorica 01.tex`:
-
-```python
-rng = np.random.default_rng(20260914)                        # a data, aaaammdd
-aulas = sorted(rng.choice([1,2,3,4,5,6], size=3, replace=False).tolist())
-# -> [2, 3, 6]; depois um exercício dentro de cada aula, na mesma ordem
-```
-
-Resultado: Ex. 5 (aula 02, Ridge bayesiana), Ex. 7 (aula 03, as duas formas da
-CV) e Ex. 13 (aula 06, sensibilidade à escala; hoje Ex. 11). A restrição de **uma
-aula por questão** evita o azar de uma prova inteira sobre o mesmo assunto. **O
-sorteio rodou uma vez e vale** --- não foi repetido até dar um resultado bonito.
-Ele rodou sobre a lista de 13; refeito com a de 11, a mesma semente sorteia os
-mesmos três exercícios (conferido em 16/09/2026).
-
-Pesos: **4,0 por questão**, total 12,0, em 2 horas. A igualdade entre as três não
-é simetria decorativa: a Questão 3 pede sete respostas (cinco classificações mais
-dois itens discursivos) e a Questão 1 pede três, de modo que pesos iguais já
-corrigem um desequilíbrio que a distribuição anterior tinha.
-
-### A prova não diz de que aula vem cada questão
-
-Decisão do Gabriel em 16/09/2026. O sorteio é feito por aula, mas nada que o aluno
-lê na prova revela a aula de origem de uma questão:
-
-- **o título da questão não tem marcador.** O `\daaula`, que imprimia ``[Aula 03]''
-  à direita do título, saiu das três questões e do estilo;
-- **o enunciado não cita aula por número.** O Gabriel reescreveu os Ex. 1 a 5 nessa
-  linha (``já mencionamos'', ``as notas da aula de Regressão Linear''), e o Ex. 7,
-  sorteado, trocou as duas menções à ``Aula~03'' por ``notas de aula'';
-- **o cabeçalho não mostra o conteúdo.** O `\cabecalhoprova` ainda recebe o
-  intervalo de aulas e a descrição (2º e 3º argumentos), mas não os imprime.
-
-**A armadilha é o `\input`.** Em 16/09/2026 nenhum enunciado cita aula por
-número; sobra só a ``Lista Teórica~01'', citada no Ex. 1, que não está na prova. Mas o enunciado entra na prova exatamente como está na
-lista: **ao sortear uma prova nova, confira o texto dos exercícios sorteados**. Nas
-soluções a menção é inofensiva, porque só aparece nos gabaritos.
-
-Na mesma revisão o cabeçalho perdeu os campos de nome, matrícula e turma, e a caixa
-de instruções ficou com a duração, o valor, ``Justifique todas as respostas'' e a
-notação.
-
-### Fonte única: por que a prova e a lista não podem divergir
-
-O corpo de cada exercício --- enunciado, itens e solução --- mora em
-`avaliacoes/exercicios/ex-NN-slug.tex`, e **os dois documentos o incluem por
-`\input`**. A lista inclui os onze; a prova, os três sorteados. Nenhum dos dois
-`.tex` de topo contém prosa de exercício: eles têm só cabeçalho, títulos, `\label`
-e (na prova) os critérios de correção.
-
-Isso não é organização, é a garantia pedida: divergir deixou de ser possível,
-porque não há duas cópias. Corrigir um exercício é mexer num arquivo só.
-
-A única coisa que difere entre os dois usos é a **pontuação por item**, que a
-prova mostra e a lista não. Ela vem do comando `\pts` do estilo:
-
-```latex
-\newif\ifprova\provafalse
-\newcommand{\pts}[1]{\ifprova\textbf{(#1)}\ \fi}
-```
-
-Cada arquivo de exercício escreve `\item \pts{1,0} texto...`; a prova declara
-`\provatrue` antes do `\begin{document}` e o marcador aparece, enquanto na lista
-ele some. Os itens usam o ambiente `itens` do estilo, para que a formatação seja
-idêntica nos dois.
-
-**Ao conferir isso, não compare o `pdftotext` dos dois PDFs.** Documentos com
-matemática deslocada serializam somatórios e frações em ordem diferente conforme
-a posição na página, e os números de página caem no meio do fluxo --- a
-comparação acusa diferenças de poucos caracteres que não existem no conteúdo. A
-verificação correta é na fonte: conferir que os `\input` da prova são subconjunto
-dos da lista e que nenhum dos dois `.tex` de topo tem `\begin{solucao}`.
-
-Dá para conferir também nos PDFs, desde que a comparação seja **por multiconjunto de
-caracteres**, exercício a exercício, e não linha a linha. Três cuidados: tirar as
-marcas de pontuação `(1,6)`, que só a prova tem; tirar as duas linhas de cabeçalho
-de cada página; e tirar o rodapé pela linha que é **exatamente o número da página**,
-e não pela última linha --- o `pdftotext` às vezes solta um pedaço de fórmula
-depois do número (no gabarito da lista, o denominador $2\sigma_\beta^2$ do Ex. 5 sai
-depois do "9"). Feito em 21/09/2026, com os três exercícios sorteados: enunciados e
-soluções idênticos, 732, 916 e 1009 caracteres nos enunciados e 3194, 3524 e 4611 nas
-soluções.
-
-### O gabarito da revisão foi reescrito, e cinco respostas mudaram
-
-Pedido do Gabriel em 21/09/2026, com a prova ainda por aplicar e a intenção de
-liberar o gabarito da lista aos alunos: as onze soluções foram reescritas no
-registro de **um professor de matemática didático** --- hipóteses explícitas, cada
-passo justificado, e a leitura do resultado depois de cada conta. Os enunciados
-ficaram intactos byte a byte, com três exceções (adiante). O gabarito da lista foi
-de 18 para 23 páginas; o da prova, de 5 para 7.
-
-A reescrita derrubou cinco respostas e desfez uma ambiguidade:
-
-| Ex. | o que o gabarito dizia | o que diz hoje |
-| --- | --- | --- |
-| 8(c) | "os botões correm em sentidos opostos" --- e a frase seguinte dizia que $k$ grande e $\lambda$ grande simplificam os dois | correm no **mesmo** sentido; ao contrário corre o grau do polinômio, ou o número de nós. E $k$ não é "botão contínuo" |
-| 10(d) | o preço da floresta é "variância individual maior", e com $m$ pequeno "o produto $\rho v$ volta a subir" | o preço é **viés** --- a condição (i), que é o que o enunciado pergunta, e o que a `Lista teorica 05` 4(d) já dizia |
-| 10(a-i) | com viés, "a conclusão deixa de valer" | a comparação com cada $g_b$ sobrevive; o que se perde é o piso, que vira $\Var(Y\mid\x)+b^2$ |
-| 4(d) | $2{,}3$ é "uma espécie de média" de $\partial r/\partial x_1$, "podendo não coincidir com a inclinação em ponto nenhum" | com uma covariável é média e coincide em algum ponto; com várias nem média é: $\beta^\ast_1=2/(2+s^2)$ para $r=x_2^2$ e $X_1=X_2^2+\varepsilon$ |
-| 8(d) | só aceitava *smoothing splines*, que o deck 04 não tem e as notas citam numa frase | aceita a árvore podada --- o deck 05 a chama de não paramétrica, e o $\alpha\abs{T}$ de "reminiscente do Lasso" |
-| 7 | "a fórmula da aula" --- mas o deck 03 define $\frac1k\sum_i\mathrm{EQM}_i$, que é a do **livro** | "a fórmula das notas", também no enunciado do item (a) |
-
-O 10(d) foi medido na população do Ex. 2 da `Lista prática 05`, com as mesmas
-sementes (a tabela de lá se reproduz): de $m=p/3$ para $m=0{,}15\,p$ o piso $\rho v$
-ainda cai ($0{,}276\to0{,}208$), e quem faz o erro subir é o viés$^2$
-($0{,}984\to1{,}144$). Um detalhe para quem for mexer naquela lista: o "$v$" dela
-é a variância **entre as árvores de uma mesma floresta**, não a variância total de
-uma árvore, e o $\rho$ isolado da fórmula com esse $v$ sai $0{,}147$ no *bagging*,
-contra $0{,}127$ do verdadeiro. As conclusões não mudam. E o Ex. 2(c) passou a dizer
-por que a barra ingênua da CV não é honesta: na população da Aula 01 (grau 5,
-$n=50$, $k=5$, 4000 amostras), CV $\pm2$ EP cobre o risco condicional em 82,8% das
-vezes; o teste de $m=50$, em 92,0%.
-
-**As três mudanças de enunciado**: "sem intercepto" no Ex. 3 (a coluna de uns não
-cabe numa $\mathbb{X}$ com $\mathbb{X}^\top\mathbb{X}=\mathbb{I}$); "fórmula das
-notas" no Ex. 7(a); e o título do Ex. 8 com maiúscula. Na prova que o aluno recebe,
-a única diferença de texto é a do Ex. 7(a) --- conferido pelas coordenadas das
-palavras no PDF (`pdftotext -bbox`), porque o `pdftotext -layout` acusou mudanças
-de espaçamento que não existem: ele estima a largura das colunas pela página
-inteira. **Os critérios da prova** ganharam três linhas: no Ex. 5, a ressalva do
-intercepto não é exigida; no Ex. 11(a)(i), vale dizer que a predição soma
-$\beta_jx_j$, desde que se note que cada parcela é invariante; no 11(c), vale o
-argumento de que a comparação usou o mesmo $\lambda$.
-
-**Armadilha nova: `\ref` nas soluções.** Os Ex. 1, 4 e 8 citam outros exercícios
-por `\ref{ex:...}`, com os `\label` da `Lista de revisao 01-06.tex`. Esses rótulos
-não existem na prova: se um sorteio futuro escolher um desses três, o gabarito da
-prova imprime `??`. Os três sorteados hoje (5, 7 e 11) não citam exercício nenhum
-por número --- "no caso ortonormal, em que o Lasso tem fórmula fechada", em vez de
-"Exercício 3".
-
-**Uma medição que não entrou, e é decisão do Gabriel.** Na mesma população, o
-*bagging* com árvores **podadas** fica com risco um pouco **menor**:
-
-| árvores do *bagging* | viés$^2$ | $v$ total | $\rho$ | piso $\rho v$ | EQM |
-| --- | --- | --- | --- | --- | --- |
-| profundas | 0,876 | 3,746 | 0,127 | 0,477 | 1,373 |
-| `ccp_alpha=0.05` | 0,913 | 3,036 | 0,145 | 0,439 | 1,367 |
-| `ccp_alpha=0.2` | 1,049 | 1,522 | 0,180 | 0,274 | 1,328 |
-| `max_depth=4` | 1,005 | 2,100 | 0,164 | 0,345 | 1,359 |
-| `max_depth=2` | 1,141 | 0,986 | 0,211 | 0,208 | 1,352 |
-
-Podar sobe o viés e **a correlação** --- as árvores ficam só com os cortes do topo,
-os mais estáveis de uma amostra bootstrap para outra ---, mas derruba o $v$, e a
-média não elimina o piso $\rho v$. É o contrário do "não podar as árvores!" do deck
-05. O Ex. 10(b) foi escrito **condicionado às hipóteses da proposição**, onde o
-argumento vale, e por isso não contradiz o deck. Levar a ressalva ao gabarito, às
-notas ou ao deck espera o Gabriel.
-
-Um fato para a decisão de liberar o gabarito da lista, que é do Gabriel (ver ``O
-repositório não é entregue aos alunos''): **ele traz a resolução completa das três
-questões da prova**, porque os Ex. 5, 7 e 11 entram nela literalmente.
-
-### Três achados da mesma revisão, corrigidos no mesmo dia
-
-Achados em 21/09/2026, fora da lista de revisão, e corrigidos logo depois, a pedido
-do Gabriel.
-
-**O atalho do LOOCV não vale para o KNN, e o material se contradizia.** A
-`Lista prática 04` media isso (ver a seção da aula 04), mas as notas da aula 04 ---
-as duas versões: "valem para todos os atalhos vistos antes [...]: basta que
-$\ell_i(\x)$ não dependa de $\bm{Y}$" --- e a `Lista teorica 04` Ex. 2(c) --- "para
-$k\ge2$ a fórmula funciona normalmente" --- afirmavam o contrário. A razão é exata:
-com $k$ vizinhos, $h_{ii}=1/k$ e
-$(Y_i-\rhat(\X_i))/(1-1/k)=Y_i-(\text{média dos outros } k-1 \text{ vizinhos})$, isto
-é, o "atalho" calcula **o LOOCV do $(k-1)$-NN**. Conferido nos dados da própria
-`Lista prática 04`, até a sexta casa: o atalho em $k=3$ dá $0{,}988784$, que é o
-LOOCV exato do 2-NN (o $0{,}9888$ da tabela dela). Em $k=1$ seria o LOOCV de um
-"KNN com zero vizinhos" --- daí o $0/0$ que o Ex. 2(c) pede para interpretar.
-
-Hoje as três peças dizem a mesma coisa. A nota do aluno ganhou uma caixa `atencao`
-("linear, mas sem o atalho do LOOCV"), com a conta, e passou de 4 para 5 páginas; a
-do docente, uma `emsala` com a pergunta à turma; e o gabarito da `Lista teorica 04`
-2(c) foi reescrito, no registro da revisão, explicando também por que o erro muda de
-lado conforme $k$ (abaixo do $k$ ótimo o $(k-1)$-NN é pior, acima é melhor). O
-enunciado da lista não mudou, e por isso o PDF dele não foi recompilado. No Ex. 6
-da revisão, o passo que falha para o KNN é o (b) --- o gabarito de lá diz onde
-cada hipótese trabalhou, sem entrar no KNN.
-
-**O deck 01 tinha `g: \mathbb{R}^d \to \mathbb{R}`** nos slides "A importância da
-perda quadrática" e "Teorema (Teo. 1, Sec. 1.4 [AME])": duas dimensões que tinham
-escapado da migração. Viraram `\mathbb{R}^p` (item 12 do histórico de correções nos
-HTMLs). Uma varredura do texto visível dos onze decks, dos `.tex` e do markdown dos
-notebooks não achou outra.
-
-**Dois erros de digitação nas notas da aula 06 (aluno)**: "píspares" virou
-"díspares", na legenda da Figura~1, e "Inflacção", "Inflação", na caixa da
-hierarquia. A versão do docente não tinha nenhum dos dois.
-
-## O Trabalho Prático 01
-
-Pedido do Gabriel em 23/09/2026: um trabalho prático valendo nota, cobrindo as aulas
-01 a 10 (sem as extras), com um conjunto de regressão e um de classificação,
-públicos, e entrega em notebook. Mora em `avaliacoes/`, com o mesmo arranjo de fonte
-única da prova: `Trabalho pratico 01.tex` é o enunciado, e o invólucro
-`- gabarito.tex` liga a opção `[gabarito]`, que mostra as caixas `solucao` (o
-esperado, com os números) e `criterio` (a distribuição dos pontos). O cabeçalho é o
-`\cabecalhotrabalho`, acrescentado ao `estilo-avaliacao.sty`.
-
-São 15 tarefas: R1--R8 no concreto e C1--C7 no crédito, 4,5 pontos cada parte e 1,0
-de qualidade do notebook. **Nada no trabalho cita aula pelo número** --- nem o
-enunciado, nem o roteiro de correção, nem a resolução ---, como na prova: as marcações
-``Aula NN'' e as remissões saíram em 29/09/2026, a pedido do Gabriel, e onde a aula
-era parte da frase entrou o assunto a que ela remetia (``a fórmula das notas de aula'',
-``o piso $\rho\,v$ da variância''). **Decisões que ficaram com o Gabriel**: o prazo (a
-macro `\prazo`, hoje ``a definir pelo professor''), o valor (a macro `\valortotal`,
-hoje 10,0) e a política sobre assistentes de IA, que o enunciado não menciona.
-
-**As regras de entrega** foram simplificadas pelo Gabriel em 28/09/2026: o arquivo é
-`TP01_<nome>.ipynb`, sem a matrícula, e saiu a exigência de entregar com as saídas (o
-critério de qualidade dá metade dos 0,3 de ``roda sem erro'' a quem para num erro
-pontual). A versão da scikit-learn saiu junto e **voltou em 30/09/2026**: o
-`GroupKFold(n_splits=5, shuffle=True, random_state=0)` que o R2 manda usar só existe a
-partir da **1.6**, e na 1.3 dá `TypeError` --- o ``$\ge 1.2$'' de antes já estava
-errado. A primeira célula de código do modelo confere a versão e para com mensagem
-clara (testado na 1.3 e na 1.9). Duas outras coisas dependem da versão e foram medidas
-na 1.9: a recusa do QDA sem `reg_param` (a 1.3 só avisa ``Variables are collinear'') e
-as probabilidades do AdaBoost.
-
-**Os dados** são dois do UCI, sob CC BY 4.0, em `recursos/dados/`:
-`concreto.csv` (Yeh, 1998; 1030 × 9) e `credito.csv` (Yeh & Lien, 2009; 30 000 ×
-25). Foram convertidos do `.xls` original **sem limpeza nenhuma** --- só os nomes das
-colunas do concreto foram traduzidos, e a resposta do crédito virou `default` ---,
-porque limpar faz parte das tarefas.
-
-**Os números das soluções saem de `Trabalho pratico 01 - resolucao.ipynb`**, rodado
-na sklearn 1.9 com as sementes do enunciado (uns 4 minutos e meio no `barennet_env`
-desta máquina). Ao mexer numa semente, numa grade ou num dado, rode-o de novo e confira
-as caixas. O
-`- modelo.ipynb` é o ponto de partida do aluno: carrega os dois `.csv` e tem uma
-seção por tarefa. Os dois procuram os dados em `../recursos/dados/` --- um nível só,
-como os `.tex` desta pasta.
-
-O que o trabalho foi montado para fazer o aluno encontrar, todos medidos:
-
-- **O concreto tem 25 linhas duplicadas**, idênticas até a oitava casa, e a
-  variância das réplicas muda com elas: $25{,}1$ com 34 graus de liberdade, $64{,}6$
-  com 9 (IC $31$--$215$) sem elas. O piso do risco existe, mas estes dados quase não
-  o identificam;
-- **1005 linhas vêm de 428 traços** (a receita), ensaiados em várias idades. O teste
-  é separado por traço e a validação é `GroupKFold`; o LOOCV do MQO ($49{,}36$) fica
-  abaixo da validação em grupo ($51{,}53$), porque deixa as outras idades do traço no
-  treino;
-- os sete ingredientes somam quase a mesma massa (2339 ± 64 kg/m³), e o número de
-  condição do MQO é $10^{10}$: o coeficiente da água não é ``efeito da água'';
-- **no teste, quem mais piora é a árvore podada**, e não por extrapolação (ver ``Os
-  cortes de 30/09'', adiante); a floresta, escolhida pela validação, piora na mesma
-  proporção que a variância da resistência;
-- no crédito, os `PAY_*` como número custam caro: com *dummies* a AUC da logística
-  vai de $0{,}719$ a $0{,}765$. O QDA recusa o ajuste sem `reg_param`. O Bayes ingênuo
-  ordena como a logística e tem Brier $0{,}335$ contra $0{,}137$. O corte de custo
-  $1/6$ só é o ótimo para os modelos calibrados; o AdaBoost, com probabilidades entre
-  $0{,}22$ e $0{,}67$, contata todo mundo; e `class_weight="balanced"` desloca o corte
-  ótimo para $0{,}41$, que sai da conta $n_0/n_1$;
-- o **bootstrap pareado** no teste não separa o modelo escolhido da logística com
-  *dummies*.
-
-A SVM roda numa subamostra de 5000 do treino, fixada no enunciado: com o treino
-inteiro a grade não caberia nos 20 minutos que as regras permitem.
-
-### Os cortes de 30/09, e o que eles mudaram
-
-Edições do Gabriel em 30/09/2026 no enunciado: saíram o R5(b), o modelo aditivo de
-*splines* com nós uniformes e nos quantis, e o R5(c), os suavizadores lineares e o
-atalho do LOOCV; saiu o R7(b), a validação por linha (`KFold`) contra a por grupo
-(`GroupKFold`); o R7(a) perdeu o ``Explique usando as três categorias'', e o R6(a), o
-``em linguagem de engenheiro''. R5 e R7 ficaram com um item e **continuam valendo 0,5**
-(o critério reparte 0,25 + 0,25). Títulos de hoje: R4 ``Validação cruzada, LOOCV e
-*bootstrap*'', R5 ``Métodos não paramétricos: KNN'', R7 ``Sensibilidade à escala''. O
-roteiro, o modelo e a resolução foram atrás no mesmo dia.
-
-**Os *splines* eram o modelo final do R8.** Sem eles fica a floresta com $m=5$
-($35{,}5\pm4{,}5$ na validação; o *bagging*, com $36{,}3$, empata), e o R8 foi
-reescrito sobre ela: no teste, EQM $45{,}8$, IC $(31{,}9;\ 59{,}7)$, que contém a
-estimativa da validação ($35{,}5$), e a razão teste/validação dela, $1{,}29$, é a das
-variâncias da resistência ($1{,}25$) --- o teste é mais difícil, e só. Quem mais piora é a
-**árvore podada** ($55{,}9\to92{,}7$): os nove ensaios de dois traços do teste com a
-mesma receita-base (água 228, os mesmos agregados, cimento e escória somando 380) caem
-numa folha de três linhas do treino, de 28 dias e com cinza volante, que prevê
-$23{,}5$~MPa para concretos que resistem de 48 a 56; os traços irmãos do treino ficaram
-do outro lado de um corte em escória $\le97{,}5$. As covariáveis estão todas dentro do
-intervalo do treino: é instabilidade, não extrapolação.
-
-**E um erro que o R8 antigo carregava**: o roteiro e a resolução diziam que o traço que
-extrapola tinha ``menos água e mais areia do que qualquer outro''. A água dele,
-$126{,}6$, está dentro da faixa do treino ($121{,}75$ a $247$); só a areia, $992{,}6$
-contra máximo de $945$, passa. A floresta não sofre com ele ($46{,}5$ sem as suas 5
-linhas).
-
-**Nenhuma tarefa mede mais a validação por linha nos modelos flexíveis.** O R7(b)
-mostrava a floresta indo de $35{,}5$ a $21{,}8$ com o `KFold`, e o 1-NN, ao contrário,
-de $57$ a $77$. Sobraram o R4(b), com o MQO, e o R2(b), que pede para classificar o
-vazamento.
-
-**Mais três mudanças no mesmo dia.** O R7(a) foi reescrito a pedido do Gabriel, que o
-achou confuso: o texto antigo não dizia que o risco se estima duas vezes, em dias e em
-horas, nem com que validação, nem o $\lambda$ do Lasso. Hoje ele lista os seis modelos,
-todos nas oito covariáveis originais (MQO; Lasso com `alpha=1`, padronizado no
-*pipeline*; KNN com $k=5$ cru e padronizado; a árvore de R6(a); a floresta de R6(b)),
-manda usar a validação em grupo de R2(c) com os hiperparâmetros fixos e pede uma
-tabela. A resolução já estimava esses seis. Depois o Gabriel tirou do R8(b) o $R^2$ e a
-comparação das variâncias --- o roteiro passou a ler o EQM de teste pelo intervalo, e a
-variância virou justificativa opcional; o R8(c) compara a razão da árvore ($1{,}66$)
-com a dos outros finalistas ($1{,}01$ a $1{,}38$) --- e o R8(d) passou a ser ``para
-alguém que não fez este curso''. A Parte II ganhou ``de crédito'' no título, também no
-modelo.
-
-### O que a revisão de 30/09 corrigiu no roteiro e na resolução
-
-- **Regra 1-EP**: a resolução usava o `std_test_score` (divisor 5) na regra e
-  reportava o erro-padrão com divisor 4. Hoje as duas coisas usam divisor 4 (a
-  `ep_dobras`), e o Lasso 1-EP vai a $\alpha\approx0{,}18$ ($49{,}6\pm3{,}6$, 23 não
-  nulos; antes $0{,}14$ e $48{,}4$). O critério aceita as duas convenções.
-- **QDA (C3c)**: o roteiro dizia ``a resolução usa 0,5, pelo *log-loss*'', mas o
-  *log-loss* caía até a borda da grade. Com a grade até 0,99 o mínimo é interior, em
-  **0,8** (*log-loss* $0{,}604$, AUC $0{,}714$); pela AUC seria 0,3. O C4(d) foi atrás
-  (QDA $0{,}690$ e $0{,}647$, melhor corte $0{,}31$).
-- **C6(a)**: ``plana de 150 a 600'' para uma grade que para em 401; a busca escolhe
-  $k=301$.
-- **C1(b)**: ``a inadimplência por decil do ID não mostra tendência''. Tendência não
-  há, mas os decis variam mais do que o acaso explicaria ($\chi^2=51{,}7$, 9 gl,
-  $p\approx5\times10^{-8}$). O `ID` sai por ser identificador.
-- Miúdos: R4(c) (os erros-padrão do *bootstrap* dos traços são de 1,4 a 1,6 vez os do
-  das linhas e de 1,4 a 2,1 vezes os da fórmula clássica), R5(a) (a curva do KNN
-  oscila em $k=14$), R6(a) (os três cortes nomeados: idade 21; cimento 386 e 357,5),
-  R7(a) (o KNN padronizado varia na terceira casa), C7(d) (46\%, não 47\%), e títulos
-  e legendas da resolução que não batiam com o enunciado.
-
-Uma última conferência, no mesmo dia e a pedido do Gabriel, achou mais:
-- **R5(a) comparava dois modelos que diferiam em duas coisas**, o KNN padronizado com
-  $k=1$ e o cru com $k=5$, e a solução punha a diferença toda na padronização. Hoje o
-  cru usa o mesmo $k$: $74{,}1$ contra $57{,}3$ (no mesmo $k=5$, só $88{,}0$ contra
-  $85{,}4$). E a solução dizia que, sem padronizar, "a idade quase não pesa" na
-  distância: ela fica com 9,8\% do peso, perto dos 12,5\% de quando padronizada. Quem
-  quase some é a água (1\%) e o superplastificante (0,1\%); o cimento leva 29\%. A
-  resolução imprime esses pesos;
-- **R1(d) definia réplica como resistências diferentes**, mas o cálculo ``antes''
-  usava os 19 grupos com as mesmas covariáveis, 10 deles só de duplicatas. Hoje a
-  réplica é o grupo com as mesmas covariáveis, desde que cada linha seja um ensaio de
-  verdade;
-- enunciado mais preciso: o R1(c) diz como contar (as que repetem uma linha anterior;
-  o critério aceita 36 e 53 no lugar de 25 e 34), o R2(a) define `X` e `y` (sem o
-  `traco`), o R3(b) diz "troque a idade por log(idade)", o R6(a) e o C6(b) dizem "faça a
-  poda" (o "Pode" se lia como o verbo poder), o C6(b) fixa o log-loss e a árvore de
-  Gini, o C6(c) diz que a floresta de folhas cheias tem $m=\sqrt p$ e o C4(b) diz qual
-  logística;
-- no roteiro: 321 e 107 traços no R2(a) (a resolução passou a imprimir), o $\pm$ do
-  R8(c) é a meia largura do intervalo, a `EDUCATION` pode ser tratada como
-  ordinal no C1(b), e acertos de redação no R1(b), R4(b), C3(a), C4(e), C5(c) e C7(d).
+Uma por aula, na pasta da aula: `Lista teorica NN.tex` (quatro exercícios; dois na 04, 06 e
+08, três na 07) e `Lista prática NN.ipynb` (lacunas `...`), cada uma com gabarito. Estilo:
+`estilo-lista.sty`, que carrega o `estilo-notas`.
+
+- Os `.tex` das listas **não têm acento no nome**: o invólucro do gabarito faz
+  `\input{Lista teorica NN.tex}` antes do `\documentclass`, e nome acentuado quebra.
+- `\begin{solucao}` e `\end{solucao}` ficam sozinhos na linha (o `comment.sty` é por linha).
+- O script que gera o par enunciado/gabarito dos `.ipynb` **não está no repositório**. Mexa
+  nos dois no mesmo passo e confira que só divergem nas lacunas e nas células de leitura do
+  gabarito ("Deve imprimir..."); a tabela "O que ficou" existe nos dois.
+
+## Avaliações (`avaliacoes/`)
+
+Irmã de `aulas/` e `recursos/`. As Avaliações Presenciais de 2025-02 em
+`recursos/avaliacoes/` são herdadas e não se misturam. Estilo: `estilo-avaliacao.sty`, que
+**duplica de propósito** ~30 linhas do `estilo-lista.sty` (a pasta está a um nível da raiz,
+não a dois); se mexer num, o outro acompanha.
+
+- **Fonte única.** O corpo de cada exercício mora em `exercicios/ex-NN-slug.tex` e entra por
+  `\input` na lista de revisão (os onze) e na prova (os três sorteados); nenhum `.tex` de
+  topo tem prosa de exercício. A pontuação por item vem de `\pts{}`, que só aparece com
+  `\provatrue`. O `NN` do arquivo é o número do exercício na lista, mantido à mão: ao tirar
+  ou pôr um, renomeie os seguintes e atualize os `\input` da lista **e** da prova.
+- **O sorteio** (semente `20260914`, uma aula por questão, registrado no topo do `.tex`) deu
+  os Ex. 5, 7 e 11. Rodou uma vez e vale. São 4,0 pontos por questão, 12,0 no total, 2 horas.
+- **A prova não revela a aula de cada questão:** sem marcador no título, sem "Aula NN" no
+  enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
+  prova, confira o texto dos sorteados. E as soluções dos Ex. 1, 4 e 8 usam `\ref` com
+  rótulos que só existem na lista: sorteados, imprimiriam `??` no gabarito da prova.
+- Para conferir lista contra prova, olhe a fonte (os `\input`); `pdftotext` dos dois PDFs
+  serializa a matemática em ordens diferentes e acusa diferenças falsas.
+
+### Trabalho Prático 01
+
+`Trabalho pratico 01.tex` é o enunciado; o invólucro `- gabarito.tex` mostra as caixas
+`solucao` e `criterio` (é o roteiro de correção); `- modelo.ipynb` é o ponto de partida do
+aluno e `- resolucao.ipynb`, a resolução de referência. Cobre as aulas 01 a 10: R1 a R8 no
+`concreto.csv` e C1 a C7 no `credito.csv`, 4,5 pontos cada parte e 1,0 de qualidade.
+
+- **Os números das caixas saem do `resolucao.ipynb`**, rodado na 1.9 com as sementes do
+  enunciado (uns 4 a 5 minutos). Mexeu em semente, grade ou dado: rode de novo e confira.
+- Os dois `.csv` foram convertidos do `.xls` **sem limpeza**: limpar faz parte das tarefas.
+  Os notebooks os procuram em `../recursos/dados/` (um nível só).
+- O enunciado exige scikit-learn 1.6 ou mais, e a primeira célula do modelo confere.
+- A SVM roda numa subamostra de 5000, fixada no enunciado, para caber nos 20 minutos.
 
 ## Dados
 
-**Os notebooks não baixam dados da rede, e os `.csv` ficam numa cópia única em
-`recursos/dados/`.** A decisão passou por três rodadas e fechou em 10/08/2026:
-os alunos recebem o notebook e o `.csv`, e **podem não ter o repositório**. O
-padrão para qualquer notebook novo ou revisado é procurar em dois lugares:
+Os `.csv` ficam numa cópia única em `recursos/dados/` e **nenhum notebook do curso baixa
+nada da rede** (nada de URL do GitHub; o herdado `Exemplo - PCA` baixa o MNIST). A célula de
+carga procura na pasta do notebook e depois em `../../recursos/dados/`, e falha com mensagem
+clara; é byte a byte igual em todos, a menos do nome do arquivo: copie-a de um laboratório.
+Quem carrega o quê:
 
-```python
-import os
+| arquivo | notebooks |
+| --- | --- |
+| `superconductivity.csv` (23 MB) | aulas 01 a 05 |
+| `bank_train_redux.csv` (96 MB) | aula 08 (laboratório e lista) e Aula prática 10 |
+| `spam.csv` | aula E3 |
 
-_nome = "superconductivity.csv"
+O `bank_train_redux.csv` é um excerto da competição *Santander Customer Transaction
+Prediction*: `target` vale 1 para quem fez uma certa transação (**não** é inadimplência) e as
+200 covariáveis são anônimas. Está perto do teto de 100 MiB por arquivo do GitHub.
 
-# procura em dois lugares, sem baixar nada da internet: a pasta deste
-# notebook primeiro ou então ../../recursos/dados/
-_lugares = [_nome, os.path.join("..", "..", "recursos", "dados", _nome)]
-_caminho = next((c for c in _lugares if os.path.exists(c)), None)
+## Vazamento: a hierarquia
 
-if _caminho is None:
-    raise FileNotFoundError(...)     # dizendo onde procurou
+O que separa vazamento grave de leve é **se a etapa olha o $Y$**. Grave: selecionar
+variáveis, hiperparâmetros ou modelo olhando a resposta (com $y$ de ruído puro fabrica
+$R^2=+0{,}40$), e a mesma unidade nos dois lados da divisão ou informação do futuro (aí só
+`GroupKFold`). Leve: padronização, imputação pela média e **PCA**, que não veem o $Y$ e não
+fabricam sinal (a Aula prática E2 e a Lista prática E2 medem). A conduta não muda, tudo vai
+no `Pipeline`; muda onde gastar vigilância.
 
-df = pd.read_csv(_caminho)
-```
+## Conferido: não reabra
 
-A ordem importa: a pasta do notebook vem **primeiro**, então um `.csv` posto ao
-lado vence o do repositório. **Nada de URL para o GitHub** — falhar com mensagem
-clara é preferível a baixar pelas costas do aluno.
+- O atalho do LOOCV **não vale para o KNN**: com $h_{ii}=1/k$ ele devolve o LOOCV do
+  $(k-1)$-NN. Notas da 04, Lista teorica 04 e Lista prática 04 dizem isso.
+- O grau 49 da aula 03 não tem um número, tem uma faixa: depende do corte de posto da
+  instalação. O texto sustenta só as três leituras.
+- O `C` da aula 09: as notas e o Beamer trazem o orçamento do [ISLP] e o inverso do
+  scikit-learn, lado a lado.
+- O QDA recusa o `breast_cancer` mesmo padronizado (colinearidade). Na implementação do
+  scikit-learn só o LDA é invariante à escala: `reg_param` e `var_smoothing` quebram a do
+  QDA e a do Bayes ingênuo.
+- LDA contra QDA, como as peças da 07 dizem: $n$ contra $p(p+1)/2$ governa o que o QDA tem a
+  perder; o que ele tem a ganhar é o quanto a fronteira de Bayes se afasta de uma reta.
+  "Em dimensão baixa a escolha não importa" é falso.
+- O [AME] omite o $\frac12$ do expoente nas densidades normais da §8.1.4; as notas do aluno
+  da 07 avisam. No [ISLP], o aprendizado não supervisionado é o Capítulo 12, e a ROC do
+  `Default` está no §4.4.2.
 
-Por que não só a pasta da aula: `superconductivity.csv` tem 23 MB e era lido por 10
-notebooks; uma cópia por pasta custaria ~230 MB. Por que não só `recursos/dados/`:
-sem o repositório esse caminho nunca resolve, e o aluno teria de editar a primeira
-célula em toda aula. As duas tentativas anteriores foram essas, nessa ordem.
+## Pendências que são do Gabriel
 
-**A migração terminou em 12/08/2026**: os 17 notebooks que carregam `.csv` usam
-essa célula, byte a byte igual a menos do nome do arquivo. Nenhum baixa nada da
-rede, e nenhuma URL do GitHub sobrou no repositório — antes havia um *fallback*
-para `raw.githubusercontent`, que amarrava o material ao nome da branch.
+- **Aula 08, o escopo.** O deck (18 slides) vai da matriz de confusão à definição da AUC.
+  Não tem precisão–revocação, AP, `class_weight`, calibração, Brier nem `scoring`, que as
+  notas, o laboratório, as listas e a tarefa C4 do TP01 usam, e para onde as aulas 07, 09,
+  10 e E3 apontam. Ou o deck cresce, ou o conteúdo sai e as remissões são redirecionadas.
+  Saíram do deck e seguem nas notas a decomposição do risco pelas taxas e a AUC como
+  probabilidade (a Observação 3.2 se apoia nelas).
+- **$F_1$:** fora do deck e do laboratório da 08; segue nas notas da 08, na Lista prática 08,
+  na E3, no planejamento e na tarefa C4(a) do TP01.
+- **Aula 08, notação:** o corte é $K$ nas notas, $p_0$ no deck, $t$ no laboratório; os custos
+  são $l_0,l_1$ nas notas, $\ell_0,\ell_1$ no deck e $c_{FP},c_{FN}$ no resto.
+- **`MatConf.pdf`** (aula 08): nenhum material aponta mais para ele; continua na pasta.
+- **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
+- **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o
+  repositório; saiu das notas do aluno da 05 e da 07 e segue nas outras.
+- **Aula 05:** medido, o *bagging* com árvores podadas tem risco um pouco menor, o contrário
+  do "não podar as árvores!" do deck. Não entrou em material nenhum.
+- **TP01:** prazo (`\prazo`), valor (`\valortotal`, hoje 10,0) e política sobre assistentes
+  de IA (o enunciado não menciona).
 
-Quem **carrega** o quê, medido em 16/09/2026 por leitura no código, não por
-menção ao nome do arquivo — a `Aula prática E2` cita o `superconductivity.csv` só
-no texto, e não entra. A tabela anterior, de 12/08/2026, estava na numeração de
-antes da saída da aula 05 e ainda contava a `Aula prática 06`, que deixou de ler o
-`bank_train_redux.csv` quando encolheu, em 14/09/2026:
+## Slides em HTML
 
-| arquivo | tamanho | notebooks |
-| --- | --- | --- |
-| `superconductivity.csv` | 23 MB | 9 — aulas 01 a 05, incluindo as listas 02 e 05 |
-| `bank_train_redux.csv` | 96 MB | 4 — aula 08, incluindo a lista, e a `Aula prática 10` |
-| `spam.csv` | 0,5 MB | 3 — aula E3, incluindo a lista |
+São dez `.html` em `aulas/*/` (aulas 01 a 08, 10 e E1; a 09 é Beamer, e E2 e E3 não têm
+deck): reveal.js gerado pelo **Quarto 1.4.549**, com tudo embutido (3 a 8 MB cada). **Os
+`.qmd` não estão no repositório.** Toda edição é feita direto no HTML e se perde se alguém
+recompilar do fonte.
 
-A `Aula prática 10` é a única que foge do byte a byte: o banco entra ali como
-segundo conjunto, depois do `breast_cancer`, com os nomes sufixados (`_nome_b`,
-`_caminho_b`) e `nrows=20_000`.
+- **CRLF.** Os dez usam CRLF; o resto do repositório usa LF. Edite em modo binário (ou
+  `newline=''`) e confira a contagem de CRLF antes e depois.
+- O conteúdo começa entre as linhas 1140 e 1220; antes é CSS e JavaScript. Slides são
+  `<section>`. Leia por trecho.
+- **Ao buscar texto, descarte `<script>` e `<img>`:** a busca crua acha centenas de
+  ocorrências falsas em JavaScript minificado e em base64.
+- Os `id` das headings são slugs do Quarto (título repetido ganha `-1`, `-2`): mude junto
+  com o título, depois de conferir que nada aponta para o antigo. O rodapé gerado pelo
+  Quarto (`quarto-auto-generated-content`) mora dentro do último slide: se ele sair, mova-o.
+- **O slide não rola e corta em silêncio** o que passa do fim: cerca de 450 caracteres
+  visíveis por slide de tópicos. Na largura, o `<ul>` é `inline-block`: uma fórmula em
+  *display* mais larga que a coluna arrasta a lista inteira, e a largura que o MathJax dá
+  varia de um render para outro; quebre em `aligned`.
+- Confira no navegador (Chrome *headless*): zero `MathJax_Error`, nenhum slide passando do
+  fim nem da borda.
 
-`bank_train_redux.csv` é um excerto reduzido da base do Kaggle, por limite de
-espaço do GitHub — atenção ao teto de 100 MiB por arquivo se alguma conversão for
-duplicá-lo. A base é a da competição *Santander Customer Transaction Prediction* (o
-`README.md` dá o endereço): `ID_code`, a resposta `target` --- 1 para o cliente que fez
-uma certa transação, **não** inadimplência --- e 200 covariáveis anônimas, `var_0` a
-`var_199`, quase independentes entre si (correlação absoluta média $0{,}0048$, medida na
-`Lista prática 08`). A competição avaliava os modelos pela AUC.
+**Edições diretas já feitas** (o registro completo é
+`git log --since=2026-08-01 -- 'aulas/*/*.html'`; quem tiver os `.qmd` precisa replicá-las):
 
-## Convenções
+- todos: autoria `Gabriel Sanfins` / `gabrielsanfins@id.uff.br`; `[ITSL]` virou `[ISLP]`;
+- 01: regressão e classificação desinvertidas; título sem o "I"; "2 provas e 1 projeto";
+  `g: \mathbb{R}^p`; erros de digitação;
+- 02: slide vazio removido; argmin do MQO; limiar do lasso $\lambda/2$;
+- 03: "Randomizar o conjunto de treinamento"; par regressão/classificação; "$k=1$ é o *data
+  splitting*"; as três molduras "Implementando: ..." com o código explicado e
+  `random_state=0`; erros de digitação;
+- 04: slide novo "KNN - os pesos dos vizinhos"; grade só com `weights`; agradecimento
+  datado ("edição de 2022/02 desta disciplina, então na UFRJ");
+- 05: floresta como "menos opções: em cada nó, só $m<p$ covariáveis sorteadas"; saíram os
+  três slides e o tópico de importância de covariáveis;
+- 06: "Prós e contras do `StandardScaler`";
+- 07: seção de regressão logística (seis slides); `MultinomialNB`; erros de digitação;
+- 08: o slide "Veja `MatConf.pdf`" virou sete (matriz de confusão, doença rara, TPR, FPR,
+  por que essas taxas); ROC reescrita; teorema do custo com os custos nomeados; saíram os
+  quatro slides finais sobre o que a AUC mede e seus problemas;
+- E1: figuras 12.7 a 12.9 do [ISLP];
+- 06, 07, 08 e 10: o número da aula na capa, depois da renumeração.
 
-- Mensagens de commit em português, no estilo *conventional commits*
-  (`fix:`, `docs:`, `refactor:`).
-- Ao mexer em conteúdo pedagógico, confira a coerência com as notas em LaTeX e com
-  os dois livros-texto adotados: **[AME]** (Izbicki & Mendonça) é o esqueleto
-  teórico, **[ISLP]** (James et al.) fornece intuição e implementação em Python.
-- **Os dois livros estão em `recursos/livros/`** e devem ser lidos de fato antes de
-  escrever conteúdo, não citados de memória. Extraia com
-  `pdftotext -f A -l B recursos/livros/AME.pdf -`. O offset do AME é **+18**
-  (página do livro $+$ 18 $=$ página do PDF, conferido em dois pontos); o do ISLP é
-  instável, então localize a seção pelo título:
-  `pdftotext recursos/livros/ISLP.pdf - | grep -n "Bias-Variance"`.
-- **Meça antes de afirmar.** Várias afirmações herdadas não sobreviveram à
-  verificação — o vazamento por padronização é numericamente irrelevante perto do
-  vazamento por seleção de variáveis, e o atalho do LOOCV da Aula~03 **não vale para
-  o KNN**, apesar de ele ser um suavizador linear com $h_{ii}$ bem definido (erra 27%
-  em $k=2$; ver a `Lista prática 04`). Quando a medição contrariar o texto,
-  **registre o que foi medido** em vez de repetir a previsão.
-  Com uma ressalva, registrada na seção das 40 medições: quando o medido contradiz
-  o **deck** — que é o que os alunos veem —, o que fazer é decisão do Gabriel, não
-  consequência automática da medição. Foi assim com a variância da CV na aula 03.
+## Slide de SVM (Beamer)
 
-## A hierarquia de vazamento, e por que o PCA saiu da categoria grave
+`aulas/09-svm/09 SVM - slide.tex` (tema Madrid, 32 frames) com as figuras em
+`slide-figuras/`. Veio do `main.tex` do curso do Hugo, do qual só os frames de SVM entraram.
 
-A regra que separa vazamento **grave** de **leve** não é "quanto a etapa aprende
-dos dados", é **se ela olha o $Y$**:
-
-- **grave** — selecionar variáveis, hiperparâmetros ou o modelo olhando a resposta.
-  Mede-se: com $y$ de ruído puro, isso fabrica $R^2 = +0{,}40$ (notas da aula 06,
-  painel esquerdo da Fig.~1, gerado por `_vazamento()` no `gerar-figuras.py`);
-- **grave** — a mesma unidade nos dois lados da divisão, ou informação do futuro.
-  Nenhum `Pipeline` protege disso; a ferramenta é `GroupKFold` (notas da aula 06,
-  caixa da hierarquia);
-
-**Desde 14/09/2026 nenhum notebook mede os dois graves** --- os exercícios que os
-mediam saíram da `Lista prática 06` quando ela foi espelhar o laboratório enxuto.
-Eles vivem no texto das notas, na Fig.~1 e no Ex. 1 da `Lista teorica 06`, que pede
-para classificá-los. A geradora da figura continua medindo.
-- **leve** — padronização, imputação pela média e **PCA**. Nenhuma das três vê o
-  $Y$, e portanto nenhuma consegue fabricar sinal a partir de ruído.
-
-O PCA estava classificado como grave nas notas E2 e 06. A `Aula prática E2` (§7)
-mediu quatro configurações de $(n,d,k)$ com $y$ de ruído puro e **em nenhuma o
-$R^2$ foi inflado** — ele piorou, porque componentes calculados sobre o conjunto
-todo não são os ótimos de nenhuma dobra de treino. As duas notas foram corrigidas
-em 05/08/2026.
-
-A conduta prática não mudou: tudo isso vai para o `Pipeline`, porque corrigir custa
-uma linha. O que mudou é onde gastar vigilância.
-
-## Histórico de correções relevantes
-
-Feitas **diretamente nos HTMLs**, e portanto perdidas se alguém recompilar a partir
-dos `.qmd`. Quem mantiver os `.qmd` precisa replicar todas:
-
-1. Os slides das aulas 01 e 03 traziam invertidas as definições de regressão e
-   classificação. O correto: $Y$ quantitativa → regressão; $Y$ qualitativa →
-   classificação.
-2. Em 05/08/2026, a autoria dos 10 slides passou de `Hugo Tremonte de Carvalho` /
-   `hugo@dme.ufrj.br` para `Gabriel Sanfins` / `gabrielsanfins@id.uff.br`, com os
-   `id` das duas headings atualizados junto (`gabriel-sanfins` e
-   `gabrielsanfinsid.uff.br` — o Quarto derruba o `@`).
-3. Em 10/08/2026, `[ITSL]` virou `[ISLP]` em **14 citações de seis decks** (01, 02,
-   03, 05, 07 e o EXTRA de k-médias). É o mesmo livro.
-4. Em 10/08/2026, três correções no deck da aula 02: saiu um slide vazio entre
-   "Além da linearidade" e a capa de "Regularização"; o argmin do MQO passou a ser
-   repetido no segundo membro, que igualava um argmin a uma norma; e o limiar do
-   lasso virou $(|\hat\beta| - \lambda/2)_+$.
-5. Em 12/08/2026, as três legendas do deck de k-médias trocaram de número de
-   figura: 10.5, 10.6 e 10.7 viraram **12.7, 12.8 e 12.9**. No ISLP o capítulo de
-   não supervisionado é o 12; o 10 é *Deep Learning*. Os capítulos 2 a 9 não
-   mudaram entre as edições, então as outras sete citações do curso (2.2, 2.9,
-   4.6, 4.9, 5.5, 6.7 e 8.3) seguem válidas.
-6. Em 21/08/2026, dois slides no deck da aula 04. O que "otimizava outros
-   hiperparâmetros" exibia `KNeighborsRegressor(n_neighbors=17, p=1)` como se o `p`
-   de Minkowski fosse um achado: em **uma** covariável ele não muda a ordem dos
-   vizinhos, as quatro opções empatam em primeiro lugar e o `p=1` impresso é
-   desempate por ordem da grade. Prova disso, a figura do slide era **byte-idêntica**
-   à do slide anterior. Saíram o `p` da grade, o `p=1` da saída e a figura repetida
-   (169 KB); a grade ficou só com `weights`, que é real. E entrou um slide novo antes
-   dele, "KNN - os pesos dos vizinhos", explicando `'uniform'` × `'distance'` ---
-   que o deck usava sem nunca definir, aqui ou depois.
-7. Em 21/08/2026, o agradecimento a Lucas Galdino passou a dizer "da edição de
-   2022/02 **desta** disciplina, **então na UFRJ**". Sem isso, com o rodapé já
-   apontando para a UFF, a atribuição ficava ambígua.
-8. Em 02/09/2026, a definição de florestas aleatórias no slide "Visão de ambos os
-   métodos" do deck da aula 05 --- o primeiro em que os dois métodos aparecem lado
-   a lado. Ela dizia "crescer a árvore com ``mais cuidado''", e aponta para o lado
-   oposto do que o método faz: sortear $m<p$ covariáveis por nó torna **cada árvore
-   individualmente pior**, de propósito (o Ex. 2 da `Lista prática 05` mede $v$
-   subindo de $3{,}28$ para $3{,}80$ do *bagging* para a floresta --- a medição
-   estava na `Aula prática 05` até o corte de 09/09/2026). Além disso "com cuidado"
-   lê-se como poda ou critério de parada, e o slide **seguinte** manda "**não**
-   podar as árvores!". Virou "Crescer a árvore com **menos opções**: em cada nó, só
-   $m<p$ covariáveis sorteadas" --- o mecanismo, sem a motivação, que o deck
-   constrói dois slides adiante no "*Bagging* - atenção!". O slide "Florestas
-   aleatórias", mais ao fim do mesmo deck, já trazia a definição certa: o defeito
-   era só da visão geral.
-9. Em 09/09/2026, o slide "Fechando o *bagging*" do deck da aula 05 perdeu o tópico
-   "Permite criar uma medida de importância para cada covariável", quando a
-   importância de variáveis saiu da aula. Foi a **única linha** que os três
-   assuntos cortados ocupavam no deck inteiro.
-10. Em 21/09/2026, dois erros de digitação no deck da aula 07: ``Classifidadores
-    *plug-in*'' virou ``Classificadores'' --- no título e no `id` do slide, que nada
-    mais referenciava --- e ``hiperlanos'' virou ``hiperplanos'', no slide das
-    fronteiras do LDA.
-11. Em 21/09/2026, o deck da aula 07 ganhou uma seção de **regressão logística**, a
-    pedido do Gabriel: oito slides (a ideia, o modelo, o *log-odds* linear, a
-    interpretação dos coeficientes, a estimação por MV, a penalização com o `C`
-    invertido, o caso multiclasse e um fecho ``generativo ou discriminativo''),
-    escritos no padrão dos outros --- `<li class="fragment">`, MathJax, `<code>` com
-    link para a documentação do `scikit-learn`, `^T` para transposta como no resto
-    deste deck. O deck foi de 43 para 44 slides. Conferido no navegador: zero
-    `MathJax_Error`, nenhum slide sem título e nenhum transbordando.
-12. Em 21/09/2026, dois `g: \mathbb{R}^d \to \mathbb{R}` do deck da aula 01 --- nos
-    slides "A importância da perda quadrática" e "Teorema (Teo. 1, Sec. 1.4 [AME])"
-    --- viraram `\mathbb{R}^p`: eram dimensões que tinham escapado da migração do
-    `d`. Troca de um caractere dentro de fórmula que já existia, com o CRLF
-    preservado (2711 quebras antes e depois, e o arquivo com o mesmo tamanho).
-13. Em 21/09/2026, oito erros de digitação em quatro decks, achados na releitura do
-    Bloco I:
-    - **deck 01**: "não são são a solução" (``Algumas verdades''), "erro de
-      observaçao" (``Formulação matemática - 1''), "subjacete" (``Mais sobre as
-      duas culturas - 3'') e "usual em regresão" (``A função risco - 1''). O deck 03,
-      que copia esses slides, já estava certo;
-    - **deck 04**: o texto do link para a documentação dizia `KNeighborRegressor`
-      --- o `href` já apontava para `KNeighborsRegressor`, só o texto estava errado;
-    - **deck 05**: "Proder preditivo", no slide ``Visão geral'';
-    - **deck 06**: o título ``Prós e contas do `StandardScaler`'' virou ``Prós e
-      contras'', e o `id` do slide foi junto (`prós-e-contras-do-standardscaler`).
-      Nenhum link apontava para o `id` antigo.
-
-    Trocas em modo binário, exigindo exatamente uma ocorrência de cada trecho, e com
-    o CRLF conferido nos quatro arquivos. Nenhuma mexe em fórmula, e nenhuma muda
-    mais de um caractere o comprimento de um slide.
-14. Em 21/09/2026, no terceiro slide ``Classificador *Naive Bayes*: atributos
-    discretos'' do deck da aula 07, o `MultinomialNB` era descrito como ``Não assume
-    independência!''. É meia verdade: as contagens de uma multinomial não são
-    independentes (somam $n$), mas a hipótese ingênua continua lá, sobre as palavras,
-    como as notas do aluno já diziam. O item virou ``$\mathbf{X}|(Y=d)\sim
-    \mathrm{Multi}(\dots)$; palavras independentes dada a classe, contagens não''. Uma
-    primeira redação, mais longa, quebrava em três linhas e passava 24 px do fim do
-    slide; a atual ocupa as mesmas duas linhas de antes (folga de 80 px, medida no
-    navegador), com o CRLF preservado (2691 quebras antes e depois).
-15. Em 28/09/2026, a pedido do Gabriel, o deck da aula 07 perdeu dois dos oito
-    slides do item 11: ``Regressão logística: interpretando os coeficientes'' (a
-    razão de chances multiplicada por $e^{\beta_j}$, o efeito não linear sobre a
-    probabilidade e o sinal de $\beta_j$) e ``Regressão logística: penalização''
-    ($\ell_1$/$\ell_2$, o `C` como inverso da penalização e o `C=1` padrão). O deck
-    foi de 44 para 42 slides, e a seção da logística ficou com a ideia, o modelo, o
-    *log-odds*, a estimação, o caso multiclasse e o fecho. Nenhum `id` dos dois era
-    referenciado; saíram 16 linhas, com o CRLF preservado (2691 → 2675 quebras,
-    nenhum LF solto) e 48 → 46 `<section>`. No mesmo dia o laboratório perdeu a §7,
-    a do `C`, e o caso real a busca do `C` (ver ``O laboratório perdeu a §7 e a busca
-    do `C`''). O resto da aula não foi atrás: a interpretação em razão de chances
-    segue nas notas (as duas versões), e a penalização nas notas e na leitura do
-    Ex. 4 do gabarito da `Lista prática 07`. Pelo ``o deck manda'', alinhar é decisão
-    do Gabriel.
-16. Em 30/09/2026, dois erros no deck da aula 08, achados na leitura daquele dia. No
-    segundo slide ``Área sob a curva ROC (AUC)'', o do teorema
-    $\mathrm{AUC}=\mathbb{P}(S_1>S_0)$, $\mathbf{X}_0$ e $\mathbf{X}_1$ eram
-    ``instâncias positiva e negativa, respectivamente'': lido assim, o teorema dá
-    $1-\mathrm{AUC}$. Virou ``negativa e positiva''. E ``varirar'' virou ``variar'', no
-    slide que pergunta o que acontece ao variar $p_0$. Trocas em modo binário, uma
-    ocorrência cada, com o CRLF preservado (2478 quebras antes e depois, nenhum LF
-    solto).
-17. Em 30/09/2026, a pedido do Gabriel (``o deck da aula 08 está muito cru''), o slide
-    ``A matriz de confusão e métricas dela derivadas'', que só dizia ``Veja arquivo
-    `MatConf.pdf`'', deu lugar a nove slides no padrão do deck (`<li class="fragment">`,
-    MathJax, $\mathbb{P}(\cdot|\cdot)$ com a barra reta, como no resto dele):
-    - ``A matriz de confusão'', dois slides: o predito nas linhas e o verdadeiro nas
-      colunas, como as notas, a Tabela 7.1 do [AME] e a 4.6 do [ISLP], com a linha
-      dos totais $N$ e $P$; as contagens definidas
-      ($\mathrm{VP}=\#\{i : g(\mathbf{X}_i)=1 \text{ e } Y_i=1\}$) e o aviso de que o
-      `confusion_matrix` devolve a transposta;
-    - ``Voltando à doença rara'': os 1000 pacientes e 10 doentes do [AME] §7.4, com
-      $g_1\equiv0$ e um $g_2$ hipotético (VN 950, FN 2, FP 40, VP 8). A taxa de erro
-      prefere $g_1$, $0{,}010$ contra $0{,}042$;
-    - ``Taxa de verdadeiros positivos'' e ``Taxa de falsos positivos'', as duas da ROC,
-      com TNR e FNR só como complementos --- o pedido foi destacar as métricas da ROC,
-      não todas;
-    - ``Por que essas duas taxas?'', dois slides: dividem por total de coluna; dados
-      $P$ e $N$, o par $(\mathrm{FPR},\mathrm{TPR})$ determina a matriz; não dependem
-      da prevalência, mantida a distribuição de $\mathbf{X}$ em cada classe; e, com
-      $Y=0$ no papel de $H_0$, são o erro do tipo I e o poder;
-    - ``O risco em termos das taxas'', dois slides:
-      $R(g)=\pi_1\,\mathbb{P}(g(\mathbf{X})=0|Y=1)+\pi_0\,\mathbb{P}(g(\mathbf{X})=1|Y=0)$
-      e a identidade exata na amostra, conferida nos dois classificadores do exemplo.
-
-    Os dois slides da ROC que definiam TPR/TNR e FPR/FNR em fórmula solta saíram,
-    absorvidos pelo bloco. O de variar $p_0$ trocou as setas por ``não aumentam'' e
-    ``não diminuem'', e entraram mais dois: a curva como o conjunto
-    $\{(\mathrm{FPR}(p_0),\mathrm{TPR}(p_0)) : p_0\in[0,1]\}$, com $(0,0)$, $(1,1)$ e o
-    canto ideal, e a diagonal (sortear com probabilidade $q$ dá
-    $\mathrm{TPR}=\mathrm{FPR}=q$), com o lembrete de que na prática a probabilidade é
-    estimada e as taxas vêm da amostra de teste. E três ajustes de rigor: no teorema do
-    custo, $g(\mathbf{x})$ virou $g(\mathbf{X})$ dentro das probabilidades e os custos
-    ganharam nome ($\ell_1$ é o do falso positivo, $\ell_0$ o do falso negativo); na
-    AUC, $\mathbf{X}_0$ e $\mathbf{X}_1$ passaram a ser independentes, e o teorema
-    ganhou a hipótese $\mathbb{P}(S_1=S_0)=0$, com
-    $\mathrm{AUC}=\mathbb{P}(S_1>S_0)+\frac12\mathbb{P}(S_1=S_0)$ no caso geral.
-
-    O deck foi de 16 para 24 slides (2478 → 2551 quebras CRLF, nenhum LF solto). Os
-    `id` seguem a regra do Quarto (título repetido ganha `-1`, `-2`), a figura continua
-    `a-curva-roc-4`, e nenhum `id` removido era referenciado. Conferido em Chrome
-    *headless*, de 1280×800 a 3840×2160: zero `MathJax_Error`, todo slide novo com
-    pelo menos 34 px de folga no pé e nada passando da borda direita. Os três slides
-    antigos que já passavam do fim foram acertados em seguida (item 18).
-18. Em 30/09/2026, no mesmo passo, três slides originais do deck 08 que passavam do
-    fim do slide --- a medição do item 17 os achou --- foram acertados só no layout,
-    sem mudar uma palavra:
-    - ``Avaliando a qualidade de $g$'' ($-16$ px): a fórmula
-      $R(g)=\mathbb{P}(Y\neq g(\mathbf{X}))=\mathbb{P}(Y=1)$ do classificador trivial
-      saiu do `display` e ficou no texto do item;
-    - o primeiro ``Melhorando o classificador de Bayes'' ($-21$): o item ``Contexto de
-      classificação binária'' virou o começo do seguinte (``Contexto de classificação
-      binária: comparar as quantidades\dots''), um *fragment* a menos;
-    - o segundo ``AUC - alguns problemas'' ($-24$): a citação de Hand, inteira, dentro
-      de `<span style="font-size: 90%;">` --- o que o Quarto gera de
-      `[...]{style="font-size: 90%;"}` no `.qmd`.
-
-    Hoje os três deixam 48, 47 e 91 px de folga, e nenhum slide do deck passa do fim
-    (medido de 1167×865 a 3840×2247). O deck tem 2550 quebras CRLF.
-19. Em 05/10/2026, a pedido do Gabriel, saíram os dois slides ``O risco em termos das
-    taxas'' do item 17: a decomposição
-    $R(g)=\pi_1\,\mathbb{P}(g(\mathbf{X})=0|Y=1)+\pi_0\,\mathbb{P}(g(\mathbf{X})=1|Y=0)$,
-    a identidade na amostra com os números do exemplo e, com eles, a ponte para os
-    custos (``Se um falso negativo custar mais que um falso positivo, os pesos deveriam
-    ser outros: é o que vem a seguir''). O segundo ``Por que essas duas taxas?'' passa
-    direto ao ``Melhorando o classificador de Bayes''. Nenhum `id` dos dois era
-    referenciado. O deck foi de 24 para 22 slides (2550 → 2533 quebras CRLF, nenhum LF
-    solto); conferido em Chrome *headless*: zero `MathJax_Error` e nenhum slide
-    passando do fim. O mesmo arquivo trazia, ainda não commitada, uma edição do Gabriel
-    no ``Recapitulando'' (``Porém, $R(g)=\dots$ é uma boa forma de avaliar\dots'', no
-    lugar de ``Porém, é $R(g)=\dots$ uma boa forma\dots''), preservada.
-20. Em 05/10/2026, o Gabriel achou obscuro o ``$\mathrm{TPR}$ e $\mathrm{FPR}$ não
-    aumentam / não diminuem'' do segundo slide ``A curva ROC'' (item 17): a
-    desigualdade fraca, sozinha, não dizia o que se move nem por quê. Os subitens
-    passaram a dar o mecanismo e o efeito por extenso --- sob ``$\uparrow p_0$'',
-    ``$\mathrm{VP}$ e $\mathrm{FP}$ diminuem ou ficam iguais; como $P$ e $N$ não mudam,
-    $\mathrm{TPR}$ e $\mathrm{FPR}$ também''; sob ``$\downarrow p_0$'', ``o contrário:
-    $\mathrm{TPR}$ e $\mathrm{FPR}$ aumentam ou ficam iguais'' ---, e o último item virou
-    ``Em geral, aumentar a $\mathrm{TPR}$ custa aumentar a $\mathrm{FPR}$: a curva ROC
-    mostra essa troca''. Uma primeira redação do último item, mais longa, passava 14 px
-    do fim; a atual deixa 38 px. As notas não mudaram: lá o ``não crescentes'' vem com o
-    motivo na mesma frase (``subir o corte só tira observações do grupo dos classificados
-    como positivos'').
-21. Em 05/10/2026, a pedido do Gabriel (``tire as explicações do que a AUC mede e seus
-    problemas''), saíram os quatro últimos slides: o segundo ``Área sob a curva ROC
-    (AUC)'', com $\mathbf{X}_0$, $\mathbf{X}_1$, os escores e o teorema
-    $\mathrm{AUC}=\mathbb{P}(S_1>S_0)+\frac12\mathbb{P}(S_1=S_0)$, e os três ``AUC - alguns
-    problemas'' (a AUC ruidosa, pela Wikipedia; a citação de Hand sobre custos; a curva
-    reduzida a um número; e o aviso de que ROC e AUC são variáveis aleatórias, a
-    conferir com validação cruzada). Do primeiro ``Área sob a curva ROC (AUC)'', que
-    virou o último slide, saiu o item ``Mas o que ela mede, exatamente?'', que levava ao
-    teorema; ficam a definição e o ``usualmente associada a quão bom pode ser o
-    classificador''. O rodapé que o Quarto gera dentro do último slide
-    (`<div class="quarto-auto-generated-content">`, com o `footer` vazio) foi para o novo
-    último. Com os slides saíram também os acertos dos itens 16 (os $\mathbf{X}_0$ e
-    $\mathbf{X}_1$ trocados), 17 (independência e empate na AUC) e 18 (a citação em 90\%):
-    quem replicar este histórico no `.qmd` pode pular essas partes. O deck foi de 22 para
-    18 slides (2533 → 2506 quebras CRLF, nenhum LF solto); conferido em Chrome
-    *headless*, sem `MathJax_Error` e sem slide passando do fim.
-
-## O slide de SVM, o único em Beamer
-
-O fonte chegou em 17/08/2026 e a autoria antiga acabou: **não há mais material do
-curso creditando o Prof. Hugo**. O que veio foi o `main.tex` do curso inteiro dele
-— 137 frames, 3473 linhas, 50 figuras — em que tudo menos SVM estava dentro de dois
-`\begin{comment}`. Daí saíram os 30 frames de SVM e as 10 figuras que eles usam;
-mais dois frames escritos aqui, e o deck tem 32.
-
-```
-aulas/09-svm/
-├── 09 SVM - slide.tex        ← 958 linhas, Beamer tema Madrid
-├── 09 SVM - slide.pdf        ← 33 páginas, mesmo caminho de antes
-└── slide-figuras/            ← as 10 figuras (1,1 MB), via \graphicspath
-```
-
-O `.tex` fica ao lado do `.pdf`, como em todo o resto do repositório; só as figuras
-ganharam subpasta, para dez `.pdf` soltos não se confundirem com notas. **Compile de
-dentro da pasta da aula**, duas passadas, e apague `.nav` e `.snm` junto com os
-outros artefatos (o `.gitignore` já os cobre).
-
-Quatro coisas a saber antes de mexer nele:
-
-1. **Ele não usa o `estilo-notas.sty`.** É Beamer com tema Madrid e o preâmbulo do
-   Hugo, com as macros dele (`\V`, `\Vg`, `\RR`, `\PP`, `\ds`, `\Hcal`). Nada disso
-   conversa com as notas — não tente unificar;
-2. **o rodapé de todas as páginas sai de `\author[...]` e `\title[...]`**, as
-   chaves *curtas*. É por isso que trocar a autoria foi uma linha, não trinta e
-   uma. O título curto também perdeu o "Apredizagem" (faltava o `n`) do original;
-3. **`babel` ficou fora, de propósito**, como no `estilo-notas.sty`: sem o
-   `texlive-lang-portuguese` o `babel` falha em silêncio e as dez legendas voltam
-   para "Figure". Com `\renewcommand{\figurename}{Figura}` compila igual em qualquer
-   máquina;
-4. **dois defeitos do original foram corrigidos** e não devem voltar: os ambientes
-   `withoutheadline`/`withoutbottomline` fechavam cruzados, e `\set\date{SVM}` usava
-   um `\set` inexistente — o LaTeX errava, se recuperava, e o `\date{SVM}` passava
-   por sorte. Hoje compila com `-halt-on-error` e zero erro.
-
-As citações `[ITSL]` viraram `[ISLP]` (9 no deck), fechando a troca que os outros
-seis decks receberam em 10/08/2026. Os oito números de figura que ele cita (9.1 a
-9.12) foram conferidos no `recursos/livros/ISLP.pdf` e estão certos — o capítulo 9
-não mudou entre as edições.
-
-**Os dois frames novos são sobre o `C`, e nasceram de uma inconsistência do
-original.** O deck apresentava $\sum_i \varepsilon_i \le C$ (o orçamento do
-[ISLP]) e, na *mesma* moldura, a forma de Lagrange
-$\frac12\|\beta\|^2 + C\sum_i \varepsilon_i$ — que é a do `scikit-learn`, em que
-o `C` é o peso da penalidade e portanto tudo se inverte. Mesma letra, papéis
-opostos, sem aviso: quem lesse os slides concluiria que $\uparrow C$ dá margem
-larga e mais vetores de suporte, e a §8 da `Aula prática 09` mede o contrário
-($C=0{,}01 \to 92$ vetores; $C=1000 \to 24$). As notas já traziam a inversão numa
-caixa `atencao`; agora o slide também.
-
-**O que ficou de fora:** os outros 107 frames do curso do Hugo e 40 figuras. Estão
-só no zip que ele enviou, não no repositório.
+- **Não usa o `estilo-notas.sty`:** preâmbulo e macros do Hugo (`\V`, `\RR`, `\PP`, ...). Não
+  tente unificar.
+- O rodapé sai das chaves curtas de `\author[...]` e `\title[...]`.
+- Sem `babel`, como nas notas (`\figurename` à mão).
+- Dois defeitos do original foram corrigidos e não voltam: ambientes
+  `withoutheadline`/`withoutbottomline` fechando cruzados, e `\set\date{SVM}`.
+- Os dois frames escritos aqui são sobre o `C`: o original usava a mesma letra para o
+  orçamento do [ISLP] e para o peso da penalidade do scikit-learn, que se invertem.
