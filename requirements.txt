@@ -140,7 +140,7 @@ ipykernel>=6.0
 # Três arquivos .csv ficam em recursos/dados/:
 #
 #   superconductivity.csv    aulas 01 a 05  (23 MB, 9 notebooks)
-#   bank_train_redux.csv     aulas 06, 08 e 10  (96 MB, 5 notebooks)
+#   bank_train_redux.csv     aulas 08 e 10  (96 MB, 4 notebooks)
 #   spam.csv                 aula E3        (0,5 MB, 3 notebooks)
 #
 # e mais dois, do Trabalho Prático 01 (avaliacoes/), lidos pelos dois notebooks
@@ -148,6 +148,10 @@ ipykernel>=6.0
 #
 #   concreto.csv             Parte I        (48 KB)
 #   credito.csv              Parte II       (2,9 MB)
+#
+# Os cinco notebooks herdados de demonstração ("Exemplo - ...", "EXTRA ...",
+# "Comparação ...") ficam fora desta lista: dois importam seaborn, e o
+# "Exemplo - PCA" pede também plotly e baixa o MNIST pela rede (fetch_openml).
 #
 # NENHUM notebook baixa .csv da rede. Todos procuram o arquivo em dois lugares,
 # nesta ordem — a pasta do próprio notebook e depois ../../recursos/dados/ — e

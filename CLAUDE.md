@@ -189,6 +189,8 @@ já apareceram; em resumo:
 - `AdaBoostClassifier` perdeu `algorithm`; com o `SAMME` as probabilidades ficam entre
   $0{,}2$ e $0{,}8$ (pouca confiança, não demais);
 - `LogisticRegression(penalty=...)` sai na 1.10: omita, ou use `C=np.inf`;
+- o padrão do `n_init` do `KMeans` é `"auto"`: uma rodada com `k-means++`, dez com
+  `init="random"`;
 - `GroupKFold` reparte grupos de tamanho igual de outro jeito conforme a versão, e
   `GroupKFold(shuffle=True)` exige 1.6 (o TP01 usa);
 - os notebooks chamam `warnings.filterwarnings("ignore")`: depreciação só aparece com
@@ -273,9 +275,10 @@ Prediction*: `target` vale 1 para quem fez uma certa transação (**não** é in
 O que separa vazamento grave de leve é **se a etapa olha o $Y$**. Grave: selecionar
 variáveis, hiperparâmetros ou modelo olhando a resposta (com $y$ de ruído puro fabrica
 $R^2=+0{,}40$), e a mesma unidade nos dois lados da divisão ou informação do futuro (aí só
-`GroupKFold`). Leve: padronização, imputação pela média e **PCA**, que não veem o $Y$ e não
-fabricam sinal (a Aula prática E2 e a Lista prática E2 medem). A conduta não muda, tudo vai
-no `Pipeline`; muda onde gastar vigilância.
+`GroupKFold`). Leve: padronização, imputação pela média, codificação de categóricas,
+vetorização de texto e **PCA**, que não veem o $Y$ e não fabricam sinal (a Aula prática E2 e
+a Lista prática E2 medem o PCA). A conduta não muda, tudo vai no `Pipeline`; muda onde gastar
+vigilância.
 
 ## Conferido: não reabra
 
@@ -358,7 +361,8 @@ recompilar do fonte.
 - 08: o slide "Veja `MatConf.pdf`" virou sete (matriz de confusão, doença rara, TPR, FPR,
   por que essas taxas); ROC reescrita; teorema do custo com os custos nomeados; saíram os
   quatro slides finais sobre o que a AUC mede e seus problemas;
-- E1: figuras 12.7 a 12.9 do [ISLP];
+- 10: erro de digitação no texto do link do `KNeighborsClassifier`;
+- E1: figuras 12.7 a 12.9 do [ISLP]; erro de digitação;
 - 06, 07, 08 e 10: o número da aula na capa, depois da renumeração.
 
 ## Slide de SVM (Beamer)

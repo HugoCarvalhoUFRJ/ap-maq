@@ -31,7 +31,8 @@ aulas/
 avaliacoes/                       Avaliações do curso, com gabarito
 ├── Lista de revisao 01-06.tex    lista de revisão do Bloco I (11 exercícios)
 ├── Avaliacao teorica 01.tex      a prova, com 3 questões sorteadas dessa lista
-└── exercicios/                   o corpo de cada exercício, incluído pelos dois
+├── exercicios/                   o corpo de cada exercício, incluído pelos dois
+└── Trabalho pratico 01.tex       o trabalho prático (aulas 01 a 10), com dois notebooks
 
 recursos/
 ├── livros/        AME.pdf, ISLP.pdf
@@ -44,8 +45,9 @@ requirements.txt   pacotes necessários para rodar as aulas práticas
 ```
 
 Cada pasta de aula contém, conforme disponível:
-- o **slide**: `.html` gerado pelo Quarto em treze aulas, e um Beamer em `.tex` mais
-  `.pdf` na aula 09, com as figuras dele em `slide-figuras/`;
+- o **slide**: `.html` gerado pelo Quarto em dez aulas (01 a 08, 10 e E1), e um
+  Beamer em `.tex` mais `.pdf` na aula 09, com as figuras dele em `slide-figuras/`;
+  as aulas E2 e E3 não têm slide;
 - as **notas de aula** em duas versões (`.tex` + `.pdf` compilado);
 - a **aula prática** (`Aula prática NN.ipynb`), um laboratório guiado, para
   acompanhar em sala;
@@ -90,7 +92,8 @@ necessário para a compressão de imagem da aula E1.
 ### De onde vêm os dados
 
 Os `.csv` ficam em [`recursos/dados/`](recursos/dados), em uma cópia única para o
-curso todo, e **nenhum notebook baixa dados da internet**. Todos procuram o
+curso todo, e **nenhum notebook baixa dados da internet** (a exceção é a
+demonstração herdada `Exemplo - PCA`, que baixa o MNIST). Todos procuram o
 arquivo em dois lugares, nesta ordem:
 
 1. a pasta do próprio notebook;
@@ -138,6 +141,10 @@ Presenciais de 2025-02, que são herdadas e continuam em `recursos/avaliacoes/`.
 | `Lista de revisao 01-06 - gabarito.pdf` | a mesma lista com as soluções |
 | `Avaliacao teorica 01.tex` / `.pdf` | a prova: 3 questões **sorteadas** da lista de revisão, 12,0 pontos, 2 horas |
 | `Avaliacao teorica 01 - gabarito.pdf` | as soluções, com critério de correção por questão |
+| `Trabalho pratico 01.tex` / `.pdf` | o trabalho prático: 15 tarefas sobre as aulas 01 a 10, em dois conjuntos de dados reais, um de regressão e um de classificação, com entrega em notebook |
+| `Trabalho pratico 01 - gabarito.pdf` | o roteiro de correção: o esperado em cada tarefa e a distribuição dos pontos |
+| `Trabalho pratico 01 - modelo.ipynb` | o ponto de partida do aluno: carrega os dados e tem uma seção por tarefa |
+| `Trabalho pratico 01 - resolucao.ipynb` | a resolução de referência, de onde saem os números do roteiro |
 
 A lista de revisão não repete nenhum dos exercícios das listas de cada aula: boa
 parte dela pede que o aluno **demonstre** resultados que as notas usaram sem
@@ -217,3 +224,7 @@ são usados nas aulas práticas e provêm, respectivamente, de
 [superconductivity](https://archive.ics.uci.edu/dataset/464/superconductivty+data) e
 [bank_train_redux](https://www.kaggle.com/competitions/santander-customer-transaction-prediction/)
 (este último é um excerto da base do Kaggle, por motivos de espaço no GitHub).
+Os arquivos `concreto.csv` e `credito.csv`, do Trabalho Prático 01, vêm do
+*UCI Machine Learning Repository*, sob a licença CC BY 4.0:
+[Concrete Compressive Strength](https://doi.org/10.24432/C5PK67) e
+[Default of Credit Card Clients](https://doi.org/10.24432/C55S3H).
