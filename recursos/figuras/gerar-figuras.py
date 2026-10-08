@@ -783,7 +783,7 @@ def _kernel():
     grade = np.c_[xx.ravel(), yy.ravel()]
 
     config = [("linear", dict(kernel="linear", C=1.0)),
-              ("polinomial, $p=2$", dict(kernel="poly", degree=2, C=1.0, gamma="scale")),
+              ("polinomial, $q=2$", dict(kernel="poly", degree=2, C=1.0, gamma="scale")),
               (r"RBF, $\gamma=0{,}5$", dict(kernel="rbf", gamma=0.5, C=1.0)),
               (r"RBF, $\gamma=50$", dict(kernel="rbf", gamma=50.0, C=1.0))]
 
@@ -796,7 +796,8 @@ def _kernel():
         ax.contour(xx, yy, Z, levels=[0], colors="black", linewidths=1.2)
         ax.scatter(X[y == 0, 0], X[y == 0, 1], s=5, color=AZUL, alpha=0.6)
         ax.scatter(X[y == 1, 0], X[y == 1, 1], s=5, color=VINHO, alpha=0.6)
-        ax.set_title(f"{nome}\nacurácia (treino) $= {m.score(X, y):.3f}$", fontsize=7.5)
+        acuracia = f"{m.score(X, y):.3f}".replace(".", "{,}")
+        ax.set_title(f"{nome}\nacurácia (treino) $= {acuracia}$", fontsize=7.5)
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] kernel {nome}: acurácia de treino "
               f"{m.score(X, y):.3f}")

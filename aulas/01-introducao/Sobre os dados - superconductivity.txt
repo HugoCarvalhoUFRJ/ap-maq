@@ -25,15 +25,15 @@ resumos da mesma propriedade são fortemente redundantes. Padronizando as 81
 colunas e rodando um PCA, o primeiro componente sozinho explica 38,9% da
 variância e doze componentes chegam a 90%. Isto é, as 81 colunas carregam
 cerca de uma dúzia de dimensões de informação — e é por isso que métodos de
-vizinhança, que deveriam sofrer com d = 81, vão bem aqui.
+vizinhança, que deveriam sofrer com p = 81, vão bem aqui.
 
 Fonte: UCI Machine Learning Repository, "Superconductivty Data".
 https://archive.ics.uci.edu/dataset/464/superconductivty+data
 
 Onde a base aparece no curso:
   Aula 01  primeiro contato com dados reais
-  Aula 02  regressão linear, Ridge e Lasso com d = 81
+  Aula 02  regressão linear, Ridge e Lasso com p = 81
   Aula 03  escolha do lambda da Ridge por validação cruzada
   Aula 04  KNN, e a diferença entre número de colunas e dimensão efetiva
-  Aula 06  árvores e ensembles
+  Aula 05  árvores e ensembles
   Aula E2  PCA — as tais doze direções, encontradas

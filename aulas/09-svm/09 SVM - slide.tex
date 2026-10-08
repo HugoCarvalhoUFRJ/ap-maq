@@ -11,7 +11,7 @@
 %  Três mudanças em relação ao recebido, e o motivo de cada uma:
 %
 %    1. autoria e instituição: Gabriel Sanfins / UFF no lugar de Hugo Carvalho /
-%       UFRJ. O rodapé das 31 páginas sai de \author[...] e \title[...], então
+%       UFRJ. O rodapé das 33 páginas sai de \author[...] e \title[...], então
 %       são as duas chaves curtas que importam. O título curto também perdeu o
 %       "Apredizagem" (faltava o n) e passou a "Aprendizado de Máquina", que é
 %       o nome do curso no resto do repositório;
@@ -26,7 +26,7 @@
 %  As citações [ITSL] viraram [ISLP] -- é o mesmo livro, e é a sigla que os
 %  outros seis decks do curso já usam desde 10/08/2026.
 %
-%  Compile de dentro desta pasta:  pdflatex "10 SVM - slide.tex"
+%  Compile de dentro desta pasta:  pdflatex "09 SVM - slide.tex"
 %==============================================================================
 \documentclass[handout]{beamer}
 % \documentclass{beamer}
@@ -271,7 +271,7 @@
 
 
 \setcounter{framenumber}{0}
-\date{SVM}        % o que aparece no rodape das 31 paginas
+\date{SVM}        % o que aparece no rodape das 33 paginas
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -879,7 +879,7 @@
             
             \pause
             
-            \item $\ds k(\V{x}, \V{y}) = \left(1 + \sum_{j = 1}^{p} x_j y_j \right)^d$, \textit{kernel} polinomial de grau $d$
+            \item $\ds k(\V{x}, \V{y}) = \left(1 + \sum_{j = 1}^{p} x_j y_j \right)^q$, \textit{kernel} polinomial de grau $q$
             
             \pause
             

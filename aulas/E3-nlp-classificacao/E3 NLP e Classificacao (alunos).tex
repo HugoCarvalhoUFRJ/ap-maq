@@ -264,11 +264,13 @@ print(classification_report(y_te, y_hat))        # precisao, recall, F1
 
 \begin{atencao}[por que o vetorizador \emph{tem} que estar no pipeline]
 Se você vetorizar tudo antes de separar treino e teste, o vocabulário --- e os
-valores de IDF --- serão calculados usando as mensagens de teste. É vazamento da
-categoria \textbf{grave} da Aula~06: uma etapa que \emph{escolhe} quais colunas
-existem, olhando dados que deveriam ser novos. Dentro do \emph{pipeline}, cada
-dobra reconstrói o vocabulário do zero, e palavras que só aparecem no teste são
-simplesmente ignoradas --- que é exatamente o que aconteceria em produção.
+valores de IDF --- serão calculados usando as mensagens de teste. É vazamento, mas
+da categoria \textbf{leve} da Aula~06, como padronizar ou codificar categóricas com o
+conjunto todo: o vetorizador aprende com as mensagens, mas \emph{não olha os rótulos},
+e por isso não consegue fabricar sinal a partir de ruído. Corrija assim mesmo, porque
+custa zero: dentro do \emph{pipeline}, cada dobra reconstrói o vocabulário do zero, e
+palavras que só aparecem no teste são simplesmente ignoradas --- que é exatamente o
+que aconteceria em produção.
 \end{atencao}
 
 \begin{observacao}[o que \emph{não} vimos]
