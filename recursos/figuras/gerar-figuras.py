@@ -181,7 +181,8 @@ def _curva_u():
     ax.plot(graus, treino, "s-", color=AZUL, ms=3.5,
             label=r"erro de treino $\widehat{R}(\widehat{r}\,)$")
     ax.axhline(SIGMA ** 2, color=VERDE, ls="--", lw=1.2,
-               label=r"erro irredutível $\sigma^2=%.2f$" % SIGMA ** 2)
+               label=r"erro irredutível $\sigma^2=%s$"
+                     % f"{SIGMA ** 2:.2f}".replace(".", "{,}"))
     ax.axvline(melhor, color=CINZA, ls=":", lw=1.0)
 
     ax.annotate("subajuste", xy=(1.6, 1.06), fontsize=8, color=CINZA)
@@ -471,7 +472,8 @@ def _vazamento():
     ax1.set_ylabel("$R^2$ estimado por validação cruzada")
     ax1.set_title(f"$y$ é ruído puro ($n={n}$, $p={d}$)")
     for xx, vv in zip([0, 1], m[:2]):
-        ax1.annotate(f"{vv:+.2f}", xy=(xx, vv), xytext=(0, 6 if vv > 0 else -14),
+        ax1.annotate(f"{vv:+.2f}".replace(".", ","), xy=(xx, vv),
+                     xytext=(0, 6 if vv > 0 else -14),
                      textcoords="offset points", ha="center", fontsize=8.5)
     ax1.set_ylim(min(m[1] * 1.35, -0.1), max(m[0] * 1.35, 0.1))
 
@@ -482,8 +484,8 @@ def _vazamento():
     ax2.set_ylabel("$R^2$ estimado por validação cruzada")
     ax2.set_title("padronização, com sinal de verdade")
     for xx, vv in zip([0, 1], m[2:]):
-        ax2.annotate(f"{vv:.4f}", xy=(xx, vv), xytext=(0, 6), textcoords="offset points",
-                     ha="center", fontsize=8.5)
+        ax2.annotate(f"{vv:.4f}".replace(".", ","), xy=(xx, vv), xytext=(0, 6),
+                     textcoords="offset points", ha="center", fontsize=8.5)
     baixo = min(m[2], m[3])
     ax2.set_ylim(baixo - 0.02, max(m[2], m[3]) + 0.02)
     salvar(fig, "06-vazamento")
@@ -764,8 +766,10 @@ def _margem():
         ax.scatter(sv[:, 0], sv[:, 1], s=90, facecolors="none",
                    edgecolors=VERDE, linewidths=1.3, zorder=4)
         larg = 2 / np.linalg.norm(m.coef_)
-        ax.set_title(f"$C={C:g}$ — {len(sv)} vetores de suporte\n"
-                     f"margem $= {larg:.2f}$", fontsize=7.5)
+        c_txt = f"{C:g}".replace(".", "{,}")
+        larg_txt = f"{larg:.2f}".replace(".", "{,}")
+        ax.set_title(f"$C={c_txt}$ — {len(sv)} vetores de suporte\n"
+                     f"margem $= {larg_txt}$", fontsize=7.5)
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] C={C:g}: {len(sv)} vetores de suporte, "
               f"margem {larg:.3f}")
@@ -857,7 +861,9 @@ def _fronteiras_knn():
         ax.scatter(X[y == 0, 0], X[y == 0, 1], s=6, color=AZUL, alpha=0.65)
         ax.scatter(X[y == 1, 0], X[y == 1, 1], s=6, color=VINHO, alpha=0.65)
         tr = m.score(X, y); te = m.score(X_te, y_te)
-        ax.set_title(f"$k={k}$\ntreino ${tr:.3f}$ | teste ${te:.3f}$", fontsize=7.5)
+        tr_txt = f"{tr:.3f}".replace(".", "{,}")
+        te_txt = f"{te:.3f}".replace(".", "{,}")
+        ax.set_title(f"$k={k}$\ntreino ${tr_txt}$ | teste ${te_txt}$", fontsize=7.5)
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] k={k}: acurácia treino {tr:.3f}, teste {te:.3f}")
     salvar(fig, "10-fronteiras-knn")
@@ -1125,7 +1131,7 @@ def _texto():
     ax1.set_xlabel(f"palavras (primeiras 420 de {M.shape[1]})")
     ax1.set_ylabel("mensagens (primeiras 180)")
     ax1.set_title("cada ponto é uma palavra presente\ndensidade global: "
-                  f"{100*densidade:.2f}%", fontsize=8)
+                  + f"{100*densidade:.2f}".replace(".", ",") + "%", fontsize=8)
     ax1.grid(False)
 
     pos = np.arange(12)
