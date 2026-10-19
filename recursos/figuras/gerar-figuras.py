@@ -24,6 +24,7 @@ import sys
 
 import numpy as np
 from matplotlib.pyplot import subplots, close
+from matplotlib import ticker
 import matplotlib as mpl
 
 import sklearn.linear_model as skl
@@ -74,8 +75,47 @@ def figura(nome, aula):
     return _dec
 
 
+def _virgula(rotulo):
+    """Vírgula decimal num rótulo: ``{,}`` dentro de ``$...$`` e ``,`` fora."""
+    return rotulo.replace(".", "{,}" if "$" in rotulo else ",")
+
+
+class _ComVirgula(ticker.Formatter):
+    """Repassa os rótulos de outro formatador de eixo, com vírgula decimal."""
+
+    def __init__(self, original):
+        self.original = original
+
+    def __call__(self, x, pos=None):
+        return _virgula(self.original(x, pos))
+
+    def format_ticks(self, values):
+        return [_virgula(r) for r in self.original.format_ticks(values)]
+
+    def get_offset(self):
+        return _virgula(self.original.get_offset())
+
+    def set_locs(self, locs):
+        self.original.set_locs(locs)
+
+
+def _eixos_com_virgula(fig):
+    """Os números dos eixos são escritos pelo matplotlib, com ponto decimal.
+
+    Só os formatadores numéricos são trocados. Os rótulos de ``set_xticklabels``
+    ficam de fora: são texto, e o ponto de uma palavra não é separador decimal.
+    """
+    for ax in fig.axes:
+        for eixo in (ax.xaxis, ax.yaxis):
+            for qual in ("major", "minor"):
+                formatador = getattr(eixo, f"get_{qual}_formatter")()
+                if isinstance(formatador, (ticker.ScalarFormatter, ticker.LogFormatter)):
+                    getattr(eixo, f"set_{qual}_formatter")(_ComVirgula(formatador))
+
+
 def salvar(fig, nome):
     destino = os.path.join(AQUI, nome + ".pdf")
+    _eixos_com_virgula(fig)
     fig.savefig(destino, bbox_inches="tight", pad_inches=0.02)
     close(fig)
     print(f"  -> {nome}.pdf")

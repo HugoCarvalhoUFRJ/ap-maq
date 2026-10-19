@@ -132,7 +132,8 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
 aulas). Ele imprime linhas `[conferência]` com os números que as legendas afirmam: se mudar
 uma simulação, releia a legenda no `.tex`. Nos rótulos do matplotlib não use macro do curso
 (`$\x$`), nem `\%`, `\,`, `\emph{}`; vírgula decimal é `{,}` dentro de `$...$`, e
-`.replace(".", ",")` só no número.
+`.replace(".", ",")` só no número. Os números dos eixos saem com vírgula sozinhos: o
+`salvar()` troca os formatadores numéricos do matplotlib (os de `set_xticklabels` não).
 
 **Cada laboratório reproduz as simulações da figura da sua aula, com os mesmos parâmetros e
 a mesma semente** (população comum: $r(x)=\operatorname{sen}(1{,}5x)+0{,}3x$ em $[-3,3]$,
