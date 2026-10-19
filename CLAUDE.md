@@ -118,9 +118,11 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   laboratório e o `C` (nenhum material do aluno da 07 o define). Nas notas sem estar no
   deck, de propósito: as caixas "a acurácia engana" e "o preço do ingênuo" (a 08 as cita) e
   a observação do que se transfere da regressão.
-- **08.** Laboratório com nove seções, sem $F_1$ e sem a seção de custos (o corte ótimo
-  segue no deck e nas notas). A Lista teorica 08 pede só as métricas do deck. O deck e o
-  resto da aula ainda não coincidem: ver "Pendências".
+- **08.** O laboratório tem cinco seções e acaba na ROC e na AUC: não tem $F_1$, custos,
+  precisão–revocação, `class_weight`, calibração nem `scoring` (o corte ótimo segue no
+  deck e nas notas). A Lista prática 08 acompanha o laboratório, também sem custos, e é a
+  primeira lista prática no registro novo; a Lista teorica 08 pede só as métricas do deck.
+  O deck e o resto da aula ainda não coincidem: ver "Pendências".
 - **09.** O deck é o único em Beamer (adiante).
 - As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
   notas 04 a 08.
@@ -147,8 +149,7 @@ $\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Casos que engan
   reproduz com a **mesma** semente (12), de propósito.
 - **07:** a §6 do laboratório reproduz a `07-lda-qda` até a quarta casa; o caso $p=2$, $n=20$
   é citado pela Lista teorica 07 3(d).
-- **08:** a seção de calibração do laboratório reproduz a legenda da Figura 3 das notas; a
-  `08-roc-metricas` não é reproduzida (o laboratório usa o `bank_train_redux.csv`).
+- **08:** o laboratório usa o `bank_train_redux.csv` e não reproduz figura nenhuma.
 - As **listas práticas usam semente diferente** da do laboratório (salvo o Ex. 3 da 05): todo
   número de gabarito é medido, não previsto.
 
@@ -303,14 +304,15 @@ vigilância.
 
 - **Aula 08, o escopo.** O deck (18 slides) vai da matriz de confusão à definição da AUC.
   Não tem precisão–revocação, AP, `class_weight`, calibração, Brier nem `scoring`, que as
-  notas, o laboratório, as listas e a tarefa C4 do TP01 usam, e para onde as aulas 07, 09,
-  10 e E3 apontam. Ou o deck cresce, ou o conteúdo sai e as remissões são redirecionadas.
+  notas e a tarefa C4 do TP01 usam, e para onde as aulas 07, 09, 10 e E3 apontam. Ou o
+  deck cresce, ou o conteúdo sai e as remissões são redirecionadas.
   Saíram do deck e seguem nas notas a decomposição do risco pelas taxas e a AUC como
   probabilidade (a Observação 3.2 se apoia nelas).
-- **$F_1$:** fora do deck e do laboratório da 08; segue nas notas da 08, na Lista prática 08,
-  na E3, no planejamento e na tarefa C4(a) do TP01.
-- **Aula 08, notação:** o corte é $K$ nas notas, $p_0$ no deck, $t$ no laboratório; os custos
-  são $l_0,l_1$ nas notas, $\ell_0,\ell_1$ no deck e $c_{FP},c_{FN}$ no resto.
+- **$F_1$:** fora do deck, do laboratório e das listas da 08; segue nas notas da 08, na E3,
+  no planejamento e na tarefa C4(a) do TP01.
+- **Aula 08, notação:** o corte é $K$ nas notas, $p_0$ no deck, $t$ no laboratório e na
+  Lista prática 08; os custos são $l_0,l_1$ nas notas, $\ell_0,\ell_1$ no deck e
+  $c_{FP},c_{FN}$ no resto.
 - **`MatConf.pdf`** (aula 08): nenhum material aponta mais para ele; continua na pasta.
 - **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
 - **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o

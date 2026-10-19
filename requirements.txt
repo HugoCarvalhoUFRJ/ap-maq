@@ -48,7 +48,6 @@ ipykernel>=6.0
 #   get_feature_names_out                aulas 06 e E3 -> >= 1.0
 #   permutation_importance               aula 05  -> >= 0.22
 #   cost_complexity_pruning_path         aula 05  -> >= 0.22
-#   calibration_curve(strategy=...)      aula 08  -> >= 0.24
 #
 # O Trabalho Prático 01 (avaliacoes/) pede mais do que as aulas:
 #
