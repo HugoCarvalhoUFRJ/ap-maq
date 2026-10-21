@@ -281,10 +281,6 @@
         
         \pause
         
-        \item ...
-        
-        \pause
-        
         \item Formulação atual: 1995 -- C. Cortes e V. Vapnik
         
         \pause
@@ -333,7 +329,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Interlúdio -- Hiperplanos em $\RR^p$}
-    \textbf{Definição}: Em $\RR^p$, um \alert{hiperplano} é um sub-espaço afim de dimensão $p - 1$. Equivalentemente, é o conjunto de pontos $\V{x} = (x_1, \dots, x_p)^T$ satisfazendo $$\beta_0 + \beta_1 x_1 + \dots + \beta_p x_p = 0,$$ para parâmetros $\beta_0, \beta_1, \dots, \beta_p$ escolhidos
+    \textbf{Definição}: Em $\RR^p$, um \alert{hiperplano} é um subespaço afim de dimensão $p - 1$. Equivalentemente, é o conjunto de pontos $\V{x} = (x_1, \dots, x_p)^T$ satisfazendo $$\beta_0 + \beta_1 x_1 + \dots + \beta_p x_p = 0,$$ para parâmetros $\beta_0, \beta_1, \dots, \beta_p$ escolhidos, com $(\beta_1, \dots, \beta_p) \neq (0, \dots, 0)$
     
     \pause
     
@@ -360,7 +356,7 @@
     \begin{figure}
         \center
         \includegraphics[scale=0.30]{9-1.pdf}
-        \caption{(Figura 9.1 de [ISLP]) Hiperplano $1 + 2x_1 + 3x_2 = 0$ em $\RR^2$ (linha sólida). A região azul são os pontos $\V{x}$ tais que $1 + 2x_1 + 3x_2 > 0$ e região roxa são os pontos $\V{x}$ tais que $1 + 2x_1 + 3x_2 < 0$.}
+        \caption{(Figura 9.1 de [ISLP]) Hiperplano $1 + 2x_1 + 3x_2 = 0$ em $\RR^2$ (linha sólida). A região azul são os pontos $\V{x}$ tais que $1 + 2x_1 + 3x_2 > 0$ e a região roxa são os pontos $\V{x}$ tais que $1 + 2x_1 + 3x_2 < 0$.}
     \end{figure}
 \end{frame}
 
@@ -467,7 +463,7 @@
         
         \pause
         
-        \item No classificador de margem máxima, as observações que atingem a margem são chamados de \alert{vetores suporte}
+        \item No classificador de margem máxima, as observações que atingem a margem são chamadas de \alert{vetores suporte}
     \end{itemize}
 \end{frame}
 
@@ -479,7 +475,7 @@
     \begin{figure}
         \center
         \includegraphics[scale=0.25]{9-3.pdf}
-        \caption{(Figura 9.2 de [ISLP]) Classificador de margem máxima (linha sólida), margens (linhas tracejadas) e os respectivos vetores suporte.}
+        \caption{(Figura 9.3 de [ISLP]) Classificador de margem máxima (linha sólida), margens (linhas tracejadas) e os respectivos vetores suporte.}
     \end{figure}
     
     \pause
@@ -526,7 +522,7 @@
     \begin{figure}
         \center
         \includegraphics[scale=0.40]{9-5.pdf}
-        \caption{(Figura 9.5 de [ISLP]) Esquerda: Classificador de margem máxima. Direita: Classificadores de margem máxima antigo (linha pontilhada) e novo (linha sólida) após acrescentar uma nova observação no conjunto de treinamento.}
+        \caption{(Figura 9.5 de [ISLP]) Esquerda: Classificador de margem máxima. Direita: Classificadores de margem máxima antigo (linha tracejada) e novo (linha sólida) após acrescentar uma nova observação no conjunto de treinamento.}
     \end{figure}
     
     \pause
@@ -569,7 +565,7 @@
     \begin{figure}
         \center
         \includegraphics[scale=0.55]{9-6.pdf}
-        \caption{(Figura 9.6 de [ISLP]) Hiperplanos de margem máxima (linha sólida) e margens (linhas tracejadas). Esquerda: Algumas observações do lado ``errado"~da margem, porém nenhuma do lado ``errado"~do hiperplano. Direita: Observações do lado ``errado"~da margem e do hiperplano, após acréscimo de duas novas observações, 11 e 12.}
+        \caption{(Figura 9.6 de [ISLP]) Classificadores de vetor suporte: hiperplanos (linha sólida) e margens (linhas tracejadas). Esquerda: Algumas observações do lado ``errado"~da margem, porém nenhuma do lado ``errado"~do hiperplano. Direita: Observações do lado ``errado"~da margem e do hiperplano, após acréscimo de duas novas observações, 11 e 12.}
     \end{figure}
 \end{frame}
 
@@ -589,7 +585,7 @@
     \pause
     
     \begin{itemize}
-        \item $\varepsilon_i = 0 \iff$ observação $i$ do lado ``certo"~do hiperplano
+        \item $\varepsilon_i = 0 \iff$ observação $i$ do lado ``certo"~da margem
         
         \item $\varepsilon_i > 1 \iff$ observação $i$ do lado ``errado"~do hiperplano
         
@@ -603,7 +599,7 @@
 
 \begin{frame}{Classificador de vetor suporte -- análise}
     \begin{itemize}
-        \item $(****)$: $\ds \sum_{i = 1}^{n} \varepsilon_i \leq C \iff C$ representa um \alert{orçamento} para as violações do hiperplano:
+        \item $(****)$: $\ds \sum_{i = 1}^{n} \varepsilon_i \leq C$, ou seja, $C$ representa um \alert{orçamento} para as violações da margem:
         
         \pause
         
@@ -612,16 +608,16 @@
             
             \pause
             
-            \item $C > 0 \iff$ não mais que $C$ observações podem estar classificadas erroneamente, no pior dos casos
+            \item $C > 0 \implies$ menos de $C$ observações ficam do lado ``errado"~do hiperplano, pois cada uma delas tem $\varepsilon_i > 1$
         \end{itemize}
         
         \pause
         
-        \item $\uparrow C \implies$ mais tolerantes com classificações errôneas $\implies$ maior margem $\implies$ $\uparrow$ viés e $\downarrow$ variância
+        \item $\uparrow C \implies$ mais tolerantes com violações da margem $\implies$ maior margem $\implies$ $\uparrow$ viés e $\downarrow$ variância
         
         \pause
         
-        \item $\downarrow C \implies$ menos tolerantes com classificações errôneas $\implies$ menor margem $\implies$ $\downarrow$ viés e $\uparrow$ variância
+        \item $\downarrow C \implies$ menos tolerantes com violações da margem $\implies$ menor margem $\implies$ $\downarrow$ viés e $\uparrow$ variância
         
         \pause
         
@@ -637,7 +633,7 @@
     \begin{figure}
         \center
         \includegraphics[scale=0.30]{9-7.pdf}
-        \caption{(Figura 9.7 de [ISLP]) Classificadores de vetor suporte ajustados com quatro valores de $C$ distintos. Hiperplanos separadores em linha sólida e margens em linha pontilhada.}
+        \caption{(Figura 9.7 de [ISLP]) Classificadores de vetor suporte com quatro valores de $C$, decrescentes na ordem de leitura. Hiperplanos em linha sólida e margens tracejadas.}
     \end{figure}
 \end{frame}
 
@@ -647,7 +643,7 @@
 
 \begin{frame}{Classificador de vetor suporte -- análise}
     \begin{itemize}
-        \item O hiperplano depende somente das observações que estão do lado ``errado"~da margem e do hiperplano $\implies$ \alert{vetores suporte}
+        \item O hiperplano depende somente das observações que estão sobre a margem ou do lado ``errado"~dela $\implies$ \alert{vetores suporte}
         
         \pause
         
@@ -669,12 +665,12 @@
     
     \pause
     
-    \textbf{Observação}: Distinto de outros métodos com fronteira de decisão lineares!
+    \textbf{Observação}: Distinto de outros métodos com fronteiras de decisão lineares!
     
     \pause
     
     \begin{itemize}
-        \item LDA depende (e é sensível) a todas as observações
+        \item LDA depende de todas as observações (e é sensível a elas)
         
         \pause
         
@@ -688,7 +684,7 @@
 
 \begin{frame}{Classificador de vetor suporte -- observação importante}
     \textbf{Observação}: O que é resolvido numericamente \alert{não} são as equações $(*, **, ***, ****)$, mas sim:
-    $$\min_{\substack{\beta_0, \beta_1, \dots, \beta_p, \\ \varepsilon_1, \dots, \varepsilon_n}} \|(\beta_1, \dots, \beta_p)\|_2 \text{ t.q. } \begin{cases} y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq 1 - \varepsilon_i \\ \varepsilon_i \geq 0, \sum_{i = 1}^{n} \varepsilon_i \leq C, \forall i = 1, \dots, n\end{cases}$$
+    $$\min_{\substack{\beta_0, \beta_1, \dots, \beta_p, \\ \varepsilon_1, \dots, \varepsilon_n}} \|(\beta_1, \dots, \beta_p)\|_2^2 \text{ t.q. } \begin{cases} y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq 1 - \varepsilon_i \\ \varepsilon_i \geq 0, \sum_{i = 1}^{n} \varepsilon_i \leq C, \forall i = 1, \dots, n\end{cases}$$
     
     \pause
     
@@ -754,7 +750,7 @@
 
     \pause
 
-    O $C$ \emph{pequeno} do \texttt{scikit-learn} é que dá \alert{mais} vetores suporte --- quatro vezes mais --- exatamente ao contrário do que os slides anteriores dizem do $C$ deles.
+    O $C$ \emph{pequeno} do \texttt{scikit-learn} é que dá \alert{mais} vetores suporte --- quase quatro vezes mais --- exatamente ao contrário do que os slides anteriores dizem do $C$ deles.
 
     \pause
 
@@ -846,7 +842,7 @@
         
         \pause
         
-        \item Para estimar $\beta_0, \alpha_1, \dots, \alpha_n$ precisamos somente dos $\ds \binom{n}{2}$ produtos internos $\langle \V{x}_i, \V{x}_j \rangle$, para $1 \leq i < j \leq n$
+        \item Para estimar $\beta_0, \alpha_1, \dots, \alpha_n$ precisamos somente dos $n(n+1)/2$ produtos internos $\langle \V{x}_i, \V{x}_j \rangle$, para $1 \leq i \leq j \leq n$
         
         \pause
         
@@ -879,11 +875,11 @@
             
             \pause
             
-            \item $\ds k(\V{x}, \V{y}) = \left(1 + \sum_{j = 1}^{p} x_j y_j \right)^q$, \textit{kernel} polinomial de grau $q$
+            \item $\ds k(\V{x}, \V{y}) = \left(1 + \sum_{j = 1}^{p} x_j y_j \right)^q$, \textit{kernel} polinomial de grau $q \in \{1, 2, \dots\}$
             
             \pause
             
-            \item $\ds k(\V{x}, \V{y}) = \exp\left(-\gamma \sum_{j = 1}^{p} (x_j - y_j)^2 \right)$, \textit{kernel} radial ou exponencial quadrático
+            \item $\ds k(\V{x}, \V{y}) = \exp\left(-\gamma \sum_{j = 1}^{p} (x_j - y_j)^2 \right)$, com $\gamma > 0$, \textit{kernel} radial ou exponencial quadrático
             
             \pause
             
@@ -912,12 +908,12 @@
     \pause
     
     \begin{center}
-        $\implies$ Intuitivamente, os dados devem ser linearmente separáveis em algum espaço, potencialmente de dimensão infinita.
+        $\implies$ Intuitivamente: ajustar a SVM com $k$ é ajustar um classificador de vetor suporte \alert{linear} aos pontos $\varphi(\V{x}_1), \dots, \varphi(\V{x}_n)$, num espaço potencialmente de dimensão infinita.
     \end{center}
     
     \pause
     
-    \textbf{Teorema}: A função $k:\RR^p \times \RR^p \to \RR$ é um \textit{kernel} (i.e., existem $\Hcal$ e $\varphi$ como acima) se e somente se ela é positiva semidefinida: $$\int_{\RR^p} \int_{\RR^p} g(\V{x}) k(\V{x}, \V{y}) g(\V{y})~d\V{x}d\V{y} \geq 0,$$ para toda $g: \RR^p \to \RR$ tal que $\int_{\RR^p} \|g(\V{x})\|^2~d\V{x} < \infty$.
+    \textbf{Teorema}: A função $k:\RR^p \times \RR^p \to \RR$ é um \textit{kernel} (i.e., existem $\Hcal$ e $\varphi$ como acima) se e somente se ela é simétrica, $k(\V{x}, \V{y}) = k(\V{y}, \V{x})$, e positiva semidefinida: para todo $n \geq 1$ e quaisquer $\V{x}_1, \dots, \V{x}_n \in \RR^p$, a matriz $\big[k(\V{x}_i, \V{x}_j)\big]_{i, j = 1}^{n}$ é positiva semidefinida.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -927,8 +923,8 @@
 \begin{frame}{Digressão de Álgebra Linear}
     \begin{figure}
         \center
-        \includegraphics[scale=0.50]{kernel-trick.png}
-        \caption{[Wikipedia] $\varphi: \RR^2 \to \RR^3$ dada por $\varphi(x_1, x_2) = (x_1, x_2, x_1^2 + x_2^2)$ e portanto $k(\V{x}, \V{y}) = \langle \V{x}, \V{y} \rangle + \|\V{x}\|^2\|\V{y}\|^2$. Dados não-separáveis linearmente em $\RR^2$ mas sim em $\RR^3$.}
+        \includegraphics[width=\textwidth]{kernel-trick.png}
+        \caption{[Wikipedia] $\varphi: \RR^2 \to \RR^3$ dada por $\varphi(x_1, x_2) = (x_1, x_2, x_1^2 + x_2^2)$ e portanto $k(\V{x}, \V{y}) = \langle \V{x}, \V{y} \rangle + \|\V{x}\|^2\|\V{y}\|^2$. Dados não separáveis linearmente em $\RR^2$ mas sim em $\RR^3$.}
     \end{figure}
 \end{frame}
 
@@ -965,7 +961,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Relação com regressão logística}
-    Lembremos do classificador de vetor suporte (caso particular do SVM com \textit{kernel} linear:
+    Lembremos do classificador de vetor suporte (caso particular do SVM com \textit{kernel} linear):
     \begin{align*}
         &\max_{\beta_0, \beta_1, \dots, \beta_p, \varepsilon_1, \dots, \varepsilon_n, M} M \\ 
         &\text{sujeito a } \sum_{j = 1}^{p} \beta_j^2 = 1, \varepsilon_i \geq 0 \text{ e } \sum_{i = 1}^{n} \varepsilon_i \leq C \\
@@ -1021,7 +1017,7 @@
 
 \begin{frame}{Relação com regressão logística}
     \begin{itemize}
-        \item Na formulação de custo + penalidade, a margem do classificador de vetor suporte corresponde ao valor 1, e o seu tamanho é dado por $\sum_{j = 1}^{p} \beta_j^2$
+        \item Na formulação de custo + penalidade, a margem do classificador de vetor suporte corresponde a $y_i f(\V{x}_i) = 1$, e a distância do hiperplano até ela é $1 / \sqrt{\sum_{j = 1}^{p} \beta_j^2}$
         
         \pause
         
@@ -1029,7 +1025,7 @@
         
         \pause
         
-        \item A perda da regressão logística nunca é zero! Porém, é \alert{próxima} de zero quando a perda do classificador de vetor suporte é zero!
+        \item A perda da regressão logística nunca é zero! Porém, é \alert{pequena} para observações do lado ``certo"~e longe da fronteira de decisão, onde a perda do classificador de vetor suporte é zero!
         
         \pause
         
@@ -1039,7 +1035,7 @@
     \pause
     
     \begin{center}
-        $\implies$ Ambas as técnicas dão resultados semelhantes!
+        $\implies$ Ambas as técnicas costumam dar resultados semelhantes!
     \end{center}
 \end{frame}
 
