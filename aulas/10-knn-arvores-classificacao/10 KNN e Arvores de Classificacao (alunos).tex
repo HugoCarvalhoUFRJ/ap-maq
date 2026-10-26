@@ -182,10 +182,11 @@ Toda a Aula~05 se transfere; as árvores individuais agora classificam:
 \begin{observacao}
 Vale registrar a ponte teórica: o AdaBoost, apesar de ter sido inventado por outro
 caminho, equivale a fazer \emph{boosting} com a \textbf{perda exponencial}
-$e^{-y\,g(\x)}$ --- mais uma perda de margem, no mesmo eixo horizontal da
-Figura~3 da Aula~09. Vista assim, ela é ainda mais agressiva que a \emph{hinge} com
-os pontos mal classificados, o que explica a sensibilidade conhecida do AdaBoost a
-rótulos errados.
+$e^{-y\,g(\x)}$, com $y\in\{-1,+1\}$. Ela depende da observação apenas pelo produto
+$y\,g(\x)$, positivo quando a classificação está certa, e cresce exponencialmente
+quando ele é negativo: um ponto mal classificado por larga diferença pesa muito mais
+do que na perda 0--1, que vale $1$ para qualquer erro. Isso explica a sensibilidade
+conhecida do AdaBoost a rótulos errados.
 \end{observacao}
 
 %==============================================================================
