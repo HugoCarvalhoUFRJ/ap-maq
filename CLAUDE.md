@@ -123,9 +123,16 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   deck e nas notas). A Lista prática 08 acompanha o laboratório, também sem custos, e é a
   primeira lista prática no registro novo; a Lista teorica 08 pede só as métricas do deck.
   O deck e o resto da aula ainda não coincidem: ver "Pendências".
-- **09.** O deck é o único em Beamer (adiante).
+- **09.** O deck é o único em Beamer (adiante). Deck e notas usam só o $C$ do [ISLP], o
+  orçamento de violações, e não têm a forma penalizada, o `C` do scikit-learn, a perda
+  *hinge* nem a relação com a regressão logística. Nos dois, a forma
+  $f(\mathbf{x})=\beta_0+\sum_i\alpha_i\langle\mathbf{x},\mathbf{x}_i\rangle$ é admitida sem
+  demonstração: uma prova por projeção ortogonal entrou no deck e saiu a pedido do Gabriel.
+  A figura `09-margem` é gerada com o `C` do scikit-learn e por isso não o rotula (os
+  painéis vão do menor ao maior orçamento); o título mostra $M$, a metade da largura da
+  faixa, que o laboratório mede inteira e chama de "largura da margem".
 - As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
-  notas 04 a 08.
+  notas 04 a 09.
 
 ## Figuras, notebooks e os acoplamentos entre eles
 
@@ -288,8 +295,6 @@ vigilância.
   $(k-1)$-NN. Notas da 04, Lista teorica 04 e Lista prática 04 dizem isso.
 - O grau 49 da aula 03 não tem um número, tem uma faixa: depende do corte de posto da
   instalação. O texto sustenta só as três leituras.
-- O `C` da aula 09: as notas e o Beamer trazem o orçamento do [ISLP] e o inverso do
-  scikit-learn, lado a lado.
 - O QDA recusa o `breast_cancer` mesmo padronizado (colinearidade). Na implementação do
   scikit-learn só o LDA é invariante à escala: `reg_param` e `var_smoothing` quebram a do
   QDA e a do Bayes ingênuo.
@@ -313,8 +318,17 @@ vigilância.
 - **Aula 08, notação:** o corte é $K$ nas notas, $p_0$ no deck, $t$ no laboratório e na
   Lista prática 08; os custos são $l_0,l_1$ nas notas, $\ell_0,\ell_1$ no deck e
   $c_{FP},c_{FN}$ no resto.
-- **`MatConf.pdf`** (aula 08): nenhum material aponta mais para ele; continua na pasta.
+- **`MatConf.pdf`** (aula 08) e **`slide-figuras/9-12.pdf`** (aula 09): nenhum material
+  aponta mais para eles; continuam na pasta.
 - **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
+- **Aula 09:** a forma penalizada, a inversão do `C` do scikit-learn e a relação com a
+  regressão logística (a perda *hinge*) saíram do deck e das notas, mas seguem na Lista
+  teorica 09 (Ex. 2, o `C`; Ex. 4, a *hinge*) e na §6 do laboratório; o laboratório e a
+  Lista prática 09 usam o `C` do scikit-learn. O planejamento ainda lista "relação com
+  regressão logística" na aula 09.
+- **Aula 09, notação:** no deck e nas notas, a folga é $\varepsilon_i$, como no [ISLP] (o
+  [AME] usa $e_i$), e o *kernel* é $k$ (os dois livros usam $K$); a Lista teorica 09 usa
+  $\xi_i$ e $K$.
 - **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o
   repositório; saiu das notas do aluno da 05 e da 07 e segue nas outras.
 - **Aula 05:** medido, o *bagging* com árvores podadas tem risco um pouco menor, o contrário
@@ -370,7 +384,7 @@ recompilar do fonte.
 
 ## Slide de SVM (Beamer)
 
-`aulas/09-svm/09 SVM - slide.tex` (tema Madrid, 32 frames) com as figuras em
+`aulas/09-svm/09 SVM - slide.tex` (tema Madrid, 25 frames e a capa) com as figuras em
 `slide-figuras/`. Veio do `main.tex` do curso do Hugo, do qual só os frames de SVM entraram.
 
 - **Não usa o `estilo-notas.sty`:** preâmbulo e macros do Hugo (`\V`, `\RR`, `\PP`, ...). Não
@@ -379,5 +393,4 @@ recompilar do fonte.
 - Sem `babel`, como nas notas (`\figurename` à mão).
 - Dois defeitos do original foram corrigidos e não voltam: ambientes
   `withoutheadline`/`withoutbottomline` fechando cruzados, e `\set\date{SVM}`.
-- Os dois frames escritos aqui são sobre o `C`: o original usava a mesma letra para o
-  orçamento do [ISLP] e para o peso da penalidade do scikit-learn, que se invertem.
+- **A capa não tem número:** o slide $N$ do rodapé é a página $N+1$ do PDF.
