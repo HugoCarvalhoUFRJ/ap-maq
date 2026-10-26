@@ -11,351 +11,619 @@
 \cabecalholista{09}{Máquinas de Vetores de Suporte (SVM)}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[a margem, na mão]
-Quatro observações em $\R^2$, linearmente separáveis:
+\begin{exercicio}[a margem máxima, calculada à mão]
+Uma estudante quer entender o classificador de margem máxima num exemplo em que todas
+as contas cabem no papel. Ela toma quatro observações de $\R^2$:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-        & $A$ & $B$ & $C$ & $D$ \\
+$i$     & $1$ & $2$ & $3$ & $4$ \\
 \midrule
 $\x_i$  & $(3,1)$ & $(3,3)$ & $(1,1)$ & $(1,3)$ \\
 $y_i$   & $+1$ & $+1$ & $-1$ & $-1$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Lembre que o hiperplano de margem máxima é escrito na forma canônica
-$\bm w^\top\x + b = 0$ com $y_i(\bm w^\top\x_i+b)\ge 1$ para todo $i$, e que a
-margem de cada lado vale $1/\norm{\bm w}$.
+Lembre que o classificador de margem máxima é dado pela solução do problema
+\begin{equation}\label{eq:mm}
+  \max_{\beta_0,\,\bbeta,\,M}\ M
+  \quad\text{sujeito a}\quad
+  \sum_{j=1}^p\beta_j^2=1
+  \quad\text{e}\quad
+  y_i\,(\beta_0+\bbeta^\top\x_i)\ge M,\ \ i=1,\dots,n,
+\end{equation}
+e que os seus vetores de suporte são as observações com
+$y_i(\beta_0+\bbeta^\top\x_i)=M$. Escreva $f(\x)=\beta_0+\bbeta^\top\x$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Desenhe os quatro pontos e determine, por inspeção, o hiperplano de
-        margem máxima. Escreva $\bm w$ e $b$ na forma canônica e calcule a margem.
-  \item Quais pontos são vetores de suporte?
-  \item Acrescente $E=(5,2)$ com $y_E=+1$. O hiperplano muda? Justifique sem
-        refazer a conta.
-  \item Agora mova $A$ de $(3,1)$ para $(2{,}5\,;\,1)$, mantendo os demais. Qual
-        é o novo hiperplano e a nova margem? Quais são agora os vetores de
-        suporte?
+  \item Sejam $\x_i$ e $\x_j$ observações distintas de classes opostas, com $y_i=+1$
+        e $y_j=-1$. Mostre que todo ponto $(\beta_0,\bbeta,M)$ que satisfaz as
+        restrições de \eqref{eq:mm} tem $M\le\norm{\x_i-\x_j}/2$, e que a igualdade
+        exige $\bbeta=(\x_i-\x_j)/\norm{\x_i-\x_j}$. (Some as restrições das duas
+        observações e use a desigualdade de Cauchy--Schwarz.)
+  \item Use o item (a) para determinar o classificador de margem máxima das quatro
+        observações e o valor ótimo de $M$, e mostre que a solução é única. Quais
+        observações são vetores de suporte?
+  \item A estudante acrescenta uma quinta observação, $\x_5=(5,2)$, com $y_5=+1$. O
+        classificador muda? Justifique sem resolver o problema de novo.
+  \item Em vez disso, ela desloca a primeira observação de $(3,1)$ para
+        $(2{,}5\,;\,1)$, sem mexer nas outras. Determine o novo classificador, o novo
+        valor ótimo de $M$ e os novos vetores de suporte.
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Os positivos estão todos em $x_1=3$ e os negativos em $x_1=1$; a
-coordenada $x_2$ não distingue nada. O hiperplano que mais se afasta dos dois
-grupos é a reta vertical no meio, $x_1=2$.
+\textbf{(a)} Como $y_i=+1$ e $y_j=-1$, as restrições das observações $i$ e $j$ são
+\[
+  \beta_0+\bbeta^\top\x_i\ge M
+  \qquad\text{e}\qquad
+  -\big(\beta_0+\bbeta^\top\x_j\big)\ge M .
+\]
+Somando as duas, $\beta_0$ se cancela e fica $\bbeta^\top(\x_i-\x_j)\ge 2M$. Pela
+desigualdade de Cauchy--Schwarz e pela restrição $\norm{\bbeta}=1$,
+\[
+  2M\le\bbeta^\top(\x_i-\x_j)\le\norm{\bbeta}\,\norm{\x_i-\x_j}=\norm{\x_i-\x_j},
+\]
+que é a desigualdade pedida.
 
-Na forma canônica precisamos de $y_i(\bm w^\top\x_i+b)=1$ nos pontos mais
-próximos. Tomando $\bm w=(1,0)$ e $b=-2$:
+Suponha agora $M=\norm{\x_i-\x_j}/2$. Então as desigualdades acima são igualdades, e,
+com $\bm u=(\x_i-\x_j)/\norm{\x_i-\x_j}$, vale $\bbeta^\top\bm u=1$. Como $\bbeta$ e
+$\bm u$ têm norma $1$,
 \[
-  A:\ (1)(3-2)=1,\quad B:\ (1)(3-2)=1,\quad
-  C:\ (-1)(1-2)=1,\quad D:\ (-1)(1-2)=1 .
+  \norm{\bbeta-\bm u}^2=\norm{\bbeta}^2-2\,\bbeta^\top\bm u+\norm{\bm u}^2=1-2+1=0,
 \]
-Todos valem exatamente $1$, como exige a forma canônica. A margem é
-\[
-  \frac{1}{\norm{\bm w}} = \frac{1}{1} = \mathbf{1}
-\]
-de cada lado, ou seja uma faixa de largura total $2$, entre $x_1=1$ e $x_1=3$.
+e portanto $\bbeta=\bm u$. Além disso, as duas restrições valem com igualdade, porque
+cada uma é pelo menos $M$ e a soma das duas é exatamente $2M$: as observações $i$ e
+$j$ estão ambas à distância $M$ do hiperplano.
+
+Em palavras: nenhuma observação de treino fica no interior da faixa
+$\{\x:\abs{f(\x)}<M\}$, cuja largura é $2M$, e por isso a faixa não pode ser mais larga
+que a distância entre duas observações de classes opostas. A cota vale para todo par,
+e a mais forte vem do par mais próximo. Ela não é atingida em todo conjunto de dados.
+Com $(0,0)$ na classe $+1$ e $(-1,1)$ e $(1,1)$ na classe $-1$, a menor distância entre
+as classes é $\sqrt2$; mas a restrição de $(0,0)$, somada à média das restrições das
+outras duas observações, dá $-\beta_2\ge2M$, e portanto $M\le1/2<\sqrt2/2$ (o valor
+$1/2$ é atingido pela reta $x_2=1/2$). Quando um ponto viável atinge a cota, porém, ele
+é ótimo, e é isso que o item seguinte usa.
 
 \smallskip
-\textbf{(b)} \textbf{Todos os quatro.} Vetor de suporte é o ponto que satisfaz
-$y_i(\bm w^\top\x_i+b)=1$, isto é, que \emph{toca} a margem --- e aqui os quatro
-tocam.
+\textbf{(b)} Os pares mais próximos de classes opostas são $\x_1,\x_3$ e $\x_2,\x_4$,
+à distância $2$; os outros dois estão à distância $\norm{(2,\pm2)}=2\sqrt2$. Pelo item
+(a), aplicado a $\x_1=(3,1)$ e $\x_3=(1,1)$, todo ponto viável tem
+$M\le\norm{(2,0)}/2=1$.
 
-\begin{atencao}[o que o \texttt{scikit-learn} vai dizer]
-Se você conferir com \texttt{SVC(kernel="linear", C=1e6)} e imprimir
-\texttt{support\_vectors\_}, vão aparecer \textbf{dois} pontos, não quatro. Não é
-erro: nesta configuração simétrica a solução \emph{dual} não é única, e o
-otimizador devolve um conjunto mínimo de multiplicadores que já reproduz o mesmo
-$\bm w$. A definição geométrica (pontos sobre a margem) e a computacional
-(pontos com multiplicador de Lagrange não nulo) coincidem no caso genérico e
-podem divergir em casos degenerados como este.
-\end{atencao}
-
-\smallskip
-\textbf{(c)} \textbf{Não muda.} Para $E=(5,2)$ temos
-$y_E(\bm w^\top\x_E+b) = 5-2 = 3 > 1$: o ponto está \emph{fora} da margem, do
-lado certo. A solução do problema de margem máxima depende apenas dos pontos que
-tocam a margem --- os demais têm multiplicador de Lagrange zero e poderiam ser
-apagados do conjunto de dados sem alterar nada.
-
-É a propriedade que dá nome ao método e o distingue, por exemplo, do LDA, cuja
-fronteira depende das \emph{médias} e portanto de todas as observações. Mover $E$
-para $(50,2)$ também não mudaria nada; mover $A$ um pouco muda tudo --- é o item
-seguinte.
-
-\smallskip
-\textbf{(d)} Agora os positivos são $(2{,}5\,;1)$ e $(3,3)$, e os negativos
-continuam em $x_1=1$. O ponto positivo mais próximo dos negativos é
-$A=(2{,}5\,;1)$, e o negativo mais próximo dele é $C=(1,1)$: a distância entre
-eles é $1{,}5$, na horizontal. O hiperplano de margem máxima é a mediatriz desse
-segmento,
+Tome $\bbeta=(\x_1-\x_3)/2=(1,0)$, que tem norma $1$, e $\beta_0=-2$, isto é,
+$f(\x)=x_1-2$, em que $x_1$ é a primeira coordenada de $\x$. Então
 \[
-  x_1 = \frac{1+2{,}5}{2} = 1{,}75,
-  \qquad\text{margem} = \frac{1{,}5}{2} = \mathbf{0{,}75}.
+  y_1f(\x_1)=y_2f(\x_2)=3-2=1
+  \qquad\text{e}\qquad
+  y_3f(\x_3)=y_4f(\x_4)=-(1-2)=1,
 \]
-Na forma canônica, $\bm w = (1/0{,}75,\ 0) = (4/3,\ 0)$ e
-$b = -1{,}75\cdot 4/3 = -7/3$, de modo que $1/\norm{\bm w} = 0{,}75$.
+e o ponto com $\beta_0=-2$, $\bbeta=(1,0)$ e $M=1$ satisfaz as restrições. Como nenhum
+ponto viável tem $M>1$, ele é ótimo, e o valor ótimo é $M=1$.
 
-Confira que $D=(1,3)$ também toca: $(-1)(4/3 - 7/3) = 1$. Já $B=(3,3)$ dá
-$(1)(4 - 7/3) = 5/3 > 1$ e ficou de fora. Os vetores de suporte são portanto
-$\mathbf{A}$, $\mathbf{C}$ e $\mathbf{D}$.
+A solução é única. Se $(\beta_0,\bbeta,M)$ é ótimo, então $M=1=\norm{\x_1-\x_3}/2$, e o
+caso de igualdade do item (a) dá $\bbeta=(1,0)$ e $y_1f(\x_1)=M$, isto é,
+$\beta_0+3=1$, ou $\beta_0=-2$. O classificador de margem máxima é, portanto, a reta
+vertical $x_1=2$: ele classifica como $+1$ os pontos com primeira coordenada maior que
+$2$. A faixa $\{\x:1<x_1<3\}$, de largura $2M=2$, não contém nenhuma observação, e as
+quatro estão sobre as suas bordas: todas são vetores de suporte.
 
-Compare com o item (a): mover \emph{um} ponto de $0{,}5$ encolheu a margem em
-$25\%$ e mudou o conjunto de vetores de suporte. A SVM de margem rígida é
-extremamente sensível aos pontos da fronteira --- e é exatamente esse defeito que
-o parâmetro $C$ do próximo exercício vem corrigir.
+\smallskip
+\textbf{(c)} Não muda. O problema com cinco observações tem as quatro restrições
+anteriores e mais uma. Todo ponto que o satisfaz satisfaz, portanto, as restrições do
+problema anterior, e a cota $M\le1$ do item (b), que só usou $\x_1$ e $\x_3$, continua
+valendo. Por outro lado, a solução anterior satisfaz a restrição nova,
+\[
+  y_5f(\x_5)=5-2=3\ge1 ,
+\]
+e é, assim, um ponto viável do problema novo com $M=1$, o maior valor possível:
+continua ótima. A unicidade se prova como no item (b). A observação nova não é vetor de
+suporte, porque está do lado certo e fora da faixa, à distância $3$ do hiperplano.
+
+O argumento só usou $y_5f(\x_5)\ge1$. Qualquer observação acrescentada do lado certo e
+fora da faixa deixa o classificador como estava, por mais longe que esteja: com
+$\x_5=(50,2)$ seria igual. É nesse sentido que o classificador de margem máxima depende
+apenas dos vetores de suporte. Neste exemplo vale até mais: a cota e a verificação do
+item (b) usaram só $\x_1$ e $\x_3$, e, com apenas essas duas observações, o mesmo
+argumento daria o mesmo classificador. Dois dos quatro vetores de suporte já o
+determinam.
+
+\smallskip
+\textbf{(d)} Agora $\x_1=(2{,}5\,;\,1)$, e o par $\x_1,\x_3$ está à distância
+$\norm{(1{,}5\,;\,0)}=1{,}5$: pelo item (a), todo ponto viável tem $M\le0{,}75$. O
+hiperplano equidistante de $\x_1$ e $\x_3$ tem $\bbeta=(\x_1-\x_3)/1{,}5=(1,0)$ e
+$f(\x)=x_1-1{,}75$, e
+\[
+  y_1f(\x_1)=0{,}75,\quad y_2f(\x_2)=3-1{,}75=1{,}25,\quad
+  y_3f(\x_3)=0{,}75,\quad y_4f(\x_4)=0{,}75 .
+\]
+O ponto com $\beta_0=-1{,}75$, $\bbeta=(1,0)$ e $M=0{,}75$ é viável e atinge a cota; é,
+portanto, ótimo, e o caso de igualdade do item (a) mostra, como no item (b), que é a
+única solução. O novo classificador é a reta $x_1=1{,}75$, o valor ótimo é $M=0{,}75$,
+e os vetores de suporte são $\x_1$, $\x_3$ e $\x_4$. A observação $\x_2$, a $1{,}25$ do
+hiperplano, deixou de ser vetor de suporte.
+
+Deslocar uma única observação de $0{,}5$ moveu o hiperplano de $0{,}25$, reduziu o
+valor ótimo de $M$ em $25\%$, de $1$ para $0{,}75$, e mudou o conjunto de vetores de
+suporte. O classificador de margem máxima depende de poucas observações, as mais
+próximas da fronteira, e responde a cada uma delas. Essa sensibilidade, junto com a
+exigência de que as classes sejam separáveis, é o que leva ao classificador de vetor de
+suporte do próximo exercício.
 \end{solucao}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[o que $C$ faz, e por que ele é invertido]
-A SVM de margem suave resolve
-\[
-  \min_{\bm w,\,b,\,\bm\xi}\ \tfrac12\norm{\bm w}^2 + C\sum_{i=1}^n \xi_i
-  \qquad\text{sujeito a}\qquad
-  y_i(\bm w^\top\x_i+b)\ge 1-\xi_i,\quad \xi_i\ge 0 .
-\]
+\begin{exercicio}[o orçamento $C$, com uma covariável]
+Uma analista tem oito observações de uma única covariável ($p=1$). As da classe $-1$
+estão em $-3$, $-2$, $-1$ e $1{,}5$, e as da classe $+1$ em $-1{,}5$, $1$, $2$ e $3$.
+Ela quer ajustar o classificador de vetor de suporte, dado pela solução de
+\begin{equation}\label{eq:soft}
+\begin{aligned}
+  \max_{\beta_0,\,\beta_1,\,\bm\varepsilon,\,M}\ \ & M\\
+  \text{sujeito a}\ \ & \beta_1^2=1,\qquad
+     y_i\,(\beta_0+\beta_1x_i)\ge M(1-\varepsilon_i),\quad i=1,\dots,8,\\
+  & \varepsilon_i\ge0,\quad i=1,\dots,8,\qquad \textstyle\sum_{i=1}^8\varepsilon_i\le C,
+\end{aligned}
+\end{equation}
+e entender o papel do orçamento $C$. Com $p=1$, a restrição $\beta_1^2=1$ deixa
+só $\beta_1=\pm1$, e o hiperplano é um ponto da reta, o corte $t=-\beta_0/\beta_1$.
+Lembre que, fixados $\beta_0$, $\beta_1$ e $M>0$, a menor folga que a observação $i$
+admite é $\varepsilon_i=\max\{0,\ 1-y_if(x_i)/M\}$, com $f(x)=\beta_0+\beta_1x$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Descreva o que acontece quando $C\to\infty$. Existe sempre solução?
-  \item Descreva o que acontece quando $C\to 0$. O que ocorre com $\bm w$, com a
-        margem e com o número de vetores de suporte?
-  \item Portanto: $C$ grande corresponde a um modelo mais \emph{flexível} ou mais
-        \emph{rígido}? Compare com o papel de $\lambda$ na Ridge (Aula~02) e
-        explique por que essa comparação confunde tanta gente.
-  \item Ao montar uma grade de busca para $C$, por que se usa
-        \texttt{np.logspace(-3, 3, 7)} e não \texttt{np.linspace(0.001, 1000, 7)}?
+  \item Mostre que as observações não são linearmente separáveis. O que isso diz sobre
+        \eqref{eq:soft} com $C=0$?
+  \item Tome $\beta_0=0$ e $\beta_1=1$, isto é, o corte $t=0$, e $M=2$. Calcule a menor
+        folga de cada observação e diga onde ela está em relação à margem e ao
+        hiperplano. Qual é o menor orçamento com que esse ponto satisfaz as
+        restrições? Quais observações estão sobre a margem ou do lado errado dela, e
+        quantas estão do lado errado do hiperplano? Compare com o que se viu em aula
+        sobre o número de erros de treino.
+  \item Para $\beta_1=1$ e um corte $t$ qualquer, seja $S(t,M)$ a soma das menores
+        folgas. Agrupe as observações em quatro pares, $(-3,3)$, $(-2,2)$, $(-1,1)$ e
+        $(1{,}5\,;\,-1{,}5)$, cada um com uma observação de cada classe, e use que
+        $\max\{0,a\}+\max\{0,b\}\ge\max\{0,a+b\}$ para mostrar que
+        $S(t,M)\ge S(0,M)$. Calcule $S(0,M)$ como função de $M$ e esboce o seu
+        gráfico. Mostre também que, com $\beta_1=-1$, a soma das menores folgas é
+        sempre maior que $8$.
+  \item Use o item (c) para responder: para que valores de $C$ o problema
+        \eqref{eq:soft} tem solução com $M>0$? Qual é a solução com $C=4{,}5$? Qual é
+        o valor ótimo de $M$ com $C=5$, e quantos vetores de suporte há? O que
+        acontece com o valor ótimo de $M$ quando $C$ cresce?
+  \item A analista descobre que a observação da classe $+1$ em $3$ foi registrada
+        errado: o valor correto é $30$. Mostre que, com $C=4{,}5$, o classificador de
+        vetor de suporte não muda. Compare com a análise discriminante linear da
+        Aula~07. Com uma covariável e as duas classes do mesmo tamanho, ela classifica
+        cada ponto pelo lado em que ele está do ponto médio entre as médias das duas
+        classes; calcule esse corte antes e depois da correção.
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Com $C\to\infty$, qualquer $\xi_i>0$ paga um preço infinito, então a
-solução força $\xi_i=0$ para todo $i$: é a \textbf{margem rígida} do
-Exercício~1. A margem fica a mais larga possível \emph{sem que nenhum ponto a
-invada}, e poucos pontos são vetores de suporte.
+\textbf{(a)} Com $p=1$, $f(x)=\beta_1(x-t)$. Se $\beta_1=1$, separar as classes
+exigiria $x_i>t$ em toda observação da classe $+1$, em particular $-1{,}5>t$, e
+$x_i<t$ em toda observação da classe $-1$, em particular $1{,}5<t$, o que é
+impossível. Se $\beta_1=-1$, exigiria $3<t$, pela observação da classe $+1$ em $3$, e
+$t<-3$, pela observação da classe $-1$ em $-3$, também impossível. As observações não
+são, portanto, linearmente separáveis.
 
-\textbf{Não existe sempre solução:} se os dados não forem linearmente separáveis,
-o problema com $\xi_i=0$ é \emph{inviável} --- não há hiperplano que satisfaça
-todas as restrições. É por isso que a margem suave existe: sem ela, o método
-simplesmente não se aplica a dados reais.
-
-\smallskip
-\textbf{(b)} Com $C\to 0$ a soma dos $\xi_i$ deixa de custar, e o objetivo vira
-essencialmente $\min\tfrac12\norm{\bm w}^2$, cuja solução é $\bm w\to\bm 0$.
-Então:
-\begin{itemize}[leftmargin=1.4cm]
-  \item $\norm{\bm w}\to 0$, logo a margem $1/\norm{\bm w}\to\infty$: a faixa
-        engole todo o espaço;
-  \item \textbf{todos} os pontos passam a estar dentro da margem, e portanto
-        todos viram vetores de suporte;
-  \item a fronteira deixa de depender dos dados de forma útil --- o classificador
-        degenera.
-\end{itemize}
+Com $C=0$, as restrições $\varepsilon_i\ge0$ e $\sum_i\varepsilon_i\le0$ forçam
+$\varepsilon_1=\dots=\varepsilon_8=0$, e as restrições restantes ficam
+$y_if(x_i)\ge M$. Com $M>0$, isso diria que o hiperplano separa as classes, o que
+acabamos de excluir. Com $C=0$, o problema é o do classificador de margem máxima, e ele
+não tem solução com $M>0$ para estes dados.
 
 \smallskip
-\textbf{(c)} $C$ \textbf{grande} é modelo \textbf{mais flexível} (menos
-regularizado): ele persegue os dados de treino e aceita margens estreitas para
-não errar ninguém.
-
-A confusão com $\lambda$ da Ridge é natural, porque os dois parâmetros aparecem
-em posições análogas mas com papéis \emph{opostos}. Escrevendo os dois objetivos
-lado a lado:
-\[
-  \underbrace{\norm{\bm Y-\bm X\bbeta}^2 + \lambda\norm{\bbeta}^2}_{\text{Ridge}},
-  \qquad
-  \underbrace{\tfrac12\norm{\bm w}^2 + C\textstyle\sum_i\xi_i}_{\text{SVM}} .
-\]
-Na Ridge, o hiperparâmetro multiplica a \textbf{penalização}, então
-$\lambda$ grande $\Rightarrow$ mais regularização $\Rightarrow$ mais rígido. Na
-SVM, ele multiplica o \textbf{erro}, então $C$ grande $\Rightarrow$ menos
-regularização $\Rightarrow$ mais flexível. Dividindo o objetivo da SVM por $C$
-fica claro: $\tfrac{1}{2C}\norm{\bm w}^2 + \sum_i\xi_i$, e $1/(2C)$ é que faz o
-papel de $\lambda$.
-
-Um jeito de nunca mais errar: \textbf{$C$ é o preço de errar}. Preço alto, o
-modelo não erra no treino.
-
-\smallskip
-\textbf{(d)} Porque o efeito de $C$ é \textbf{multiplicativo}, não aditivo: o que
-importa é a ordem de grandeza. A diferença entre $C=0{,}001$ e $C=0{,}01$ é
-enorme (um fator de 10 na regularização), e a diferença entre $C=900$ e
-$C=1000$ é irrelevante.
-
-Uma grade linear de $0{,}001$ a $1000$ com 7 pontos daria
-$\{0{,}001;\ 166{,}7;\ 333{,}3;\ 500;\ 666{,}7;\ 833{,}3;\ 1000\}$: seis pontos
-espremidos na região em que nada muda, e \emph{nenhum} entre $0{,}001$ e $166$ ---
-justamente o intervalo onde está o ótimo na maioria dos problemas. A grade
-logarítmica dá $\{10^{-3},10^{-2},\dots,10^{3}\}$, um ponto por ordem de
-grandeza.
-
-A mesma regra vale para o $\alpha$ da Ridge e do Lasso, para o $\gamma$ do kernel
-RBF e para a taxa de aprendizado do \emph{boosting}.
-\end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[o truque do kernel, explicitamente]
-Em $\R^2$, considere o kernel polinomial de grau 2
-\[
-  K(\x,\bm z) = (\x^\top\bm z + 1)^2 .
-\]
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Expanda $K$ e exiba um mapa $\varphi:\R^2\to\R^m$ tal que
-        $K(\x,\bm z)=\varphi(\x)^\top\varphi(\bm z)$. Qual é $m$?
-  \item Conte as operações necessárias para calcular $K(\x,\bm z)$ pelos dois
-        caminhos: pela fórmula fechada e via $\varphi$.
-  \item Em $\R^p$, o espaço de atributos do kernel polinomial de grau $q$ tem
-        $\binom{p+q}{q}$ dimensões. Calcule para $p=100$, $q=3$ e para
-        $p=1000$, $q=3$.
-  \item Enuncie em uma frase o que é o ``truque do kernel'', usando os números
-        do item (c).
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)} Com $\x=(x_1,x_2)$ e $\bm z=(z_1,z_2)$,
-\[
-  (x_1z_1+x_2z_2+1)^2
-  = x_1^2z_1^2 + x_2^2z_2^2 + 1 + 2x_1x_2z_1z_2 + 2x_1z_1 + 2x_2z_2 .
-\]
-Agrupando cada termo como um produto de uma parte em $\x$ por uma parte em
-$\bm z$, lê-se diretamente
-\[
-  \varphi(\x) = \Big(x_1^2,\ x_2^2,\ \sqrt2\,x_1x_2,\ \sqrt2\,x_1,\ \sqrt2\,x_2,\ 1\Big),
-\]
-com $m=\mathbf{6}$. (Os $\sqrt2$ aparecem para que, ao multiplicar
-$\varphi(\x)$ por $\varphi(\bm z)$, cada termo cruzado seja contado com o fator
-$2$ da expansão.) Confere com $\binom{2+2}{2}=6$.
-
-\smallskip
-\textbf{(b)} Pela \textbf{fórmula fechada}: 2 multiplicações e 1 soma para o
-produto interno $\x^\top\bm z$, mais 1 soma e 1 elevação ao quadrado. Cerca de
-\textbf{5 operações}, e nenhuma memória extra.
-
-Via $\varphi$: construir os dois vetores de 6 componentes (com quadrados,
-produtos e multiplicações por $\sqrt2$) e depois fazer um produto interno em
-$\R^6$, ou seja 6 multiplicações e 5 somas. Cerca de \textbf{25 operações}, mais
-o armazenamento dos dois vetores de dimensão 6.
-
-Em $p=2$ e $q=2$ a diferença é pequena; o item (c) mostra o que acontece quando
-não é.
-
-\smallskip
-\textbf{(c)}
-\[
-  \binom{103}{3} = \frac{103\cdot102\cdot101}{6} = \mathbf{176\,851},
-  \qquad
-  \binom{1003}{3} = \frac{1003\cdot1002\cdot1001}{6} = \mathbf{167\,668\,501}.
-\]
-Com $p=1000$ e grau 3, o espaço de atributos tem \textbf{167 milhões} de
-dimensões. Guardar um único $\varphi(\x)$ em precisão dupla custaria cerca de
-$1{,}3$ GB; guardar os $\varphi(\x_i)$ de mil observações seria impossível.
-
-\smallskip
-\textbf{(d)} O truque do kernel é: \textbf{a SVM só precisa de produtos internos
-entre observações, nunca das coordenadas em si} --- então dá para trabalhar num
-espaço de 167 milhões de dimensões calculando, para cada par, um produto interno
-em $\R^{1000}$ seguido de uma soma e um cubo, \emph{sem nunca construir esse
-espaço}.
-
-O que torna isso possível é a formulação \textbf{dual} do problema: nela $\x$
-aparece exclusivamente dentro de produtos $\x_i^\top\x_j$, que podem ser
-substituídos por $K(\x_i,\x_j)$. O preço é que o custo passa a ser governado por
-$n$, não por $p$ --- a matriz de Gram é $n\times n$, o que explica o custo entre
-$O(n^2)$ e $O(n^3)$ do treino e por que a SVM não escala para milhões de
-observações.
-\end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[a perda \emph{hinge} e a esparsidade]
-A SVM de margem suave é equivalente a minimizar
-\[
-  \sum_{i=1}^{n} \underbrace{\max\big(0,\ 1 - y_i f(\x_i)\big)}_{\text{perda \emph{hinge}}}
-   \;+\; \lambda\norm{\bm w}^2,
-  \qquad f(\x)=\bm w^\top\x+b .
-\]
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Complete a tabela abaixo com o valor das três perdas, em função da
-        \emph{margem funcional} $m = y f(\x)$.
-        \begin{center}\small
-        \renewcommand{\arraystretch}{1.3}
-        \begin{tabular}{@{}lccccc@{}}
-        \toprule
-        $m=yf(\x)$ & $-1$ & $0$ & $0{,}5$ & $1$ & $2$ \\
-        \midrule
-        $0$--$1$: $\1{m<0}$          & & & & & \\
-        \emph{hinge}: $\max(0,1-m)$  & & & & & \\
-        logística: $\log_2(1+e^{-m})$ & & & & & \\
-        \bottomrule
-        \end{tabular}
-        \end{center}
-  \item Para quais valores de $m$ a perda \emph{hinge} vale exatamente zero?
-        Relacione com o conceito de vetor de suporte.
-  \item A perda logística vale zero para algum $m$ finito? Que consequência isso
-        tem sobre \emph{quais} observações influenciam o ajuste de uma regressão
-        logística?
-  \item Por que não se minimiza diretamente a perda $0$--$1$, que é a que
-        realmente interessa?
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)}
+\textbf{(b)} Com $\beta_0=0$ e $\beta_1=1$, $f(x)=x$, e a menor folga é
+$\varepsilon_i=\max\{0,\,1-y_ix_i/2\}$:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabular}{@{}lcccccccc@{}}
 \toprule
-$m=yf(\x)$ & $-1$ & $0$ & $0{,}5$ & $1$ & $2$ \\
+$x_i$ & $-3$ & $-2$ & $-1$ & $1{,}5$ & $-1{,}5$ & $1$ & $2$ & $3$ \\
+$y_i$ & $-1$ & $-1$ & $-1$ & $-1$ & $+1$ & $+1$ & $+1$ & $+1$ \\
 \midrule
-$0$--$1$    & $1$ & $0$ & $0$ & $0$ & $0$ \\
-\emph{hinge}& $2$ & $1$ & $0{,}5$ & $\mathbf{0}$ & $\mathbf{0}$ \\
-logística   & $1{,}8946$ & $1{,}0000$ & $0{,}6839$ & $0{,}4519$ & $0{,}1831$ \\
+$y_if(x_i)$ & $3$ & $2$ & $1$ & $-1{,}5$ & $-1{,}5$ & $1$ & $2$ & $3$ \\
+$\varepsilon_i$ & $0$ & $0$ & $0{,}5$ & $1{,}75$ & $1{,}75$ & $0{,}5$ & $0$ & $0$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-(Com $\1{m<0}$, o ponto $m=0$, exatamente sobre a fronteira, conta como acerto. É
-uma convenção: com $\1{m\le 0}$ ele contaria como erro, e nada do que segue muda.)
+Como $\abs{\beta_1}=1$, o número $\abs{y_if(x_i)}=\abs{x_i}$ é a distância da
+observação ao hiperplano, e o sinal de $y_if(x_i)$ diz de que lado ela está. As
+observações em $-3$ e $3$ estão do lado certo e fora da faixa $\{x:\abs{x}<2\}$; as em
+$-2$ e $2$, sobre a margem; as em $-1$ e $1$, dentro da faixa, mas do lado certo do
+hiperplano ($0<\varepsilon_i<1$); e as em $1{,}5$, da classe $-1$, e $-1{,}5$, da
+classe $+1$, do lado errado do hiperplano ($\varepsilon_i>1$). Nenhuma está sobre o
+hiperplano, o caso $\varepsilon_i=1$.
+
+As menores folgas somam $2\cdot1{,}75+2\cdot0{,}5=4{,}5$. Como toda folga admissível é
+pelo menos a menor, as restrições valem com algum $\bm\varepsilon$ se e somente se
+$C\ge4{,}5$: o menor orçamento é $4{,}5$. As observações sobre a margem ou do lado
+errado dela, isto é, com $y_if(x_i)\le M=2$, são seis, todas exceto as em $-3$ e $3$.
+
+Duas observações estão do lado errado do hiperplano. Com $C=4{,}5$, o resultado visto
+em aula garante menos de $4{,}5$ erros de treino, isto é, no máximo $4$. A cota vale
+com sobra, porque ela conta cada erro com uma folga apenas maior que $1$, e aqui cada
+um consome $1{,}75$ do orçamento.
 
 \smallskip
-\textbf{(b)} A \emph{hinge} vale zero exatamente quando $m\ge 1$, isto é
-$y_i f(\x_i)\ge 1$: o ponto está classificado corretamente \textbf{e fora da
-margem}.
+\textbf{(c)} Com $\beta_1=1$ e corte $t$, $f(x)=x-t$, e a menor folga da observação
+$i$ é $\max\{0,a_i\}$, com $a_i=1-y_i(x_i-t)/M$. Nos três pares $(-d,d)$, com
+$d=1,2,3$, a observação em $-d$ é da classe $-1$ e a em $d$, da classe $+1$, e
+\[
+  a_{-d}+a_d=\Big(1+\frac{-d-t}{M}\Big)+\Big(1-\frac{d-t}{M}\Big)=2-\frac{2d}{M};
+\]
+no par $(1{,}5\,;\,-1{,}5)$, com a observação em $1{,}5$ na classe $-1$ e a em
+$-1{,}5$ na classe $+1$,
+\[
+  a_{1{,}5}+a_{-1{,}5}=\Big(1+\frac{1{,}5-t}{M}\Big)+\Big(1+\frac{1{,}5+t}{M}\Big)
+  =2+\frac{3}{M}.
+\]
+Em todos os pares, $t$ se cancela. A desigualdade
+$\max\{0,a\}+\max\{0,b\}\ge\max\{0,a+b\}$ vale porque o lado esquerdo é não negativo e
+é maior ou igual a $a+b$. Somando-a nos quatro pares,
+\[
+  S(t,M)\ \ge\ \Big(2+\frac3M\Big)+\sum_{d=1}^{3}\max\Big\{0,\ 2-\frac{2d}{M}\Big\}.
+\]
+Com $t=0$, as duas observações de cada par têm o mesmo $a_i$, e, quando $a=b$, a
+desigualdade é uma igualdade, porque $2\max\{0,a\}=\max\{0,2a\}$. O lado direito é,
+portanto, $S(0,M)$, e $S(t,M)\ge S(0,M)$ para todo $t$. Calculando os máximos em cada
+faixa de valores de $M$,
+\[
+  S(0,M)=\begin{cases}
+    2+3/M, & 0<M\le1,\\
+    4+1/M, & 1\le M\le2,\\
+    6-3/M, & 2\le M\le3,\\
+    8-9/M, & M\ge3.
+  \end{cases}
+\]
+A função decresce em $(0,2]$, de $+\infty$ a $4{,}5$, e cresce em $[2,\infty)$,
+passando por $5$ em $M=3$ e tendendo a $8$ sem nunca atingir esse valor. O mínimo,
+$4{,}5$, é atingido só em $M=2$.
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.6\textwidth, height=5.5cm, axis lines=left,
+  xmin=0, xmax=10.4, ymin=4.2, ymax=8.6,
+  xlabel={$M$}, ylabel={$S(0,M)$},
+  xtick={0,1,2,3,4,6,8,10}, ytick={4.5,5,6,7,8},
+  /pgf/number format/use comma]
+  \addplot[azulufrj, thick, domain=0.5:1, samples=40] {2+3/x};
+  \addplot[azulufrj, thick, domain=1:2, samples=40] {4+1/x};
+  \addplot[azulufrj, thick, domain=2:3, samples=40] {6-3/x};
+  \addplot[azulufrj, thick, domain=3:10.4, samples=80] {8-9/x};
+  \addplot[gray, dashed, domain=0:10.4] {8};
+  \addplot[only marks, mark=*, mark size=1.6pt] coordinates {(2,4.5) (3,5)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
 
-Esses são precisamente os pontos que \textbf{não} são vetores de suporte. Como
-eles contribuem com zero para a soma, movê-los (sem cruzar a margem) não altera
-o objetivo, e portanto não altera a solução --- que é a propriedade do
-Exercício~1(c), agora vista pelo lado da função de perda em vez da geometria.
-
-A esparsidade da SVM é, portanto, consequência direta de a \emph{hinge} ter uma
-região \textbf{plana em zero}. É o análogo, em perda, do que a quina do losango
-$\ell_1$ faz com os coeficientes no Lasso (Aula~02): um ``bico'' na função gera
-soluções exatamente nulas.
+Com $\beta_1=-1$, $y_if(x_i)=-y_i(x_i-t)$, e cada menor folga é pelo menos
+$1+y_i(x_i-t)/M$. Somando as oito,
+\[
+  \sum_{i=1}^8\varepsilon_i\ \ge\ 8+\frac1M\sum_{i=1}^8y_i(x_i-t)
+  =8+\frac1M\Big(\sum_{y_i=+1}x_i-\sum_{y_i=-1}x_i\Big)
+  =8+\frac{4{,}5-(-4{,}5)}{M}=8+\frac9M>8,
+\]
+em que $t$ desaparece porque há quatro observações em cada classe.
 
 \smallskip
-\textbf{(c)} \textbf{Nunca.} $\log_2(1+e^{-m})>0$ para todo $m$ finito, por menor
-que seja --- em $m=2$ ainda vale $0{,}1831$, e só tende a zero quando
-$m\to\infty$.
+\textbf{(d)} Fixados $\beta_1$, $t$ e $M>0$, as restrições valem com algum
+$\bm\varepsilon$ se e somente se a soma das menores folgas não passa de $C$. Pelo item
+(c), com $\beta_1=-1$ isso exige $C>8$, e com $\beta_1=1$ existe um corte que serve
+se e somente se $S(0,M)\le C$, já que $t=0$ minimiza a soma. Logo, o problema
+\eqref{eq:soft} tem solução com $M>0$ se e somente se $4{,}5\le C<8$, como se vê a
+seguir.
 
-A consequência é que, na regressão logística, \textbf{todas as observações
-influenciam o ajuste}, inclusive as que estão longe e do lado certo da fronteira.
-Não existe ``vetor de suporte'' na logística: apagar um ponto bem classificado
-muda a solução, ainda que pouco. Isso a torna mais sensível a observações
-distantes --- em compensação, é o que permite que ela estime probabilidades, já
-que ela precisa dizer algo sobre todo o espaço, não só perto da fronteira.
+Com $C<4{,}5$, nenhum ponto com $M>0$ satisfaz as restrições, porque
+$S(0,M)\ge4{,}5$. O orçamento tem de pagar as folgas das duas observações do lado
+errado do hiperplano, que somam pelo menos $2+3/M$ e ficam tanto maiores quanto menor é
+$M$, e as das observações que caem dentro da faixa, que aparecem quando $M$ cresce.
+
+Com $C=4{,}5$, só $M=2$ é admissível, e, com $M=2$, só o corte $t=0$: no par
+$(-2,2)$, $a_{-2}=-t/2$ e $a_2=t/2$, e a desigualdade do item (c) só é uma igualdade se
+$t=0$. As folgas são então as do item (b), cuja soma já é $4{,}5$. A solução é única:
+o corte $t=0$, com $M=2$, e as seis observações listadas no item (b) são os vetores de
+suporte.
+
+Com $C=5$, os valores admissíveis de $M$ são os de $S(0,M)\le5$, que formam o
+intervalo $[1,3]$, e o valor ótimo é $M=3$. O mesmo argumento, aplicado ao par
+$(-3,3)$, mostra que o corte é de novo $t=0$. Agora as oito observações têm
+$y_if(x_i)\le\abs{x_i}\le3=M$: todas são vetores de suporte, e as em $-3$ e $3$ estão
+sobre a margem.
+
+Para $C$ entre $4{,}5$ e $8$, o valor ótimo de $M$ é a maior solução de $S(0,M)=C$:
+\[
+  M^\ast(C)=\frac{3}{6-C}\ \ \text{se }4{,}5\le C\le5,
+  \qquad
+  M^\ast(C)=\frac{9}{8-C}\ \ \text{se }5\le C<8 .
+\]
+Ele cresce com $C$ e tende a infinito quando $C\to8$. Com $C\ge8$, todo $M\ge3$ é
+admissível, pois $S(0,M)=8-9/M<8$, e $M$ cresce sem limite: não há solução. As notas
+mostram isso para todo orçamento maior que o número de observações; aqui o problema
+falha já em $C=n=8$.
+
+Os números ilustram o que se viu em aula. O valor ótimo de $M$ não diminui quando o
+orçamento cresce, e o número de vetores de suporte passa de $6$, com $C=4{,}5$, a $8$,
+com $C=5$: no primeiro caso, o classificador é determinado pelas seis observações mais
+próximas do corte; no segundo, por todas. O corte é o mesmo nos dois casos por causa
+da simetria dos dados; em geral, o hiperplano também se move quando $C$ muda. Para os
+demais valores de $C$ entre $4{,}5$ e $8$, há dentro da faixa tantas observações de
+uma classe quanto da outra, e deslocar um pouco o corte não altera a soma das folgas:
+o corte $t=0$ continua ótimo, mas deixa de ser o único. O valor ótimo $M^\ast(C)$ não
+depende dessa escolha.
 
 \smallskip
-\textbf{(d)} Porque a perda $0$--$1$ é \textbf{não convexa e descontínua}: ela é
-constante por partes, com um salto em $m=0$, e sua derivada é zero em quase todo
-ponto. Nenhum método baseado em gradiente tem por onde começar, e minimizá-la
-exatamente é um problema NP-difícil em geral.
+\textbf{(e)} Com a correção, a observação da classe $+1$ em $3$ passa para $30$.
+Descartando os dois termos do par formado por ela e pela observação em $-3$, que são
+não negativos, e tratando os outros três pares como no item (c), a nova soma das
+menores folgas, com $\beta_1=1$, satisfaz
+\[
+  S(t,M)\ \ge\ \Big(2+\frac3M\Big)+\max\Big\{0,\,2-\frac2M\Big\}
+  +\max\Big\{0,\,2-\frac4M\Big\}
+  =\begin{cases}
+    2+3/M, & 0<M\le1,\\
+    4+1/M, & 1\le M\le2,\\
+    6-3/M, & M\ge2,
+  \end{cases}
+\]
+que é pelo menos $4{,}5$, com igualdade só em $M=2$; e, como no item (d), com $M=2$ a
+igualdade no par $(-2,2)$ exige $t=0$. No ponto $t=0$, $M=2$, as observações em $-3$
+e $30$ têm folga zero, e a soma vale exatamente $4{,}5$. Com $\beta_1=-1$, a conta do
+item (c) dá agora $8+36/M>8$. Com $C=4{,}5$, a única solução continua sendo o corte
+$t=0$ com $M=2$: o classificador de vetor de suporte não muda. A observação corrigida
+está do lado certo e fora da faixa, antes e depois da correção, e não é vetor de
+suporte.
 
-Tanto a \emph{hinge} quanto a logística são \textbf{cotas superiores convexas} da
-perda $0$--$1$ --- confira na tabela: em cada coluna, as duas últimas linhas são
-$\ge$ a primeira. (É por isso que a logística aparece aqui em base~$2$: em
-logaritmo natural ela vale $\ln 2\approx0{,}69$ em $m=0$, e fica abaixo de $1$ em
-todo o trecho $-0{,}54<m<0$, onde a $0$--$1$ vale $1$. Mudar a base só multiplica a
-perda por $1/\ln 2$, e não muda o minimizador.) Minimizar uma cota superior convexa
-é tratável e controla o que interessa. É o mesmo movimento da Aula~02, em que a norma $\ell_1$ substitui a
-$\ell_0$ por ser sua relaxação convexa: \emph{trocar o objetivo verdadeiro por
-uma aproximação convexa que se pode de fato otimizar}.
+Na análise discriminante linear, com as probabilidades das classes estimadas iguais
+($4/8$ cada) e variância comum estimada $\widehat\sigma^2$, a diferença entre as
+funções discriminantes das duas classes é
+\[
+  \delta_{+1}(x)-\delta_{-1}(x)
+  =\frac{\widehat\mu_{+1}-\widehat\mu_{-1}}{\widehat\sigma^2}
+   \Big(x-\frac{\widehat\mu_{+1}+\widehat\mu_{-1}}{2}\Big),
+\]
+e, como $\widehat\mu_{+1}>\widehat\mu_{-1}$, a LDA classifica como $+1$ os pontos à
+direita do ponto médio entre as médias, qualquer que seja $\widehat\sigma^2$. Antes da
+correção, $\widehat\mu_{-1}=-4{,}5/4=-1{,}125$ e $\widehat\mu_{+1}=4{,}5/4=1{,}125$, e
+o corte é $0$, o mesmo do classificador de vetor de suporte. Depois,
+$\widehat\mu_{+1}=31{,}5/4=7{,}875$, e o corte passa a
+$(-1{,}125+7{,}875)/2=3{,}375$. As observações da classe $+1$ em $1$ e $2$ ficam à
+esquerda dele e passam a ser classificadas errado, enquanto a da classe $-1$ em
+$1{,}5$ deixa de sê-lo: os erros de treino vão de $2$ para $3$.
+
+Uma única observação, do lado certo e longe da fronteira, deslocou o corte da LDA em
+mais de três unidades, porque a LDA estima as médias com todas as observações. O
+classificador de vetor de suporte não mudou, porque ela não é vetor de suporte.
 \end{solucao}
 
+%------------------------------------------------------------------------------
+\begin{exercicio}[o truque do \emph{kernel}, por extenso]
+Um colega vai ajustar uma máquina de vetores de suporte com o \emph{kernel} polinomial
+de grau $2$, $k(\x,\x')=\big(1+\inner{\x}{\x'}\big)^2$, e se pergunta se não seria
+mais simples fazer como no início da construção da SVM: ampliar as covariáveis à mão e
+ajustar um classificador de vetor de suporte linear no espaço ampliado.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Para $p=2$, expanda $k(\x,\x')$ e exiba $\varphi:\R^2\to\R^m$ tal que
+        $k(\x,\x')=\inner{\varphi(\x)}{\varphi(\x')}$ para todos $\x,\x'\in\R^2$.
+        Qual é $m$?
+  \item A função de decisão da SVM é
+        $f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_i\,k(\x,\x_i)$. Use o item (a)
+        para mostrar que, com $p=2$, $f$ é um polinômio de grau no máximo $2$ em
+        $(x_1,x_2)$. Que forma pode ter a fronteira $\{\x: f(\x)=0\}$? Compare com a
+        ampliação que acrescenta só os quadrados, $X_1,X_2,X_1^2,X_2^2$.
+  \item Com $p$ covariáveis e grau $q$, a função $\varphi$ do \emph{kernel} polinomial
+        tem $\binom{p+q}{q}$ coordenadas. Calcule esse número para $q=3$, com $p=100$
+        e com $p=1000$, e quanta memória ocupa um único $\varphi(\x)$ com $p=1000$,
+        guardando cada coordenada em $8$ bytes. Quantas operações aritméticas custa
+        calcular $k(\x,\x')$ diretamente pela fórmula, com $p=1000$ e $q=3$?
+  \item Suponha $n=10\,000$ observações, $p=1000$ e $q=3$. Compare o que o colega
+        teria de guardar para ajustar o classificador linear no espaço ampliado com o
+        que a SVM precisa, e enuncie o truque do \emph{kernel} numa frase.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Com $\x=(x_1,x_2)$ e $\x'=(x_1',x_2')$,
+$k(\x,\x')=(1+x_1x_1'+x_2x_2')^2$, e o quadrado de uma soma de três parcelas dá
+\[
+  k(\x,\x')=1+2x_1x_1'+2x_2x_2'+x_1^2x_1'^2+x_2^2x_2'^2+2x_1x_2\,x_1'x_2' .
+\]
+Cada termo é o produto de um fator que só depende de $\x$ por um que só depende de
+$\x'$, e os termos com coeficiente $2$ se escrevem como $(\sqrt2\,u)(\sqrt2\,v)$. Com
+\[
+  \varphi(\x)=\big(1,\ \sqrt2\,x_1,\ \sqrt2\,x_2,\ x_1^2,\ x_2^2,\ \sqrt2\,x_1x_2\big)
+  \in\R^6,
+\]
+o produto interno $\inner{\varphi(\x)}{\varphi(\x')}$ é exatamente a soma acima, e
+$m=6=\binom{2+2}{2}$: uma coordenada para cada monômio de grau até $2$ em $x_1$ e
+$x_2$.
+
+\smallskip
+\textbf{(b)} Pela bilinearidade do produto interno,
+\[
+  f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_i\inner{\varphi(\x)}{\varphi(\x_i)}
+  =\beta_0+\inner{\varphi(\x)}{\bm b},
+  \qquad \bm b=\sum_{i\in\mathcal S}\alpha_i\,\varphi(\x_i)\in\R^6 .
+\]
+Escrevendo $\bm b=(b_1,\dots,b_6)$,
+\[
+  f(\x)=(\beta_0+b_1)+\sqrt2\,b_2\,x_1+\sqrt2\,b_3\,x_2+b_4\,x_1^2+b_5\,x_2^2
+        +\sqrt2\,b_6\,x_1x_2 ,
+\]
+um polinômio de grau no máximo $2$ em $(x_1,x_2)$. A fronteira $\{\x: f(\x)=0\}$ é,
+portanto, uma cônica (elipse, hipérbole ou parábola) ou um caso degenerado dela (uma
+reta, um par de retas, um ponto ou o conjunto vazio). Em $\R^6$, ela corresponde ao
+hiperplano $\{\bm z:\beta_0+\inner{\bm z}{\bm b}=0\}$: a SVM com esse \emph{kernel} é
+um classificador linear nos pontos $\varphi(\x_i)$, e a fronteira só deixa de ser
+linear quando é vista em $\R^2$.
+
+A ampliação que acrescenta só os quadrados dá
+$f(\x)=\beta_0+\beta_{11}x_1+\beta_{21}x_2+\beta_{12}x_1^2+\beta_{22}x_2^2$, sem o termo
+$x_1x_2$, e as cônicas não degeneradas que ela produz têm eixos paralelos aos eixos
+coordenados. O \emph{kernel} inclui também o produto $x_1x_2$ e produz, por exemplo,
+elipses inclinadas. Ele corresponde a ampliar as covariáveis com todos os monômios de
+grau até $2$, com os pesos $\sqrt2$ que a expansão fixou.
+
+\smallskip
+\textbf{(c)} Com $q=3$,
+\[
+  \binom{103}{3}=\frac{103\cdot102\cdot101}{6}=176\,851,
+  \qquad
+  \binom{1003}{3}=\frac{1003\cdot1002\cdot1001}{6}=167\,668\,501 .
+\]
+Com $p=1000$, um único $\varphi(\x)$ tem quase $168$ milhões de coordenadas e ocupa
+$167\,668\,501\times8\approx1{,}34\times10^9$ bytes, cerca de $1{,}3$ GB. Já
+$k(\x,\x')=(1+\inner{\x}{\x'})^3$ se calcula com $1000$ multiplicações e $999$ adições
+para o produto interno, uma adição para somar $1$ e duas multiplicações para o cubo:
+$2002$ operações. Pelo outro caminho, só escrever as coordenadas de $\varphi(\x)$
+exige mais de cem milhões de operações, porque cada monômio de grau maior que zero
+custa pelo menos uma multiplicação, e o produto interno de dois desses vetores custa
+outras $2\times167\,668\,501-1\approx3{,}4\times10^8$.
+
+\smallskip
+\textbf{(d)} Para ajustar o classificador linear no espaço ampliado, o colega teria de
+guardar os $n$ vetores $\varphi(\x_i)$:
+$10\,000\times167\,668\,501\approx1{,}68\times10^{12}$ números, cerca de $13$ TB. A
+SVM, pela representação vista em aula, só precisa dos valores $k(\x_i,\x_j)$ com
+$1\le i\le j\le n$, que são $n(n+1)/2=50\,005\,000$ números, cerca de $400$ MB, cada
+um calculado com $2002$ operações; para classificar um ponto novo $\x$, bastam os
+$k(\x,\x_i)$ com $i\in\mathcal S$. Os parâmetros a estimar, $\beta_0$ e
+$\alpha_1,\dots,\alpha_n$, são $n+1$, qualquer que seja a dimensão do espaço ampliado.
+
+O truque do \emph{kernel}, numa frase: como o ajuste e a previsão só usam os dados por
+meio de produtos internos, trocar o produto interno por $k$ ajusta um classificador
+linear nos pontos $\varphi(\x_i)$ sem que $\varphi$ seja calculada uma única vez. O
+custo passa a crescer com o número de pares de observações, e não com a dimensão do
+espaço ampliado: com $n=10^6$, os $n(n+1)/2$ valores de $k$ já seriam cerca de
+$5\times10^{11}$.
+\end{solucao}
+
+%------------------------------------------------------------------------------
+\begin{exercicio}[quais funções são \emph{kernels}]
+Uma pesquisadora quer usar a SVM com medidas de semelhança diferentes do produto
+interno, e precisa decidir quais das funções que imaginou são \emph{kernels}. Lembre
+que $k:\R^p\times\R^p\to\R$ é um \emph{kernel} se existem um espaço de Hilbert
+$\mathcal H$ e uma função $\varphi:\R^p\to\mathcal H$ com
+$k(\x,\x')=\inner{\varphi(\x)}{\varphi(\x')}_{\mathcal H}$ para todos $\x,\x'$, e que,
+pelo teorema visto em aula, isso acontece se e somente se $k$ é simétrica e, para todo
+$n\ge1$ e quaisquer $\x_1,\dots,\x_n\in\R^p$, a matriz
+$\big[k(\x_i,\x_j)\big]_{i,j=1}^n$ é positiva semidefinida.
+\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
+  \item Mostre que, se $k_1$ e $k_2$ são \emph{kernels} e $c\ge0$, então $c\,k_1$ e
+        $k_1+k_2$ também são. Conclua que $k(\x,\x')=c+\inner{\x}{\x'}$ é um
+        \emph{kernel} para todo $c\ge0$.
+  \item Mostre que todo \emph{kernel} satisfaz $k(\x,\x)\ge0$ e
+        $k(\x,\x')^2\le k(\x,\x)\,k(\x',\x')$. A pesquisadora propõe
+        $k(\x,\x')=\norm{\x-\x'}^2$, que é simétrica. É um \emph{kernel}?
+  \item No \emph{kernel} radial, $k(\x,\x')=\exp\!\big(-\gamma\norm{\x-\x'}^2\big)$,
+        exige-se $\gamma>0$. Para dois pontos distintos $\x_1$ e $\x_2$, calcule os
+        autovalores da matriz $\big[k(\x_i,\x_j)\big]_{i,j=1}^2$ e mostre que, com
+        $\gamma<0$, a função não é um \emph{kernel}. O que acontece com $\gamma=0$, e
+        por que esse caso não serve para classificar?
+  \item Para $n$ pontos distintos $\x_1,\dots,\x_n$, mostre que a matriz
+        $\big[k(\x_i,\x_j)\big]$ do \emph{kernel} radial converge para a identidade
+        quando $\gamma\to\infty$ e para a matriz com todas as entradas iguais a $1$
+        quando $\gamma\to0$. Use isso e a forma da função de decisão,
+        $f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_i\,k(\x,\x_i)$, para explicar por
+        que $\gamma$ grande dá fronteiras flexíveis e $\gamma$ pequeno, fronteiras
+        suaves. Para dois pontos à distância $1$, calcule $k$ com $\gamma=0{,}5$ e com
+        $\gamma=50$.
+\end{enumerate}
+\end{exercicio}
+
+\begin{solucao}
+\textbf{(a)} Sejam $\x_1,\dots,\x_n\in\R^p$, $\bm a\in\R^n$, e $K_1$ e $K_2$ as
+matrizes $\big[k_1(\x_i,\x_j)\big]$ e $\big[k_2(\x_i,\x_j)\big]$, positivas
+semidefinidas pelo teorema, porque $k_1$ e $k_2$ são \emph{kernels}. As funções
+$c\,k_1$ e $k_1+k_2$ são simétricas, porque $k_1$ e $k_2$ o são, e as suas matrizes
+nos pontos $\x_1,\dots,\x_n$ são $cK_1$ e $K_1+K_2$. Como
+\[
+  \bm a^\top(cK_1)\bm a=c\,\bm a^\top K_1\bm a\ge0
+  \qquad\text{e}\qquad
+  \bm a^\top(K_1+K_2)\bm a=\bm a^\top K_1\bm a+\bm a^\top K_2\bm a\ge0,
+\]
+as duas matrizes são positivas semidefinidas, e, pelo teorema, $c\,k_1$ e $k_1+k_2$
+são \emph{kernels}. O mesmo se vê pela definição: se
+$k_\ell(\x,\x')=\inner{\varphi_\ell(\x)}{\varphi_\ell(\x')}_{\mathcal H_\ell}$, basta
+tomar $\sqrt c\,\varphi_1$ para $c\,k_1$ e, para $k_1+k_2$, o par
+$(\varphi_1(\x),\varphi_2(\x))$, no espaço $\mathcal H_1\times\mathcal H_2$ com o
+produto interno
+$\inner{(u_1,u_2)}{(v_1,v_2)}=\inner{u_1}{v_1}_{\mathcal H_1}+\inner{u_2}{v_2}_{\mathcal H_2}$.
+
+A função constante igual a $1$ é um \emph{kernel}, com $\varphi(\x)=1\in\R$, e o
+produto interno também é, com $\varphi$ a identidade de $\R^p$. Pelo que acabamos de
+provar, $c+\inner{\x}{\x'}=c\cdot1+\inner{\x}{\x'}$ é um \emph{kernel} para todo
+$c\ge0$; com $c=1$, é o \emph{kernel} polinomial de grau $1$.
+
+\smallskip
+\textbf{(b)} Aplique o teorema a um ou dois pontos. Com $n=1$ e o ponto $\x$, a matriz
+$1\times1$ $\big[k(\x,\x)\big]$ é positiva semidefinida, isto é, $k(\x,\x)\ge0$. Com
+$n=2$ e os pontos $\x$ e $\x'$, a matriz
+\[
+  K=\begin{pmatrix} k(\x,\x) & k(\x,\x')\\ k(\x',\x) & k(\x',\x')\end{pmatrix}
+\]
+é simétrica e positiva semidefinida. Os seus autovalores são, portanto, não negativos,
+e o seu determinante, que é o produto deles, também:
+$k(\x,\x)\,k(\x',\x')-k(\x,\x')^2\ge0$. Pela definição, essa é a desigualdade de
+Cauchy--Schwarz em $\mathcal H$.
+
+A função $k(\x,\x')=\norm{\x-\x'}^2$ é simétrica, mas não é um \emph{kernel}. Para
+$\x\ne\x'$, ela vale $k(\x,\x)=k(\x',\x')=0$ e $k(\x,\x')=\norm{\x-\x'}^2>0$, e a
+desigualdade acima falharia: $0-\norm{\x-\x'}^4<0$. Concretamente, com
+$\bm a=(1,-1)$, $\bm a^\top K\bm a=-2\norm{\x-\x'}^2<0$.
+
+A desigualdade diz que, num \emph{kernel}, a semelhança entre dois pontos não passa,
+em valor absoluto, da média geométrica das semelhanças de cada um consigo mesmo; em
+particular, se $k(\x,\x)=0$, então $k(\x,\x')=0$ para todo $\x'$. Uma função que vale
+zero entre cada ponto e ele mesmo e é positiva entre pontos distintos, como o quadrado
+de uma distância, mede dissimilaridade e não pode ser um \emph{kernel}.
+
+\smallskip
+\textbf{(c)} Sejam $\x_1\ne\x_2$ e $r=\norm{\x_1-\x_2}>0$. Como $k(\x,\x)=e^{0}=1$, a
+matriz é
+\[
+  K=\begin{pmatrix}1&\rho\\ \rho&1\end{pmatrix},\qquad \rho=e^{-\gamma r^2}>0 .
+\]
+Os vetores $(1,1)$ e $(1,-1)$ são autovetores, com autovalores $1+\rho$ e $1-\rho$,
+porque $K(1,1)^\top=(1+\rho)(1,1)^\top$ e $K(1,-1)^\top=(1-\rho)(1,-1)^\top$. A matriz
+é positiva semidefinida se e somente se $1-\rho\ge0$, isto é, $e^{-\gamma r^2}\le1$,
+ou $\gamma r^2\ge0$; como $r^2>0$, isso equivale a $\gamma\ge0$. Com $\gamma<0$, o
+autovalor $1-\rho$ é negativo, a condição do teorema falha já com dois pontos, e a
+função não é um \emph{kernel}.
+
+Com $\gamma=0$, $k(\x,\x')=1$ para todos $\x,\x'$. É um \emph{kernel}, com
+$\varphi(\x)=1$, mas a função de decisão
+$f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_i$ é constante, e o sinal de $f$ é o mesmo
+em todo ponto: a SVM não distingue um ponto de outro. Daí a exigência $\gamma>0$. Que,
+com $\gamma>0$, a função é um \emph{kernel} para todo $p$ é um fato que admitimos; as
+notas exibem $\varphi$ quando $p=1$.
+
+\smallskip
+\textbf{(d)} Para $i\ne j$, $r_{ij}=\norm{\x_i-\x_j}>0$, e a entrada
+$e^{-\gamma r_{ij}^2}$ tende a $0$ quando $\gamma\to\infty$ e a $1$ quando
+$\gamma\to0$; a diagonal vale sempre $1$. Logo, a matriz tende à identidade quando
+$\gamma\to\infty$ e à matriz $\bm 1\bm 1^\top$, com todas as entradas iguais a $1$,
+quando $\gamma\to0$.
+
+Com $\gamma$ grande, cada observação de treino é semelhante só a si mesma. Na função
+de decisão, o termo $\alpha_i\,k(\x,\x_i)$ decai depressa com a distância a $\x_i$:
+fica abaixo de $e^{-1}\abs{\alpha_i}$ quando $\norm{\x-\x_i}\ge1/\sqrt\gamma$ e abaixo
+de $e^{-4}\abs{\alpha_i}\approx0{,}02\,\abs{\alpha_i}$ quando
+$\norm{\x-\x_i}\ge2/\sqrt\gamma$, de modo que o alcance de cada termo é da ordem de
+$1/\sqrt\gamma$. Longe de todos os vetores de suporte, $f(\x)$ fica perto de $\beta_0$,
+e perto de cada um o sinal de $f$ pode ser decidido por ele. A fronteira pode, assim,
+contornar observações isoladas: é flexível, com viés baixo e variância alta. Com
+$\gamma$ pequeno, a matriz fica perto de $\bm 1\bm 1^\top$, que tem posto $1$: o
+\emph{kernel} quase não distingue as observações umas das outras, cada $k(\x,\x_i)$
+varia devagar na região dos dados, e a fronteira é suave, com viés mais alto e
+variância mais baixa.
+
+Para dois pontos à distância $1$, $e^{-0{,}5}\approx0{,}61$ e
+$e^{-50}\approx1{,}9\times10^{-22}$. Com $\gamma=0{,}5$, pontos à distância $1$ ainda
+são bem semelhantes; com $\gamma=50$, são, para todos os efeitos, alheios um ao outro.
+São os dois valores da figura dos anéis concêntricos nas notas: o primeiro dá uma
+fronteira próxima de uma circunferência, e o segundo, uma fronteira irregular, que
+contorna observações isoladas. Como a acurácia de treino quase não distingue um caso
+do outro, $\gamma$ é escolhido junto com $C$, por validação cruzada.
+\end{solucao}
 
 \end{document}
