@@ -18,310 +18,546 @@
 %==============================================================================
 Ao final desta aula você deve ser capaz de:
 \begin{itemize}[leftmargin=1.4cm]
-  \item definir hiperplano separador e o \textbf{classificador de margem máxima};
-  \item identificar os \textbf{vetores de suporte} e o papel da margem;
-  \item generalizar para dados não separáveis com o \textbf{classificador de vetor
-        de suporte} (\emph{soft margin}) e o hiperparâmetro $C$;
-  \item explicar o \textbf{truque do \emph{kernel}} a partir da forma dual;
-  \item usar \emph{kernels} (polinomial, gaussiano/RBF) para fronteiras não
-        lineares e entender $\gamma$;
-  \item reconhecer a SVM como minimização da \emph{perda \emph{hinge}} regularizada
-        e sua relação com a regressão logística; tratar o caso multiclasse.
+  \item descrever um hiperplano de $\R^p$, calcular a distância de um ponto a ele e
+        usá-lo como classificador;
+  \item formular o classificador de margem máxima e reconhecer os seus vetores de
+        suporte;
+  \item formular o classificador de vetor de suporte e interpretar as folgas
+        $\varepsilon_i$ e o orçamento $C$;
+  \item entender que a solução depende dos dados apenas por meio de produtos
+        internos, e como isso leva aos \emph{kernels};
+  \item decidir se uma função é um \emph{kernel}, usar os \emph{kernels} linear,
+        polinomial e radial e entender o papel de $\gamma$;
+  \item tratar problemas com mais de duas classes.
 \end{itemize}
 
 \noindent
-Mudança de perspectiva em relação à Aula~07. Lá, todo método passava por modelar
-$\Prob(Y\mid\x)$ e depois aplicar o Teorema de Bayes. A SVM ignora probabilidades e
-ataca a fronteira \emph{geometricamente}, procurando a separação mais folgada
-possível. É um dos métodos mais elegantes do curso --- liga geometria, otimização e
-os RKHS (§4.6 do [AME]). Comece pela pergunta:
+Na Aula~07, os classificadores foram construídos a partir de estimativas de
+$\Prob(Y=c\mid\x)$: cada $\x$ era atribuído à classe de maior probabilidade estimada.
+Dois deles, a análise discriminante linear e a regressão logística, têm fronteira de
+decisão linear, mas chegam a ela por meio de um modelo probabilístico. Nesta aula
+seguimos outro caminho: procuramos diretamente um hiperplano que separe as classes,
+usando apenas a geometria das observações de treino, sem modelar probabilidade
+alguma. As primeiras ideias nessa direção são de Vapnik e Chervonenkis (1963), e a
+formulação usada hoje é de Cortes e Vapnik (1995). A pergunta que organiza a aula é a
+seguinte:
 
 \begin{center}\itshape
-  se há infinitos hiperplanos que separam as classes, qual é o melhor?
+  se há infinitos hiperplanos que separam as classes, qual deles escolher?
 \end{center}
 
 %==============================================================================
-\section{Hiperplanos e o classificador de margem máxima}
+\section{Hiperplanos e classificação}
 %==============================================================================
-Codifique as classes como $y\in\{-1,+1\}$. Um \textbf{hiperplano} em $\R^p$ é o
-conjunto $\{\x: f(\x)=0\}$ com $f(\x)=\beta_0+\bbeta^\top\x$. Ele separa o espaço
-em dois lados conforme o sinal de $f$. Dizemos que os dados são \emph{linearmente
-separáveis} se existe $f$ tal que
-\begin{equation}\label{eq:sep}
-  y_i\,f(\X_i) > 0 \qquad \text{para todo } i.
-\end{equation}
-A magnitude $\abs{f(\x)}$ (com $\norm{\bbeta}=1$) é a \emph{distância} de $\x$ ao
-hiperplano.
-
-\begin{ideia}[por que a codificação $\pm1$]
-Não é capricho de notação. Com $y\in\{-1,+1\}$, o produto $y_i f(\X_i)$ é positivo
-exatamente quando a classificação está certa, e seu \emph{valor} mede o quanto ela
-está certa. Essa única quantidade --- a \textbf{margem} da observação $i$ --- vai
-organizar a aula inteira, inclusive a função de perda da
-Seção~\ref{sec:hinge}.
-\end{ideia}
-
-\begin{definicao}[Classificador de margem máxima]
-Procura-se o hiperplano que maximiza a margem $M$:
+\begin{definicao}[Hiperplano]
+Sejam $\beta_0\in\R$ e $\bbeta=(\beta_1,\dots,\beta_p)^\top\in\R^p$, com
+$\bbeta\ne\bm 0$, e seja $f(\x)=\beta_0+\bbeta^\top\x$. O conjunto
 \[
-  \max_{\beta_0,\bbeta}\ M \quad\text{s.a.}\quad
-  \sum_{j=1}^p \beta_j^2 = 1,\qquad
-  y_i\,f(\X_i)\ge M \ \ \forall i.
+  H=\{\x\in\R^p : f(\x)=0\}
 \]
-A restrição $\norm{\bbeta}=1$ torna os hiperplanos comparáveis (assim $y_if(\X_i)$
-é a distância com sinal). As observações que \emph{atingem} a margem
-($y_if(\X_i)=M$) são os \textbf{vetores de suporte}.
+é um \emph{hiperplano} de $\R^p$. Os conjuntos $\{\x: f(\x)>0\}$ e
+$\{\x: f(\x)<0\}$ são os dois \emph{lados} de $H$.
 \end{definicao}
 
+A exigência $\bbeta\ne\bm 0$ é essencial: com $\bbeta=\bm 0$, o conjunto $H$ seria
+vazio ou o próprio $\R^p$. Com ela, $H$ é um subespaço afim de dimensão $p-1$. De
+fato, $H$ contém o ponto $\bm h=-\beta_0\bbeta/\norm{\bbeta}^2$, e $\x\in H$ se e
+somente se $\bbeta^\top(\x-\bm h)=0$, de modo que $H$ é o transladado, por $\bm h$, do
+complemento ortogonal de $\bbeta$, que tem dimensão $p-1$. Em $\R^2$, um hiperplano é
+uma reta; em $\R^3$, um plano.
+
+Os coeficientes não são determinados pelo hiperplano: para todo $c\ne0$, o par
+$(c\beta_0,c\bbeta)$ define o mesmo $H$. A normalização $\norm{\bbeta}=1$ elimina essa
+liberdade, a menos do sinal, e o sinal escolhe qual dos lados é o positivo. Com ela,
+$\abs{f(\x)}$ ganha um significado geométrico preciso.
+
+\begin{proposicao}[Distância a um hiperplano]\label{prop:dist}
+Para todo $\x\in\R^p$, a distância de $\x$ ao hiperplano $H$ é
+\[
+  d(\x,H)=\min_{\bm z\in H}\norm{\x-\bm z}=\frac{\abs{f(\x)}}{\norm{\bbeta}} .
+\]
+Em particular, se $\norm{\bbeta}=1$, então $d(\x,H)=\abs{f(\x)}$.
+\end{proposicao}
+\begin{proof}
+Seja $\x_0=\x-\big(f(\x)/\norm{\bbeta}^2\big)\,\bbeta$. Como
+$f(\x_0)=f(\x)-\big(f(\x)/\norm{\bbeta}^2\big)\,\bbeta^\top\bbeta=0$, o ponto $\x_0$
+está em $H$. Para $\bm z\in H$, vale $\bbeta^\top(\x_0-\bm z)=f(\x_0)-f(\bm z)=0$; logo
+$\x-\x_0$, que é múltiplo de $\bbeta$, é ortogonal a $\x_0-\bm z$. Pelo Teorema de
+Pitágoras,
+\[
+  \norm{\x-\bm z}^2=\norm{\x-\x_0}^2+\norm{\x_0-\bm z}^2\ \ge\ \norm{\x-\x_0}^2
+  =\frac{f(\x)^2}{\norm{\bbeta}^2},
+\]
+com igualdade se e somente se $\bm z=\x_0$.
+\end{proof}
+
+Para classificar, codificamos as duas classes por $y\in\{-1,+1\}$ e atribuímos $\x$ à
+classe $+1$ se $f(\x)>0$ e à classe $-1$ se $f(\x)<0$, com uma convenção qualquer para
+os pontos de $H$. Com $\norm{\bbeta}=1$, o número $\abs{f(\x)}$ é a distância de $\x$
+à fronteira de decisão: quanto maior, mais longe da fronteira está o ponto, e mais
+segura é a sua classificação.
+
+Sejam $(\x_1,y_1)$, \dots, $(\x_n,y_n)$ as observações de treino, com $\x_i\in\R^p$ e
+$y_i\in\{-1,+1\}$, e suponha que haja observações das duas classes. O hiperplano
+classifica corretamente a observação $i$ exatamente quando $y_i$ e $f(\x_i)$ têm o
+mesmo sinal, isto é, quando $y_if(\x_i)>0$. Com $\norm{\bbeta}=1$, a
+Proposição~\ref{prop:dist} dá $\abs{y_if(\x_i)}=\abs{f(\x_i)}=d(\x_i,H)$, e portanto
+\[
+  y_if(\x_i)=\begin{cases}
+    \phantom{-}d(\x_i,H), & \text{se a observação $i$ está do lado certo de $H$},\\
+    -d(\x_i,H), & \text{se está do lado errado}.
+  \end{cases}
+\]
+É para isso que serve a codificação $\pm1$: as $n$ condições de acerto passam a ter
+todas a mesma forma, e o mesmo número diz se a observação está do lado certo e a que
+distância do hiperplano.
+
+\begin{definicao}[Separabilidade linear]
+As observações de treino são \emph{linearmente separáveis} se existe
+$(\beta_0,\bbeta)$, com $\bbeta\ne\bm 0$, tal que
+\begin{equation}\label{eq:sep}
+  y_i\,(\beta_0+\bbeta^\top\x_i)>0 \qquad\text{para } i=1,\dots,n.
+\end{equation}
+O hiperplano correspondente é dito \emph{separador}.
+\end{definicao}
+
+%==============================================================================
+\section{O classificador de margem máxima}
+%==============================================================================
+Se as observações são linearmente separáveis, há infinitos hiperplanos separadores:
+as desigualdades \eqref{eq:sep} são estritas e em número finito, e, por continuidade,
+continuam valendo depois de uma perturbação suficientemente pequena de
+$(\beta_0,\bbeta)$. É preciso um critério para escolher um deles, e o critério natural
+é ficar o mais longe possível das observações de treino.
+
+\begin{definicao}[Margem]
+Para $(\beta_0,\bbeta)$ com $\norm{\bbeta}=1$, seja
+\[
+  m(\beta_0,\bbeta)=\min_{1\le i\le n}\ y_i\,(\beta_0+\bbeta^\top\x_i).
+\]
+Se o hiperplano é separador, $m(\beta_0,\bbeta)>0$ é a menor distância de uma
+observação de treino a ele, e é chamado de \emph{margem} do hiperplano.
+\end{definicao}
+
+\begin{definicao}[Classificador de margem máxima]
+Suponha as observações linearmente separáveis. O \emph{classificador de margem
+máxima} é o hiperplano dado pela solução do problema
+\begin{equation}\label{eq:mm}
+  \max_{\beta_0,\,\bbeta,\,M}\ M
+  \quad\text{sujeito a}\quad
+  \sum_{j=1}^p\beta_j^2=1
+  \quad\text{e}\quad
+  y_i\,(\beta_0+\bbeta^\top\x_i)\ge M,\ \ i=1,\dots,n.
+\end{equation}
+\end{definicao}
+
+Para $(\beta_0,\bbeta)$ fixos, as restrições dizem que $M$ não excede nenhum dos
+números $y_i(\beta_0+\bbeta^\top\x_i)$, e o maior $M$ permitido é
+$m(\beta_0,\bbeta)$. O problema \eqref{eq:mm} procura, portanto, o hiperplano de maior
+margem. As duas restrições têm papéis distintos.
+\begin{itemize}[leftmargin=1.4cm]
+  \item A restrição $\sum_j\beta_j^2=1$ garante que $y_i(\beta_0+\bbeta^\top\x_i)$,
+        quando positivo, é a distância de $\x_i$ ao hiperplano, pela
+        Proposição~\ref{prop:dist}. Sem ela, multiplicar
+        $(\beta_0,\bbeta)$ por $c>1$ multiplicaria por $c$ todos esses números, sem
+        mudar o hiperplano, e $M$ cresceria sem limite.
+  \item As restrições $y_i(\beta_0+\bbeta^\top\x_i)\ge M$ dizem que cada observação
+        está do lado certo do hiperplano, a uma distância pelo menos $M$ dele.
+\end{itemize}
+Se um ponto satisfaz as restrições com $M>0$, todas as observações estão do lado
+certo, e os dados são separáveis. Reciprocamente, se $(\beta_0,\bbeta)$ é separador e
+$\norm{\bbeta}=1$, as restrições valem com $M=m(\beta_0,\bbeta)>0$. Assim, o valor
+ótimo de \eqref{eq:mm} é positivo se e somente se as observações são linearmente
+separáveis. Sem separabilidade, \eqref{eq:mm} não tem solução com $M>0$.
+
+\begin{definicao}[Vetores de suporte]
+As observações de treino que estão à distância $M$ do classificador de margem máxima,
+isto é, com $y_i(\beta_0+\bbeta^\top\x_i)=M$, são os seus \emph{vetores de suporte}.
+\end{definicao}
+
+Nenhuma observação de treino está no interior da faixa $\{\x:\abs{f(\x)}<M\}$, e os
+vetores de suporte estão sobre a sua borda. Pode-se mostrar que o classificador de
+margem máxima depende apenas deles: retirar uma observação que não é vetor de suporte,
+ou deslocá-la para outro ponto do mesmo lado e fora da faixa, não altera a solução.
+
 \begin{atencao}
-Apenas os vetores de suporte determinam o hiperplano: mover um ponto longe da
-margem não muda \emph{nada}. Isso é bom e ruim ao mesmo tempo. Bom: o modelo é
-econômico, definido por um punhado de observações. Ruim: a formulação \emph{exige}
-separabilidade perfeita e é \textbf{muito sensível} --- mover um único vetor de
-suporte pode girar a fronteira inteira. Precisamos relaxá-la.
+Por ser determinado por poucos pontos, o classificador de margem máxima é muito
+sensível às observações próximas da fronteira: uma única observação nova, perto do
+hiperplano, pode deslocá-lo bastante. Isso indica variância alta e risco de
+superajuste. Além disso, ele só existe quando as classes são linearmente separáveis,
+o que é raro em dados reais. As duas limitações motivam a próxima seção.
 \end{atencao}
 
 %==============================================================================
-\section{O classificador de vetor de suporte (\emph{soft margin})}
+\section{O classificador de vetor de suporte}
 %==============================================================================
-Para lidar com dados não separáveis (e ganhar robustez), permitimos que algumas
-observações violem a margem, introduzindo \emph{folgas} $e_i\ge 0$:
+A ideia agora é abrir mão de classificar todas as observações de treino corretamente
+e com folga. Admite-se que algumas fiquem dentro da faixa da margem, ou mesmo do lado
+errado do hiperplano, em troca de uma solução que dependa menos de cada observação
+isolada e que deixe a maioria delas mais longe da fronteira. A mesma ideia resolve o
+caso em que as classes não são linearmente separáveis.
+
+\begin{definicao}[Classificador de vetor de suporte]
+Dado $C\ge0$, o \emph{classificador de vetor de suporte} é o hiperplano dado pela
+solução do problema
 \begin{equation}\label{eq:soft}
-  \max_{\beta_0,\bbeta,\,\bm{e}}\ M \quad\text{s.a.}\quad
-  \norm{\bbeta}=1,\quad
-  y_i\,f(\X_i)\ge M(1-e_i)\ \ \forall i,\quad
-  e_i\ge 0,\ \ \sum_{i=1}^n e_i \le C.
+\begin{aligned}
+  \max_{\beta_0,\,\bbeta,\,\bm\varepsilon,\,M}\ \ & M\\
+  \text{sujeito a}\ \ & \textstyle\sum_{j=1}^p\beta_j^2=1,\\
+  & y_i\,(\beta_0+\bbeta^\top\x_i)\ge M(1-\varepsilon_i),\quad i=1,\dots,n,\\
+  & \varepsilon_i\ge0,\quad i=1,\dots,n,\qquad \textstyle\sum_{i=1}^n\varepsilon_i\le C.
+\end{aligned}
 \end{equation}
-A folga $e_i$ mede o quanto a $i$-ésima observação viola a margem: $e_i>0$ significa
-dentro da margem; $e_i>1$ significa do \emph{lado errado} do hiperplano (erro de
-classificação).
+As variáveis $\varepsilon_1,\dots,\varepsilon_n$ são as \emph{folgas}, e $C$ é o
+\emph{orçamento} de violações.
+\end{definicao}
+
+\noindent
+Supomos daqui em diante que \eqref{eq:soft} tem solução com $M>0$. A
+Observação~\ref{obs:faixaC}, adiante, mostra que isso restringe $C$ a uma faixa de
+valores.
+
+\paragraph{O que as folgas medem.} Fixe $(\beta_0,\bbeta,M)$, com $M>0$. A restrição
+da observação $i$ vale se e somente se $\varepsilon_i\ge1-y_if(\x_i)/M$, e a menor
+folga admissível é
+\[
+  \varepsilon_i=\max\Big\{0,\ 1-\frac{y_if(\x_i)}{M}\Big\}.
+\]
+Numa solução de \eqref{eq:soft}, podemos supor que as folgas têm esses valores
+mínimos, porque reduzi-las a eles preserva todas as restrições e não altera $M$. Com
+essa escolha, e lembrando que $y_if(\x_i)$ vale $d(\x_i,H)$ do lado certo do hiperplano
+e $-d(\x_i,H)$ do lado errado, há quatro casos:
+\begin{itemize}[leftmargin=1.4cm]
+  \item $\varepsilon_i=0$ se e somente se $y_if(\x_i)\ge M$: a observação está do lado
+        certo da margem, ou sobre ela;
+  \item $0<\varepsilon_i<1$ se e somente se $0<y_if(\x_i)<M$: a observação está do
+        lado errado da margem, mas do lado certo do hiperplano;
+  \item $\varepsilon_i=1$ se e somente se $f(\x_i)=0$: a observação está sobre o
+        hiperplano;
+  \item $\varepsilon_i>1$ se e somente se $y_if(\x_i)<0$: a observação está do lado
+        errado do hiperplano, isto é, é classificada errado.
+\end{itemize}
+
+\paragraph{O papel do orçamento.} Com $C=0$, todas as folgas são nulas, e
+\eqref{eq:soft} coincide com \eqref{eq:mm}: o classificador de margem máxima é o caso
+particular sem orçamento. Com $C>0$, o orçamento limita o número de erros de
+classificação no treino.
+
+\begin{proposicao}\label{prop:erros}
+Seja $(\beta_0,\bbeta,\bm\varepsilon,M)$ um ponto que satisfaz as restrições de
+\eqref{eq:soft}, com $M>0$ e $C>0$. Então menos de $C$ observações de treino estão do
+lado errado do hiperplano.
+\end{proposicao}
+\begin{proof}
+Se $y_if(\x_i)<0$, a restrição da observação $i$ dá
+$M(1-\varepsilon_i)\le y_if(\x_i)<0$, e, como $M>0$, segue que $\varepsilon_i>1$. Seja
+$E$ o conjunto dessas observações e $\ell$ o seu número de elementos. Se $\ell=0$, não
+há o que provar. Se $\ell\ge1$,
+\[
+  \ell<\sum_{i\in E}\varepsilon_i\le\sum_{i=1}^n\varepsilon_i\le C. \qedhere
+\]
+\end{proof}
+
+O orçamento também governa a margem. Se $C\le C'$, todo ponto que satisfaz as
+restrições com orçamento $C$ as satisfaz com orçamento $C'$, e o máximo sobre um
+conjunto maior não pode ser menor; logo o valor ótimo de $M$ é uma função não
+decrescente de $C$. Aumentar o orçamento é tolerar mais violações da margem em troca
+de uma margem maior ou igual. A Figura~\ref{fig:margem} mostra o efeito num mesmo
+conjunto de dados.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/09-margem.pdf}
-  \caption{O mesmo conjunto de $40$ pontos com três orçamentos de violação. A linha
-  cheia é a fronteira; as tracejadas delimitam a margem; os pontos circulados em
-  verde são os \textbf{vetores de suporte}. Aumentar a tolerância a violações alarga
-  a margem e traz mais pontos para dentro dela: de $3$ vetores de suporte e margem
-  $0{,}50$ até $18$ vetores de suporte e margem $2{,}80$. Quanto mais pontos
-  sustentam a solução, menos ela depende de cada um --- daí a robustez.
-  \textbf{Atenção ao rótulo:} este é o \texttt{C} do \texttt{scikit-learn}, cuja
-  convenção é a inversa da de \eqref{eq:soft}.}
+  \caption{O mesmo conjunto de $40$ pontos e três orçamentos de violação, do menor (à
+  esquerda) ao maior (à direita). A linha cheia é o hiperplano, e as tracejadas estão
+  à distância $M$ dele, de modo que a faixa entre elas tem largura $2M$. Os pontos
+  circulados em verde são os vetores de suporte. À medida que o orçamento cresce, $M$
+  passa de $0{,}25$ a $1{,}40$, e o número de vetores de suporte, de $3$ a $18$.}
   \label{fig:margem}
 \end{figure}
 
+\paragraph{Vetores de suporte.} Os \emph{vetores de suporte} do classificador de vetor
+de suporte são as observações que estão sobre a margem ou do lado errado dela, isto é,
+com $y_if(\x_i)\le M$. Também aqui pode-se mostrar que o hiperplano depende apenas
+deles: uma observação do lado certo e fora da faixa da margem pode ser retirada, ou
+deslocada para outro ponto do lado certo e fora da faixa, sem que a solução mude. Na
+Figura~\ref{fig:margem}, o orçamento maior alarga a faixa e traz mais pontos para
+dentro dela, e o número de vetores de suporte cresce.
+
+Essa propriedade distingue o classificador de vetor de suporte de outros métodos com
+fronteira linear. Na análise discriminante linear (Aula~07), as médias das classes e
+a matriz de covariâncias comum são estimadas com todas as observações, e deslocar
+qualquer uma delas altera, em geral, a fronteira estimada, por mais longe dela que a
+observação esteja. A regressão logística fica entre os dois casos. Nas equações de
+máxima verossimilhança,
+\[
+  \sum_{i=1}^n\big(y_i-\widehat p(\x_i)\big)\begin{pmatrix}1\\ \x_i\end{pmatrix}=\bm 0,
+\]
+escritas com $y_i\in\{0,1\}$, a observação $i$ entra com o peso
+$y_i-\widehat p(\x_i)$, que é próximo de zero quando ela está bem classificada e longe
+da fronteira. A logística é, portanto, pouco sensível a essas observações, mas não
+insensível.
+
 \begin{ideia}
-$C$ é o \textbf{tuning parameter}, escolhido por validação cruzada (Aula~03). Na
-convenção de \eqref{eq:soft} --- a do [AME] e do [ISLP] --- $C$ é o \emph{orçamento
-de violações}:
-\begin{itemize}[leftmargin=1.2cm,nosep]
-  \item $C$ \emph{grande}: tolera muitas violações $\Rightarrow$ margem larga, mais
-        vetores de suporte, modelo mais \emph{rígido} (alto viés, baixa variância);
-  \item $C$ \emph{pequeno}: poucas violações $\Rightarrow$ margem estreita, modelo
-        mais \emph{flexível} (baixo viés, alta variância).
-\end{itemize}
-É o balanço viés--variância da Aula~01 outra vez.
+O orçamento $C$ é um \emph{tuning parameter} e regula o balanço entre viés e
+variância. Com $C$ pequeno, a margem é estreita e a solução depende de poucas
+observações, as mais próximas da fronteira: o classificador se ajusta de perto aos
+dados de treino, com viés baixo e variância alta. Com $C$ grande, a margem é larga, a
+solução depende de muitas observações e muda pouco quando uma delas muda: viés mais
+alto e variância mais baixa. Como nas aulas anteriores, $C$ é escolhido por validação
+cruzada (Aula~03).
 \end{ideia}
 
-\begin{atencao}[a inversão que já derrubou muita gente]
-No \texttt{scikit-learn}, o \texttt{C} é o \emph{peso da penalidade} sobre as
-violações, não o orçamento delas. Portanto tudo se inverte: \texttt{C} grande
-penaliza mais, tolera menos, e dá margem \emph{estreita}. É o que a
-Figura~\ref{fig:margem} mostra. Ao ler qualquer texto sobre SVM, confira qual
-convenção está em uso antes de interpretar ``$C$ grande''.
-\end{atencao}
+\begin{observacao}[A faixa de valores de $C$]\label{obs:faixaC}
+A hipótese de que \eqref{eq:soft} tem solução com $M>0$ falha nos dois extremos. Se os
+dados não são linearmente separáveis e $C=0$, nenhum ponto com $M>0$ satisfaz as
+restrições. No outro extremo, se $C>n$, tome qualquer $(\beta_0,\bbeta)$ com
+$\norm{\bbeta}=1$ e folgas $\varepsilon_i=C/n>1$: a restrição da observação $i$ fica
+$y_if(\x_i)\ge-M(C/n-1)$, e vale para todo $M$ suficientemente grande. O valor de $M$
+cresce, então, sem limite, e o problema não tem solução.
+\end{observacao}
 
 %==============================================================================
-\section{O truque do \emph{kernel}}
+\section{Fronteiras não lineares}
 %==============================================================================
-A chave que torna a SVM poderosa: a solução depende dos dados \emph{apenas através
-de produtos internos}. Pode-se mostrar que a função ótima se escreve
-\begin{equation}\label{eq:dual}
-  f(\x) = \beta_0 + \sum_{k=1}^n \alpha_k\,\inner{\x}{\X_k},
-  \qquad \inner{\x}{\X_k}=\textstyle\sum_{j=1}^p x_j x_{k,j},
+A fronteira do classificador de vetor de suporte é um hiperplano, e nenhum hiperplano
+aproxima bem uma fronteira de Bayes muito curva. O exemplo típico é o de uma classe
+cercada pela outra, como nos anéis concêntricos da Figura~\ref{fig:kernel}: ali, o
+classificador linear acerta $60\%$ das observações de treino, pouco mais que os
+$50\%$ de quem atribui todas à mesma classe.
+
+\paragraph{Ampliar o espaço das covariáveis.} Como na regressão polinomial, podemos
+ajustar o classificador de vetor de suporte às $2p$ covariáveis
+$X_1,\dots,X_p,X_1^2,\dots,X_p^2$, isto é, resolver \eqref{eq:soft} com
+\[
+  f(\x)=\beta_0+\sum_{j=1}^p\beta_{j1}x_j+\sum_{j=1}^p\beta_{j2}x_j^2
+\]
+e a restrição $\sum_j(\beta_{j1}^2+\beta_{j2}^2)=1$. A fronteira $\{\x: f(\x)=0\}$ é um
+hiperplano do espaço ampliado e, no espaço original, uma superfície quadrática; em
+$\R^2$, uma cônica. O preço é o número de coeficientes. Usando todos os monômios de
+grau até $q$ nas $p$ covariáveis, que são $\binom{p+q}{q}$, já seriam $231$ com $p=20$
+e $q=2$, e $53\,130$ com $p=20$ e $q=5$.
+
+\paragraph{A solução depende dos dados por meio de produtos internos.} O fato que
+permite contornar esse custo é o seguinte, que admitiremos sem demonstração (ver
+[ISLP], §9.3.2).
+
+\begin{proposicao}\label{prop:repr}
+Seja $(\beta_0,\bbeta,\bm\varepsilon,M)$ uma solução de \eqref{eq:soft}, e seja
+$\mathcal S$ o conjunto dos índices dos vetores de suporte. Existem
+$\alpha_1,\dots,\alpha_n\in\R$, com $\alpha_i=0$ para $i\notin\mathcal S$, tais que
+\begin{equation}\label{eq:repr}
+  f(\x)=\beta_0+\sum_{i=1}^n\alpha_i\inner{\x}{\x_i}
+       =\beta_0+\sum_{i\in\mathcal S}\alpha_i\inner{\x}{\x_i}
+  \qquad\text{para todo }\x\in\R^p,
 \end{equation}
-e que o cálculo dos $\alpha_k$ também só requer os produtos internos
-$\inner{\X_i}{\X_k}$ entre as observações. Crucialmente, $\alpha_k=0$ para todos os
-pontos que \emph{não} são vetores de suporte; logo
+em que $\inner{\x}{\x_i}=\sum_{j=1}^px_jx_{ij}$. Além disso, $\beta_0$ e
+$\alpha_1,\dots,\alpha_n$ podem ser calculados a partir apenas dos $n(n+1)/2$ produtos
+internos $\inner{\x_i}{\x_j}$, $1\le i\le j\le n$.
+\end{proposicao}
+
+A Proposição~\ref{prop:repr} diz que os dados entram no ajuste e na previsão somente
+por meio de produtos internos. Para ajustar, bastam os produtos internos entre as
+observações de treino; para classificar um ponto novo $\x$, bastam os produtos
+internos entre $\x$ e os vetores de suporte.
+
+%==============================================================================
+\section{\emph{Kernels} e a máquina de vetores de suporte}
+%==============================================================================
+O produto interno mede a semelhança entre dois vetores: para vetores de norma fixa,
+$\inner{\x}{\x'}$ é tanto maior quanto menor o ângulo entre eles. A
+Proposição~\ref{prop:repr} sugere trocá-lo por outras medidas de semelhança.
+
+\begin{definicao}[\emph{Kernel}]
+Uma função $k:\R^p\times\R^p\to\R$ é um \emph{kernel} se existem um espaço de Hilbert
+real $\mathcal H$, com produto interno $\inner{\cdot}{\cdot}_{\mathcal H}$, e uma
+função $\varphi:\R^p\to\mathcal H$ tais que
 \[
-  f(\x) = \beta_0 + \sum_{k\in S}\alpha_k\,\inner{\x}{\X_k},
+  k(\x,\x')=\inner{\varphi(\x)}{\varphi(\x')}_{\mathcal H}
+  \qquad\text{para todos }\x,\x'\in\R^p.
 \]
-onde $S$ é o conjunto de vetores de suporte.
+\end{definicao}
 
-\begin{ideia}
-Como tudo depende só de produtos internos, podemos \textbf{substituir}
-$\inner{\x}{\X_k}$ por um \emph{kernel} $K(\x,\X_k)$ --- que corresponde a um produto
-interno num espaço de \emph{features} de dimensão muito maior (ou infinita), sem
-\emph{nunca} computar esse espaço explicitamente. Isso é o \textbf{truque do
-\emph{kernel}}: fronteiras não lineares no espaço original a custo de fronteiras
-lineares num espaço ampliado.
-\end{ideia}
-
-\begin{exemplo}[o truque em duas dimensões]
-Tome $K(\x,\x')=(\inner{\x}{\x'})^2$ em $\R^2$. Expandindo,
-\[
-  (x_1x_1'+x_2x_2')^2 = (x_1^2)(x_1'^2) + 2(x_1x_2)(x_1'x_2') + (x_2^2)(x_2'^2)
-  = \inner{\phi(\x)}{\phi(\x')},
-\]
-com $\phi(\x)=(x_1^2,\;\sqrt2\,x_1x_2,\;x_2^2)$. Ou seja: calcular \emph{um} produto
-e elevá-lo ao quadrado equivale a mapear os pontos para $\R^3$ e fazer o produto
-interno lá. Com o kernel polinomial de grau $q$ em $\R^p$ o espaço tem dimensão
-$\binom{p+q}{q}$, e com o RBF ele é \emph{de dimensão infinita} --- e o custo
-continua sendo uma conta com $p$ termos. É esse o negócio.
-\end{exemplo}
-
-\noindent \emph{Kernels} de Mercer comuns (cf.\ [AME], §4.6):
+Um \emph{kernel} é, portanto, um produto interno calculado depois de levar os pontos,
+por meio de $\varphi$, a um espaço possivelmente de dimensão infinita. Os mais usados
+são os seguintes.
 \begin{center}\small
 \renewcommand{\arraystretch}{1.4}
-\begin{tabular}{@{}ll@{}}
+\begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Kernel} & \textbf{$K(\x,\x')$} \\
+\emph{Kernel} & $k(\x,\x')$ & parâmetro \\
 \midrule
-Linear      & $\inner{\x}{\x'}$ \\
-Polinomial (grau $q$) & $(1+\inner{\x}{\x'})^{q}$ \\
-Gaussiano (RBF) & $\exp\!\big(-\gamma\,\norm{\x-\x'}^2\big)$ \\
+linear & $\inner{\x}{\x'}$ & nenhum \\
+polinomial de grau $q$ & $\big(1+\inner{\x}{\x'}\big)^{q}$ & $q\in\{1,2,\dots\}$ \\
+radial, ou gaussiano & $\exp\!\big(-\gamma\,\norm{\x-\x'}^2\big)$ & $\gamma>0$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-No kernel gaussiano, $\gamma>0$ é um \emph{tuning parameter}: $\gamma$ grande
-$\Rightarrow$ influência local, fronteiras muito flexíveis (risco de superajuste);
-$\gamma$ pequeno $\Rightarrow$ fronteiras suaves. Escolhem-se $C$ e $\gamma$ juntos
-por validação cruzada.
+O linear é o próprio produto interno, com $\mathcal H=\R^p$ e $\varphi$ a identidade.
+Para os outros dois, os exemplos a seguir exibem uma função $\varphi$.
+
+\begin{exemplo}\label{ex:quad}
+Em $\R^2$, seja $k(\x,\x')=\inner{\x}{\x'}^2$. Expandindo o quadrado,
+\[
+  (x_1x_1'+x_2x_2')^2=x_1^2x_1'^2+2\,x_1x_2\,x_1'x_2'+x_2^2x_2'^2
+  =\inner{\varphi(\x)}{\varphi(\x')},
+\]
+com $\varphi(\x)=\big(x_1^2,\ \sqrt2\,x_1x_2,\ x_2^2\big)\in\R^3$. Calcular $k$ custa
+um produto interno em $\R^2$ e um quadrado; passar por $\varphi$ dá o mesmo número
+com mais contas. Um plano de $\R^3$, $b_0+b_1z_1+b_2z_2+b_3z_3=0$,
+corresponde em $\R^2$ à cônica $b_0+b_1x_1^2+\sqrt2\,b_2x_1x_2+b_3x_2^2=0$. Com
+$b_1=b_3=1$, $b_2=0$ e $b_0=-r^2$, ela é a circunferência de raio $r$ centrada na
+origem, que é a fronteira de que os anéis da Figura~\ref{fig:kernel} precisam.
+\end{exemplo}
+
+O mesmo cálculo vale para o \emph{kernel} polinomial em geral. Expandindo
+$\big(1+\sum_jx_jx_j'\big)^q$ pela fórmula do multinômio, obtém-se uma soma de termos
+$c_{\bm a}\,\x^{\bm a}\,\x'^{\bm a}$, um para cada monômio
+$\x^{\bm a}=x_1^{a_1}\cdots x_p^{a_p}$ de grau $a_1+\dots+a_p\le q$, com coeficientes
+$c_{\bm a}>0$. Basta então tomar
+$\varphi(\x)=\big(\sqrt{c_{\bm a}}\,\x^{\bm a}\big)_{\bm a}$, que tem $\binom{p+q}{q}$
+coordenadas, enquanto $k(\x,\x')$ se calcula com cerca de $p$ operações.
+
+\begin{exemplo}\label{ex:rbf}
+Para $p=1$, o \emph{kernel} radial se fatora como
+\[
+  e^{-\gamma(x-x')^2}=e^{-\gamma x^2}\,e^{-\gamma x'^2}\,e^{2\gamma xx'}
+  =\sum_{m=0}^\infty\varphi_m(x)\,\varphi_m(x'),
+  \qquad
+  \varphi_m(x)=\sqrt{\frac{(2\gamma)^m}{m!}}\;x^m e^{-\gamma x^2},
+\]
+pela série de Taylor de $e^{2\gamma xx'}$. Então $k(x,x')=\inner{\varphi(x)}{\varphi(x')}$,
+com $\varphi(x)=\big(\varphi_0(x),\varphi_1(x),\dots\big)$ no espaço $\ell^2$ das
+sequências de quadrado somável; de fato, $\sum_m\varphi_m(x)^2=k(x,x)=1$. Aqui
+$\mathcal H=\ell^2$ tem dimensão infinita, e ainda assim $k(x,x')$ se calcula com uma
+subtração, um quadrado e uma exponencial.
+\end{exemplo}
+
+Nem toda função de duas variáveis é um \emph{kernel}, e exibir $\varphi$ nem sempre é
+fácil. O teorema a seguir dá um critério que envolve apenas $k$.
+
+\begin{teorema}\label{teo:kernel}
+Uma função $k:\R^p\times\R^p\to\R$ é um \emph{kernel} se e somente se
+\begin{enumerate}[label=(\roman*),leftmargin=1.4cm]
+  \item é simétrica, isto é, $k(\x,\x')=k(\x',\x)$ para todos $\x,\x'\in\R^p$; e
+  \item é positiva semidefinida, isto é, para todo $n\ge1$ e quaisquer
+        $\x_1,\dots,\x_n\in\R^p$, a matriz $\big[k(\x_i,\x_j)\big]_{i,j=1}^n$ é
+        positiva semidefinida.
+\end{enumerate}
+\end{teorema}
+\begin{proof}[Demonstração de que as condições são necessárias]
+Se $k(\x,\x')=\inner{\varphi(\x)}{\varphi(\x')}_{\mathcal H}$, a simetria de $k$ vem da
+simetria do produto interno. Dados $\x_1,\dots,\x_n$ e $\bm a\in\R^n$, a
+bilinearidade do produto interno dá
+\[
+  \sum_{i=1}^n\sum_{j=1}^na_ia_j\,k(\x_i,\x_j)
+  =\Big\langle\sum_{i=1}^na_i\varphi(\x_i),\ \sum_{j=1}^na_j\varphi(\x_j)\Big\rangle_{\mathcal H}
+  =\Big\|\sum_{i=1}^na_i\varphi(\x_i)\Big\|_{\mathcal H}^2\ \ge\ 0. \qedhere
+\]
+\end{proof}
+
+A suficiência é mais difícil e não será demonstrada: a partir de uma função $k$
+simétrica e positiva semidefinida, constrói-se um espaço de Hilbert $\mathcal H$ de
+funções, o espaço de Hilbert com \emph{kernel} reprodutor, em que
+$\varphi(\x)=k(\cdot,\x)$ satisfaz a definição (Aronszajn, 1950). O [AME], §4.6, chama
+essas funções de \emph{kernels} de Mercer e obtém $\varphi$ pelo Teorema de Mercer. Na
+prática, o Teorema~\ref{teo:kernel} serve para verificar que uma função é um
+\emph{kernel} sem exibir $\varphi$, e também para mostrar que uma função não é:
+$k(\x,\x')=-\inner{\x}{\x'}$, por exemplo, não é um \emph{kernel}, porque
+$k(\x_1,\x_1)=-\norm{\x_1}^2<0$ para $\x_1\ne\bm 0$.
+
+\paragraph{A máquina de vetores de suporte.} Escolhido um \emph{kernel} $k$, a
+\emph{máquina de vetores de suporte} (SVM) é o classificador de vetor de suporte
+ajustado aos pontos $\varphi(\x_1),\dots,\varphi(\x_n)$ de $\mathcal H$. A
+Proposição~\ref{prop:repr} continua valendo quando $\R^p$ é substituído por um espaço
+de Hilbert, e dá a função de decisão
+\begin{equation}\label{eq:svm}
+  f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_i\,k(\x,\x_i),
+\end{equation}
+em que $\beta_0$ e os $\alpha_i$ se calculam a partir dos números $k(\x_i,\x_j)$, no
+lugar dos produtos internos $\inner{\x_i}{\x_j}$. Nem $\varphi$ nem $\mathcal H$
+precisam ser construídos, porque o ajuste e a previsão só usam valores de $k$: é o
+chamado \emph{truque do kernel}. O número de parâmetros, $\beta_0$ e
+$\alpha_1,\dots,\alpha_n$, não depende da dimensão de $\mathcal H$, mesmo quando ela é
+infinita. A fronteira $\{\x: f(\x)=0\}$ é a imagem inversa, por $\varphi$, de um
+hiperplano de $\mathcal H$: linear em $\mathcal H$, ela em geral não é linear em
+$\R^p$.
+
+\paragraph{O parâmetro $\gamma$.} No \emph{kernel} radial,
+$k(\x,\x_i)=e^{-\gamma\norm{\x-\x_i}^2}$ decai com a distância entre $\x$ e $\x_i$, e
+$\gamma$ regula a rapidez do decaimento. Com $\gamma$ grande, $k(\x,\x_i)$ é
+desprezível, salvo para $\x$ muito perto de $\x_i$. Em \eqref{eq:svm}, $f(\x)$ fica
+então determinado pelos poucos vetores de suporte mais próximos de $\x$, e, longe de
+todos eles, $f(\x)\approx\beta_0$; a fronteira pode contornar observações isoladas.
+É uma fronteira flexível, com risco de superajuste. Com $\gamma$ pequeno,
+$k(\x,\x_i)$ varia devagar, muitos vetores de suporte pesam em cada ponto, e a
+fronteira é suave. Como $C$ e $\gamma$ interagem, eles são escolhidos juntos, por
+validação cruzada sobre uma grade de pares $(C,\gamma)$.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/09-kernel.pdf}
-  \caption{Duas classes dispostas em anéis concêntricos --- o exemplo canônico do
-  que uma reta não resolve. O kernel linear acerta $60\%$, pouco acima do palpite. O
-  polinomial de grau~2 encontra a circunferência exata e sobe para $99{,}4\%$, e o
-  RBF com $\gamma=0{,}5$ faz o mesmo. Já o RBF com $\gamma=50$ produz uma fronteira
-  rendilhada que persegue observações individuais: $\gamma$ é um botão de
-  flexibilidade e, como todos os outros do curso, superajusta se você o girar demais.}
+  \caption{Duas classes de $175$ pontos cada, em anéis concêntricos, e quatro máquinas
+  de vetores de suporte ajustadas a elas. Com o \emph{kernel} linear, a acurácia de
+  treino é $60\%$. O polinomial de grau $2$ usado aqui não tem o termo constante: é um
+  múltiplo do \emph{kernel} do Exemplo~\ref{ex:quad}. Ele chega a $99{,}4\%$ com uma
+  fronteira próxima de uma circunferência, e o radial com $\gamma=0{,}5$ também. O
+  radial com $\gamma=50$ chega a $99{,}1\%$ com uma fronteira irregular, que contorna
+  observações isoladas. A acurácia de treino quase não distingue os três últimos e não
+  revela o superajuste do último; para escolher $\gamma$, é preciso estimar o risco,
+  por validação cruzada, por exemplo.}
   \label{fig:kernel}
 \end{figure}
 
 %==============================================================================
-\section{SVM como perda \emph{hinge} regularizada}\label{sec:hinge}
-%==============================================================================
-Há uma leitura que conecta a SVM a tudo o que vimos. Dado um kernel de Mercer $K$
-com RKHS $\mathcal{H}_K$ ([AME], §4.6), o classificador da SVM minimiza
-\begin{equation}\label{eq:hinge}
-  \min_{g\in\mathcal{H}_K}\ \sum_{k=1}^n \underbrace{\big(1-y_k\,g(\X_k)\big)_+}_{\text{perda \emph{hinge}}}
-  + \lambda\,\norm{g}_{\mathcal{H}_K}^2 ,
-\end{equation}
-onde $(u)_+=\max(u,0)$. Ou seja, a SVM é \emph{ajuste de perda + regularização}
-(Aula~02), com a \textbf{perda \emph{hinge}} $L(y,g)=(1-yg)_+$.
-
-\begin{observacao}
-A perda \emph{hinge} é \textbf{zero} quando $y\,g(\x)\ge 1$, isto é, quando o ponto
-está do lado certo e \emph{folgadamente} longe da margem. Só os pontos próximos ou
-violando a margem contribuem --- e são exatamente os \emph{vetores de suporte}. No
-caso separável, \eqref{eq:hinge} reencontra a margem máxima ($1/\norm{g}$).
-\end{observacao}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.62\textwidth]{../../recursos/figuras/09-perdas.pdf}
-  \caption{As três perdas como função da margem $y\,g(x)$. A 0--1 é o que
-  gostaríamos de minimizar, mas ela é descontínua e constante por partes --- otimizar
-  sobre ela é NP-difícil. A \emph{hinge} e a logística são substitutas convexas:
-  ambas majoram a 0--1 e são tratáveis. A diferença decisiva está na faixa
-  sombreada: a \emph{hinge} \textbf{zera} a partir da margem $1$, e todos os pontos
-  ali param de influenciar a solução --- é daí que vem a esparsidade em vetores de
-  suporte. A logística nunca chega a zero, e por isso \emph{todo} ponto pesa um
-  pouco.}
-  \label{fig:perdas}
-\end{figure}
-
-\subsection{Relação com a regressão logística}
-A SVM (\emph{hinge}) e a regressão logística (perda logística
-$\log(1+e^{-yg})$) são ambas ``perda de margem $+$ regularização $\ell_2$'':
-\begin{itemize}[leftmargin=1.4cm,nosep]
-  \item a \emph{hinge} é exatamente zero longe da margem $\Rightarrow$ solução
-        \emph{esparsa} em vetores de suporte; a logística nunca é zero;
-  \item a logística entrega \textbf{probabilidades} calibradas (Aula~08); a SVM
-        entrega só a fronteira. As ``probabilidades'' do \texttt{SVC} vêm de um
-        ajuste \emph{a posteriori} (escala de Platt), não do método.
-\end{itemize}
-Regra prática: classes bem separadas $\to$ SVM costuma ir muito bem; quando se quer
-$\Prob(Y\mid\x)$, prefira a logística.
-
-%==============================================================================
 \section{Mais de duas classes}
 %==============================================================================
-A SVM é intrinsecamente binária --- não há como escrever ``$y_i f(\X_i)>0$'' com
-três classes. Para $\abs{\mathcal{C}}>2$, contorna-se com vários classificadores
-binários:
+As formulações desta aula usam a codificação $y\in\{-1,+1\}$ de modo essencial: a
+condição de acerto $y_if(\x_i)>0$ não tem análogo direto com três ou mais classes.
+Com $K=\abs{\mathcal{C}}\ge3$ classes, combinam-se vários classificadores binários.
 \begin{description}[leftmargin=2.8cm,style=nextline]
-  \item[Um-contra-um (OvO)] treina uma SVM para cada par de classes
-        ($\binom{K}{2}$ classificadores) e classifica por votação. Cada ajuste usa
-        só os dados de duas classes, então são muitos problemas pequenos. Padrão do
-        \texttt{scikit-learn}.
-  \item[Um-contra-todos (OvA)] treina $K$ SVMs (cada classe vs.\ o resto) e escolhe
-        a de maior $f(\x)$. São $K$ problemas grandes, e cada um deles fica
-        desbalanceado --- com a ressalva da Aula~08.
+  \item[Um contra um] Ajusta-se uma SVM para cada par de classes, usando apenas as
+        observações dessas duas classes; são $\binom{K}{2}=K(K-1)/2$ ajustes. Um
+        ponto novo é atribuído à classe que vence o maior número de comparações. É o
+        que faz o \texttt{SVC} do \texttt{scikit-learn}.
+  \item[Um contra todos] Ajustam-se $K$ SVMs, a da classe $c$ separando-a de todas
+        as outras juntas, com função de decisão $f_c$. Um ponto novo é atribuído à
+        classe com maior $f_c(\x)$. Cada um desses problemas é desbalanceado, com uma
+        classe contra $K-1$, o que pede cuidado na avaliação (Aula~08).
 \end{description}
-
-%==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import GridSearchCV
-
-# SVM com kernel RBF; padronizar e ESSENCIAL (metodo baseado em distancia)
-pipe = make_pipeline(StandardScaler(), SVC(kernel="rbf"))
-grade = {"svc__C":     [0.1, 1, 10, 100],
-         "svc__gamma": [0.001, 0.01, 0.1, 1]}
-busca = GridSearchCV(pipe, grade, cv=5, scoring="accuracy")
-busca.fit(X_tr, y_tr)
-print("melhores parametros:", busca.best_params_)
-
-# Para probabilidades: SVC(probability=True) (usa Platt scaling, mais lento)
-\end{lstlisting}
-
-\begin{atencao}
-Três observações práticas. (i) SVM com RBF é \textbf{sensível à escala} --- a
-distância $\norm{\x-\x'}^2$ do kernel soma todas as coordenadas, então
-\emph{sempre} padronize dentro do \emph{pipeline} (Aula~06). (ii) $C$ e $\gamma$
-interagem, e por isso a busca é numa \emph{grade bidimensional}, não em dois passos
-separados. (iii) O custo de treino do \texttt{SVC} cresce entre $O(n^2)$ e
-$O(n^3)$: com centenas de milhares de observações ele fica inviável, e a saída é o
-\texttt{LinearSVC} ou aproximações de kernel (\texttt{Nystroem}).
-\end{atencao}
-
-Os notebooks \texttt{Aula prática 09} e \texttt{Exemplo - SVM em dados artificiais}
-ilustram o efeito de $C$,
-$\gamma$ e da escolha do kernel sobre a fronteira de decisão.
 
 %==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
-  \item \textbf{Margem máxima}: hiperplano separador de maior folga; definido pelos
-        \emph{vetores de suporte}; exige separabilidade e é frágil.
-  \item \textbf{\emph{Soft margin}} \eqref{eq:soft}: folgas $e_i$ e orçamento $C$
-        controlam o balanço viés--variância (Fig.~\ref{fig:margem}). Cuidado com a
-        convenção invertida de $C$ no \texttt{scikit-learn}.
-  \item \textbf{Truque do kernel}: a solução só depende de produtos internos
-        \eqref{eq:dual}; trocá-los por $K$ dá fronteiras não lineares
-        (Fig.~\ref{fig:kernel}), e $\gamma$ do RBF é mais um botão de flexibilidade.
-  \item SVM $=$ \textbf{perda \emph{hinge}} $+$ regularização \eqref{eq:hinge}
-        (RKHS, [AME] §4.6); a hinge zera longe da margem, e é daí que vem a esparsidade
-        (Fig.~\ref{fig:perdas}).
-  \item Relação com a logística (perda de margem $+$ $\ell_2$); SVM não dá
-        probabilidades de imediato.
-  \item Multiclasse por OvO/OvA; \emph{padronize} sempre.
+  \item Com $\norm{\bbeta}=1$, $\abs{f(\x)}$ é a distância de $\x$ ao hiperplano
+        (Proposição~\ref{prop:dist}), e $y_if(\x_i)$ vale $d(\x_i,H)$ se a observação
+        $i$ está do lado certo e $-d(\x_i,H)$ se está do lado errado.
+  \item O classificador de margem máxima \eqref{eq:mm} escolhe, entre os hiperplanos
+        separadores, o de maior margem. Só existe com dados linearmente separáveis,
+        depende apenas dos vetores de suporte e é sensível a eles.
+  \item O classificador de vetor de suporte \eqref{eq:soft} admite folgas
+        $\varepsilon_i$ com orçamento $C$. Menos de $C$ observações ficam do lado
+        errado do hiperplano (Proposição~\ref{prop:erros}), e a margem ótima não
+        diminui quando $C$ cresce. O orçamento regula o balanço entre viés e
+        variância e é escolhido por validação cruzada (Figura~\ref{fig:margem}).
+  \item A solução depende dos dados apenas por meio de produtos internos, e só os
+        vetores de suporte entram na função de decisão
+        (Proposição~\ref{prop:repr}).
+  \item Trocando o produto interno por um \emph{kernel}, isto é, por uma função
+        simétrica e positiva semidefinida (Teorema~\ref{teo:kernel}), obtém-se a SVM
+        \eqref{eq:svm}, com fronteira linear em $\mathcal H$ e, em geral, não linear
+        em $\R^p$. No \emph{kernel} radial, $\gamma$ regula a flexibilidade
+        (Figura~\ref{fig:kernel}).
+  \item Com mais de duas classes, combinam-se SVMs binárias, um contra um ou um
+        contra todos.
 \end{itemize}
 
-\paragraph{Leitura recomendada.} [AME] §8.2 (SVM) e §4.6 (RKHS e o truque do
-kernel, onde o mesmo maquinário aparece em regressão). [ISLP] Capítulo~9 inteiro:
-§9.1 (margem máxima), §9.2 (vetor de suporte e o papel de $C$ --- a Figura~9.7 deles
-é a nossa Figura~\ref{fig:margem}), §9.3 (kernels, com a versão deles da nossa
-Figura~\ref{fig:kernel}), §9.4 (multiclasse) e §9.5 (relação com a logística, de
-onde vem a nossa Figura~\ref{fig:perdas}).
+\paragraph{Leitura recomendada.} [AME] §8.2 (SVM) e §4.6 (\emph{kernels} de Mercer e o
+Teorema de Mercer). [ISLP] §9.1 (margem máxima), §9.2 (classificador de vetor de
+suporte; a Figura~9.7 de lá corresponde à nossa Figura~\ref{fig:margem}), §9.3
+(\emph{kernels} e SVM; a Figura~9.9 de lá é análoga à nossa Figura~\ref{fig:kernel}) e
+§9.4 (mais de duas classes).
 
 \paragraph{Para praticar.} \texttt{Lista teorica 09.pdf} (teórica, com gabarito) e \texttt{Lista prática 09.ipynb} (prática, para completar as lacunas), nesta mesma pasta.
 

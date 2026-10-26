@@ -795,6 +795,8 @@ def _margem():
     grade = np.c_[xx.ravel(), yy.ravel()]
 
     fig, axes = subplots(1, 3, figsize=(7.4, 2.6), sharex=True, sharey=True)
+    # O C do scikit-learn é o peso da penalidade, o inverso do orçamento das notas: da
+    # esquerda para a direita o orçamento cresce. Por isso o título não mostra o C.
     for ax, C in zip(axes, [100.0, 1.0, 0.05]):
         m = SVC(kernel="linear", C=C).fit(X, y)
         Z = m.decision_function(grade).reshape(xx.shape)
@@ -805,14 +807,13 @@ def _margem():
         sv = m.support_vectors_
         ax.scatter(sv[:, 0], sv[:, 1], s=90, facecolors="none",
                    edgecolors=VERDE, linewidths=1.3, zorder=4)
-        larg = 2 / np.linalg.norm(m.coef_)
-        c_txt = f"{C:g}".replace(".", "{,}")
-        larg_txt = f"{larg:.2f}".replace(".", "{,}")
-        ax.set_title(f"$C={c_txt}$ — {len(sv)} vetores de suporte\n"
-                     f"margem $= {larg_txt}$", fontsize=7.5)
+        M = 1 / np.linalg.norm(m.coef_)    # distância do hiperplano a cada tracejada
+        M_txt = f"{M:.2f}".replace(".", "{,}")
+        ax.set_title(f"{len(sv)} vetores de suporte\n"
+                     f"$M = {M_txt}$", fontsize=7.5)
         ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
         print(f"     [conferência] C={C:g}: {len(sv)} vetores de suporte, "
-              f"margem {larg:.3f}")
+              f"M {M:.3f}")
     salvar(fig, "09-margem")
 
 
@@ -846,29 +847,6 @@ def _kernel():
         print(f"     [conferência] kernel {nome}: acurácia de treino "
               f"{m.score(X, y):.3f}")
     salvar(fig, "09-kernel")
-
-
-@figura("09-perdas", "09")
-def _perdas():
-    """hinge, logística e 0-1 como funções da margem y*g(x)."""
-    u = np.linspace(-2.5, 3.0, 800)
-    fig, ax = subplots(figsize=(4.8, 3.1))
-    ax.plot(u, np.where(u < 0, 1.0, 0.0), color=CINZA, lw=1.6,
-            label=r"0--1: $\mathbb{1}\{y\,g<0\}$")
-    ax.plot(u, np.maximum(0, 1 - u), color=VINHO,
-            label=r"hinge: $(1-y\,g)_+$")
-    ax.plot(u, np.log2(1 + np.exp(-u)), color=AZUL,
-            label=r"logística: $\log_2(1+e^{-y\,g})$")
-    ax.axvline(1, color=VERDE, ls=":", lw=1.1)
-    ax.axvspan(1, 3.0, color=VERDE, alpha=0.07)
-    ax.text(1.55, 1.75, "aqui a hinge é zero:\nnão são vetores de suporte",
-            fontsize=7.5, color=VERDE)
-    ax.axvline(0, color="black", lw=0.7)
-    ax.set_xlabel(r"margem $y\,g(x)$  (positiva $=$ classificou certo)")
-    ax.set_ylabel("perda")
-    ax.set_ylim(0, 3.0)
-    ax.legend(loc="upper right", fontsize=7.5)
-    salvar(fig, "09-perdas")
 
 
 # =========================================================================== #
