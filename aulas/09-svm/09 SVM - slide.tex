@@ -11,7 +11,7 @@
 %  Três mudanças em relação ao recebido, e o motivo de cada uma:
 %
 %    1. autoria e instituição: Gabriel Sanfins / UFF no lugar de Hugo Carvalho /
-%       UFRJ. O rodapé das 33 páginas sai de \author[...] e \title[...], então
+%       UFRJ. O rodapé das 26 páginas sai de \author[...] e \title[...], então
 %       são as duas chaves curtas que importam. O título curto também perdeu o
 %       "Apredizagem" (faltava o n) e passou a "Aprendizado de Máquina", que é
 %       o nome do curso no resto do repositório;
@@ -271,7 +271,7 @@
 
 
 \setcounter{framenumber}{0}
-\date{SVM}        % o que aparece no rodape das 33 paginas
+\date{SVM}        % o que aparece no rodape das 26 paginas
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -291,10 +291,6 @@
             
             \item Classificador de vetor suporte
         \end{itemize}
-        
-        \pause
-        
-        \item Relação interessante com regressão logística e outros classificadores
     \end{itemize}
 \end{frame}
 
@@ -682,87 +678,6 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Classificador de vetor suporte -- observação importante}
-    \textbf{Observação}: O que é resolvido numericamente \alert{não} são as equações $(*, **, ***, ****)$, mas sim:
-    $$\min_{\substack{\beta_0, \beta_1, \dots, \beta_p, \\ \varepsilon_1, \dots, \varepsilon_n}} \|(\beta_1, \dots, \beta_p)\|_2^2 \text{ t.q. } \begin{cases} y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq 1 - \varepsilon_i \\ \varepsilon_i \geq 0, \sum_{i = 1}^{n} \varepsilon_i \leq C, \forall i = 1, \dots, n\end{cases}$$
-    
-    \pause
-    
-    \begin{center}
-        $\implies$ Problema quadrático com restrições lineares $\implies$ problema de otimização convexa!
-    \end{center}
-    
-    \pause
-    
-    Equivalente a resolver o problema (multiplicadores de Lagrange):
-    $$\min_{\substack{\beta_0, \beta_1, \dots, \beta_p, \\ \varepsilon_1, \dots, \varepsilon_n}} \frac{1}{2}\|(\beta_1, \dots, \beta_p)\|_2^2 + C\sum_{i = 1}^{n} \varepsilon_i, \text{ t.q. } \varepsilon_i \geq 0$$ $$\text{e } y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq 1 - \varepsilon_i, \forall i = 1, \dots, n$$
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Cuidado: o $C$ do slide anterior aparece de duas formas}
-    Repare que a \alert{mesma letra} foi usada para dois papéis \alert{opostos}:
-
-    \pause
-
-    \begin{itemize}
-        \item em $(****)$, $\ds \sum_{i = 1}^{n} \varepsilon_i \leq C$: o $C$ é o \alert{orçamento} de violações. É a convenção do [ISLP] e do [AME] --- a dos slides anteriores;
-
-        \pause
-
-        \item na forma de Lagrange, $\ds \frac{1}{2}\|(\beta_1, \dots, \beta_p)\|_2^2 + C\sum_{i = 1}^{n} \varepsilon_i$: o $C$ é o \alert{peso da penalidade} sobre as violações --- e é esta a convenção do \texttt{scikit-learn}
-    \end{itemize}
-
-    \pause
-
-    \begin{center}
-        $\implies$ Tudo o que dissemos sobre ``$\uparrow C$'' se \alert{inverte} de uma para a outra!
-    \end{center}
-
-    \pause
-
-    No \texttt{scikit-learn}: $\uparrow C \implies$ penaliza mais $\implies$ tolera menos $\implies$ margem \alert{estreita} $\implies$ \alert{menos} vetores suporte.
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Cuidado: o $C$ do slide anterior aparece de duas formas}
-    E não é sutileza de notação --- dá para medir. Na Seção 8 da \texttt{Aula prática 09}, ajustando \texttt{SVC} ao \texttt{breast\_cancer} com $\gamma$ e \emph{kernel} fixos:
-
-    \pause
-
-    \begin{center}\small
-    \renewcommand{\arraystretch}{1.3}
-    \begin{tabular}{@{}lrrr@{}}
-    \toprule
-     & vetores suporte & \% do treino & AUC no teste \\
-    \midrule
-    \texttt{SVC(C=0.01)} & $92$ & $23{,}1\%$ & $0{,}9921$ \\
-    \texttt{SVC(C=1000)} & $24$ & $6{,}0\%$ & $0{,}9911$ \\
-    \bottomrule
-    \end{tabular}
-    \end{center}
-
-    \pause
-
-    O $C$ \emph{pequeno} do \texttt{scikit-learn} é que dá \alert{mais} vetores suporte --- quase quatro vezes mais --- exatamente ao contrário do que os slides anteriores dizem do $C$ deles.
-
-    \pause
-
-    \begin{center}
-        $\implies$ Ao ler qualquer texto sobre SVM, confira \alert{qual} $C$ está em uso antes de interpretar ``$C$ grande''!
-    \end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % \setcounter{framenumber}{0}
 % \set\date{Aula 22}
 
@@ -954,89 +869,6 @@
         \includegraphics[scale=0.45]{9-9.pdf}
         \caption{(Figura 9.9 de [ISLP]) Esquerda: Ajuste com \textit{kernel} polinomial de grau 3. Direita: Ajuste com \textit{kernel} radial.}
     \end{figure}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Relação com regressão logística}
-    Lembremos do classificador de vetor suporte (caso particular do SVM com \textit{kernel} linear):
-    \begin{align*}
-        &\max_{\beta_0, \beta_1, \dots, \beta_p, \varepsilon_1, \dots, \varepsilon_n, M} M \\ 
-        &\text{sujeito a } \sum_{j = 1}^{p} \beta_j^2 = 1, \varepsilon_i \geq 0 \text{ e } \sum_{i = 1}^{n} \varepsilon_i \leq C \\
-        &y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq M(1 - \varepsilon_i), \forall i = 1, \dots, n
-    \end{align*}
-    
-    \pause
-    
-    Esse problema de otimização pode ser escrito como $$\min_{\beta_0, \beta_1, \dots, \beta_p} \left\{\sum_{i = 1}^{n} \max[0, 1 - y_i f(\V{x}_i)] + \lambda \sum_{j = 1}^{p} \beta_j^2\right\},$$ onde $f(\V{x}) = \beta_0 + \beta_1 x_1 + \dots + \beta_p x_p$
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Relação com regressão logística}
-    $$\min_{\beta_0, \beta_1, \dots, \beta_p} \left\{\sum_{i = 1}^{n} \max[0, 1 - y_i f(\V{x}_i)] + \lambda \sum_{j = 1}^{p} \beta_j^2\right\}$$
-    
-    \pause
-    
-    $$\Downarrow$$
-    
-    $$\min_{\beta_0, \beta_1, \dots, \beta_p} \left\{L(\V{X}, \V{y}, \Vg{\beta}) + \lambda P(\Vg{\beta})\right\},$$ onde $L$ é uma \alert{função custo} e $P$ é uma \alert{penalidade}
-    
-    \pause
-    
-    \begin{itemize}
-        \item A função custo mede o ajuste do modelo aos dados
-        
-        \item A penalidade impõe uma restrição desejada \textit{a priori} no modelo
-        
-        \pause
-        
-        \item O modelo de regressão logística também pode ser escrito nessa forma
-    \end{itemize}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Relação com regressão logística}
-    \begin{figure}
-        \center
-        \includegraphics[scale=0.32]{9-12.pdf}
-        \caption{(Figura 9.12 de [ISLP]) Funções perda associadas à regressão logística (verde) e classificador de vetor suporte (preto), como função de $y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip})$.}
-    \end{figure}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Relação com regressão logística}
-    \begin{itemize}
-        \item Na formulação de custo + penalidade, a margem do classificador de vetor suporte corresponde a $y_i f(\V{x}_i) = 1$, e a distância do hiperplano até ela é $1 / \sqrt{\sum_{j = 1}^{p} \beta_j^2}$
-        
-        \pause
-        
-        \item Observação do lado ``certo"~da margem $\iff y_i(\beta_0 + \beta_1 x_{i1} + \dots + \beta_p x_{ip}) \geq 1 \iff$ perda do classificador de vetor suporte é zero
-        
-        \pause
-        
-        \item A perda da regressão logística nunca é zero! Porém, é \alert{pequena} para observações do lado ``certo"~e longe da fronteira de decisão, onde a perda do classificador de vetor suporte é zero!
-        
-        \pause
-        
-        \item Além disso, ambas as perdas são próximas para observações do lado ``errado"~da margem
-    \end{itemize}
-    
-    \pause
-    
-    \begin{center}
-        $\implies$ Ambas as técnicas costumam dar resultados semelhantes!
-    \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
