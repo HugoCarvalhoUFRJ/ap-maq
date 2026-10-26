@@ -26,9 +26,9 @@ existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
   fica). Do mesmo modo, a prova e o Trabalho Prático 01 não citam aula pelo número.
 - **O deck manda.** Os slides são o que os alunos veem. Assunto que não está no deck não
   entra nas notas, no laboratório nem nas listas sem falar com o Gabriel; se entra no deck,
-  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07 e (em parte) 08;
-  nas outras não corte por conta própria. Se uma medição contradiz o deck, o que fazer é
-  decisão dele.
+  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07 e, em parte, 08
+  e 09; nas outras não corte por conta própria. Se uma medição contradiz o deck, o que
+  fazer é decisão dele.
 - **Meça antes de afirmar.** Os números do material foram medidos rodando o código, e várias
   afirmações de livro não se reproduziram. Medição nova é afirmação nova: confira-a contra
   as notas (as duas versões), as listas, os gabaritos e o deck.
@@ -130,7 +130,11 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   demonstração: uma prova por projeção ortogonal entrou no deck e saiu a pedido do Gabriel.
   A figura `09-margem` é gerada com o `C` do scikit-learn e por isso não o rotula (os
   painéis vão do menor ao maior orçamento); o título mostra $M$, a metade da largura da
-  faixa, que o laboratório mede inteira e chama de "largura da margem".
+  faixa, que o laboratório mede inteira e chama de "largura da margem". A Lista teorica 09
+  também segue o deck, na notação dele: a margem máxima calculada à mão, o orçamento $C$
+  com uma covariável (a LDA entra para comparar), o truque do *kernel* e quais funções são
+  *kernels*. No Ex. 2, o corte ótimo só é único com $C=4{,}5$ e $C=5$, e o gabarito diz
+  isso. O Ex. 1 é citado pela Lista prática 09, nas duas versões.
 - As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
   notas 04 a 09.
 
@@ -322,13 +326,14 @@ vigilância.
   aponta mais para eles; continuam na pasta.
 - **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
 - **Aula 09:** a forma penalizada, a inversão do `C` do scikit-learn e a relação com a
-  regressão logística (a perda *hinge*) saíram do deck e das notas, mas seguem na Lista
-  teorica 09 (Ex. 2, o `C`; Ex. 4, a *hinge*) e na §6 do laboratório; o laboratório e a
-  Lista prática 09 usam o `C` do scikit-learn. O planejamento ainda lista "relação com
-  regressão logística" na aula 09.
-- **Aula 09, notação:** no deck e nas notas, a folga é $\varepsilon_i$, como no [ISLP] (o
-  [AME] usa $e_i$), e o *kernel* é $k$ (os dois livros usam $K$); a Lista teorica 09 usa
-  $\xi_i$ e $K$.
+  regressão logística (a perda *hinge*) saíram do deck, das notas e da Lista teorica 09,
+  mas seguem na §6 do laboratório e no gabarito da Lista prática 09; o laboratório e a
+  Lista prática 09 usam o `C` do scikit-learn, que age no sentido oposto ao orçamento. O
+  planejamento ainda lista "relação com regressão logística" na aula 09.
+- **Aula 09, notação:** no deck, nas notas e na Lista teorica 09, a folga é
+  $\varepsilon_i$, como no [ISLP] (o [AME] usa $e_i$), e o *kernel* é $k$ (os dois livros
+  usam $K$); o laboratório e a Lista prática 09 escrevem o *kernel* como $K$, e a lista
+  prática, a margem como $1/\lVert w\rVert$.
 - **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o
   repositório; saiu das notas do aluno da 05 e da 07 e segue nas outras.
 - **Aula 05:** medido, o *bagging* com árvores podadas tem risco um pouco menor, o contrário
