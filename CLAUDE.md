@@ -26,8 +26,8 @@ existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
   fica). Do mesmo modo, a prova e o Trabalho Prático 01 não citam aula pelo número.
 - **O deck manda.** Os slides são o que os alunos veem. Assunto que não está no deck não
   entra nas notas, no laboratório nem nas listas sem falar com o Gabriel; se entra no deck,
-  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07 e, em parte, 08
-  e 09; nas outras não corte por conta própria. Se uma medição contradiz o deck, o que
+  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07 e 09 e, em
+  parte, à 08; nas outras não corte por conta própria. Se uma medição contradiz o deck, o que
   fazer é decisão dele.
 - **Meça antes de afirmar.** Os números do material foram medidos rodando o código, e várias
   afirmações de livro não se reproduziram. Medição nova é afirmação nova: confira-a contra
@@ -144,7 +144,16 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   sem demonstração, porque a prova usa a forma penalizada. Não reintroduza nele a perda
   *hinge*, `probability=True`, a busca por AUC, o caso do câncer de mama, nem, na §4, a
   conferência numérica do *kernel* polinomial e a figura do $\varphi$ truncado (o Gabriel
-  as apagou).
+  as apagou). A grade de `C` e $\gamma$ e o custo do `SVC`, que o deck não tem, ficam no
+  laboratório por decisão dele.
+  A Lista prática 09 acompanha o laboratório em dois exercícios: o argumento `C` e a
+  margem (com a prova pelo triângulo: a observação 35 no interior do triângulo das
+  observações 0, 5 e 23) e o custo do ajuste. Não reintroduza nela a grade no
+  `breast_cancer`, que saiu por decisão dele, nem `dual=True` no `LinearSVC`: com ele, o
+  `LinearSVC` fica mais lento que o `SVC` em todos os $n$ até 16 000, e a conclusão
+  antiga, de que ele só compensaria perto de $n=200\,000$, era artefato disso. Em todas as
+  peças da 09, a folga é $\varepsilon_i$, como no [ISLP] (o [AME] usa $e_i$), e o *kernel*
+  é $k$ (os dois livros usam $K$).
 - As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
   notas 04 a 09.
 
@@ -346,14 +355,9 @@ vigilância.
 - **`MatConf.pdf`** (aula 08) e **`slide-figuras/9-12.pdf`** (aula 09): nenhum material
   aponta mais para eles; continuam na pasta.
 - **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
-- **Aula 09:** a forma penalizada e a relação com a regressão logística (a perda *hinge*)
-  saíram do deck, das notas, da Lista teorica 09 e do laboratório, mas seguem no gabarito
-  da Lista prática 09, que também usa o `C` do scikit-learn sem relacioná-lo ao orçamento.
-  O planejamento ainda lista "relação com regressão logística" na aula 09.
-- **Aula 09, notação:** no deck, nas notas e na Lista teorica 09, a folga é
-  $\varepsilon_i$, como no [ISLP] (o [AME] usa $e_i$), e o *kernel* é $k$ (os dois livros
-  usam $K$). O laboratório segue essa notação; a Lista prática 09 escreve o *kernel* como
-  $K$ e a margem como $1/\lVert w\rVert$.
+- **Aula 09:** o planejamento ainda lista "relação com regressão logística" na aula 09; a
+  perda *hinge* e a forma penalizada saíram do deck, das notas, das duas listas e do
+  laboratório.
 - **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o
   repositório; saiu das notas do aluno da 05 e da 07 e segue nas outras.
 - **Aula 05:** medido, o *bagging* com árvores podadas tem risco um pouco menor, o contrário
