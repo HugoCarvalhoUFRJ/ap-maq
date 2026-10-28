@@ -130,11 +130,21 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   demonstração: uma prova por projeção ortogonal entrou no deck e saiu a pedido do Gabriel.
   A figura `09-margem` é gerada com o `C` do scikit-learn e por isso não o rotula (os
   painéis vão do menor ao maior orçamento); o título mostra $M$, a metade da largura da
-  faixa, que o laboratório mede inteira e chama de "largura da margem". A Lista teorica 09
+  faixa, que é também o que o laboratório mede. A Lista teorica 09
   também segue o deck, na notação dele: a margem máxima calculada à mão, o orçamento $C$
   com uma covariável (a LDA entra para comparar), o truque do *kernel* e quais funções são
   *kernels*. No Ex. 2, o corte ótimo só é único com $C=4{,}5$ e $C=5$, e o gabarito diz
   isso. O Ex. 1 é citado pela Lista prática 09, nas duas versões.
+  O laboratório segue o deck e as notas, na notação delas ($\varepsilon_i$, $M$, o *kernel*
+  $k$), em seis seções: margem máxima (os dados, três retas separadoras, a solução e o
+  experimento de remoção, com figura), vetor de suporte (dados não separáveis, a prova pelo
+  triângulo, as folgas e o orçamento), ampliação e *kernels*, a grade de `C` e $\gamma$ e o
+  custo do `SVC`. O $C$ é o do deck: a §3 calcula o orçamento de cada ajuste (a soma das
+  folgas) e diz que o argumento `C` do `SVC` age no sentido oposto; a equivalência entra
+  sem demonstração, porque a prova usa a forma penalizada. Não reintroduza nele a perda
+  *hinge*, `probability=True`, a busca por AUC, o caso do câncer de mama, nem, na §4, a
+  conferência numérica do *kernel* polinomial e a figura do $\varphi$ truncado (o Gabriel
+  as apagou).
 - As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
   notas 04 a 09.
 
@@ -161,6 +171,11 @@ $\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Casos que engan
 - **07:** a §6 do laboratório reproduz a `07-lda-qda` até a quarta casa; o caso $p=2$, $n=20$
   é citado pela Lista teorica 07 3(d).
 - **08:** o laboratório usa o `bank_train_redux.csv` e não reproduz figura nenhuma.
+- **09:** a §4 do laboratório usa os anéis da `09-kernel`, com os mesmos parâmetros, e
+  reproduz o linear (60%) e os radiais (99,4% e 99,1%); o polinomial dela é
+  $(1+\langle\mathbf{x},\mathbf{x}'\rangle)^2$, não o da figura, que não tem termo
+  constante. A `09-margem` não é reproduzida: a §3 usa 40 pontos próprios, não separáveis
+  (semente 43).
 - As **listas práticas usam semente diferente** da do laboratório (salvo o Ex. 3 da 05): todo
   número de gabarito é medido, não previsto.
 
@@ -191,7 +206,10 @@ jupyter nbconvert --to notebook --execute "Aula prática 03.ipynb" --output-dir 
 ```
 
 **Rode com scikit-learn 1.9**, a versão do Gabriel (conda `barennet_env`, na máquina
-`/home/exxon-lp-003`; nas outras, um venv com `scikit-learn==1.9.0`). Versões antigas
+`/home/exxon-lp-003`; nas outras, um venv com `scikit-learn==1.9.0`). Nessa máquina, chame
+o `jupyter` do env pelo caminho absoluto, `~/anaconda3/envs/barennet_env/bin/jupyter
+nbconvert ...`: o `jupyter` do PATH e o `python -m jupyter` do env despacham para o
+`jupyter-nbconvert` do Anaconda base, que roda o kernel na 1.3. Versões antigas
 escondem quebras, e rodar é a única varredura que as pega. O `requirements.txt` lista as que
 já apareceram; em resumo:
 
@@ -308,6 +326,9 @@ vigilância.
 - O [AME] omite o $\frac12$ do expoente nas densidades normais da §8.1.4; as notas do aluno
   da 07 avisam. No [ISLP], o aprendizado não supervisionado é o Capítulo 12, e a ROC do
   `Default` está no §4.4.2.
+- Na grade da §5 do laboratório da 09, o $\gamma$ padrão do `SVC` (1/2 depois da
+  padronização) cai sobre a faixa boa. O texto justifica a grade bidimensional pela
+  interação, com a tabela do melhor `C` para cada $\gamma$, e não pelo $\gamma$ padrão.
 
 ## Pendências que são do Gabriel
 
@@ -325,15 +346,14 @@ vigilância.
 - **`MatConf.pdf`** (aula 08) e **`slide-figuras/9-12.pdf`** (aula 09): nenhum material
   aponta mais para eles; continuam na pasta.
 - **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
-- **Aula 09:** a forma penalizada, a inversão do `C` do scikit-learn e a relação com a
-  regressão logística (a perda *hinge*) saíram do deck, das notas e da Lista teorica 09,
-  mas seguem na §6 do laboratório e no gabarito da Lista prática 09; o laboratório e a
-  Lista prática 09 usam o `C` do scikit-learn, que age no sentido oposto ao orçamento. O
-  planejamento ainda lista "relação com regressão logística" na aula 09.
+- **Aula 09:** a forma penalizada e a relação com a regressão logística (a perda *hinge*)
+  saíram do deck, das notas, da Lista teorica 09 e do laboratório, mas seguem no gabarito
+  da Lista prática 09, que também usa o `C` do scikit-learn sem relacioná-lo ao orçamento.
+  O planejamento ainda lista "relação com regressão logística" na aula 09.
 - **Aula 09, notação:** no deck, nas notas e na Lista teorica 09, a folga é
   $\varepsilon_i$, como no [ISLP] (o [AME] usa $e_i$), e o *kernel* é $k$ (os dois livros
-  usam $K$); o laboratório e a Lista prática 09 escrevem o *kernel* como $K$, e a lista
-  prática, a margem como $1/\lVert w\rVert$.
+  usam $K$). O laboratório segue essa notação; a Lista prática 09 escreve o *kernel* como
+  $K$ e a margem como $1/\lVert w\rVert$.
 - **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o
   repositório; saiu das notas do aluno da 05 e da 07 e segue nas outras.
 - **Aula 05:** medido, o *bagging* com árvores podadas tem risco um pouco menor, o contrário
