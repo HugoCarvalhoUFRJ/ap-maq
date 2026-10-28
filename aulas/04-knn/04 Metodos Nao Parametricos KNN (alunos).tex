@@ -144,12 +144,12 @@ O KNN é talvez o método não paramétrico mais intuitivo: para prever em $\x$,
 a \emph{média das respostas dos $k$ pontos de treino mais próximos de $\x$}.
 
 \begin{definicao}[Regressão KNN]
-Seja $\mathcal{N}_{\x}$ o conjunto dos índices das $k$ observações de treino mais
+Seja $\mathcal{N}_{\x}^{(k)}$ o conjunto dos índices das $k$ observações de treino mais
 próximas de $\x$ (segundo uma distância $d$, em geral euclidiana):
-$\mathcal{N}_{\x}=\{i : d(\X_i,\x)\le d^{k}_{\x}\}$, onde $d^k_{\x}$ é a distância
+$\mathcal{N}_{\x}^{(k)}=\{i : d(\X_i,\x)\le d^{k}_{\x}\}$, onde $d^k_{\x}$ é a distância
 do $k$-ésimo vizinho. Então
 \begin{equation}\label{eq:knn}
-  \widehat{r}(\x) = \frac{1}{k}\sum_{i\in\mathcal{N}_{\x}} Y_i .
+  \widehat{r}(\x) = \frac{1}{k}\sum_{i\in\mathcal{N}_{\x}^{(k)}} Y_i .
 \end{equation}
 \end{definicao}
 
@@ -198,7 +198,7 @@ KNN, \emph{séries} e \emph{splines} são todos
   \widehat{r}(\x) = \sum_{i=1}^n \ell_i(\x)\,Y_i,
 \]
 com pesos $\ell_i(\x)$ que dependem só das covariáveis (não de $\bm{Y}$). Para o
-KNN, $\ell_i(\x)=\tfrac1k\1{i\in\mathcal{N}_{\x}}$; para uma base de $I$ funções,
+KNN, $\ell_i(\x)=\tfrac1k\1{i\in\mathcal{N}_{\x}^{(k)}}$; para uma base de $I$ funções,
 $\ell_i(\x)$ vem do ajuste de mínimos quadrados na base.
 
 \begin{ideia}

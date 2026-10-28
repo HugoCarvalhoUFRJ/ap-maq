@@ -8,9 +8,9 @@ RSS do MQO uma penalidade sobre o tamanho dos coeficientes,
 \]
 Os métodos não paramétricos o \emph{soltam}: o KNN, por exemplo, não supõe forma
 nenhuma para $r$ e prevê pela média das respostas dos $k$ vizinhos mais próximos de
-$\x$, cujos índices formam o conjunto $\mathcal N_{\x}$,
+$\x$, cujos índices formam o conjunto $\mathcal{N}_{\x}^{(k)}$,
 \[
-  \rhat(\x)=\frac1k\sum_{i\in\mathcal N_{\x}} Y_i .
+  \rhat(\x)=\frac1k\sum_{i\in\mathcal{N}_{\x}^{(k)}} Y_i .
 \]
 Parece contradição, e não é: são ferramentas para serem usadas em dois contextos
 diferentes.
@@ -43,7 +43,7 @@ termo não depende do método; a disputa é entre os dois primeiros.
         constante $\sigma^2$ em torno de $r$. Nesse caso a decomposição fica
         \[
           \E\big[(Y_0-\rhat(\x_0))^2\big]
-          = \Big(\frac1k\sum_{i\in\mathcal N_{\x_0}} r(\X_i)-r(\x_0)\Big)^2
+          = \Big(\frac1k\sum_{i\in\mathcal{N}_{\x_0}^{(k)}} r(\X_i)-r(\x_0)\Big)^2
           + \frac{\sigma^2}{k} + \sigma^2 .
         \]
         O que acontece com cada termo quando $k$ cresce?
@@ -90,7 +90,7 @@ mostram também por que os remédios se parecem.
 
 \emph{O KNN.} Na situação da dica, os vizinhos de $\x_0$ estão fixos e as respostas são
 $Y_i=r(\X_i)+\varepsilon_i$, com ruídos independentes, de média zero e variância
-$\sigma^2$. Então $\E[\rhat(\x_0)]=\frac1k\sum_{i\in\mathcal N_{\x_0}}r(\X_i)$ e
+$\sigma^2$. Então $\E[\rhat(\x_0)]=\frac1k\sum_{i\in\mathcal{N}_{\x_0}^{(k)}}r(\X_i)$ e
 $\Var(\rhat(\x_0))=\frac1{k^2}\cdot k\sigma^2=\sigma^2/k$; como $Y_0$ é independente da
 amostra, a decomposição da dica sai direto. Com $k=1$, a variância vale $\sigma^2$ ---
 tanto quanto o próprio ruído ---, enquanto o viés,

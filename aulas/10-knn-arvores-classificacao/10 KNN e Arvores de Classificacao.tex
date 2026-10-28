@@ -36,11 +36,13 @@ pergunta a fazer em cada nó quando o alvo é uma classe?''}
 Adaptação direta da regressão KNN (Aula~04): para classificar $\x$, olhe seus $k$
 vizinhos mais próximos e tome a \textbf{classe mais frequente} (voto da maioria):
 \begin{equation}\label{eq:knncls}
-  \ghat(\x) = \operatorname{moda}\{Y_i : i\in\mathcal{N}_{\x}\}.
+  \ghat(\x) = \operatorname{moda}\{Y_i : i\in\mathcal{N}_{\x}^{(k)}\},
 \end{equation}
+em que $\mathcal{N}_{\x}^{(k)}$ é o conjunto dos índices das $k$ observações de treino
+mais próximas de $\x$.
 Equivalentemente, é um classificador \emph{plug-in} (Aula~07): estima-se
 \[
-  \widehat\Prob(Y=c\mid\x) = \frac{1}{k}\sum_{i\in\mathcal{N}_{\x}}\1{Y_i=c}
+  \widehat\Prob(Y=c\mid\x) = \frac{1}{k}\sum_{i\in\mathcal{N}_{\x}^{(k)}}\1{Y_i=c}
 \]
 (a proporção de vizinhos da classe $c$) e toma-se o $\argmax_c$. Essa estimativa
 está, por construção, em $[0,1]$.
