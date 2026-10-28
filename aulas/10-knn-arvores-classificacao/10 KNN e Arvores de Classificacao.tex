@@ -185,28 +185,6 @@ honesta}. Pergunte à turma o que fazer com um modelo que ordena bem e calibra m
 \end{emsala}
 
 %==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
-
-knn  = make_pipeline(StandardScaler(),
-                     KNeighborsClassifier(n_neighbors=11))   # k por CV
-arv  = DecisionTreeClassifier(criterion="gini", ccp_alpha=0.0)  # ou "entropy"
-rf   = RandomForestClassifier(n_estimators=500, max_features="sqrt",
-                              oob_score=True, random_state=0)
-ada  = AdaBoostClassifier(n_estimators=200, learning_rate=0.5)
-
-for nome, modelo in [("KNN", knn), ("arvore", arv), ("RF", rf), ("Ada", ada)]:
-    modelo.fit(X_tr, y_tr)
-    print(nome, modelo.score(X_te, y_te))   # use tambem as metricas da Aula 08
-\end{lstlisting}
-
-%==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]

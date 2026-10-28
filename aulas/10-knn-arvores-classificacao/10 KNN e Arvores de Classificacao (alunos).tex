@@ -254,37 +254,6 @@ de usá-la, confira a calibração do modelo (Aula~08) --- ou calibre-o, que é 
 \end{atencao}
 
 %==============================================================================
-\section{Prática em Python}
-%==============================================================================
-\begin{lstlisting}
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-
-# KNN: k impar, padronizado dentro do pipeline (Aula 06)
-knn = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=11))
-
-# Arvore: criterion "gini" (padrao) ou "entropy" -- na pratica, tanto faz
-arv = DecisionTreeClassifier(criterion="gini", ccp_alpha=0.01).fit(X_tr, y_tr)
-plot_tree(arv, feature_names=nomes, class_names=classes, filled=True)
-
-# Floresta: m = sqrt(d) e o padrao em classificacao
-rf = RandomForestClassifier(n_estimators=500, max_features="sqrt",
-                            oob_score=True, random_state=0).fit(X_tr, y_tr)
-\end{lstlisting}
-Repare que \texttt{max\_features="sqrt"} já é o padrão do
-\texttt{RandomForestClassifier}, enquanto no \texttt{RandomForestRegressor} o padrão
-é usar todas as variáveis --- isto é, \emph{bagging}, não floresta. Se você quer uma
-floresta em regressão, precisa dizer.
-
-Os notebooks \texttt{Aula prática 10}, \texttt{Comparação entre classificadores
-paramétricos} e
-\texttt{Exemplo - KNN e árvores em dados artificiais} desenham as fronteiras de
-decisão de todos esses métodos lado a lado, nos mesmos dados. É o melhor jeito de
-fixar a intuição de ``flexível $\times$ rígido'' que percorreu o curso inteiro ---
-vale rodar os três.
-
-%==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
