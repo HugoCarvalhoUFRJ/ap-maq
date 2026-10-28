@@ -1423,11 +1423,11 @@ margin-right: 0; }
 <li class="fragment">Métricas para determinar uma nova região <span class="math inline">\(R\)</span>:
 <ul>
 <li class="fragment">Erro de classificação: <span class="math inline">\(\displaystyle E = 1 - \max_{c} \hat{p}_{R, c}\)</span></li>
-<li class="fragment">Índice de Gini: <span class="math inline">\(\displaystyle G = \sum_R\sum_{c \in \mathcal{C}} \hat{p}_{R, c}(1 - \hat{p}_{R, c})\)</span></li>
+<li class="fragment">Índice de Gini: <span class="math inline">\(\displaystyle G = \sum_{c \in \mathcal{C}} \hat{p}_{R, c}(1 - \hat{p}_{R, c})\)</span></li>
 <li class="fragment">Entropia: <span class="math inline">\(\displaystyle D = -\sum_{c \in \mathcal{C}} \hat{p}_{R, c}\log(\hat{p}_{R, c})\)</span></li>
 </ul></li>
-<li class="fragment"><span class="math inline">\(\hat{p}_{R, c}\)</span> é a proporção de observações classificadas como sendo da classe <span class="math inline">\(c\)</span> entre as que caem na região <span class="math inline">\(R\)</span></li>
-<li class="fragment">Prezar por árvores <em>puras</em>: cada folha contém observações de somente uma única classe</li>
+<li class="fragment"><span class="math inline">\(\hat{p}_{R, c}\)</span>: proporção da classe <span class="math inline">\(c\)</span> nos dados de treino em <span class="math inline">\(R\)</span></li>
+<li class="fragment">Prezar por árvores <em>puras</em>: uma só classe em cada folha</li>
 </ul>
 </section>
 <section id="árvores-de-classificação---observações" class="slide level2">
