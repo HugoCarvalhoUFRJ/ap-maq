@@ -6,6 +6,7 @@
 %==============================================================================
 \documentclass[11pt,a4paper]{article}
 \usepackage[aluno]{../../recursos/latex/estilo-notas}
+\usepackage{placeins} % \FloatBarrier: a Figura 1 não passa para a seção das árvores
 
 \title{}
 \date{}
@@ -32,16 +33,7 @@ Ao final desta aula você deve ser capaz de:
 \noindent
 Esta é a última aula de classificação, e ela fecha um ciclo: praticamente tudo aqui
 é uma tradução do que vimos em regressão, com a média virando \emph{moda} e o EQM
-virando \emph{impureza}. Comece pela pergunta:
-
-\begin{center}\itshape
-  como uma árvore decide a melhor pergunta a fazer em cada nó,\\
-  quando o alvo é uma classe?
-\end{center}
-
-\noindent
-A resposta ocupa a Seção~\ref{sec:impureza}, e o mais interessante nela é que a
-medida \emph{óbvia} --- a taxa de erro --- é justamente a que não funciona.
+virando \emph{impureza}.
 
 %==============================================================================
 \section{KNN para classificação}
@@ -60,6 +52,8 @@ Equivalentemente, é um classificador \emph{plug-in} (Aula~07): estima-se
 (a proporção de vizinhos da classe $c$) e toma-se o $\argmax_c$. Essa estimativa
 está, por construção, em $[0,1]$.
 
+A Figura~\ref{fig:knncls} mostra as fronteiras de decisão para $k=1$, $15$ e $120$.
+
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{../../recursos/figuras/10-fronteiras-knn.pdf}
@@ -74,20 +68,14 @@ está, por construção, em $[0,1]$.
   \label{fig:knncls}
 \end{figure}
 
-\begin{ideia}
-A acurácia de treino de $1{,}000$ com $k=1$ é o exemplo mais limpo de todo o curso
-do que a Aula~01 dizia: o erro de treino é um estimador \emph{otimista} do risco, e
-seu otimismo cresce com a flexibilidade. Aqui ele não é só otimista --- é
-\emph{perfeito}, e o modelo é o pior dos três. Se alguém lhe mostrar um
-classificador com $100\%$ de acerto, a primeira pergunta é ``em qual conjunto?''.
-\end{ideia}
-
 \begin{atencao}
 Valem os mesmos cuidados da Aula~04: \emph{padronize} as covariáveis (KNN usa
 distância) e lembre da \emph{maldição da dimensionalidade} --- KNN não
 seleciona variáveis e degrada com muitas covariáveis irrelevantes. Em binário, use
 $k$ \emph{ímpar} para evitar empates.
 \end{atencao}
+
+\FloatBarrier
 
 %==============================================================================
 \section{Árvores de classificação}
@@ -105,7 +93,18 @@ e $\widehat\Prob(Y=c\mid\x)=\widehat p_{R_k,c}$, a proporção da classe $c$ na 
 a média condicional, em classificação é a moda condicional.
 
 \subsection{Critério de divisão: impureza}\label{sec:impureza}
-O EQM não faz sentido com $Y$ qualitativo. Em cada região $R$, seja
+A segunda adaptação responde à pergunta:
+
+\begin{center}\itshape
+  como uma árvore decide a melhor pergunta a fazer em cada nó,\\
+  quando o alvo é uma classe?
+\end{center}
+
+\noindent
+Em regressão, a Aula~05 escolhia a divisão de menor EQM, mas o EQM não faz sentido
+com $Y$ qualitativo. A medida \emph{óbvia}, a taxa de erro, é justamente a que não
+funciona, e veremos por quê depois de definir as duas que funcionam. Em cada região
+$R$, seja
 $\widehat p_{R,c}$ a proporção da classe $c$. Buscam-se divisões que tornem as
 folhas \textbf{puras} (idealmente, uma só classe por folha). Mede-se a impureza por:
 \begin{align}

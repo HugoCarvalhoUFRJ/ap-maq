@@ -26,8 +26,7 @@ Ao final desta aula o aluno deve ser capaz de:
 Aula que fecha a classificação reaproveitando dois métodos não paramétricos vistos
 em regressão (KNN, Aula~04; árvores, Aula~05), agora para classificar. Boa notícia: a
 estrutura é a mesma; muda só o ``resumo local'' (média $\to$ moda) e o critério de divisão
-(EQM $\to$ impureza). Pergunta de abertura: \emph{``como uma árvore decide a melhor
-pergunta a fazer em cada nó quando o alvo é uma classe?''}
+(EQM $\to$ impureza).
 \end{emsala}
 
 %==============================================================================
@@ -74,7 +73,12 @@ Numa folha $R_k$, prediz-se a \textbf{classe majoritária} (em vez da média):
 e $\widehat\Prob(Y=c\mid\x)=\widehat p_{R_k,c}$, a proporção da classe $c$ na folha.
 
 \subsection{Critério de divisão: impureza}
-O EQM não faz sentido com $Y$ qualitativo. Em cada região $R$, seja
+\begin{emsala}
+Pergunta para a turma, antes das fórmulas: \emph{``como uma árvore decide a melhor
+pergunta a fazer em cada nó quando o alvo é uma classe?''}
+\end{emsala}
+
+\noindent O EQM não faz sentido com $Y$ qualitativo. Em cada região $R$, seja
 $\widehat p_{R,c}$ a proporção da classe $c$. Buscam-se divisões que tornem as
 folhas \textbf{puras} (idealmente, uma só classe por folha). Mede-se a impureza por:
 \begin{align}
