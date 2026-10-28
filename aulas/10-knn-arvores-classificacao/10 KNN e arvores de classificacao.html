@@ -1422,12 +1422,21 @@ margin-right: 0; }
 <ul>
 <li class="fragment">Métricas para determinar uma nova região <span class="math inline">\(R\)</span>:
 <ul>
-<li class="fragment">Erro de classificação: <span class="math inline">\(\displaystyle E = 1 - \max_{c} \hat{p}_{R, c}\)</span></li>
-<li class="fragment">Índice de Gini: <span class="math inline">\(\displaystyle G = \sum_{c \in \mathcal{C}} \hat{p}_{R, c}(1 - \hat{p}_{R, c})\)</span></li>
-<li class="fragment">Entropia: <span class="math inline">\(\displaystyle D = -\sum_{c \in \mathcal{C}} \hat{p}_{R, c}\log(\hat{p}_{R, c})\)</span></li>
+<li class="fragment">Erro de classificação: <span class="math inline">\(\displaystyle E(R) = 1 - \max_{c} \hat{p}_{R, c}\)</span>, usado na poda; para crescer, usa-se <span class="math inline">\(G\)</span> ou <span class="math inline">\(D\)</span></li>
+<li class="fragment">Índice de Gini: <span class="math inline">\(\displaystyle G(R) = \sum_{c \in \mathcal{C}} \hat{p}_{R, c}(1 - \hat{p}_{R, c})\)</span></li>
+<li class="fragment">Entropia: <span class="math inline">\(\displaystyle D(R) = -\sum_{c \in \mathcal{C}} \hat{p}_{R, c}\log(\hat{p}_{R, c})\)</span></li>
 </ul></li>
 <li class="fragment"><span class="math inline">\(\hat{p}_{R, c}\)</span>: proporção da classe <span class="math inline">\(c\)</span> nos dados de treino em <span class="math inline">\(R\)</span></li>
 <li class="fragment">Prezar por árvores <em>puras</em>: uma só classe em cada folha</li>
+</ul>
+</section>
+<section id="criação-da-árvore-1" class="slide level2">
+<h2>Criação da árvore</h2>
+<ul>
+<li class="fragment">Como em regressão, uma região <span class="math inline">\(R\)</span> é dividida em <span class="math inline">\(R_1\)</span> e <span class="math inline">\(R_2\)</span>, agora com <span class="math inline">\(x_j\)</span> e <span class="math inline">\(t\)</span> que minimizam a impureza ponderada <span class="math display">\[n_1 G(R_1) + n_2 G(R_2)\]</span></li>
+<li class="fragment"><span class="math inline">\(n_m\)</span>: número de observações de treino em <span class="math inline">\(R_m\)</span></li>
+<li class="fragment">Em regressão, a soma de quadrados em <span class="math inline">\(R_m\)</span> é <span class="math inline">\(n_m\)</span> vezes o EQM em <span class="math inline">\(R_m\)</span>: cada região já pesa pelo seu tamanho</li>
+<li class="fragment">Com a entropia, troca-se <span class="math inline">\(G\)</span> por <span class="math inline">\(D\)</span></li>
 </ul>
 </section>
 <section id="árvores-de-classificação---observações" class="slide level2">
