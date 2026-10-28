@@ -195,7 +195,7 @@ sem o pacote `ISLP`:
 - versionados **sem saída**, sem `execution_count`, com `kernelspec` "Python 3" e
   `language_info.version` 3.12.7.
 
-Cinco notebooks herdados de demonstração (`Exemplo - ...`, `EXTRA K-medias (exemplo)`,
+Quatro notebooks herdados de demonstração (`Exemplo - ...`, `EXTRA K-medias (exemplo)`,
 `Comparação entre classificadores paramétricos`) não seguem nada disso e ficam como estão.
 
 **Antes de versionar, rode o notebook inteiro fora do repositório** e confira cada afirmação

@@ -148,7 +148,7 @@ ipykernel>=6.0
 #   concreto.csv             Parte I        (48 KB)
 #   credito.csv              Parte II       (2,9 MB)
 #
-# Os cinco notebooks herdados de demonstração ("Exemplo - ...", "EXTRA ...",
+# Os quatro notebooks herdados de demonstração ("Exemplo - ...", "EXTRA ...",
 # "Comparação ...") ficam fora desta lista: dois importam seaborn, e o
 # "Exemplo - PCA" pede também plotly e baixa o MNIST pela rede (fetch_openml).
 #
