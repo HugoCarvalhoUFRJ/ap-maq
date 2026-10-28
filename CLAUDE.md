@@ -87,6 +87,9 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   fator até o `alpha` do `Ridge` é $2n$ (é $n$ no `ElasticNet` com `l1_ratio=0`).
 - **Matriz de confusão: previsto nas linhas, real nas colunas** (como [AME] e [ISLP]); o
   `confusion_matrix` devolve a transposta, e o material avisa.
+- **O conjunto dos $k$ vizinhos é $\mathcal{N}_{\x}^{(k)}$**, como nos decks 04 e 10, com
+  $d^k_{\x}$ a distância do $k$-ésimo vizinho: notas 04 e 10, Aula prática 04 e o Ex. 8 da
+  lista de revisão. Ao procurar a forma antiga, procure também `\mathcal N` sem chaves.
 
 ## O que cada aula cobre, e o que não volta
 
@@ -154,8 +157,24 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   antiga, de que ele só compensaria perto de $n=200\,000$, era artefato disso. Em todas as
   peças da 09, a folga é $\varepsilon_i$, como no [ISLP] (o [AME] usa $e_i$), e o *kernel*
   é $k$ (os dois livros usam $K$).
+- **10.** O deck abre cada seção relembrando o método em regressão, com figuras dos decks
+  04 e 05. No slide "Criação da árvore", as três medidas são de uma região (o Gini não tem
+  o $\sum_R$ do [AME]) e o $E$ é "usado na poda; para crescer, usa-se $G$ ou $D$"; o slide
+  seguinte mostra a impureza ponderada $n_1G(R_1)+n_2G(R_2)$. As notas vão além do deck
+  (*ensembles*, a comparação dos classificadores, a caixa da calibração), e a reescrita no
+  registro novo não mexeu nisso. Nelas, a pergunta "como uma árvore decide..." abre a
+  seção 2.2, onde é respondida, e a entropia é em $\log_2$, como na figura `10-impureza`. O
+  exemplo do tomógrafo usa o Gini ponderado, $19/60\approx0{,}317$ (leitos) e
+  $7/15\approx0{,}467$ (cardiologia); os $0{,}326$ e $0{,}472$ do [AME] somam
+  $\widehat p(1-\widehat p)$ sem ponderar e não voltam. As notas do aluno carregam o
+  `placeins` de propósito: o `\FloatBarrier` antes da seção 2 segura a Figura 1 na seção do
+  KNN. O [ISLP] não tem figura das medidas de impureza. Pendente no laboratório: ele
+  atribui ao scikit-learn "Gini ou entropia para crescer, erro de classificação para podar
+  e avaliar", mas o `ccp_alpha` poda pela impureza das folhas (o
+  `cost_complexity_pruning_path` devolve a soma delas); o erro só entra quando a validação
+  cruzada escolhe o `ccp_alpha`.
 - As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
-  notas 04 a 09.
+  notas 04 a 10.
 
 ## Figuras, notebooks e os acoplamentos entre eles
 
@@ -407,7 +426,11 @@ recompilar do fonte.
 - 08: o slide "Veja `MatConf.pdf`" virou sete (matriz de confusão, doença rara, TPR, FPR,
   por que essas taxas); ROC reescrita; teorema do custo com os custos nomeados; saíram os
   quatro slides finais sobre o que a AUC mede e seus problemas;
-- 10: erro de digitação no texto do link do `KNeighborsClassifier`;
+- 10: erro de digitação no texto do link do `KNeighborsClassifier`; slides que relembram o
+  KNN e as árvores de regressão antes de cada seção; "$k=n\Rightarrow g$ constante: a classe
+  majoritária"; $R_1,\dots,R_J$ no "Formalizando"; em "Criação da árvore", os dois últimos
+  tópicos encurtados, o Gini sem $\sum_R$, $E(R)$, $G(R)$, $D(R)$ e o $E$ reservado para a
+  poda; slide novo com a impureza ponderada;
 - E1: figuras 12.7 a 12.9 do [ISLP]; erro de digitação;
 - 06, 07, 08 e 10: o número da aula na capa, depois da renumeração.
 
