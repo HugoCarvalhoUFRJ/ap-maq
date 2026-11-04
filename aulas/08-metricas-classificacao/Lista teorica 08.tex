@@ -107,9 +107,10 @@ isto é, a sensibilidade e a taxa de falsos positivos, ditas por extenso.
 \textbf{(d)} A sensibilidade e a taxa de falsos positivos não podem diminuir, a
 especificidade não pode aumentar, e a taxa de erro pode mudar em qualquer sentido.
 
-Suponha que o sistema acuse uma transação quando $\widehat p(\x)\ge K$, sendo
-$\widehat p$ a probabilidade de fraude que ele estima, e que o corte passe de $K$ a
-$K'<K$. Toda transação com $\widehat p(\x)\ge K$ também tem $\widehat p(\x)\ge K'$:
+Suponha que o sistema acuse uma transação quando $\widehat p(\x)\ge p_0$, sendo
+$\widehat p$ a probabilidade de fraude que ele estima, e que o corte passe de $p_0$ a
+$p_0'<p_0$. Toda transação com $\widehat p(\x)\ge p_0$ também tem
+$\widehat p(\x)\ge p_0'$:
 o conjunto das transações acusadas só cresce. Logo $VP$ e $FP$ não diminuem, $FN$ e
 $VN$ não aumentam, e os totais $P=500$ e $N=9\,500$ não dependem do corte.
 \begin{itemize}[leftmargin=1.4cm]
@@ -125,7 +126,7 @@ $VN$ não aumentam, e os totais $P=500$ e $N=9\,500$ não dependem do corte.
         $200$ normais, sobe para $0{,}0595$.
 \end{itemize}
 Nenhuma das quatro precisa mudar: se nenhuma transação tiver $\widehat p(\x)$ entre
-$K'$ e $K$, nada se altera.
+$p_0'$ e $p_0$, nada se altera.
 
 A sensibilidade e a taxa de falsos positivos andam, portanto, juntas: baixar o corte
 compra sensibilidade pagando com falsos positivos. Cada uma, sozinha, é trivial de
@@ -137,16 +138,16 @@ ROC acompanha.
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[o corte que minimiza o custo]
-Nem todo erro custa o mesmo. Seja $c_{FP}>0$ o custo de um falso positivo e
-$c_{FN}>0$ o de um falso negativo (os $l_1$ e $l_0$ das notas), e suponha que
-acertar não custe nada. Suponha também que o classificador conheça
+Nem todo erro custa o mesmo. Como em aula, seja $\ell_1>0$ o custo de um falso
+positivo e $\ell_0>0$ o de um falso negativo (o índice é a decisão tomada no erro), e
+suponha que acertar não custe nada. Suponha também que o classificador conheça
 $p(\x)=\Prob(Y=1\mid\X=\x)$.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Num ponto $\x$ com $p=p(\x)$, escreva o custo esperado de decidir
         $\widehat y=1$ e o de decidir $\widehat y=0$.
   \item Conclua que a decisão ótima em $\x$ é $\widehat y=1$ quando
         \[
-          p > \frac{c_{FP}}{c_{FP}+c_{FN}},
+          p > \frac{\ell_1}{\ell_0+\ell_1},
         \]
         e explique por que decidir assim em cada $\x$ minimiza também o custo
         esperado total.
@@ -161,24 +162,24 @@ $p(\x)=\Prob(Y=1\mid\X=\x)$.
 
 \begin{solucao}
 \textbf{(a)} Dado $\X=\x$, a decisão está fixada e só $Y$ é aleatório, com
-$Y\mid\X=\x\sim\text{Bernoulli}(p)$. Decidindo $\widehat y=1$, paga-se $c_{FP}$ se
-$Y=0$ e nada se $Y=1$; decidindo $\widehat y=0$, paga-se $c_{FN}$ se $Y=1$ e nada se
+$Y\mid\X=\x\sim\text{Bernoulli}(p)$. Decidindo $\widehat y=1$, paga-se $\ell_1$ se
+$Y=0$ e nada se $Y=1$; decidindo $\widehat y=0$, paga-se $\ell_0$ se $Y=1$ e nada se
 $Y=0$. Os custos esperados são
 \[
-  \E\big[\text{custo}\mid\X=\x,\ \widehat y=1\big]=c_{FP}\,(1-p),
+  \E\big[\text{custo}\mid\X=\x,\ \widehat y=1\big]=\ell_1\,(1-p),
   \qquad
-  \E\big[\text{custo}\mid\X=\x,\ \widehat y=0\big]=c_{FN}\,p .
+  \E\big[\text{custo}\mid\X=\x,\ \widehat y=0\big]=\ell_0\,p .
 \]
 
 \smallskip
 \textbf{(b)} Decidir $\widehat y=1$ é melhor exatamente quando o seu custo esperado é
 menor:
 \[
-  c_{FP}\,(1-p) < c_{FN}\,p
-  \iff c_{FP} < p\,(c_{FP}+c_{FN})
-  \iff p > \frac{c_{FP}}{c_{FP}+c_{FN}},
+  \ell_1\,(1-p) < \ell_0\,p
+  \iff \ell_1 < p\,(\ell_0+\ell_1)
+  \iff p > \frac{\ell_1}{\ell_0+\ell_1},
 \]
-em que a última passagem divide por $c_{FP}+c_{FN}>0$. Na igualdade as duas decisões
+em que a última passagem divide por $\ell_0+\ell_1>0$. Na igualdade as duas decisões
 custam o mesmo, e qualquer uma é ótima.
 
 Para o custo total, seja $g$ a regra acima e $h$ um classificador qualquer. Pela lei
@@ -187,18 +188,17 @@ $\E[\text{custo}]=\E\big[\,\E[\text{custo}\mid\X]\,\big]$, a média, sobre a
 distribuição de $\X$, do custo esperado condicional. Em cada $\x$, o custo
 condicional de $g$ é o menor dos dois valores do item (a), e portanto não supera o de
 $h$; tomando a média em $\X$, o custo esperado de $g$ não supera o de $h$. Como $h$ é
-arbitrário, $g$ minimiza o custo esperado total. É a Proposição~3.1 das notas, com
-$l_1=c_{FP}$ e $l_0=c_{FN}$.
+arbitrário, $g$ minimiza o custo esperado total. É a Proposição~3.1 das notas.
 
-Duas consequências. O corte se escreve $1/(1+c_{FN}/c_{FP})$ e depende só da razão
+Duas consequências. O corte se escreve $1/(1+\ell_0/\ell_1)$ e depende só da razão
 entre os custos: multiplicar os dois pela mesma constante, por exemplo mudar de moeda,
-não altera a decisão. E, com $c_{FP}=c_{FN}$, o corte é $1/2$ e a regra é o
+não altera a decisão. E, com $\ell_0=\ell_1$, o corte é $1/2$ e a regra é o
 classificador de Bayes da Aula~07.
 
 \smallskip
-\textbf{(c)} Com $c_{FP}=10$ e $c_{FN}=500$,
+\textbf{(c)} Com $\ell_1=10$ e $\ell_0=500$, o corte ótimo é
 \[
-  p^\ast=\frac{10}{10+500}=\frac{1}{51}\approx\mathbf{0{,}0196}.
+  p_0^\ast=\frac{10}{500+10}=\frac{1}{51}\approx\mathbf{0{,}0196}.
 \]
 Vale a pena investigar toda transação com probabilidade de fraude acima de cerca de
 $2\%$. Em $p=1/51$ os dois custos esperados empatam,
@@ -219,8 +219,8 @@ muito perto do anterior. A conclusão não muda, mas o exemplo mostra que vale e
 os custos das quatro situações antes de calcular.
 
 \smallskip
-\textbf{(d)} O corte $0{,}5$ corresponde a $c_{FP}/(c_{FP}+c_{FN})=1/2$, isto é, a
-$c_{FP}=c_{FN}$: ele supõe que os dois erros custam o mesmo. É o corte do classificador
+\textbf{(d)} O corte $0{,}5$ corresponde a $\ell_1/(\ell_0+\ell_1)=1/2$, isto é, a
+$\ell_0=\ell_1$: ele supõe que os dois erros custam o mesmo. É o corte do classificador
 de Bayes, ótimo para o risco $0$--$1$; o problema não está nele, e sim em usá-lo
 quando os custos são outros.
 

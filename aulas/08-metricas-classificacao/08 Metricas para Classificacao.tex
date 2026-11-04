@@ -3,7 +3,7 @@
 \usepackage{../../recursos/latex/estilo-notas}
 
 \begin{document}
-\cabecalhoaula{08}{Métricas para Classificação}{AME §7.4 e cap.~9; ISLP §4.4--4.5}
+\cabecalhoaula{08}{Métricas para Classificação}{AME §7.4 e §9.1; ISLP §4.4.2}
 
 %==============================================================================
 \section*{Objetivos da aula}
@@ -12,16 +12,11 @@ Ao final desta aula o aluno deve ser capaz de:
 \begin{itemize}[leftmargin=1.4cm]
   \item explicar por que a \emph{acurácia} é insuficiente quando uma classe é rara ou
         quando os erros têm custos diferentes;
-  \item ler uma \textbf{matriz de confusão}, definir sensibilidade, especificidade,
-        precisão, VPN e $F_1$ como estimativas de probabilidades e escrever o risco em
-        termos das taxas de erro de cada classe;
+  \item ler uma \textbf{matriz de confusão} e definir sensibilidade, especificidade,
+        TPR e FPR como estimativas de probabilidades;
   \item formular \textbf{perdas assimétricas} e deduzir o \emph{corte ótimo} de um
         classificador \emph{plug-in};
-  \item construir e interpretar a \textbf{curva ROC} e a \textbf{AUC};
-  \item comparar as estratégias para \textbf{dados desbalanceados} (corte, pesos,
-        reamostragem) e ver que todas codificam custos;
-  \item distinguir \emph{classificar bem} de \emph{estimar bem probabilidades}
-        (calibração e regras de pontuação próprias).
+  \item construir e interpretar a \textbf{curva ROC} e a \textbf{AUC}.
 \end{itemize}
 
 \begin{emsala}
@@ -48,8 +43,8 @@ dois casos:
 
 \begin{atencao}
 O desbalanceamento, sozinho, não é o problema: com custos iguais, o classificador de
-Bayes continua minimizando o que interessa. O problema são os custos diferentes, e as
-Seções~\ref{sec:custos} a~\ref{sec:desb} são maneiras de levá-los em conta.
+Bayes continua minimizando o que interessa. O problema são os custos diferentes, e a
+Seção~\ref{sec:custos} mostra como levá-los em conta.
 \end{atencao}
 
 %==============================================================================
@@ -79,35 +74,11 @@ nova $(\X,Y)$:
   \text{sensibilidade:}\quad & S=\Prob\big(g(\X)=1\mid Y=1\big),
     & \widehat S&=\text{VP}/P,\\
   \text{especificidade:}\quad & E=\Prob\big(g(\X)=0\mid Y=0\big),
-    & \widehat E&=\text{VN}/N,\\
-  \text{precisão:}\quad & \text{VPP}=\Prob\big(Y=1\mid g(\X)=1\big),
-    & \widehat{\text{VPP}}&=\text{VP}/(\text{VP}+\text{FP}),\\
-  \text{valor preditivo negativo:}\quad & \text{VPN}=\Prob\big(Y=0\mid g(\X)=0\big),
-    & \widehat{\text{VPN}}&=\text{VN}/(\text{VN}+\text{FN}).
+    & \widehat E&=\text{VN}/N.
 \end{align*}
-Sensibilidade e especificidade condicionam na classe verdadeira e não dependem da
-prevalência $\pi_1$; precisão e VPN condicionam na decisão e dependem dela. Pelo
-teorema de Bayes,
-\[
-  \text{VPP}=\frac{S\,\pi_1}{S\,\pi_1+(1-E)\,(1-\pi_1)} .
-\]
-
-\begin{emsala}
-Pergunte: num teste com sensibilidade e especificidade de $99\%$, aplicado a uma
-doença com prevalência de $1\%$, que fração dos positivos apontados é de fato doente? A
-fórmula dá exatamente $1/2$; com prevalência de $0{,}1\%$, cerca de $9\%$. O teste é o
-mesmo; mudou a raridade da doença.
-\end{emsala}
-
-A \textbf{estatística $F_1$} é a média harmônica de sensibilidade e precisão:
-\begin{equation}\label{eq:f1}
-  F_1=\frac{2}{1/S+1/\text{VPP}}=\frac{2\,S\cdot\text{VPP}}{S+\text{VPP}},
-  \qquad
-  \widehat F_1=\frac{2\,\text{VP}}{2\,\text{VP}+\text{FP}+\text{FN}} .
-\end{equation}
-Ela não usa os VN, e a média harmônica fica perto da menor das duas: quem declara
-todos positivos numa prevalência de $2\%$ tem $S=1$, precisão $0{,}02$ e
-$F_1\approx0{,}039$, contra $0{,}51$ da média aritmética.
+As duas condicionam na classe verdadeira e não dependem da prevalência
+$\pi_1=\Prob(Y=1)$: com $g$ fixado, cada uma só depende da distribuição de $\X$
+dentro de uma classe.
 
 \begin{atencao}
 Todas essas estimativas se fazem no conjunto de \emph{teste}, nunca no treino
@@ -116,61 +87,50 @@ Todas essas estimativas se fazem no conjunto de \emph{teste}, nunca no treino
 
 Na ROC e no \texttt{scikit-learn} (a \texttt{roc\_curve} devolve \texttt{fpr} e
 \texttt{tpr}), $S$ é a \textbf{taxa de verdadeiros positivos}, TPR, e $1-E$ é a
-\textbf{taxa de falsos positivos}, FPR, estimadas por $\text{VP}/P$ e $\text{FP}/N$.
-Dados $P$ e $N$, essas duas estimativas reconstroem a matriz. Com $Y=0$ como
-hipótese nula e $g=1$ como rejeição, a FPR é a probabilidade do erro do tipo~I e a
-TPR, o poder.
-
-Com $\pi_1=\Prob(Y=1)$, pela probabilidade total,
-\[
-  \risco(g)=\pi_1\,(1-S)+(1-\pi_1)\,(1-E):
-\]
-o risco é a média das duas taxas de erro, ponderada pelas prevalências. Na amostra, a
-mesma conta é uma identidade exata:
-\[
-  \frac{\text{FP}+\text{FN}}{m}=\frac{P}{m}\cdot\frac{\text{FN}}{P}
-                                +\frac{N}{m}\cdot\frac{\text{FP}}{N}.
-\]
+\textbf{taxa de falsos positivos}, FPR, estimadas por $\text{VP}/P$ e $\text{FP}/N$;
+o complemento $1-S$ é a taxa de falsos negativos. Dados $P$ e $N$, a TPR e a FPR
+reconstroem a matriz. Com $Y=0$ como hipótese nula e $g=1$ como rejeição, a FPR é a
+probabilidade do erro do tipo~I e a TPR, o poder.
 
 \begin{emsala}
 O exemplo dos slides: 1000 pacientes, 10 doentes; o trivial $g_1\equiv0$ contra um
 $g_2$ com VP $8$, FN $2$, FP $40$ e VN $950$. Pergunte qual dos dois o risco prefere
-($0{,}010$ contra $0{,}042$: prefere $g_1$) e deixe a turma achar o motivo na
-decomposição: a sensibilidade que $g_1$ perde por inteiro entra com peso
-$\pi_1=0{,}01$.
+($0{,}010$ contra $0{,}042$: prefere $g_1$) e por quê: os $10$ doentes que $g_1$
+perde são só $1\%$ dos pacientes, e os $40$ alarmes falsos de $g_2$, $4\%$. As taxas
+por classe separam os dois erros: TPR $0$ contra $0{,}8$, FPR $0$ contra
+$40/990\approx0{,}040$.
 \end{emsala}
 
 %==============================================================================
 \section{Perdas assimétricas e o corte ótimo}\label{sec:custos}
 %==============================================================================
-Atribua custo $l_0>0$ a cada falso negativo (decidir $0$ quando $Y=1$) e $l_1>0$ a
-cada falso positivo (decidir $1$ quando $Y=0$):
+Atribua custo $\ell_0>0$ a cada falso negativo (decidir $0$ quando $Y=1$) e
+$\ell_1>0$ a cada falso positivo (decidir $1$ quando $Y=0$):
 \begin{equation}\label{eq:riscoassim}
-  \risco_l(g)=l_1\,\Prob\big(g(\X)=1,\,Y=0\big)+l_0\,\Prob\big(g(\X)=0,\,Y=1\big)
-             =l_0\,\pi_1\,(1-S)+l_1\,(1-\pi_1)\,(1-E).
+  \risco_\ell(g)=\ell_1\,\Prob\big(g(\X)=1,\,Y=0\big)
+                +\ell_0\,\Prob\big(g(\X)=0,\,Y=1\big).
 \end{equation}
 
 \begin{proposicao}[Corte ótimo sob perda assimétrica]\label{prop:corte}
 Com $\eta(\x)=\Prob(Y=1\mid\X=\x)$, o classificador
-$g^*(\x)=\1{\ \eta(\x)>\tfrac{l_1}{l_0+l_1}\ }$ minimiza \eqref{eq:riscoassim}.
+$g^*(\x)=\1{\ \eta(\x)>\tfrac{\ell_1}{\ell_0+\ell_1}\ }$ minimiza \eqref{eq:riscoassim}.
 \end{proposicao}
 \begin{proof}
 Condicionando em $\X$,
 \[
-  \risco_l(g)=\E\Big[\,l_1\big(1-\eta(\X)\big)\1{g(\X)=1}+l_0\,\eta(\X)\1{g(\X)=0}\Big].
+  \risco_\ell(g)=\E\Big[\,\ell_1\big(1-\eta(\X)\big)\1{g(\X)=1}
+                +\ell_0\,\eta(\X)\1{g(\X)=0}\Big].
 \]
-Para cada $\x$, decidir $1$ custa $l_1\big(1-\eta(\x)\big)$ e decidir $0$ custa
-$l_0\,\eta(\x)$; o primeiro é menor se e só se $\eta(\x)>l_1/(l_0+l_1)$. Minimizar o
-integrando em cada $\x$ minimiza a esperança; no empate, qualquer decisão é ótima.
+Para cada $\x$, decidir $1$ custa $\ell_1\big(1-\eta(\x)\big)$ e decidir $0$ custa
+$\ell_0\,\eta(\x)$; o primeiro é menor se e só se $\eta(\x)>\ell_1/(\ell_0+\ell_1)$.
+Minimizar o integrando em cada $\x$ minimiza a esperança; no empate, qualquer decisão
+é ótima.
 \end{proof}
 
 \begin{ideia}
 Mudar os custos muda o corte, não o modelo: as probabilidades estimadas são as
-mesmas. Com $l_0=l_1$ o corte é $1/2$ (Bayes); com $l_0=10\,l_1$, é
-$1/11\approx0{,}09$. Com $l_0=1-\pi_1$ e $l_1=\pi_1$, custos inversamente
-proporcionais às prevalências, o corte é $\pi_1$ ([AME] §9.1) e
-$\risco_l(g)=\pi_1(1-\pi_1)\,(2-S-E)$: minimizar o custo é maximizar $S+E$, o
-critério usado com a ROC.
+mesmas. Com $\ell_0=\ell_1$ o corte é $1/2$ (Bayes); com $\ell_0=10\,\ell_1$, é
+$1/11\approx0{,}09$. Só a razão $\ell_0/\ell_1$ importa.
 \end{ideia}
 
 \begin{emsala}
@@ -182,115 +142,33 @@ $9\%$.)
 %==============================================================================
 \section{Escolhendo o corte: curva ROC e AUC}\label{sec:roc}
 %==============================================================================
-Um classificador \emph{plug-in} usa uma estimativa $\widehat\eta$ e um corte $K$:
-$g_K(\x)=\1{\widehat\eta(\x)\ge K}$. Cada $K$ dá um par
-$(\text{FPR}(K),\text{TPR}(K))$, e a \textbf{curva ROC} (\emph{Receiver Operating
-Characteristic}) é o conjunto $\{(\text{FPR}(K),\text{TPR}(K)) : K\in[0,1]\}$, a
-sensibilidade contra $1-$especificidade à medida que o corte varia. As duas taxas
-diminuem ou ficam iguais quando $K$ aumenta: o conjunto dos classificados como
+Um classificador \emph{plug-in} usa uma estimativa $\widehat\eta$ e um corte $p_0$:
+$g_{p_0}(\x)=\1{\widehat\eta(\x)\ge p_0}$. Cada $p_0$ dá um par
+$(\text{FPR}(p_0),\text{TPR}(p_0))$, e a \textbf{curva ROC} (\emph{Receiver Operating
+Characteristic}) é o conjunto $\{(\text{FPR}(p_0),\text{TPR}(p_0)) : p_0\in[0,1]\}$,
+a sensibilidade contra $1-$especificidade à medida que o corte varia. As duas taxas
+diminuem ou ficam iguais quando $p_0$ aumenta: o conjunto dos classificados como
 positivos só encolhe, e $P$ e $N$ não dependem do corte. Propriedades:
 \begin{itemize}[leftmargin=1.4cm,nosep]
-  \item vai de $(0,0)$ ($K$ acima de todas as probabilidades: ninguém é positivo) a
-        $(1,1)$ ($K=0$: todos são);
+  \item vai de $(0,0)$ ($p_0$ acima de todas as probabilidades: ninguém é positivo) a
+        $(1,1)$ ($p_0=0$: todos são);
   \item o canto superior esquerdo $(0,1)$ é o classificador sem erro;
   \item a diagonal é o ``palpite aleatório'': sortear $g=1$ com probabilidade $q$,
         ignorando $\x$, dá $\text{TPR}=\text{FPR}=q$;
-  \item a \textbf{AUC} (área sob a curva) vale $1$ para o classificador perfeito e
-        $1/2$ para o sorteio. Com um positivo e um negativo sorteados de forma
-        independente, e escores $Z_1$ e $Z_0$,
-        $\text{AUC}=\Prob(Z_1>Z_0)+\tfrac12\,\Prob(Z_1=Z_0)$.
+  \item a \textbf{AUC} (área sob a curva) vale $1$ para o classificador perfeito, cuja
+        curva passa por $(0,1)$, e $1/2$ para o sorteio da diagonal.
 \end{itemize}
 
 \begin{ideia}
-A ROC e a AUC dependem de $\widehat\eta$ só pela ordem que ela induz, e não mudam se
-$\widehat\eta$ for trocada por uma função estritamente crescente dela: servem para
-comparar modelos antes de fixar custos. Fixado o contexto, escolhe-se $K$ pela
-Prop.~\ref{prop:corte}, se os custos são conhecidos, ou maximizando $S+E$, que é o
-caso $l_c$ inversamente proporcional a $\pi_c$.
+Fixados os custos, o corte é o da Prop.~\ref{prop:corte}, com $\widehat\eta$ no lugar
+de $\eta$; a curva mostra o que cada um dos outros cortes daria, e a AUC resume o
+desempenho do modelo ao longo de todos eles.
 \end{ideia}
 
 \begin{atencao}
-A curva ROC também deve ser construída no \emph{teste}. Em dados muito
-desbalanceados ela pode parecer otimista: mil falsos positivos entre $50\,000$
-negativos dão $\text{FPR}=0{,}02$, mas, com $110$ verdadeiros positivos, só um em cada
-dez alarmes é verdadeiro. A curva precisão--revocação registra isso.
+A curva ROC também deve ser construída no \emph{teste}: no treino, as duas taxas saem
+otimistas.
 \end{atencao}
-
-%==============================================================================
-\section{Lidando com dados desbalanceados}\label{sec:desb}
-%==============================================================================
-Três estratégias, todas codificando custos:
-\begin{description}[leftmargin=2.6cm,style=nextline]
-  \item[Mover o corte] para métodos que estimam $\eta$, usar o corte da
-        Prop.~\ref{prop:corte}, ou a prevalência estimada. Não mexe no modelo e
-        preserva as probabilidades.
-  \item[Reponderar] dar pesos $w_1$ e $w_0$ às classes na função objetivo
-        (\texttt{class\_weight} no \texttt{scikit-learn}). Útil quando o método não
-        estima $\eta$.
-  \item[Reamostrar] alterar a prevalência do treino: \emph{oversampling} da minoria
-        (o SMOTE cria pontos sintéticos) ou \emph{undersampling} da maioria.
-\end{description}
-Para um modelo ajustado por máxima verossimilhança, a log-verossimilhança ponderada
-é maximizada em
-\[
-  p_w(\x)=\frac{w_1\,\eta(\x)}{w_1\,\eta(\x)+w_0\big(1-\eta(\x)\big)},
-  \qquad
-  \frac{p_w}{1-p_w}=\frac{w_1}{w_0}\cdot\frac{\eta}{1-\eta}:
-\]
-o modelo reponderado estima $p_w$, com as chances multiplicadas por $w_1/w_0$, e
-classificar com $p_w>1/2$ é usar o corte $w_0/(w_0+w_1)$ em $\eta$. Com
-$w_c\propto1/n_c$ (\texttt{class\_weight="balanced"}), o corte implícito é a
-prevalência da amostra. Reamostrar para a prevalência $\pi_1'$ multiplica as chances
-estimadas por $\frac{\pi_1'/(1-\pi_1')}{\pi_1/(1-\pi_1)}$, desde que a distribuição de
-$\X$ em cada classe não mude.
-
-\begin{atencao}
-Reponderar e reamostrar deslocam as probabilidades por um fator conhecido; para usá-las
-como probabilidades da população original é preciso desfazer o fator. Se os custos
-são iguais, o corte $1/2$ já é o correto, por mais desbalanceados que sejam os dados:
-não reamostre por reflexo.
-\end{atencao}
-
-%==============================================================================
-\section{Classificar bem $\neq$ estimar bem probabilidades}
-%==============================================================================
-Para decidir, basta que $\widehat\eta(\x)-K$ tenha o mesmo sinal que $\eta(\x)-K$
-([AME] §9.2): um classificador \emph{plug-in} pode estar perto do ótimo com
-$\widehat\eta$ longe de $\eta$. Quando as probabilidades em si importam (ordenar
-riscos, decidir com custos que mudam caso a caso, comunicar um risco), interessam:
-\begin{itemize}[leftmargin=1.4cm,nosep]
-  \item a \textbf{calibração}:
-        $\Prob\big(Y=1\mid\widehat\eta(\X)=p\big)=p$, vista na curva de calibração
-        (média predita contra frequência observada, por faixas de $\widehat\eta$);
-  \item as \textbf{regras de pontuação próprias}, perdas $s(p,y)$ cujo valor
-        esperado sob $Y\sim\text{Bernoulli}(\eta)$ é mínimo em $p=\eta$: o
-        \textbf{score de Brier}, $(p-y)^2$, e a \textbf{entropia cruzada},
-        $-[\,y\log p+(1-y)\log(1-p)\,]$.
-\end{itemize}
-Para o Brier, $\E\big[(p-Y)^2\big]=(p-\eta)^2+\eta(1-\eta)$, e, tomando a esperança em
-$\X$,
-\[
-  \E\big[(\widehat\eta(\X)-Y)^2\big]
-  =\E\big[(\widehat\eta(\X)-\eta(\X))^2\big]+\E\big[\eta(\X)\big(1-\eta(\X)\big)\big],
-\]
-a decomposição da Aula~01 aplicada a $Y\in\{0,1\}$. A acurácia e a AUC não são
-próprias: uma só vê o lado do corte, a outra só a ordem. Por isso, Brier e entropia
-cruzada são os critérios indicados para escolher \emph{tuning parameters} (por
-exemplo, o $\lambda$ da logística penalizada) quando o objetivo é estimar bem as
-probabilidades.
-
-\begin{ideia}
-Um modelo bem calibrado é aquele em que, entre os casos a que ele atribui
-$\widehat\eta=0{,}7$, cerca de $70\%$ são de fato positivos. Brier e entropia cruzada
-penalizam a má calibração; acurácia e AUC, não. Na figura de calibração da versão do
-aluno, a logística e o Bayes ingênuo têm praticamente a mesma AUC ($0{,}774$ e
-$0{,}776$) e Brier de $0{,}065$ e $0{,}152$.
-\end{ideia}
-
-\begin{emsala}
-Pergunte: dois modelos com a mesma AUC servem igualmente para calcular um custo
-esperado? Não: a AUC só vê a ordem, e o custo esperado usa o valor de $\widehat\eta$.
-\end{emsala}
 
 %==============================================================================
 \section*{Resumo}
@@ -298,24 +176,16 @@ esperado? Não: a AUC só vê a ordem, e o custo esperado usa o valor de $\wideh
 \begin{itemize}[leftmargin=1.4cm]
   \item A acurácia engana com custos assimétricos ou classe rara; olhe a
         \textbf{matriz de confusão}.
-  \item Sensibilidade e especificidade não dependem da prevalência; precisão e VPN
-        dependem. O $F_1$ \eqref{eq:f1} é a média harmônica de sensibilidade e
-        precisão. O risco $0$--$1$ é a média das taxas de erro ponderada pelas
-        prevalências.
+  \item Sensibilidade (TPR) e especificidade ($1-\text{FPR}$) condicionam na classe
+        verdadeira e não dependem da prevalência.
   \item \textbf{Perda assimétrica} \eqref{eq:riscoassim} $\Rightarrow$ corte ótimo
-        $l_1/(l_0+l_1)$ (Prop.~\ref{prop:corte}); custos inversos às prevalências dão
-        o corte $\pi_1$ e o critério $\max\,(S+E)$.
-  \item \textbf{ROC/AUC} avaliam o ordenamento, independentemente do corte; com
-        positivos raros, a curva precisão--revocação informa mais.
-  \item Corte, pesos e reamostragem codificam custos; os dois últimos deslocam as
-        probabilidades por um fator conhecido.
-  \item Classificar bem $\neq$ estimar bem: use calibração, Brier e entropia
-        cruzada.
+        $\ell_1/(\ell_0+\ell_1)$ (Prop.~\ref{prop:corte}).
+  \item \textbf{ROC}: TPR contra FPR à medida que o corte varia; a \textbf{AUC} é a
+        área sob ela.
 \end{itemize}
 
-\paragraph{Leitura recomendada.} [AME] §7.4 (matriz de confusão e métricas), §9.1
-(perdas assimétricas, cortes, dados desbalanceados), §9.2 (classificação vs.\
-estimação de probabilidades); [ISLP] §4.4.2 (matriz de confusão, ROC e AUC no exemplo
-do \texttt{Default}; Tabelas~4.6 e~4.7).
+\paragraph{Leitura recomendada.} [AME] §7.4 (matriz de confusão e métricas) e §9.1
+(perdas assimétricas, cortes e a curva ROC); [ISLP] §4.4.2 (matriz de confusão, ROC
+e AUC no exemplo do \texttt{Default}; Tabelas~4.6 e~4.7).
 
 \end{document}

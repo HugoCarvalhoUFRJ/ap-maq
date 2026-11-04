@@ -655,30 +655,18 @@ def _lda_qda():
 # Aula 08 --- Métricas para Classificação
 # =========================================================================== #
 
-def _cenario_desbalanceado(n, rng, prev=0.08, correlacionado=False):
-    """Uma classe rara (8%) com sobreposição realista.
-
-    Com ``correlacionado=True`` as covariáveis são fortemente dependentes entre
-    si dentro de cada classe -- o que torna a suposição do Bayes ingênuo
-    FALSA, e é o que revela a diferença de calibração.
-    """
+def _cenario_desbalanceado(n, rng, prev=0.08):
+    """Uma classe rara (8%) com sobreposição realista."""
     y = (rng.uniform(size=n) < prev).astype(int)
-    if correlacionado:
-        d = 6
-        S = np.full((d, d), 0.85) + np.eye(d) * 0.15
-        L = np.linalg.cholesky(S)
-        X = rng.normal(size=(n, d)) @ L.T
-        X[y == 1] += 1.05
-    else:
-        X = rng.normal(size=(n, 4))
-        X[y == 1] += np.array([1.5, 0.9, 0.0, 0.0])
+    X = rng.normal(size=(n, 4))
+    X[y == 1] += np.array([1.5, 0.9, 0.0, 0.0])
     return X, y
 
 
 @figura("08-roc-metricas", "08")
 def _roc_metricas():
-    """ROC, AUC e o efeito do corte sobre as métricas."""
-    from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve
+    """ROC, AUC e as duas taxas da ROC em função do corte."""
+    from sklearn.metrics import roc_curve, roc_auc_score
 
     rng = np.random.default_rng(41)
     X, y = _cenario_desbalanceado(4000, rng)
@@ -712,67 +700,21 @@ def _roc_metricas():
     ax1.legend(loc="lower right", fontsize=7.5)
 
     grade = np.linspace(0.01, 0.95, 200)
-    prec, rec, f1 = [], [], []
-    for t in grade:
-        pred = (p >= t)
-        tp = np.sum(pred & (y_te == 1)); fp = np.sum(pred & (y_te == 0))
-        fn = np.sum(~pred & (y_te == 1))
-        pr = tp / (tp + fp) if tp + fp else np.nan
-        rc = tp / (tp + fn) if tp + fn else np.nan
-        prec.append(pr); rec.append(rc)
-        f1.append(2 * pr * rc / (pr + rc) if pr and rc else np.nan)
-    melhor_t = grade[int(np.nanargmax(f1))]
-    print(f"     [conferência] F1 máximo no corte {melhor_t:.2f} "
-          f"(F1 = {np.nanmax(f1):.3f}), não em 0,50")
+    taxa_vp = np.array([np.mean(p[y_te == 1] >= t) for t in grade])
+    taxa_fp = np.array([np.mean(p[y_te == 0] >= t) for t in grade])
+    tpr_05, fpr_05 = np.mean(p[y_te == 1] >= 0.5), np.mean(p[y_te == 0] >= 0.5)
+    print(f"     [conferência] no corte 0,5: TPR = {tpr_05:.3f}, FPR = {fpr_05:.3f}")
 
-    ax2.plot(grade, prec, color=AZUL, label="precisão")
-    ax2.plot(grade, rec, color=VINHO, label="sensibilidade")
-    ax2.plot(grade, f1, color=VERDE, lw=1.8, label="$F_1$")
+    ax2.plot(grade, taxa_vp, color=VINHO, lw=1.6, label="sensibilidade (TPR)")
+    ax2.plot(grade, taxa_fp, color=AZUL, lw=1.6, label="taxa de falsos positivos (FPR)")
     ax2.axvline(0.5, color=CINZA, ls="--", lw=1.0)
-    ax2.text(0.52, 0.03, "corte 0,50\n(o padrão)", fontsize=7, color=CINZA)
-    ax2.axvline(melhor_t, color=VERDE, ls=":", lw=1.2)
-    ax2.text(melhor_t - 0.02, 0.88,
-             "$F_1$ máx.\nem " + f"{melhor_t:.2f}".replace(".", ","),
-             fontsize=7, color=VERDE, ha="right")
+    ax2.text(0.52, 0.55, "corte 0,50\n(o padrão)", fontsize=7, color=CINZA)
     ax2.set_xlabel("corte aplicado a $\\widehat{P}(Y=1\\mid x)$")
-    ax2.set_ylabel("valor da métrica")
-    ax2.set_title("o corte muda tudo")
+    ax2.set_ylabel("valor da taxa")
+    ax2.set_title("as duas taxas em função do corte")
     ax2.set_ylim(0, 1.02)
-    ax2.legend(loc="center right", fontsize=7.5)
+    ax2.legend(loc="upper right", fontsize=7.5)
     salvar(fig, "08-roc-metricas")
-
-
-@figura("08-calibracao", "08")
-def _calibracao():
-    """Classificar bem não é o mesmo que estimar bem probabilidades."""
-    from sklearn.calibration import calibration_curve
-    from sklearn.naive_bayes import GaussianNB
-    from sklearn.metrics import roc_auc_score, brier_score_loss
-
-    rng = np.random.default_rng(43)
-    X, y = _cenario_desbalanceado(4000, rng, correlacionado=True)
-    X_te, y_te = _cenario_desbalanceado(20000, np.random.default_rng(44),
-                                        correlacionado=True)
-
-    modelos = [("regressão logística", Pipeline([("sc", StandardScaler()),
-                                                 ("lg", skl.LogisticRegression())]), AZUL),
-               ("Bayes ingênuo", GaussianNB(), VINHO)]
-    fig, ax = subplots(figsize=(4.6, 3.4))
-    ax.plot([0, 1], [0, 1], color=CINZA, ls="--", lw=1.0, label="calibração perfeita")
-    for nome, m, cor in modelos:
-        m.fit(X, y)
-        p = m.predict_proba(X_te)[:, 1]
-        obs, prev = calibration_curve(y_te, p, n_bins=10, strategy="quantile")
-        auc = roc_auc_score(y_te, p)
-        brier = brier_score_loss(y_te, p)
-        print(f"     [conferência] {nome}: AUC = {auc:.3f}, Brier = {brier:.4f}")
-        ax.plot(prev, obs, "o-", color=cor, ms=4,
-                label=f"{nome}\nAUC $={auc:.3f}$, Brier $={brier:.4f}$".replace(".", "{,}"))
-    ax.set_xlabel("probabilidade predita")
-    ax.set_ylabel("frequência observada")
-    ax.set_title("curva de calibração")
-    ax.legend(loc="upper left", fontsize=7)
-    salvar(fig, "08-calibracao")
 
 
 # =========================================================================== #
