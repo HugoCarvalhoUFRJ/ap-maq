@@ -40,8 +40,8 @@ de \textbf{classificação binária} (Aula~07) cujas covariáveis são \emph{tex
 
 \begin{atencao}
 A base é \textbf{desbalanceada} (muito mais \emph{ham} que \emph{spam}). Como vimos
-na Aula~08, a acurácia engana aqui --- precisaremos de precisão, \emph{recall} e
-$F_1$. E os custos são assimétricos: bloquear uma mensagem legítima (falso positivo)
+na Aula~08, a acurácia engana aqui --- precisaremos de precisão, revocação e $F_1$,
+definidas na seção de avaliação. E os custos são assimétricos: bloquear uma mensagem legítima (falso positivo)
 costuma ser pior que deixar passar um \emph{spam}.
 \end{atencao}
 
@@ -130,10 +130,16 @@ o lado do corte, não a probabilidade exata.
 %==============================================================================
 \section{Avaliação}
 %==============================================================================
-Como o problema é desbalanceado (Aula~08):
+Como o problema é desbalanceado (Aula~08), parta da matriz de confusão, com o
+\emph{spam} como positivo. A \textbf{revocação} é a sensibilidade da Aula~08,
+$\text{VP}/P$; a \textbf{precisão}, que a Aula~08 não usa, é $\text{VP}/(\text{VP}+\text{FP})$,
+a fração das mensagens bloqueadas que eram \emph{spam}. O \textbf{$F_1$} é a média
+harmônica das duas, $2\,\text{VP}/(2\,\text{VP}+\text{FP}+\text{FN})$, e a
+\textbf{precisão média} (AP) é a média, sobre os \emph{spams}, da precisão no corte
+que acaba de incluir cada um.
 \begin{itemize}[leftmargin=1.4cm,nosep]
-  \item reporte a \textbf{matriz de confusão}, \textbf{precisão}, \textbf{\emph{recall}}
-        e \textbf{$F_1$} --- não só a acurácia;
+  \item reporte a \textbf{matriz de confusão}, a precisão, a revocação e o $F_1$
+        --- não só a acurácia;
   \item para \emph{spam}, a \emph{precisão} sobre a classe ``spam'' é crítica
         (não classificar \emph{ham} como \emph{spam});
   \item ajuste o \textbf{corte} de decisão conforme os custos (Aula~08): se um falso
@@ -200,8 +206,8 @@ O notebook \texttt{Aula prática E3} percorre a limpeza, a exploração
   \item A matriz documento--termo é \textbf{esparsa e de alta dimensão} ---
         terreno do \textbf{Bayes ingênuo} e da \textbf{logística penalizada}
         (Aula~07).
-  \item Avalie com \textbf{precisão/\emph{recall}/$F_1$} e ajuste o \textbf{corte}
-        (dados desbalanceados, Aula~08).
+  \item Avalie com \textbf{precisão}, \textbf{revocação} e \textbf{$F_1$} e ajuste o
+        \textbf{corte} pelos custos (Aula~08).
   \item Tudo num \textbf{\emph{pipeline}} com CV sem vazamento (Aulas~03 e~06).
 \end{itemize}
 

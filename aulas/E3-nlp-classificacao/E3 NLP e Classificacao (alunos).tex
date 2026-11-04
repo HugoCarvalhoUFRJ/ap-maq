@@ -23,7 +23,8 @@ Ao final desta aula você deve ser capaz de:
         por que ela é esparsa;
   \item definir o \textbf{TF--IDF} e dizer o que ele corrige;
   \item escolher métodos adequados a alta dimensão esparsa e justificar a escolha;
-  \item avaliar um classificador de \emph{spam} com as métricas certas (Aula~08);
+  \item avaliar um classificador de \emph{spam} pela matriz de confusão (Aula~08) e
+        pela precisão, pela revocação, pelo $F_1$ e pela precisão média;
   \item montar o \emph{pipeline} completo, sem vazamento (Aula~06).
 \end{itemize}
 
@@ -49,7 +50,8 @@ $13{,}4\%$ delas \emph{spam}. É um problema de \textbf{classificação binária
 \begin{atencao}
 A base é \textbf{desbalanceada}. Como vimos na Aula~08, a acurácia engana aqui: um
 classificador que declarasse tudo \emph{ham} já acertaria $86{,}6\%$. Precisaremos de
-precisão, \emph{recall} e $F_1$. E os custos são assimétricos: bloquear uma mensagem
+medidas que separem os dois tipos de erro, definidas na Seção~\ref{sec:avaliacao}. E
+os custos são assimétricos: bloquear uma mensagem
 legítima (falso positivo) costuma ser bem pior que deixar passar um \emph{spam} ---
 o que, pela Proposição~3.1 da Aula~08, significa exigir um corte \emph{alto} para
 declarar \emph{spam}.
@@ -174,26 +176,55 @@ probabilidade --- e, para classificar, basta acertar o lado do corte.
 \end{ideia}
 
 \begin{atencao}
-Mas atenção ao que a Aula~08 mediu: o Bayes ingênuo com covariáveis correlacionadas
---- e palavras \emph{são} correlacionadas --- produz probabilidades muito
-descalibradas, mesmo classificando bem. Se você for ajustar o corte por custos
-(como o problema de \emph{spam} pede), estará mexendo justamente nos números em que
-não se pode confiar. Nesse caso, ou use a logística, ou calibre o Bayes ingênuo com
-\texttt{CalibratedClassifierCV}.
+Mas lembre o preço que a Aula~07 apontou: com covariáveis correlacionadas --- e
+palavras \emph{são} correlacionadas --- o Bayes ingênuo conta a mesma evidência várias
+vezes e empurra as probabilidades para $0$ e $1$, mesmo classificando bem. O corte
+ótimo da Aula~08 foi deduzido para as probabilidades verdadeiras; se você for ajustar
+o corte por custos (como o problema de \emph{spam} pede), estará mexendo justamente
+nos números em que não se pode confiar. Nesse caso, prefira a logística.
 \end{atencao}
 
 %==============================================================================
-\section{Avaliação}
+\section{Avaliação}\label{sec:avaliacao}
 %==============================================================================
-Como o problema é desbalanceado (Aula~08):
+Como o problema é desbalanceado, a acurácia não basta (Aula~08), e a avaliação parte
+da matriz de confusão, com o \emph{spam} como classe positiva. Da Aula~08 vem a
+sensibilidade, $\text{VP}/P$, a fração dos \emph{spams} que o filtro bloqueia; em
+busca e filtragem de texto ela se chama \textbf{revocação} (\emph{recall}). A ela se
+junta uma medida que a Aula~08 não usou, a \textbf{precisão},
+\[
+  \text{precisão}=\frac{\text{VP}}{\text{VP}+\text{FP}},
+\]
+a fração das mensagens bloqueadas que eram de fato \emph{spam}. As duas têm o mesmo
+numerador e denominadores diferentes: a revocação divide pelo total de uma coluna da
+matriz, os \emph{spams} verdadeiros; a precisão, pelo total de uma linha, as
+mensagens que o filtro declarou \emph{spam}. Por isso a precisão responde à pergunta
+de quem teve mensagens bloqueadas, quanto do que foi bloqueado era lixo, e estima
+$\Prob\big(Y=1\mid g(\X)=1\big)$.
+
+Duas medidas resumem o par. O \textbf{$F_1$} é a média harmônica das duas,
+\[
+  F_1=\frac{2}{1/\text{precisão}+1/\text{revocação}}
+     =\frac{2\,\text{VP}}{2\,\text{VP}+\text{FP}+\text{FN}} ,
+\]
+que não usa os verdadeiros negativos, a imensa maioria das mensagens. A média
+harmônica fica perto da menor das duas: um filtro que bloqueia tudo tem revocação $1$
+e precisão $0{,}134$, a proporção de \emph{spam}, e $F_1\approx0{,}24$. A
+\textbf{precisão média} (AP, \emph{average precision}) olha todos os cortes de uma
+vez, como a AUC da Aula~08. Ordenadas as mensagens pelo escore, com escores
+distintos, ela é a média, sobre os \emph{spams}, da precisão no corte que acaba de
+incluir cada um (a \texttt{average\_precision\_score} do \texttt{scikit-learn}); é
+alta quando os \emph{spams} ocupam o topo da lista.
+
+Na prática:
 \begin{itemize}[leftmargin=1.4cm,nosep]
-  \item reporte a \textbf{matriz de confusão}, \textbf{precisão}, \textbf{\emph{recall}}
-        e \textbf{$F_1$} --- não só a acurácia;
-  \item para \emph{spam}, a \emph{precisão} sobre a classe ``spam'' é crítica:
-        precisão alta significa que quase tudo que você bloqueou era mesmo lixo;
+  \item reporte a \textbf{matriz de confusão}, a precisão, a revocação e o $F_1$,
+        não só a acurácia;
+  \item para \emph{spam}, a \emph{precisão} é crítica: precisão alta significa que
+        quase tudo que você bloqueou era mesmo lixo;
   \item ajuste o \textbf{corte} de decisão conforme os custos: se um falso positivo
-        é dez vezes mais caro que um falso negativo, o corte ótimo é
-        $10/11\approx0{,}91$, não $0{,}5$.
+        é dez vezes mais caro que um falso negativo, o corte ótimo da
+        Proposição~3.1 da Aula~08 é $10/11\approx0{,}91$, não $0{,}5$.
 \end{itemize}
 
 \begin{observacao}[a métrica escolhida depois é a métrica errada]
@@ -299,8 +330,9 @@ e a classificação na base \texttt{spam.csv}.
         palavras comuns demais.
   \item Alta dimensão $+$ esparsidade $\Rightarrow$ Bayes ingênuo e logística
         penalizada; KNN vai mal.
-  \item Avalie com precisão/\emph{recall}/$F_1$ e ajuste o corte pelos custos
-        (Aula~08); cuidado com a calibração do Bayes ingênuo.
+  \item Avalie com a matriz de confusão, a precisão, a revocação e o $F_1$, e ajuste
+        o corte pelos custos (Aula~08); as probabilidades do Bayes ingênuo não servem
+        para esse corte.
   \item Tudo num \emph{pipeline} (Aula~06): o vetorizador aprende o vocabulário
         \emph{só} no treino.
 \end{itemize}
