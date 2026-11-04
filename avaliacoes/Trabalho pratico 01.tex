@@ -754,9 +754,9 @@ dobras_c = skm.StratifiedKFold(5, shuffle=True, random_state=0)
         unidade repetida nestes dados?
   \item O banco vai usar o modelo para decidir \textbf{quem contatar} com uma
         proposta de renegociação antes do vencimento. Contatar um cliente que pagaria
-        de qualquer jeito custa $c_{FP}=1$ (tempo da equipe, desconto concedido sem
-        necessidade); deixar de contatar um cliente que vai ficar inadimplente custa
-        $c_{FN}=5$. Deduza o corte ótimo
+        de qualquer jeito, um falso positivo, custa $\ell_1=1$ (tempo da equipe,
+        desconto concedido sem necessidade); deixar de contatar um cliente que vai
+        ficar inadimplente, um falso negativo, custa $\ell_0=5$. Deduza o corte ótimo
         para a probabilidade \emph{verdadeira} $\Prob(Y=1\mid\x)$.
   \item Calcule, no treino, o custo médio por cliente das duas regras triviais,
         ``não contatar ninguém'' e ``contatar todos''. Qual delas é a referência a
@@ -769,9 +769,9 @@ dobras, o que estabiliza as métricas com classe desbalanceada. Aqui a unidade �
 cliente e cada um aparece uma vez (35 linhas são idênticas em tudo menos no
 \cod{ID}, provavelmente clientes sem movimento; não é o caso de agrupar).
 
-\textbf{(b)} Prever 1 custa $c_{FP}(1-\eta)$ em esperança; prever 0 custa
-$c_{FN}\eta$. Prever 1 quando $c_{FP}(1-\eta)<c_{FN}\eta$, isto é,
-$\eta>c_{FP}/(c_{FP}+c_{FN})=1/6\approx0{,}167$.
+\textbf{(b)} Prever 1 custa $\ell_1(1-\eta)$ em esperança; prever 0 custa
+$\ell_0\eta$. Prever 1 quando $\ell_1(1-\eta)<\ell_0\eta$, isto é,
+$\eta>\ell_1/(\ell_0+\ell_1)=1/6\approx0{,}167$.
 
 \textbf{(c)} Ninguém: $5\times0{,}2212=1{,}106$ por cliente. Todos:
 $1\times0{,}7788=0{,}779$. A referência é ``contatar todos'' --- e um modelo só vale a
@@ -848,7 +848,7 @@ faturas; (b) 0,15; (c) 0,25 --- 0,1 pela causa da recusa do QDA, 0,1 pelo
 \end{criterio}
 
 %------------------------------------------------------------------------------
-\tarefa{C4}{Métricas, custos e calibração}{1,0 ponto}
+\tarefa{C4}{Métricas e custos}{1,0 ponto}
 %------------------------------------------------------------------------------
 Toda esta tarefa usa probabilidades \textbf{fora da dobra}
 no treino, e o teste continua guardado:
@@ -859,67 +859,54 @@ p = skm.cross_val_predict(modelo, Xc_tr, yc_tr, cv=dobras_c,
 
 \begin{itens}
   \item Para a logística com \cod{PAY\_*} em \emph{dummies}, no corte $0{,}5$: a matriz
-        de confusão, a acurácia, a sensibilidade, a especificidade, a precisão, o VPN
-        e o $F_1$. Compare a acurácia com a de C1(a). Qual erro o modelo comete mais?
-  \item Sobreponha as curvas ROC e as curvas precisão--\emph{recall} da logística de
-        (a), do Bayes ingênuo e do LDA, com a AUC e a precisão média de cada um.
-  \item Compare a \textbf{calibração}: o score de Brier e a curva de calibração da
-        logística e do Bayes ingênuo. Que fração das probabilidades do Bayes ingênuo
-        passa de $0{,}99$? Calibre-o com \cod{CalibratedClassifierCV}
-        (\cod{method="isotonic"}) e compare de novo. O que mudou na AUC, e o que mudou
-        no Brier? Por quê?
+        de confusão, a acurácia, a sensibilidade, a especificidade e a taxa de falsos
+        positivos. Compare a acurácia com a de C1(a). Qual erro o modelo comete mais?
+  \item Sobreponha as curvas ROC da logística de (a), do Bayes ingênuo e do LDA, com
+        a AUC de cada um.
   \item Para cada modelo até aqui, calcule o custo médio por cliente no corte
         $1/6$ de C2(b) e o menor custo possível varrendo o corte de $0{,}02$ a
         $0{,}95$. Em quais modelos o melhor corte fica perto de $1/6$, e em quais fica
-        longe? Relacione com o item~(c).
-  \item Reajuste a logística com \cod{class\_weight="balanced"}. O que acontece com o
-        Brier e com o custo no corte $1/6$? Mostre que, se a reponderação
-        multiplica a chance estimada por $n_0/n_1$, o corte que corresponde a $1/6$ no
-        modelo reponderado é
-        $\big[\tfrac15\cdot\tfrac{n_0}{n_1}\big]\big/\big[1+\tfrac15\cdot\tfrac{n_0}{n_1}\big]$,
-        calcule-o e confira com o melhor corte que você encontrou.
+        longe? Por que o melhor corte de um modelo pode ficar longe do $1/6$ deduzido
+        em C2(b)?
+  \item Que fração das probabilidades do Bayes ingênuo passa de $0{,}99$, e que fração
+        fica abaixo de $0{,}01$? Relacione com o melhor corte dele no item~(c) e com
+        o que você viu em C1 e em C3(d).
 \end{itens}
 
 \begin{solucao}
 \textbf{(a)} VN 16725, FP 798, FN 3248, VP 1729: acurácia $0{,}820$ (contra $0{,}779$ do
-trivial --- quatro pontos), sensibilidade $0{,}347$, especificidade $0{,}955$,
-precisão $0{,}684$, VPN $0{,}837$, $F_1$ $0{,}461$. O erro dominante é o falso
-negativo: dois em cada três inadimplentes passam sem ser apontados no corte $0{,}5$ ---
-justamente o erro que custa 5.
+trivial --- quatro pontos), sensibilidade $0{,}347$, especificidade $0{,}954$ e taxa
+de falsos positivos $0{,}046$. O erro dominante é o falso negativo: dois em cada três
+inadimplentes passam sem ser apontados no corte $0{,}5$ --- justamente o erro que
+custa 5.
 
-\textbf{(b)} AUC: logística $0{,}765$, Bayes ingênuo $0{,}726$, LDA $0{,}713$; precisão
-média $0{,}536$, $0{,}479$ e $0{,}495$ (referência: a prevalência, $0{,}221$). A ROC da
+\textbf{(b)} AUC: logística $0{,}765$, Bayes ingênuo $0{,}726$, LDA $0{,}713$. A ROC da
 logística domina as outras em quase toda a extensão.
 
-\textbf{(c)} Brier: logística $0{,}137$, Bayes ingênuo $0{,}335$ --- quase duas vezes e
-meia pior, com AUC comparável. $14{,}5\%$ das probabilidades do ingênuo passam de
-$0{,}99$ (e $11\%$ ficam abaixo de $0{,}01$); a curva de calibração dele é quase
-horizontal. Calibrado: Brier $0{,}145$, AUC $0{,}729$ --- a AUC quase não se mexe,
-porque a calibração isotônica é monótona e preserva a ordem; o Brier cai porque os
-números passam a significar frequências. Classificar (ordenar) bem $\neq$ estimar bem
-probabilidades, e a causa é a correlação das faturas (C1d).
+\textbf{(c)} No corte $1/6$ e no melhor corte: logística com \emph{dummies} $0{,}580$
+e $0{,}579$ (corte $0{,}16$); logística com \cod{PAY\_*} numérico $0{,}691$ e $0{,}635$
+($0{,}23$); LDA $0{,}690$ e $0{,}638$ ($0{,}21$); QDA $0{,}690$ e $0{,}647$ ($0{,}31$);
+Bayes ingênuo $0{,}701$ e $0{,}622$ ($0{,}77$). O corte $1/6$ de C2(b) é o
+ótimo para as probabilidades \emph{verdadeiras} (Proposição~3.1 da Aula~08).
+Aplicado às estimativas de um modelo, ele só é o melhor se elas estiverem perto das
+verdadeiras, ao menos na região do corte. É o caso da logística com \emph{dummies},
+cujo melhor corte é $0{,}16$; não é o do Bayes ingênuo, cujo melhor corte é $0{,}77$.
+A logística com \cod{PAY\_*} numérico mostra que uma especificação errada também
+afasta as probabilidades estimadas das verdadeiras.
 
-\textbf{(d)} No corte $1/6$ e no melhor corte: logística com \emph{dummies} $0{,}580$
-e $0{,}579$ (corte $0{,}16$); Bayes ingênuo calibrado $0{,}618$ e $0{,}617$ ($0{,}17$);
-logística com \cod{PAY\_*} numérico $0{,}691$ e $0{,}635$ ($0{,}23$); LDA $0{,}690$ e
-$0{,}638$ ($0{,}21$); QDA $0{,}690$ e $0{,}647$ ($0{,}31$); Bayes ingênuo $0{,}701$ e
-$0{,}622$ ($0{,}77$). O corte teórico só é o ótimo quando as probabilidades são
-honestas: os modelos calibrados têm melhor corte em $1/6$; os descalibrados, longe. E
-a logística com \cod{PAY\_*} numérico mostra que especificação errada também
-descalibra.
-
-\textbf{(e)} Brier $0{,}186$ (piora) e custo em $1/6$ de $0{,}755$ --- quase o de
-``contatar todos''. Com $n_0/n_1=3{,}52$, a chance $1/5$ vira $0{,}704$ e o corte
-equivalente é $0{,}413$; o melhor corte medido é $0{,}40$, com custo $0{,}579$ ---
-praticamente o da logística sem peso no corte $1/6$, $0{,}580$. Reponderar é mover o corte por outro
-caminho, e ao preço de estragar as probabilidades.
+\textbf{(d)} $14{,}5\%$ das probabilidades do ingênuo passam de $0{,}99$, e $11{,}4\%$
+ficam abaixo de $0{,}01$: um quarto dos clientes recebe um número quase igual a $0$ ou
+a $1$. É o efeito da correlação entre as faturas (C1): o Bayes ingênuo conta a
+mesma evidência várias vezes e empurra as probabilidades para $0$ e $1$ (Aula~07).
+Ele ainda ordena razoavelmente (AUC $0{,}726$; C3(d)), mas os números que produz não
+servem como probabilidades, e por isso o melhor corte dele fica tão longe de $1/6$.
 \end{solucao}
 
 \begin{criterio}
-(a) 0,15; (b) 0,15; (c) 0,3 --- 0,1 pelas medidas, 0,1 pela calibração do ingênuo,
-0,1 pela explicação de por que a AUC não muda; (d) 0,25 --- a relação entre
-calibração e corte é o centro da tarefa; (e) 0,15 --- 0,1 pela conta do corte
-equivalente. Custos calculados no teste, em vez de fora da dobra, zeram o (d).
+(a) 0,2; (b) 0,15; (c) 0,4 --- 0,15 pelos custos, 0,25 pela explicação de por que o
+melhor corte se afasta de $1/6$, que é o centro da tarefa; (d) 0,25 --- 0,1 pelas
+frações, 0,15 pela relação com o corte e com a correlação. Custos calculados no
+teste, em vez de fora da dobra, zeram o (c).
 \end{criterio}
 
 %------------------------------------------------------------------------------
@@ -962,10 +949,11 @@ subir de \cod{C}$=0{,}1$ para \cod{C}$=10$. As classes se sobrepõem muito (o er
 mal classificado é vetor de suporte, e os pontos dentro da margem também; com tanta
 sobreposição, quase metade da amostra está sempre nessa situação.
 
-\textbf{(d)} Não sem verificar: as ``probabilidades'' do \cod{SVC} vêm de um ajuste de
-Platt \emph{a posteriori}, feito por validação cruzada interna, e não do método. Se
-estiverem calibradas o corte vale; é preciso conferir (Brier, curva de calibração)
-antes de usá-lo.
+\textbf{(d)} Não sem verificar: as ``probabilidades'' do \cod{SVC} vêm de uma regressão
+logística ajustada \emph{a posteriori} sobre a distância à fronteira (o método de
+Platt), por validação cruzada interna, e não do método. O corte $1/6$ vale para as
+probabilidades verdadeiras; antes de usá-lo, é preciso conferir, varrendo o corte como
+em C4(c), se o melhor corte dessas ``probabilidades'' fica perto de $1/6$.
 \end{solucao}
 
 \begin{criterio}
@@ -989,7 +977,7 @@ ter caído; (d) 0,1.
   \item Ajuste florestas com $m=\sqrt p$ (o padrão do \cod{RandomForestClassifier}),
         $m\approx p/3$ e $m=p$ (\emph{bagging}), com \cod{min\_samples\_leaf=5}, e uma
         com $m=\sqrt p$ e folhas cheias, isto é, com o \cod{min\_samples\_leaf} padrão.
-        Compare AUC e Brier. Opcional: o \cod{AdaBoostClassifier} e o custo dele no
+        Compare a AUC e o custo no corte $1/6$. Opcional: o \cod{AdaBoostClassifier} e o custo dele no
         corte $1/6$.
 \end{itens}
 
@@ -1007,9 +995,11 @@ de esperar: as duas medidas de impureza são muito parecidas. A poda por \emph{l
 $0{,}611$ da cheia). O primeiro corte separa quem está com dois ou mais meses de atraso
 em setembro --- o grupo de maior risco.
 
-\textbf{(c)} Com 200 árvores: $m=\sqrt p$, AUC $0{,}773$ e Brier $0{,}1356$;
-$m\approx p/3$, $0{,}772$; \emph{bagging}, $0{,}767$; folhas cheias, $0{,}760$ e Brier
-$0{,}1387$ --- folhas de uma observação dão probabilidades mais extremas. O AdaBoost ordena
+\textbf{(c)} Com 200 árvores, AUC e custo no corte $1/6$: $m=\sqrt p$, $0{,}773$ e
+$0{,}565$; $m\approx p/3$, $0{,}772$ e $0{,}571$; \emph{bagging}, $0{,}767$ e $0{,}579$;
+folhas cheias, $0{,}760$ e $0{,}597$. Folhas de uma observação dão probabilidades mais
+extremas: a ordem piora um pouco, e o custo mais, porque o melhor corte dessa floresta
+se afasta de $1/6$ e vai a $0{,}21$ (C7). O AdaBoost ordena
 bem (AUC $0{,}771$), mas as probabilidades dele ficam entre $0{,}22$ e $0{,}67$: no corte
 $1/6$ ele contata todo mundo, com custo $0{,}779$ --- o mesmo da regra trivial (o corte
 por custo pode não cortar nada).
@@ -1026,8 +1016,7 @@ leitura dele pode compensar até 0,1 perdido nesta tarefa.
 
 \begin{itens}
   \item Monte uma tabela, com probabilidades fora da dobra no treino, de todos os
-        modelos: AUC, precisão média, Brier, custo no corte $1/6$, melhor corte e
-        custo nele. Escolha o modelo final \emph{e} o corte, e justifique. Qual das
+        modelos: AUC, custo no corte $1/6$, melhor corte e custo nele. Escolha o modelo final \emph{e} o corte, e justifique. Qual das
         colunas responde à pergunta do banco?
   \item Reajuste o modelo escolhido em todo o treino e aplique-o \textbf{uma vez} ao
         teste, no corte escolhido: a matriz de confusão, o custo médio por cliente, a
@@ -1047,16 +1036,16 @@ leitura dele pode compensar até 0,1 perdido nesta tarefa.
 \textbf{(a)} Pelo custo no corte $1/6$: floresta $m=\sqrt p$ $0{,}565$, floresta
 $p/3$ $0{,}571$, \emph{bagging} $0{,}579$, logística com \emph{dummies} $0{,}580$, árvore
 podada $0{,}586$, KNN $0{,}598$ --- todos bem abaixo de $0{,}779$. A coluna que
-responde ao banco é o custo; a AUC ordena modelos sem saber dos custos, e o Brier diz
-se o corte teórico é confiável. A floresta $m=\sqrt p$ tem o menor custo, e o melhor
+responde ao banco é o custo; a AUC resume o desempenho em todos os cortes sem saber
+dos custos, e a distância entre o melhor corte e $1/6$ diz se o corte teórico é
+confiável. A floresta $m=\sqrt p$ tem o menor custo, e o melhor
 corte dela ($0{,}16$) coincide com o teórico --- o que autoriza usar $1/6$. A logística
 com \emph{dummies}, a $0{,}015$ de distância e muito mais interpretável, é uma escolha
 igualmente defensável.
 
 \textbf{(b)} Floresta no teste, corte $1/6$: VN 3632, FP 2209, FN 386, VP 1273. Custo
 médio $0{,}552$ por cliente, contra $0{,}779$ de contatar todos (29\% menos);
-contata $46{,}4\%$ dos clientes e pega $76{,}7\%$ dos inadimplentes. AUC $0{,}787$,
-Brier $0{,}134$.
+contata $46{,}4\%$ dos clientes e pega $76{,}7\%$ dos inadimplentes. AUC $0{,}787$.
 
 \textbf{(c)} AUC: floresta $0{,}787$, logística $0{,}784$, diferença com IC
 $(-0{,}006;\ 0{,}012)$. Custo: floresta $0{,}552$, logística $0{,}538$, diferença com IC
