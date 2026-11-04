@@ -112,7 +112,7 @@ dentro do treino.
 A acurácia (1 $-$ risco 0--1) pode \textbf{enganar} em dados desbalanceados: com 10
 doentes em 1000, o classificador trivial ``todos saudáveis'' acerta 99\% --- e é
 inútil. Precisaremos de outras métricas (matriz de confusão, sensibilidade,
-precisão) --- tema da Aula~08.
+especificidade) --- tema da Aula~08.
 \end{atencao}
 
 %==============================================================================
@@ -229,8 +229,7 @@ Quando as covariáveis são de fato correlacionadas, o Bayes ingênuo conta a me
 evidência várias vezes --- se três colunas dizem quase a mesma coisa, ele as trata
 como três testemunhas independentes. O efeito é curioso e importante: a
 \emph{ordenação} das observações costuma sair boa (ele acerta quem é mais provável
-de ser da classe~1), mas as \emph{probabilidades} saem grudadas em $0$ e $1$. A
-Aula~08 mede isso.
+de ser da classe~1), mas as \emph{probabilidades} saem grudadas em $0$ e $1$.
 \end{atencao}
 
 %==============================================================================
@@ -460,8 +459,8 @@ experimente ambos e compare por validação cruzada.
         diretamente (discriminativo).
   \item \textbf{Bayes ingênuo}: independência condicional \eqref{eq:nb}, com um
         modelo univariado por covariável (\texttt{GaussianNB},
-        \texttt{BernoulliNB}, \texttt{MultinomialNB}, \dots) --- barato, mas
-        descalibra quando as covariáveis são correlacionadas.
+        \texttt{BernoulliNB}, \texttt{MultinomialNB}, \dots) --- barato, mas, com
+        covariáveis correlacionadas, empurra as probabilidades para $0$ e $1$.
   \item \textbf{LDA} (covariância comum $\to$ fronteira linear,
         Prop.~\ref{prop:lda}) e \textbf{QDA} (covariância por classe $\to$
         quadrática), com parâmetros por máxima verossimilhança. Ver
