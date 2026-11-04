@@ -125,11 +125,14 @@ igualdade; como $v(\x)/B\le v(\x)$, o risco não aumenta.
 \end{proof}
 
 \begin{ideia}
-Duas exigências da Prop.~\ref{prop:media} guiam tudo o que segue: precisamos de
-preditores (i) \textbf{não-viesados} --- por isso usamos árvores \emph{não podadas}
-(profundas, baixo viés) --- e (ii) \textbf{pouco correlacionados} --- o ponto fraco,
-que as florestas aleatórias atacam diretamente. Quanto menor a correlação, mais a
-variância cai.
+Duas hipóteses da Prop.~\ref{prop:media} guiam tudo o que segue: ela supõe
+preditores (i) \textbf{não-viesados} --- por isso, em geral, usam-se árvores
+profundas, sem poda, de viés baixo --- e (ii) \textbf{pouco correlacionados} --- o
+ponto fraco, que as florestas aleatórias atacam diretamente. Quanto menor a correlação, mais a
+variância cai. Não podar é a escolha usual, não uma exigência: medido na população
+da figura das florestas, o \emph{bagging} de árvores podadas ($\alpha=0{,}2$) teve
+erro $1{,}328$, contra $1{,}373$ com árvores profundas, porque a média não elimina o
+piso $\rho\,v$.
 \end{ideia}
 
 %==============================================================================

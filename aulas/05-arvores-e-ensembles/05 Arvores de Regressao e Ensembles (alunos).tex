@@ -238,10 +238,10 @@ igualdade; como $v(\x)/B\le v(\x)$, o risco não aumenta.
 \end{proof}
 
 \begin{ideia}
-Duas exigências da Prop.~\ref{prop:media} guiam tudo o que segue: precisamos de
-preditores (i) \textbf{não-viesados} --- por isso usamos árvores \emph{não podadas}
-(profundas, baixo viés) --- e (ii) \textbf{pouco correlacionados} --- o ponto fraco,
-que as florestas aleatórias atacam diretamente.
+Duas hipóteses da Prop.~\ref{prop:media} guiam tudo o que segue: ela supõe
+preditores (i) \textbf{não-viesados} --- por isso, em geral, usam-se árvores
+profundas, sem poda, de viés baixo --- e (ii) \textbf{pouco correlacionados} --- o
+ponto fraco, que as florestas aleatórias atacam diretamente.
 \end{ideia}
 
 \begin{observacao}[o que acontece quando a hipótese falha]
@@ -270,6 +270,19 @@ tamanho $n$) e ajuste nela uma árvore \emph{profunda} (não podada) $g_b$. A pr
 Note a divisão de trabalho: as árvores são profundas (para ter viés baixo, condição
 (i)) e a média cuida da variância. Sozinha, cada árvore superajusta
 descaradamente --- e é para isso que ela está ali.
+
+Não podar é a escolha usual ([ISLP] §8.2.1), e não uma exigência. A média não
+reduz o viés, mas também não elimina o piso $\rho\,v(\x)$ da observação acima, e
+árvores podadas, com viés maior e variância bem menor, podem dar um \emph{bagging}
+melhor. Medimos isso na população da Figura~\ref{fig:numeroarvores} ($n=150$, $p=8$
+e ruído com desvio-padrão $1{,}5$), com $B=100$ árvores e $40$ conjuntos de treino
+independentes. Com árvores profundas, o erro quadrático médio de estimação,
+$\E\big[(g(\x)-r(\x))^2\big]$ em média sobre $\x$, foi $1{,}373$; com árvores podadas
+por custo--complexidade com $\alpha=0{,}2$, foi $1{,}328$. A poda elevou o viés$^2$
+de $0{,}876$ para $1{,}049$ e a correlação entre as árvores de $0{,}127$ para
+$0{,}180$, mas reduziu a variância de cada árvore de $3{,}75$ para $1{,}52$, e o piso
+$\rho\,v$ caiu de $0{,}477$ para $0{,}274$. A diferença é pequena, e o sentido dela
+depende do problema; é mais um hiperparâmetro a escolher por validação cruzada.
 
 %==============================================================================
 \section{Florestas aleatórias}
