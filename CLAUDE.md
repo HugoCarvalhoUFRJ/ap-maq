@@ -26,8 +26,8 @@ existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
   fica). Do mesmo modo, a prova e o Trabalho Prático 01 não citam aula pelo número.
 - **O deck manda.** Os slides são o que os alunos veem. Assunto que não está no deck não
   entra nas notas, no laboratório nem nas listas sem falar com o Gabriel; se entra no deck,
-  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07 e 09 e, em
-  parte, à 08; nas outras não corte por conta própria. Se uma medição contradiz o deck, o que
+  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07, 08 e 09; nas
+  outras não corte por conta própria. Se uma medição contradiz o deck, o que
   fazer é decisão dele.
 - **Meça antes de afirmar.** Os números do material foram medidos rodando o código, e várias
   afirmações de livro não se reproduziram. Medição nova é afirmação nova: confira-a contra
@@ -63,7 +63,8 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   **locais**. `pdftotext -layout` acusa diferenças de espaçamento que não existem; para
   conferir texto, compare por multiconjunto de caracteres ou use `-bbox`.
 - **Numeração citada de fora:** a Prop. 3.2 das notas do aluno da 03 (atalho do LOOCV) é
-  citada pelas da 04; a Prop. 3.1 da 08 (corte ótimo) é citada pela E3. Fórmula nova
+  citada pelas da 04; a Prop. 3.1 da 08 (corte ótimo) é citada pelo laboratório e pela
+  Lista teorica da 08, pelas notas e pela Lista teorica da 10 e pela E3. Fórmula nova
   nessas notas entra sem número. Ao procurar remissão num `.tex`, procure também com
   quebra de linha no meio (`Aula` / `prática 11`).
 
@@ -85,6 +86,11 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   $\hat\beta/(1+\lambda)$ no Ridge). No scikit-learn o `Lasso` minimiza
   $\frac1{2n}$RSS $+\,\alpha\|\beta\|_1$: é a nossa convenção com $\lambda=2n\alpha$, e o
   fator até o `alpha` do `Ridge` é $2n$ (é $n$ no `ElasticNet` com `l1_ratio=0`).
+- **Corte e custos, como no deck da 08:** o corte de um classificador *plug-in* é $p_0$
+  (no código, `p0`), e os custos são $\ell_0$, de um falso negativo, e $\ell_1$, de um
+  falso positivo (o índice é a decisão tomada no erro), com corte ótimo
+  $\ell_1/(\ell_0+\ell_1)$. Vale nas notas, nas listas, nas notas da 10 e no TP01
+  ($\ell_0=5$, $\ell_1=1$); o [AME] escreve $K$ e $l_0,l_1$.
 - **Matriz de confusão: previsto nas linhas, real nas colunas** (como [AME] e [ISLP]); o
   `confusion_matrix` devolve a transposta, e o material avisa.
 - **O conjunto dos $k$ vizinhos é $\mathcal{N}_{\x}^{(k)}$**, como nos decks 04 e 10, com
@@ -110,7 +116,15 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
 - **05.** Árvore, poda, agregação, *bagging* e florestas. Não reintroduza *boosting*, OOB nem
   importância de variáveis. Ficam de propósito a correlação $\rho$ e o piso $\rho v$: nas
   notas, na Lista teorica 05 (Ex. 4) e na Lista prática 05 (Ex. 2); se sair, saem os três.
-  Outras aulas citam OOB e *boosting* como conceito, sem ponteiro para a 05.
+  Outras aulas citam OOB e *boosting* como conceito, sem ponteiro para a 05. Sobre não
+  podar as árvores do *bagging*: o deck diz "A conta supõe $g_b$ não viesadas $\Rightarrow$
+  em geral, árvores profundas, sem poda", e as notas dizem que é a escolha usual
+  ([ISLP] §8.2.1), não uma exigência. A versão do aluno traz a medição, feita na população
+  da `05-numero-arvores` com o protocolo do Ex. 2 da Lista prática 05 ($B=100$, 40
+  conjuntos de treino): EQM $1{,}373$ com árvores profundas e $1{,}328$ com
+  `ccp_alpha=0.2`, porque a poda derruba $v$ ($3{,}75\to1{,}52$) e o piso $\rho v$
+  ($0{,}477\to0{,}274$) mais do que sobe o viés$^2$ ($0{,}876\to1{,}049$). Refeita na
+  1.9 em 04/11/2026, com os mesmos números da medição de setembro.
 - **06.** O laboratório e a lista prática cobrem só o que o deck cobre: sensibilidade à
   escala, $\mu$ e $\sigma$ aprendidos, o `Pipeline` e `Pipeline` + `GridSearchCV`. Não
   reintroduza neles vazamento por seleção, agrupamento, `ColumnTransformer` nem busca no
@@ -119,13 +133,22 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
 - **07.** Notas, laboratório e listas seguem o deck, na ordem dele (Bayes ingênuo, LDA, QDA,
   logística). Fora de propósito: regressão sobre indicadores, a comparação de escala no
   laboratório e o `C` (nenhum material do aluno da 07 o define). Nas notas sem estar no
-  deck, de propósito: as caixas "a acurácia engana" e "o preço do ingênuo" (a 08 as cita) e
-  a observação do que se transfere da regressão.
-- **08.** O laboratório tem cinco seções e acaba na ROC e na AUC: não tem $F_1$, custos,
-  precisão–revocação, `class_weight`, calibração nem `scoring` (o corte ótimo segue no
-  deck e nas notas). A Lista prática 08 acompanha o laboratório, também sem custos, e é a
-  primeira lista prática no registro novo; a Lista teorica 08 pede só as métricas do deck.
-  O deck e o resto da aula ainda não coincidem: ver "Pendências".
+  deck, de propósito: as caixas "a acurácia engana" (a 08 a cita) e "o preço do ingênuo"
+  (a 10, a E3 e as listas teóricas 10 e E3 se apoiam nela para dizer que o Bayes ingênuo
+  empurra as probabilidades para 0 e 1), a observação do que se transfere da regressão e,
+  por decisão dele, a razão de chances e a penalização $\ell_1/\ell_2$ da logística, que é
+  o remédio da caixa da separação perfeita.
+- **08.** Toda a aula segue o deck (18 slides): a matriz de confusão, a sensibilidade
+  (TPR), a especificidade e a FPR, o corte ótimo (Prop. 3.1) e a ROC, com a AUC como área.
+  Por decisão dele, em 04/11/2026, saíram das notas, do laboratório e das listas: precisão,
+  VPN e $F_1$; o risco como média das taxas ponderada pelas prevalências (e a acurácia
+  como média das taxas de acerto); a AUC como probabilidade; os custos inversamente
+  proporcionais às prevalências (o critério $S+E$); a curva precisão–revocação; dados
+  desbalanceados (`class_weight`, reamostragem); e calibração, Brier e entropia cruzada.
+  Não reintroduza nada disso: as aulas 07, 10 e E3 e o TP01 foram acertados para não
+  depender deles. A figura `08-calibracao` saiu; a `08-roc-metricas` mostra, à direita, a
+  TPR e a FPR em função do corte. O laboratório tem cinco seções e acaba na ROC e na AUC;
+  a Lista prática 08 o acompanha, na história de Marta.
 - **09.** O deck é o único em Beamer (adiante). Deck e notas usam só o $C$ do [ISLP], o
   orçamento de violações, e não têm a forma penalizada, o `C` do scikit-learn, a perda
   *hinge* nem a relação com a regressão logística. Nos dois, a forma
@@ -161,8 +184,12 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   04 e 05. No slide "Criação da árvore", as três medidas são de uma região (o Gini não tem
   o $\sum_R$ do [AME]) e o $E$ é "usado na poda; para crescer, usa-se $G$ ou $D$"; o slide
   seguinte mostra a impureza ponderada $n_1G(R_1)+n_2G(R_2)$. As notas vão além do deck
-  (*ensembles*, a comparação dos classificadores, a caixa da calibração), e a reescrita no
-  registro novo não mexeu nisso. Nelas, a pergunta "como uma árvore decide..." abre a
+  (*ensembles*, a comparação dos classificadores e a caixa sobre probabilidade e escore), e
+  a reescrita no registro novo não mexeu nisso. Notas, laboratório e listas não usam AP,
+  Brier nem calibração (04/11/2026): a comparação no banco usa acurácia e AUC, e o Ex. 4 da
+  Lista prática 10 lê as probabilidades do AdaBoost (de $0{,}21$ a $0{,}81$) como
+  impróprias para o corte de custo da 08. Com $0{,}9702$ de acurácia, o AdaBoost é o
+  quarto, atrás da logística e das duas SVM; na AUC, o terceiro. Nelas, a pergunta "como uma árvore decide..." abre a
   seção 2.2, onde é respondida, e a entropia é em $\log_2$, como na figura `10-impureza`. O
   exemplo do tomógrafo usa o Gini ponderado, $19/60\approx0{,}317$ (leitos) e
   $7/15\approx0{,}467$ (cardiologia); os $0{,}326$ e $0{,}472$ do [AME] somam
@@ -173,8 +200,12 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   e avaliar", mas o `ccp_alpha` poda pela impureza das folhas (o
   `cost_complexity_pruning_path` devolve a soma delas); o erro só entra quando a validação
   cruzada escolhe o `ccp_alpha`.
-- As notas do aluno da 05 e da 07 não têm "Para praticar"; "Prática em Python" saiu das
-  notas 04 a 10.
+- **E3.** As notas definem, na seção de avaliação, a precisão, a revocação (a
+  sensibilidade da 08), o $F_1$ e a precisão média (AP), que o laboratório e as listas da E3
+  usam e que a 08 não tem. As remissões à 08 ficam para a matriz de confusão e o corte
+  ótimo.
+- Nenhuma nota nem laboratório tem "Para praticar" (saiu de todos em 04/11/2026: pressupunha
+  o repositório e o gabarito); "Prática em Python" saiu das notas 04 a 10.
 
 ## Figuras, notebooks e os acoplamentos entre eles
 
@@ -310,6 +341,13 @@ aluno e `- resolucao.ipynb`, a resolução de referência. Cobre as aulas 01 a 1
   Os notebooks os procuram em `../recursos/dados/` (um nível só).
 - O enunciado exige scikit-learn 1.6 ou mais, e a primeira célula do modelo confere.
 - A SVM roda numa subamostra de 5000, fixada no enunciado, para caber nos 20 minutos.
+- A C4 ("Métricas e custos", 1,0 ponto) usa só o que o deck da 08 tem: a matriz e as taxas
+  no corte 0,5, as curvas ROC com a AUC, o custo no corte $1/6$ contra o melhor corte de
+  cada modelo e as probabilidades extremas do Bayes ingênuo (aula 07). Saíram, em
+  04/11/2026, precisão, VPN, $F_1$, AP, Brier, calibração e `class_weight`; a C5(d), a
+  C6(c) e a C7 foram acertadas junto.
+- Por decisão dele, o prazo fica "a definir pelo professor", o valor em 10,0, e o enunciado
+  não trata de assistentes de IA.
 
 ## Dados
 
@@ -360,29 +398,10 @@ vigilância.
 
 ## Pendências que são do Gabriel
 
-- **Aula 08, o escopo.** O deck (18 slides) vai da matriz de confusão à definição da AUC.
-  Não tem precisão–revocação, AP, `class_weight`, calibração, Brier nem `scoring`, que as
-  notas e a tarefa C4 do TP01 usam, e para onde as aulas 07, 09, 10 e E3 apontam. Ou o
-  deck cresce, ou o conteúdo sai e as remissões são redirecionadas.
-  Saíram do deck e seguem nas notas a decomposição do risco pelas taxas e a AUC como
-  probabilidade (a Observação 3.2 se apoia nelas).
-- **$F_1$:** fora do deck, do laboratório e das listas da 08; segue nas notas da 08, na E3,
-  no planejamento e na tarefa C4(a) do TP01.
-- **Aula 08, notação:** o corte é $K$ nas notas, $p_0$ no deck, $t$ no laboratório e na
-  Lista prática 08; os custos são $l_0,l_1$ nas notas, $\ell_0,\ell_1$ no deck e
-  $c_{FP},c_{FN}$ no resto.
-- **`MatConf.pdf`** (aula 08) e **`slide-figuras/9-12.pdf`** (aula 09): nenhum material
-  aponta mais para eles; continuam na pasta.
-- **Aula 07:** a razão de chances e a penalização saíram do deck e seguem nas notas.
-- **Aula 09:** o planejamento ainda lista "relação com regressão logística" na aula 09; a
-  perda *hinge* e a forma penalizada saíram do deck, das notas, das duas listas e do
-  laboratório.
-- **"Para praticar"** diz "nesta mesma pasta" e "com gabarito", o que pressupõe o
-  repositório; saiu das notas do aluno da 05 e da 07 e segue nas outras.
-- **Aula 05:** medido, o *bagging* com árvores podadas tem risco um pouco menor, o contrário
-  do "não podar as árvores!" do deck. Não entrou em material nenhum.
-- **TP01:** prazo (`\prazo`), valor (`\valortotal`, hoje 10,0) e política sobre assistentes
-  de IA (o enunciado não menciona).
+- **Aula 10, o escopo.** O deck só cita *bagging* e florestas ("podem ser acopladas"). As
+  notas, o laboratório e as listas têm AdaBoost, o `max_features`, a comparação dos
+  classificadores do curso e o caso real da §7 do laboratório. Ou o deck cresce, ou esse
+  conteúdo sai.
 
 ## Slides em HTML
 
@@ -420,7 +439,8 @@ recompilar do fonte.
 - 04: slide novo "KNN - os pesos dos vizinhos"; grade só com `weights`; agradecimento
   datado ("edição de 2022/02 desta disciplina, então na UFRJ");
 - 05: floresta como "menos opções: em cada nó, só $m<p$ covariáveis sorteadas"; saíram os
-  três slides e o tópico de importância de covariáveis;
+  três slides e o tópico de importância de covariáveis; em "*Bagging* - atenção!", "A conta
+  supõe $g_b$ não viesadas $\Rightarrow$ em geral, árvores profundas, sem poda";
 - 06: "Prós e contras do `StandardScaler`";
 - 07: seção de regressão logística (seis slides); `MultinomialNB`; erros de digitação;
 - 08: o slide "Veja `MatConf.pdf`" virou sete (matriz de confusão, doença rara, TPR, FPR,
