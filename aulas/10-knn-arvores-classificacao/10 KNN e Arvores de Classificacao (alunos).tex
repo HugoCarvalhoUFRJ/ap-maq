@@ -363,7 +363,7 @@ A tabela resume os classificadores vistos no curso.
 \midrule
 Logística & linear (no \emph{log-odds}) & alta (coefs.) & dá probabilidades; robusta \\
 LDA / QDA & linear / quadrática & média & ótimos sob gaussianidade \\
-Bayes ingênuo & depende & média & forte com texto; descalibra se há correlação \\
+Bayes ingênuo & depende & média & forte com texto; com correlação, probabilidades extremas \\
 KNN & muito flexível, local & baixa & sensível a escala e dimensão \\
 Árvore & ``escada'' (eixos) & \textbf{altíssima} & instável sozinha \\
 Florestas / Boosting & muito flexível & baixa & topo de desempenho em dados tabulares \\
@@ -377,8 +377,9 @@ Nenhum método é melhor que os outros em todos os problemas; é o que se costum
 resumir na expressão ``não existe almoço grátis''. A escolha depende da estrutura dos
 dados e do objetivo da análise, e quatro perguntas resolvem a maioria dos casos:
 \begin{enumerate}[leftmargin=1.6cm,nosep]
-  \item Preciso de probabilidades calibradas? Se sim, use a logística; se não,
-        qualquer um serve (Aula~08).
+  \item Preciso de boas estimativas de $\Prob(Y=1\mid\x)$, por exemplo para usar o
+        corte ótimo da Aula~08? Se sim, prefira a logística; se não, qualquer um
+        serve.
   \item Preciso explicar a decisão a alguém? Se sim, use uma árvore ou a logística.
   \item Há muitas covariáveis irrelevantes? Então evite o KNN e a SVM com
         \emph{kernel} radial, que somam todas as coordenadas na distância, e prefira
@@ -392,29 +393,29 @@ ao problema.
 \end{ideia}
 
 \begin{atencao}[o que a tabela não mostra: probabilidade não é escore]
-A primeira das quatro perguntas, sobre probabilidades calibradas, parece uma
-preferência de estilo, mas é uma restrição. A §7 da \texttt{Aula prática 10} compara
+A primeira das quatro perguntas, sobre as probabilidades, parece uma preferência
+de estilo, mas é uma restrição. A §7 da \texttt{Aula prática 10} compara
 os sete métodos numa base em que a classe positiva é rara ($10\%$ das observações) e
 mede duas coisas que vale guardar.
 
 \emph{A acurácia deixa de distinguir os métodos.} Ela varia de $0{,}8989$ a
 $0{,}9072$ entre os sete, uma faixa de menos de um ponto percentual, e quatro deles
 empatam exatamente em $0{,}8989$, a acurácia de quem responde ``não'' para todos,
-porque nunca preveem a classe positiva. Na mesma tabela, a precisão média (AP) varia
-de $0{,}119$ a $0{,}453$, por um fator de quase quatro. Com uma classe rara, a
-acurácia é dominada pela classe majoritária e não mede o que interessa.
+porque nunca preveem a classe positiva. Na mesma tabela, a AUC vai de $0{,}554$, perto
+do sorteio, a $0{,}834$. Com uma classe rara, a acurácia é dominada pela classe
+majoritária e não mede o que interessa.
 
 \emph{O corte por custo pode não separar ninguém.} Para um falso negativo que custa
 vinte falsos positivos, o corte ótimo da Aula~08 é
-$c_{FP}/(c_{FP}+c_{FN})=1/21\approx0{,}0476$. Com ele, a árvore podada e o AdaBoost
+$\ell_1/(\ell_0+\ell_1)=1/21\approx0{,}0476$. Com ele, a árvore podada e o AdaBoost
 mandam investigar todos os clientes, porque as probabilidades que eles produzem quase
 nunca ficam abaixo de $0{,}05$. A cada mil clientes, entre os quais há $101$
 positivos, a logística manda investigar $410$ e encontra $82$, e a SVM manda $493$ e
 encontra $89$.
 
-O corte $c_{FP}/(c_{FP}+c_{FN})$ é ótimo quando as probabilidades estimadas são
-calibradas. Antes de usá-lo, confira a calibração do modelo (Aula~08) ou calibre-o, o
-que é barato.
+O corte $\ell_1/(\ell_0+\ell_1)$ é ótimo para as probabilidades verdadeiras
+(Proposição~3.1 da Aula~08). Aplicado às estimativas de um modelo, ele herda os erros
+delas, e só faz sentido com um modelo que estime bem $\Prob(Y=1\mid\x)$.
 \end{atencao}
 
 %==============================================================================

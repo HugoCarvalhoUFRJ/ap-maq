@@ -171,7 +171,7 @@ SVM (kernel) & linear ou não linear & baixa & ótima com classes separadas \\
 \begin{ideia}
 Nenhum método é melhor que os outros em todos os problemas (``não existe almoço
 grátis''). A escolha depende da estrutura dos dados e do objetivo: são necessárias
-probabilidades calibradas? interpretabilidade? há muitas covariáveis irrelevantes? a
+boas estimativas de $\Prob(Y=1\mid\x)$? interpretabilidade? há muitas covariáveis irrelevantes? a
 fronteira é não linear? Compare alguns candidatos por validação cruzada, com as
 métricas adequadas (Aula~08).
 \end{ideia}
@@ -184,15 +184,15 @@ fronteiras de decisão lado a lado. É o melhor jeito de fixar a oposição entr
 flexíveis e rígidos, que percorreu o curso inteiro.
 \end{emsala}
 
-\begin{emsala}[o item ``probabilidades calibradas'' não é preferência]
+\begin{emsala}[o item das probabilidades não é preferência]
 A §7 da \texttt{Aula prática 10} refaz a tabela numa base em que a classe positiva é
 rara ($10\%$ das observações). Vale mostrar as duas medições:
 
 \begin{itemize}[leftmargin=1.2cm,nosep]
   \item a acurácia varia de $0{,}8989$ a $0{,}9072$ entre os sete métodos, e quatro
         deles empatam exatamente com quem responde ``não'' para todos, porque nunca
-        preveem a classe positiva; na mesma tabela, a AP varia de $0{,}119$ a
-        $0{,}453$;
+        preveem a classe positiva; na mesma tabela, a AUC vai de $0{,}554$ a
+        $0{,}834$;
   \item com o corte de custo $1{:}20$ da Aula~08, $1/21\approx0{,}0476$, a árvore
         podada e o AdaBoost mandam investigar todos os clientes, porque as
         probabilidades deles quase nunca ficam abaixo de $0{,}05$; a cada mil
@@ -200,9 +200,9 @@ rara ($10\%$ das observações). Vale mostrar as duas medições:
         $410$ e encontra $82$, e a SVM manda $493$ e encontra $89$.
 \end{itemize}
 
-O ponto a registrar no quadro: o corte ótimo é ótimo para probabilidades
-calibradas. Pergunte à turma o que fazer com um modelo que ordena bem e calibra mal;
-a resposta vem da Aula~08, e é calibrar, não trocar de modelo.
+O ponto a registrar no quadro: o corte ótimo da Aula~08 é ótimo para as
+probabilidades verdadeiras e, aplicado a estimativas, herda os erros delas. Pergunte à
+turma por que a árvore podada e o AdaBoost mandam investigar todos os clientes.
 \end{emsala}
 
 %==============================================================================

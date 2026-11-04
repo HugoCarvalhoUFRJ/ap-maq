@@ -234,17 +234,20 @@ SVM com RBF & fronteira suave; similaridade decai com a distância euclidiana & 
 Bayes e KNN (a proporção entre os $k$ vizinhos). A árvore dá a proporção da folha.
 A \textbf{SVM não dá}: ela devolve uma distância com sinal, não uma
 probabilidade, e o \texttt{predict\_proba} do \texttt{scikit-learn} só existe com
-\texttt{probability=True}, que ajusta uma calibração de Platt \emph{por cima} do
-modelo, com validação cruzada interna.
+\texttt{probability=True}, que ajusta \emph{por cima} do modelo, com validação
+cruzada interna, uma regressão logística sobre essa distância (o método de Platt).
 
 Numa conta de custo esperado (Exercício~2 da Lista Teórica~08) o que importa não
-é ter um número entre 0 e 1, é ele ser \textbf{calibrado}. A logística é a mais
-confiável nesse quesito, por construção --- ela maximiza a verossimilhança de
-Bernoulli, que é uma regra de pontuação própria. O naive Bayes é o pior, pelo
-motivo medido na Lista prática~08. KNN e árvores dão probabilidades grosseiras,
-com granularidade $1/k$ e $1/n_{\text{folha}}$ respectivamente. Para qualquer um
-deles, vale conferir com uma curva de calibração antes de usar o número numa
-decisão de custo.
+é ter um número entre 0 e 1, é ele \textbf{estimar bem} $\Prob(Y=1\mid\X=\x)$,
+porque o corte ótimo da Proposição~3.1 da Aula~08 foi deduzido para as
+probabilidades verdadeiras. Entre os métodos da tabela, a logística é a que as
+estima com menos suposições: modela $\Prob(Y=1\mid\X=\x)$ diretamente, sem supor
+nada sobre a distribuição de $\X$, enquanto LDA, QDA e naive Bayes só acertam a
+probabilidade se a forma suposta para $\X\mid Y$ estiver certa. O naive Bayes é o
+caso mais delicado: com covariáveis correlacionadas, ele conta a mesma evidência
+várias vezes e empurra as probabilidades para $0$ e $1$ (Aula~07). KNN e árvores
+dão probabilidades grosseiras, com granularidade $1/k$ e $1/n_{\text{folha}}$
+respectivamente.
 
 \smallskip
 \textbf{(c)} É a \textbf{árvore}. (Fora da tabela, os \emph{ensembles} de árvores
