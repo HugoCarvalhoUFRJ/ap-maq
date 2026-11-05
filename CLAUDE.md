@@ -314,17 +314,30 @@ Irmã de `aulas/` e `recursos/`. As Avaliações Presenciais de 2025-02 em
 **duplica de propósito** ~30 linhas do `estilo-lista.sty` (a pasta está a um nível da raiz,
 não a dois); se mexer num, o outro acompanha.
 
-- **Fonte única.** O corpo de cada exercício mora em `exercicios/ex-NN-slug.tex` e entra por
-  `\input` na lista de revisão (os onze) e na prova (os três sorteados); nenhum `.tex` de
-  topo tem prosa de exercício. A pontuação por item vem de `\pts{}`, que só aparece com
-  `\provatrue`. O `NN` do arquivo é o número do exercício na lista, mantido à mão: ao tirar
-  ou pôr um, renomeie os seguintes e atualize os `\input` da lista **e** da prova.
-- **O sorteio** (semente `20260914`, uma aula por questão, registrado no topo do `.tex`) deu
-  os Ex. 5, 7 e 11. Rodou uma vez e vale. São 4,0 pontos por questão, 12,0 no total, 2 horas.
+- **Fonte única.** O corpo de cada exercício mora num `ex-NN-slug.tex`, em `exercicios/` (a
+  lista 01-06) ou em `exercicios-07-10/` (a lista 07-10), e entra por `\input` na lista e na
+  prova; nenhum `.tex` de topo tem prosa de exercício. A pontuação por item vem de `\pts{}`,
+  que só aparece com `\provatrue`. O `NN` do arquivo é o número do exercício na lista,
+  mantido à mão: ao tirar ou pôr um, renomeie os seguintes e atualize os `\input` da lista
+  **e** da prova.
+- **O sorteio da P1** (semente `20260914`, uma aula por questão, registrado no topo do `.tex`)
+  deu os Ex. 5, 7 e 11 da lista 01-06. Rodou uma vez e vale. São 4,0 pontos por questão, 12,0
+  no total, 2 horas.
 - **A prova não revela a aula de cada questão:** sem marcador no título, sem "Aula NN" no
   enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
-  prova, confira o texto dos sorteados. E as soluções dos Ex. 1, 4 e 8 usam `\ref` com
-  rótulos que só existem na lista: sorteados, imprimiriam `??` no gabarito da prova.
+  prova, confira o texto dos sorteados. E as soluções dos Ex. 1, 4 e 8 da lista 01-06 usam
+  `\ref` com rótulos que só existem na lista: sorteados, imprimiriam `??` no gabarito da prova.
+- **A lista 07-10** tem doze exercícios, três por aula, e a P2 ainda não foi sorteada dela.
+  Seguem o deck (mais as caixas que as notas da 07 mantêm de propósito) e nada do que saiu da
+  08: os custos saem de contagens, $\ell_1\mathrm{FP}+\ell_0\mathrm{FN}$, e nunca da média das
+  taxas ponderada pelas prevalências. Todo enunciado é autocontido (sem aula pelo número, sem
+  citar outro exercício) e nenhuma solução usa `\ref`. Antes de montar a P2, o
+  `\cabecalhoprova` precisa receber a notação da caixa de instruções como argumento, porque
+  ela hoje imprime a de regressão (perda quadrática); a P1 tem de sair idêntica depois disso.
+- **Gini contra entropia, medido em 05/11/2026** (Ex. 12 da lista 07-10): em todos os pares de
+  divisões possíveis de nós com 10 a 40 observações, as duas medidas discordam em cerca de 2%
+  dos pares, e exigir filhos com 5 ou mais observações quase não muda isso. Não afirme que as
+  discordâncias se concentram em folhas pequenas: a medição não sustenta.
 - Para conferir lista contra prova, olhe a fonte (os `\input`); `pdftotext` dos dois PDFs
   serializa a matemática em ordens diferentes e acusa diferenças falsas.
 
