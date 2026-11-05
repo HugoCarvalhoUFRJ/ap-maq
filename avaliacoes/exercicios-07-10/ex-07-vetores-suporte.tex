@@ -1,0 +1,123 @@
+% Aula 09 --- a margem máxima depende só dos vetores de suporte, e o LOOCV fica limitado por |S|/n.
+Tiago trabalha no controle de qualidade de uma fábrica e classifica peças em boas ($y=+1$) e
+defeituosas ($y=-1$) a partir de $p$ medidas. As suas $n$ observações de treino
+$(\x_i,y_i)$ são linearmente separáveis, e cada classe tem pelo menos duas observações. O
+classificador de margem máxima é dado pela solução do problema
+\[
+  \max_{\beta_0,\,\bbeta,\,M}\ M
+  \quad\text{sujeito a}\quad
+  \sum_{j=1}^p\beta_j^2=1
+  \quad\text{e}\quad
+  y_i\,(\beta_0+\bbeta^\top\x_i)\ge M,\ \ i=1,\dots,n .
+\]
+Escreva $f(\x)=\beta_0+\bbeta^\top\x$. Os vetores de suporte são as observações com
+$y_if(\x_i)=M$, e $\mathcal S$ é o conjunto dos seus índices. Admita que, para observações
+separáveis com as duas classes presentes, o problema tem solução, e seja $M^*>0$ o valor
+ótimo. As notas afirmam, sem demonstrar, que essa solução depende apenas dos vetores de
+suporte; Tiago quer a demonstração e quer saber o que ela lhe dá.
+\begin{itens}
+  \item \pts{1,0} Mostre que a solução é única. (Se houvesse duas soluções com vetores
+        $\bbeta$ diferentes, compare-as com o ponto médio entre elas. Se tivessem o mesmo
+        $\bbeta$, olhe, como funções de $\beta_0$, o menor valor de $y_if(\x_i)$ em cada
+        classe.)
+  \item \pts{1,4} Seja $i_0\notin\mathcal S$. Mostre que o classificador de margem máxima
+        das $n-1$ observações sem a observação $i_0$ é o mesmo das $n$ observações. (Se o
+        valor ótimo sem $i_0$ fosse maior que $M^*$, combine a solução nova com a antiga, com
+        peso pequeno na nova.) Mostre também que deslocar $\x_{i_0}$ para qualquer ponto
+        $\x'$ com $y_{i_0}f(\x')>M^*$, em que $f$ é a função da solução, não muda o
+        classificador.
+  \item \pts{1,0} A estimativa do risco por validação cruzada com uma observação deixada de
+        fora (LOOCV) é a proporção das observações $i$ que o classificador ajustado sem $i$
+        classifica errado. Mostre que, para o classificador de margem máxima, ela é no
+        máximo $\abs{\mathcal S}/n$.
+  \item \pts{0,6} Tiago ajusta o classificador a $60$ peças e encontra $3$ vetores de
+        suporte. O que ele pode afirmar sobre a estimativa LOOCV sem fazer mais nenhum ajuste?
+        Ele refaz os $60$ ajustes e não encontra erro nenhum. Isso contradiz o item (c)? O que
+        a cota não garante?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Sejam $(\beta_0,\bbeta,M^*)$ e $(\beta_0',\bbeta',M^*)$ duas soluções, e
+$(\bar b,\bar{\bm w})$ o ponto médio de $(\beta_0,\bbeta)$ e $(\beta_0',\bbeta')$. Para cada
+$i$,
+\[
+  y_i\big(\bar b+\bar{\bm w}^\top\x_i\big)
+  =\tfrac12\big[y_i(\beta_0+\bbeta^\top\x_i)+y_i(\beta_0'+\bbeta'^\top\x_i)\big]\ \ge\ M^* .
+\]
+Suponha $\bbeta\ne\bbeta'$. Como $\norm{\bbeta}=\norm{\bbeta'}=1$, a desigualdade de
+Cauchy--Schwarz dá $\bbeta^\top\bbeta'<1$, com desigualdade estrita porque a igualdade
+exigiria $\bbeta'=\bbeta$, e
+$\norm{\bar{\bm w}}^2=\tfrac14\big(2+2\,\bbeta^\top\bbeta'\big)<1$. Também
+$\bar{\bm w}\ne\bm0$: do contrário, $y_i\bar b\ge M^*>0$ para todo $i$, o que exigiria
+$\bar b>0$ nas observações da classe $+1$ e $\bar b<0$ nas da classe $-1$. Dividindo
+$(\bar b,\bar{\bm w})$ por $\norm{\bar{\bm w}}\in(0,1)$, obtém-se um vetor de norma $1$ com
+$y_i(\cdot)\ge M^*/\norm{\bar{\bm w}}>M^*$ para todo $i$, o que contradiz a otimalidade de
+$M^*$. Logo $\bbeta=\bbeta'$.
+
+Com $\bbeta$ fixado, sejam
+$m_+(b)=\min_{i:\,y_i=+1}(b+\bbeta^\top\x_i)$ e $m_-(b)=\min_{i:\,y_i=-1}(-b-\bbeta^\top\x_i)$,
+de modo que a margem do hiperplano $(b,\bbeta)$ é $\min\{m_+(b),m_-(b)\}$. A função $m_+$ é
+estritamente crescente, e $m_-$, estritamente decrescente. Suponha $\beta_0<\beta_0'$. Então
+$m_-(\beta_0)>m_-(\beta_0')\ge M^*$, e, como o mínimo em $\beta_0$ vale $M^*$, é
+$m_+(\beta_0)=M^*$; do mesmo modo, $m_+(\beta_0')>m_+(\beta_0)=M^*$ e $m_-(\beta_0')=M^*$. No
+ponto médio $b=(\beta_0+\beta_0')/2$, $m_+(b)>m_+(\beta_0)=M^*$ e $m_-(b)>m_-(\beta_0')=M^*$:
+o hiperplano $(b,\bbeta)$ teria margem maior que $M^*$, um absurdo. Logo $\beta_0=\beta_0'$, e
+a solução é única.
+
+\smallskip
+\textbf{(b)} Seja $(\beta_0^*,\bbeta^*,M^*)$ a solução com as $n$ observações e $f^*$ a função
+correspondente; como $i_0\notin\mathcal S$, vale $\delta=y_{i_0}f^*(\x_{i_0})-M^*>0$. Sem
+$i_0$, as observações continuam separáveis e com as duas classes, porque cada classe tinha
+pelo menos duas; o problema tem solução, com valor ótimo $M'$. O ponto
+$(\beta_0^*,\bbeta^*,M^*)$ satisfaz todas as restrições sem $i_0$, e portanto $M'\ge M^*$.
+
+Suponha $M'>M^*$, atingido por $(\beta_0',\bbeta')$, com função $f'$. Para $t\in(0,1]$, seja
+$(b_t,\bm w_t)=(1-t)(\beta_0^*,\bbeta^*)+t(\beta_0',\bbeta')$. Para $i\ne i_0$,
+\[
+  y_i\big(b_t+\bm w_t^\top\x_i\big)=(1-t)\,y_if^*(\x_i)+t\,y_if'(\x_i)\ \ge\ (1-t)M^*+tM'\ >\ M^* ,
+\]
+e, para $i_0$, com $c=\abs{y_{i_0}f'(\x_{i_0})-y_{i_0}f^*(\x_{i_0})}$,
+\[
+  y_{i_0}\big(b_t+\bm w_t^\top\x_{i_0}\big)\ \ge\ M^*+\delta-t\,c\ >\ M^*
+  \qquad\text{para }0<t<\delta/c
+\]
+(para todo $t$, se $c=0$). Pela desigualdade triangular,
+$\norm{\bm w_t}\le(1-t)\norm{\bbeta^*}+t\norm{\bbeta'}=1$, e $\bm w_t\ne\bm0$ pelo mesmo
+argumento do item (a). Fixe um tal $t$ e divida $(b_t,\bm w_t)$ por $\norm{\bm w_t}\le1$: os
+números $y_i(\cdot)$, todos maiores que $M^*>0$, não diminuem, e o resultado é um hiperplano
+de norma $1$ com $y_if(\x_i)>M^*$ para \emph{todas} as $n$ observações. Isso contradiz a
+otimalidade de $M^*$. Logo $M'=M^*$, e $(\beta_0^*,\bbeta^*,M^*)$, que é viável sem $i_0$ e
+atinge esse valor, é uma solução sem $i_0$; pelo item (a), aplicado às $n-1$ observações, é a
+única.
+
+Para o deslocamento, considere as $n-1$ observações sem $i_0$ mais a observação
+$(\x',y_{i_0})$. Todo ponto viável desse problema é viável sem $i_0$, e por isso o valor ótimo
+é no máximo $M^*$. A solução $(\beta_0^*,\bbeta^*,M^*)$ satisfaz as restrições sem $i_0$ e a
+nova, $y_{i_0}f^*(\x')>M^*$: é viável e atinge $M^*$, logo é ótima e, pelo item (a), a única. A
+solução não vê as observações que estão do lado certo e fora da faixa: elas podem sair ou
+mudar de lugar, desde que continuem fora dela.
+
+\smallskip
+\textbf{(c)} Para cada $i$, as observações sem $i$ são separáveis e têm as duas classes, e o
+classificador de margem máxima delas, $g_{-i}$, está bem definido. Se $i\notin\mathcal S$,
+pelo item (b) $g_{-i}$ é o classificador $g$ das $n$ observações, que classifica $\x_i$
+corretamente, porque $y_if^*(\x_i)>M^*>0$. Assim, $g_{-i}(\x_i)\ne y_i$ só pode acontecer para
+$i\in\mathcal S$, e
+\[
+  \frac1n\sum_{i=1}^n\1{g_{-i}(\x_i)\ne y_i}
+  =\frac1n\sum_{i\in\mathcal S}\1{g_{-i}(\x_i)\ne y_i}\ \le\ \frac{\abs{\mathcal S}}{n} .
+\]
+
+\smallskip
+\textbf{(d)} Com um único ajuste, Tiago sabe que a estimativa LOOCV é no máximo
+$3/60=0{,}05$: das $60$ retiradas, $57$ deixam o classificador intacto e não erram, e só as
+$3$ de vetores de suporte podem errar. Os $60$ ajustes, que mostram erro zero, não contradizem
+nada: a cota é uma desigualdade, e os vetores de suporte deixados de fora podem continuar do
+lado certo do hiperplano recalculado. Neste conjunto de dados, nenhum deles muda de lado.
+
+A cota limita uma estimativa do risco, não o risco. Ela não diz que peças futuras serão
+classificadas sem erro: o treino ser separável não significa que a população seja, e uma peça
+nova perto da fronteira pode deslocar muito o hiperplano, que é a sensibilidade a observações
+novas apontada nas notas. O que ela mostra é que a estimativa LOOCV deste classificador
+custa um ajuste em vez de $n$, desde que se aceite uma cota no lugar do número.
+\end{solucao}

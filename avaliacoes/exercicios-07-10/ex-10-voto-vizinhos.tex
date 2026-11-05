@@ -1,0 +1,117 @@
+% Aula 10 --- o voto de k vizinhos: variância que cai com k, viés que cresce com k.
+Otávio é agrônomo e usa o KNN para classificar os talhões de uma fazenda em atacados por uma
+praga ($Y=1$) ou não ($Y=0$), a partir de medidas de solo e de clima. Num talhão novo, com
+covariáveis $\x$, a probabilidade de praga é $\eta(\x)=\Prob(Y=1\mid\X=\x)=0{,}6$. O KNN
+estima essa probabilidade pela proporção de vizinhos com praga,
+$\widehat P=\frac1k\sum_{j=1}^kY_{(j)}$, em que $Y_{(1)},\dots,Y_{(k)}$ são os rótulos dos $k$
+vizinhos de $\x$ no treino, e declara praga quando $\widehat P>1/2$. Tome $k$ ímpar, para que
+não haja empate. Para isolar o papel de $k$, suponha que os rótulos dos vizinhos sejam
+independentes entre si e do rótulo $Y$ do talhão novo, e que, nos itens (a) e (b), cada um
+seja igual a $1$ com probabilidade $0{,}6$, como se todos os vizinhos estivessem no próprio
+$\x$.
+\begin{itens}
+  \item \pts{0,8} Mostre que $\E[\widehat P]=0{,}6$ e $\Var(\widehat P)=0{,}24/k$.
+  \item \pts{1,2} Seja $q_k=\Prob(\widehat P>1/2)$. Mostre que a probabilidade de o KNN errar
+        o talhão novo é $0{,}6-0{,}2\,q_k$. Calcule $q_5$ e, usando $q_1=0{,}600$,
+        $q_{15}\approx0{,}787$ e $q_{51}\approx0{,}927$, a probabilidade de erro para
+        $k=1,5,15$ e $51$. Use a desigualdade de Chebyshev para mostrar que $q_k\to1$ e que a
+        probabilidade de erro tende a $0{,}4$. Que classificador erra com probabilidade
+        $0{,}4$ nesse talhão?
+  \item \pts{1,2} Na fazenda real, só os $9$ talhões de treino mais próximos de $\x$ têm
+        $\eta=0{,}6$; do décimo vizinho em diante, eles vêm de uma região em que a
+        probabilidade de praga é $0{,}2$. Mantida a independência, a tabela dá $q_k$ e a
+        probabilidade de erro no talhão novo:
+        \begin{center}\small
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{@{}lcccccc@{}}
+        \toprule
+        $k$ & $1$ & $5$ & $9$ & $15$ & $25$ & $51$ \\
+        \midrule
+        $q_k$ & $0{,}6000$ & $0{,}6826$ & $0{,}7334$ & $0{,}3037$ & $0{,}0381$ & $0{,}0001$ \\
+        erro & $0{,}4800$ & $0{,}4635$ & $0{,}4533$ & $0{,}5393$ & $0{,}5924$ & $0{,}6000$ \\
+        \bottomrule
+        \end{tabular}
+        \end{center}
+        Calcule $\E[\widehat P]$ para $k>9$ e use a desigualdade de Chebyshev para explicar
+        por que a probabilidade de erro se aproxima de $0{,}6$ quando $k$ cresce. Que $k$
+        Otávio deveria escolher para este talhão? O que os itens (b) e (c), juntos, dizem
+        sobre o papel de $k$?
+  \item \pts{0,8} Mostre que, com $k=1$ e uma probabilidade $\eta$ qualquer no lugar de
+        $0{,}6$, a probabilidade de erro é $2\eta(1-\eta)$, e que
+        $\min(\eta,1-\eta)\le2\eta(1-\eta)\le2\min(\eta,1-\eta)$. Interprete. O que acontece
+        no outro extremo, com $k=n$?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Pela linearidade da esperança,
+$\E[\widehat P]=\frac1k\sum_j\E[Y_{(j)}]=\frac1k\cdot k\cdot0{,}6=0{,}6$. Cada $Y_{(j)}$ é uma
+Bernoulli$(0{,}6)$, com variância $0{,}6\cdot0{,}4=0{,}24$, e, como os rótulos são independentes,
+as variâncias se somam:
+$\Var(\widehat P)=\frac1{k^2}\sum_j\Var(Y_{(j)})=\frac{0{,}24}{k}$. Nesta idealização, a
+proporção de vizinhos é um estimador não viesado de $\eta(\x)$, e a sua variância cai como
+$1/k$.
+
+\smallskip
+\textbf{(b)} O KNN erra se declara praga num talhão sem praga ou deixa de declarar num talhão
+com praga. Como a decisão depende só dos rótulos dos vizinhos, que são independentes de $Y$,
+\[
+  \Prob(\ghat(\x)\ne Y)=q_k\,\Prob(Y=0)+(1-q_k)\,\Prob(Y=1)=0{,}4\,q_k+0{,}6\,(1-q_k)=0{,}6-0{,}2\,q_k .
+\]
+Com $k=5$, o KNN declara praga quando pelo menos $3$ dos $5$ vizinhos têm praga, e o número
+deles é uma binomial$(5;\,0{,}6)$:
+\[
+  q_5=\binom53(0{,}6)^3(0{,}4)^2+\binom54(0{,}6)^4(0{,}4)+(0{,}6)^5
+     =0{,}3456+0{,}2592+0{,}0778\approx0{,}683 .
+\]
+As probabilidades de erro são $0{,}480$, $0{,}463$, $0{,}443$ e $0{,}415$ para $k=1$, $5$, $15$ e
+$51$. Como $k$ é ímpar, $\widehat P\ne1/2$, e o KNN deixa de declarar praga exatamente
+quando $\widehat P<1/2$. Esse evento está contido em
+$\{\abs{\widehat P-0{,}6}\ge0{,}1\}$, e, pela desigualdade de Chebyshev,
+\[
+  1-q_k=\Prob\big(\widehat P<1/2\big)\le\Prob\big(\abs{\widehat P-0{,}6}\ge0{,}1\big)
+  \le\frac{\Var(\widehat P)}{0{,}1^2}=\frac{24}{k}\ \longrightarrow\ 0 .
+\]
+Logo $q_k\to1$ e a probabilidade de erro tende a $0{,}6-0{,}2=0{,}4$. É a probabilidade de
+erro do classificador de Bayes nesse talhão: como $\eta(\x)>1/2$, ele declara praga, e erra
+com probabilidade $1-\eta(\x)=0{,}4$, que nenhum classificador pode melhorar.
+
+\smallskip
+\textbf{(c)} Para $k>9$, os $9$ primeiros vizinhos têm esperança $0{,}6$ e os outros $k-9$,
+esperança $0{,}2$, e
+\[
+  \E[\widehat P]=\frac{9\cdot0{,}6+(k-9)\cdot0{,}2}{k}=0{,}2+\frac{3{,}6}{k} ,
+\]
+que vale $0{,}44$ para $k=15$, $0{,}344$ para $k=25$ e cerca de $0{,}271$ para $k=51$. Para
+$k>12$, a esperança fica abaixo de $1/2$ e se aproxima de $0{,}2$. A variância, pela
+independência, é no máximo $0{,}24/k$, porque cada parcela tem variância $0{,}24$ ou $0{,}16$.
+Como $\widehat P>1/2$ exige um desvio de pelo menos $d_k=1/2-\E[\widehat P]$ em relação à
+esperança, Chebyshev dá
+\[
+  q_k=\Prob\big(\widehat P>1/2\big)\le\frac{\Var(\widehat P)}{d_k^2}\le\frac{0{,}24}{k\,d_k^2}\ \longrightarrow\ 0 ,
+\]
+porque $d_k\to0{,}3$. A probabilidade de erro $0{,}6-0{,}2\,q_k$ tende então a $0{,}6$: com
+muitos vizinhos, o KNN declara o talhão sem praga, contra o que diz $\eta(\x)=0{,}6$. Entre os
+valores da tabela, o melhor é $k=9$, com probabilidade de erro $0{,}453$.
+
+Os dois itens mostram as duas metades do balanço. No item (b), os vizinhos têm todos a
+probabilidade certa, e aumentar $k$ só reduz o ruído do voto: é a variância que cai. No item
+(c), os vizinhos mais distantes trazem a probabilidade de outra região, e aumentar $k$ demais
+desloca o voto para a resposta errada: é o viés que cresce. O melhor $k$ depende de quão
+depressa $\eta$ muda em torno de $\x$, o que não se conhece; por isso $k$ é escolhido por
+validação cruzada.
+
+\smallskip
+\textbf{(d)} Com $k=1$, o KNN repete o rótulo do vizinho mais próximo, que é $1$ com
+probabilidade $\eta$ e independente de $Y$. Ele erra se os dois rótulos diferem:
+\[
+  \Prob(\ghat(\x)\ne Y)=\eta(1-\eta)+(1-\eta)\eta=2\eta(1-\eta) .
+\]
+Sejam $m=\min(\eta,1-\eta)$ e $1-m=\max(\eta,1-\eta)$, com $1/2\le1-m\le1$. Então
+$2\eta(1-\eta)=2m(1-m)$, e multiplicar as desigualdades $1/2\le1-m\le1$ por $2m\ge0$ dá
+$m\le2m(1-m)\le2m$. Como $m$ é a probabilidade de erro do classificador de Bayes em $\x$, o
+$1$-NN, nesta idealização, erra pelo menos tanto quanto ele e no máximo o dobro; com
+$\eta=0{,}6$, são $0{,}48$ contra $0{,}40$. No outro extremo, com $k=n$, todos os pontos de treino
+votam, $\widehat P$ é a proporção de talhões com praga no treino inteiro, e o KNN atribui a
+mesma classe, a majoritária, a qualquer talhão: é o classificador constante, com o maior viés
+possível.
+\end{solucao}

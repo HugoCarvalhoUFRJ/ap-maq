@@ -1,0 +1,102 @@
+% Aula 08 --- classificadores sorteados: combinações convexas de pontos ROC.
+Diego é analista antifraude num banco e tem dois sistemas que já foram avaliados, $A$ e
+$B$. Tome a fraude como a classe positiva, $Y=1$. As taxas de falsos positivos e de
+verdadeiros positivos são $(\mathrm{FPR},\mathrm{TPR})=(0{,}02;\ 0{,}50)$ para $A$ e
+$(0{,}08;\ 0{,}80)$ para $B$. O banco aceita mandar para revisão manual no máximo $5\%$ das
+transações legítimas, e nenhum dos dois sistemas aproveita esse limite: $A$ fica abaixo
+dele e $B$ o ultrapassa. Diego então propõe sortear: para cada transação, uma moeda com
+probabilidade $\lambda$ de dar cara, lançada independentemente de tudo o mais, escolhe se a
+decisão será a de $A$ (cara) ou a de $B$ (coroa). Seja $g_\lambda$ esse classificador.
+\begin{itens}
+  \item \pts{1,2} Mostre que
+        $\mathrm{FPR}(g_\lambda)=\lambda\,\mathrm{FPR}(A)+(1-\lambda)\,\mathrm{FPR}(B)$ e
+        que o mesmo vale para a TPR, isto é, que o ponto de $g_\lambda$ no plano
+        (FPR, TPR) está no segmento que liga os pontos de $A$ e de $B$. Determine $\lambda$
+        para que a taxa de falsos positivos seja exatamente $0{,}05$ e calcule a taxa de
+        verdadeiros positivos obtida. Que classificadores sorteados dão os pontos da
+        diagonal?
+  \item \pts{1,0} Um terceiro sistema, $C$, tem $(\mathrm{FPR},\mathrm{TPR})=(0{,}70;\ 0{,}40)$.
+        Mostre que o classificador que inverte todas as decisões de $C$ tem o ponto
+        $(0{,}30;\ 0{,}60)$ e, em geral, que inverter as decisões leva
+        $(\mathrm{FPR},\mathrm{TPR})$ a $(1-\mathrm{FPR},1-\mathrm{TPR})$. Se um escore tem
+        curva ROC abaixo da diagonal, com área $\mathrm{AUC}<1/2$, qual é a curva e qual é a
+        área do escore com o sinal trocado?
+  \item \pts{1,0} Com custos $\ell_0$ por falso negativo e $\ell_1$ por falso positivo, o
+        custo esperado de um classificador $g$ é
+        $\risco_\ell(g)=\ell_1\Prob(g(\X)=1,\,Y=0)+\ell_0\Prob(g(\X)=0,\,Y=1)$. Mostre que
+        $\risco_\ell(g_\lambda)=\lambda\risco_\ell(A)+(1-\lambda)\risco_\ell(B)$ e conclua
+        que, sem a restrição do banco, sortear nunca custa menos que o melhor dos dois
+        sistemas. Para que serve, então, o sorteio?
+  \item \pts{0,8} Mostre que o conjunto dos pontos (FPR, TPR) de todos os classificadores,
+        sorteados ou não, é convexo e contém a diagonal. Use isso para explicar por que a
+        curva ROC estimada de um escore é desenhada ligando os pontos de cortes
+        consecutivos por segmentos de reta.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Seja $Z$ a moeda, com $\Prob(Z=1)=\lambda$, independente de $(\X,Y)$. Pela lei
+da probabilidade total, condicionando em $Z$,
+\begin{align*}
+  \Prob\big(g_\lambda(\X)=1\mid Y=0\big)
+  &=\lambda\,\Prob\big(g_A(\X)=1\mid Y=0,\,Z=1\big)\\
+  &\quad+(1-\lambda)\,\Prob\big(g_B(\X)=1\mid Y=0,\,Z=0\big),
+\end{align*}
+em que se usou $\Prob(Z=1\mid Y=0)=\Prob(Z=1)=\lambda$, pela independência. Também pela
+independência, condicionar em $Z$ não altera a distribuição de $\X$ dado $Y$, e as duas
+probabilidades condicionais são as taxas de falsos positivos de $A$ e de $B$. Assim,
+$\mathrm{FPR}(g_\lambda)=\lambda\,\mathrm{FPR}(A)+(1-\lambda)\,\mathrm{FPR}(B)$, e a mesma
+conta, condicionando em $Y=1$, dá a TPR. O ponto de $g_\lambda$ é a combinação convexa dos
+pontos de $A$ e de $B$ com pesos $\lambda$ e $1-\lambda$, e percorre o segmento entre eles
+quando $\lambda$ vai de $0$ a $1$.
+
+Para a taxa de falsos positivos valer $0{,}05$,
+\[
+  0{,}02\,\lambda+0{,}08\,(1-\lambda)=0{,}05\iff 0{,}06\,\lambda=0{,}03\iff\lambda=\tfrac12 ,
+\]
+e a taxa de verdadeiros positivos é $\tfrac12\cdot0{,}50+\tfrac12\cdot0{,}80=0{,}65$: Diego usa
+o limite do banco inteiro e detecta $65\%$ das fraudes, contra $50\%$ de $A$. A diagonal
+vem do sorteio entre os dois classificadores triviais, $g\equiv0$, no ponto $(0,0)$, e
+$g\equiv1$, no ponto $(1,1)$: sortear $g=1$ com probabilidade $q$ dá o ponto $(q,q)$.
+
+\smallskip
+\textbf{(b)} Se $g'=1-g$, então $g'(\X)=1$ exatamente quando $g(\X)=0$, e
+\[
+  \mathrm{TPR}(g')=\Prob\big(g(\X)=0\mid Y=1\big)=1-\mathrm{TPR}(g),
+  \qquad
+  \mathrm{FPR}(g')=1-\mathrm{FPR}(g).
+\]
+Para $C$, o ponto invertido é $(1-0{,}70;\ 1-0{,}40)=(0{,}30;\ 0{,}60)$, acima da diagonal: um
+sistema que erra sistematicamente carrega informação, desde que se faça o contrário do que
+ele diz. A aplicação $(a,b)\mapsto(1-a,1-b)$ é a simetria em relação ao ponto
+$(\tfrac12,\tfrac12)$. Trocar o sinal do escore troca ``escore acima do corte'' por
+``escore abaixo do corte'', o que inverte as decisões em cada corte; a curva do escore com o
+sinal trocado é, portanto, a simétrica da original em relação a $(\tfrac12,\tfrac12)$. Essa
+simetria leva a região do quadrado unitário abaixo de uma curva na região acima da curva
+simétrica e preserva áreas. A área sob a curva nova é, então, a área acima da curva antiga,
+$1-\mathrm{AUC}>1/2$.
+
+\smallskip
+\textbf{(c)} Condicionando de novo na moeda, e usando a independência,
+\[
+  \Prob\big(g_\lambda(\X)=1,\,Y=0\big)
+  =\lambda\,\Prob\big(g_A(\X)=1,\,Y=0\big)+(1-\lambda)\,\Prob\big(g_B(\X)=1,\,Y=0\big),
+\]
+e o mesmo para $\Prob(g_\lambda(\X)=0,\,Y=1)$. Multiplicando a primeira igualdade por
+$\ell_1$, a segunda por $\ell_0$ e somando,
+$\risco_\ell(g_\lambda)=\lambda\risco_\ell(A)+(1-\lambda)\risco_\ell(B)$. Uma média ponderada
+de dois números nunca é menor que o menor deles, e o sorteio nunca custa menos que o melhor
+dos dois sistemas: sem restrição, basta escolher um deles. O sorteio serve para atingir um
+ponto que nenhum dos dois atinge, como a taxa de falsos positivos de exatamente $0{,}05$
+permitida pelo banco: respeitando esse limite, $g_{1/2}$ detecta $65\%$ das fraudes, e $A$,
+só $50\%$.
+
+\smallskip
+\textbf{(d)} Dados dois pontos atingíveis, de classificadores $g$ e $g'$, sorteados ou não,
+o argumento do item (a) vale sem alteração para o sorteio entre $g$ e $g'$, e todos os pontos
+do segmento entre eles são atingíveis: o conjunto é convexo. Ele contém $(0,0)$ e $(1,1)$,
+dos classificadores triviais, e portanto o segmento entre eles, que é a diagonal. Para um
+escore, cada corte dá um ponto da curva; entre os pontos de dois cortes consecutivos, o
+sorteio entre os dois classificadores de corte atinge cada ponto do segmento que os liga. A
+poligonal descreve, portanto, desempenhos de fato disponíveis, e não apenas um traço para
+guiar o olho.
+\end{solucao}

@@ -1,0 +1,97 @@
+% Aula 10 --- crescer com Gini, podar com o erro: o que a poda remove, e o que muda com custos.
+Rafael é analista numa operadora de planos de saúde e cresceu uma árvore de classificação,
+com o índice de Gini, para prever quais beneficiários serão internados no próximo ano
+($Y=1$). Agora vai podá-la. Para uma região $R$ com $n_R$ observações de treino, sejam
+$n_{R,c}$ o número delas na classe $c$ e $\widehat p_{R,c}=n_{R,c}/n_R$. A folha $R$ prediz a
+classe majoritária, e $E(R)=1-\max_c\widehat p_{R,c}$ é o seu erro de classificação, de modo
+que $n_RE(R)=n_R-\max_cn_{R,c}$ é o número de erros de treino na folha. Na poda por
+custo-complexidade com o erro de classificação, escolhe-se, entre as subárvores $T$ da árvore
+crescida, a que minimiza
+\[
+  C_\alpha(T)=\sum_{m=1}^{\abs{T}}n_mE(R_m)+\alpha\abs{T},
+\]
+em que $R_1,\dots,R_{\abs{T}}$ são as folhas de $T$, $n_m=n_{R_m}$ e $\abs{T}$ é o número de
+folhas; o valor de $\alpha>0$ é escolhido por validação cruzada.
+\begin{itens}
+  \item \pts{1,0} Seja $R$ uma região dividida em regiões disjuntas $R_1,\dots,R_L$. Mostre
+        que $\sum_ln_{R_l}E(R_l)\le n_RE(R)$, com qualquer número de classes, e que vale a
+        igualdade quando uma mesma classe $c^*$ é majoritária em todas as $R_l$; nesse caso,
+        $c^*$ é majoritária também em $R$.
+  \item \pts{1,2} Mostre que, para todo $\alpha>0$, nenhuma subárvore que minimize $C_\alpha$
+        tem um nó interno cujas folhas descendentes predigam todas a mesma classe.
+  \item \pts{0,8} Na árvore de Rafael, um nó com $400$ beneficiários, dos quais $100$ foram
+        internados, foi dividido em dois filhos de $200$, com $20$ e com $80$ internados.
+        Calcule a redução do índice de Gini ponderado,
+        $G(R)-\big[n_1G(R_1)+n_2G(R_2)\big]/n_R$, e a redução do erro de classificação
+        ponderado. Por que o crescimento fez essa divisão, e o que a poda fará com ela?
+  \item \pts{1,0} A operadora estima que deixar de prever uma internação custa quatro vezes
+        mais que prever uma que não acontece: $\ell_0=4$ e $\ell_1=1$. Cada folha passa a
+        prever internação quando a sua proporção de internados passa de
+        $\ell_1/(\ell_0+\ell_1)$, e o custo da folha é $\ell_1\,\mathrm{FP}+\ell_0\,\mathrm{FN}$
+        nas suas observações de treino. Calcule o custo do nó do item (c) antes e depois da
+        divisão. Se a poda usar esse custo no lugar do número de erros, para que valores de
+        $\alpha$ a divisão sobrevive? O que isso diz sobre podar pelo erro de classificação?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} As regiões $R_l$ particionam $R$, e por isso $n_{R,c}=\sum_ln_{R_l,c}$ para
+cada classe $c$. O máximo de uma soma não passa da soma dos máximos:
+\[
+  \max_cn_{R,c}=\max_c\sum_ln_{R_l,c}\ \le\ \sum_l\max_cn_{R_l,c} .
+\]
+Logo
+\[
+  \sum_ln_{R_l}E(R_l)=\sum_l\Big(n_{R_l}-\max_cn_{R_l,c}\Big)=n_R-\sum_l\max_cn_{R_l,c}
+  \ \le\ n_R-\max_cn_{R,c}=n_RE(R).
+\]
+Se $c^*$ é majoritária em todas as $R_l$, então
+$\sum_l\max_cn_{R_l,c}=\sum_ln_{R_l,c^*}=n_{R,c^*}\le\max_cn_{R,c}$; com a desigualdade
+anterior, os três números são iguais. A igualdade vale, e $n_{R,c^*}=\max_cn_{R,c}$: $c^*$ é
+majoritária em $R$. Dividir uma região nunca aumenta o número de erros de treino, e só o
+diminui quando alguma das partes muda a classe predita.
+
+\smallskip
+\textbf{(b)} Suponha que $T$ minimize $C_\alpha$ e tenha um nó interno $t$ cujas
+$L\ge2$ folhas descendentes predizem todas a classe $c^*$. Seja $T'$ a subárvore obtida
+trocando o ramo que sai de $t$ por uma única folha, a região de $t$. Pelo item (a), essa folha
+tem $c^*$ como classe majoritária e o mesmo número de erros de treino que as $L$ folhas
+juntas; as outras folhas não mudam. As duas subárvores cometem, então, os mesmos erros, e
+$\abs{T'}=\abs{T}-(L-1)$, de modo que
+\[
+  C_\alpha(T')=C_\alpha(T)-\alpha(L-1)<C_\alpha(T),
+\]
+porque $\alpha>0$ e $L\ge2$. Isso contradiz a escolha de $T$. Qualquer que seja $\alpha>0$, a
+poda pelo erro de classificação remove todos os ramos que não mudam nenhuma decisão.
+
+\smallskip
+\textbf{(c)} As proporções de internados são $0{,}25$ no nó e $0{,}1$ e $0{,}4$ nos filhos, e, com
+duas classes, $G=2\widehat p(1-\widehat p)$:
+\[
+  G(R)=2\cdot0{,}25\cdot0{,}75=0{,}375,
+  \qquad
+  \tfrac12\,G(R_1)+\tfrac12\,G(R_2)=\tfrac12\cdot0{,}18+\tfrac12\cdot0{,}48=0{,}33 ,
+\]
+uma redução de $0{,}045$. A classe majoritária é ``não internado'' no nó ($300$ contra $100$) e
+nos dois filhos ($180$ contra $20$ e $120$ contra $80$). Os erros são $100$ no nó e
+$20+80=100$ nos filhos: a redução do erro é zero, como o item (a) previa. O Gini é
+estritamente côncavo e registra o ganho de pureza de separar um grupo de risco baixo
+($10\%$ de internações) de um de risco alto ($40\%$); por isso o crescimento fez a divisão. Os
+dois filhos, porém, predizem a mesma classe, e, pelo item (b), a poda pelo erro remove a
+divisão qualquer que seja $\alpha>0$.
+
+\smallskip
+\textbf{(d)} O corte é $\ell_1/(\ell_0+\ell_1)=1/5$. Antes da divisão, a proporção $0{,}25$
+passa do corte, e o nó prevê internação para os $400$: os $300$ não internados são falsos
+positivos, com custo $1\cdot300=300$. Depois, o filho com proporção $0{,}1$ prevê não internação
+e erra nos $20$ internados, com custo $4\cdot20=80$, e o filho com $0{,}4$ prevê internação e erra
+nos $120$ não internados, com custo $1\cdot120=120$: são $200$ no total. Com o custo no lugar
+dos erros, manter a divisão contribui com $200+2\alpha$ para o critério e removê-la, com
+$300+\alpha$, e a divisão sobrevive para $\alpha<100$.
+
+O número de erros conta um falso negativo e um falso positivo como iguais, e por isso
+corresponde ao corte $1/2$. Com custos assimétricos, a divisão que o erro de classificação
+manda remover é justamente a que muda a decisão no corte relevante. A poda deve usar o mesmo
+critério que vai guiar as decisões: o erro de classificação quando os dois erros custam o
+mesmo, o custo quando não custam. O argumento do item (b) continua valendo com o custo: a poda
+remove os ramos cujas folhas tomam todas a mesma decisão no corte de custo.
+\end{solucao}

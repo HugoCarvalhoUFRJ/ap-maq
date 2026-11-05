@@ -1,0 +1,105 @@
+% Aula 09 --- produtos e exponenciais de kernels; o kernel radial em qualquer dimensão.
+Júlia estuda matemática aplicada e lê nas notas que o \emph{kernel} radial
+$k(\x,\x')=\exp\!\big(-\gamma\norm{\x-\x'}^2\big)$, com $\gamma>0$, é um \emph{kernel} em
+$\R^p$; o exemplo das notas, porém, só exibe a função $\varphi$ para $p=1$. Ela decide provar
+o caso geral. Lembre que $k:\R^p\times\R^p\to\R$ é um \emph{kernel} se existem um espaço de
+Hilbert $\mathcal H$ e uma função $\varphi:\R^p\to\mathcal H$ com
+$k(\x,\x')=\inner{\varphi(\x)}{\varphi(\x')}_{\mathcal H}$ para todos $\x,\x'$, e que, pelo
+teorema visto em aula, isso acontece se e somente se $k$ é simétrica e, para todo $n\ge1$ e
+quaisquer $\x_1,\dots,\x_n\in\R^p$, a matriz $\big[k(\x_i,\x_j)\big]_{i,j=1}^n$ é positiva
+semidefinida. Use à vontade que o produto interno $\inner{\x}{\x'}$ e as funções constantes
+iguais a $c\ge0$ são \emph{kernels}, e que a soma de dois \emph{kernels} e o produto de um
+\emph{kernel} por uma constante $c\ge0$ também são.
+\begin{itens}
+  \item \pts{1,2} Mostre que, se $k_1$ e $k_2$ são \emph{kernels}, o produto
+        $k(\x,\x')=k_1(\x,\x')\,k_2(\x,\x')$ também é. (Escreva uma das duas matrizes pela
+        decomposição espectral.)
+  \item \pts{1,0} Mostre que, se $k$ é um \emph{kernel} e $h:\R^p\to\R$ é uma função
+        qualquer, então $h(\x)\,h(\x')\,k(\x,\x')$ é um \emph{kernel}. Mostre também que
+        $e^{k(\x,\x')}$ é um \emph{kernel}, usando a série da exponencial e o fato de que um
+        limite de matrizes positivas semidefinidas é positivo semidefinido.
+  \item \pts{0,8} Conclua que o \emph{kernel} radial é um \emph{kernel} em $\R^p$, para todo
+        $p$ e todo $\gamma>0$. (Escreva $\norm{\x-\x'}^2$ em termos de $\norm{\x}^2$,
+        $\norm{\x'}^2$ e $\inner{\x}{\x'}$.)
+  \item \pts{1,0} Mostre que, para todo \emph{kernel},
+        $\norm{\varphi(\x)-\varphi(\x')}_{\mathcal H}^2=k(\x,\x)-2\,k(\x,\x')+k(\x',\x')$, e
+        calcule essa distância para o \emph{kernel} radial. Conclua que $\varphi$ leva $\R^p$
+        na esfera unitária de $\mathcal H$ e que pontos distintos ficam, em $\mathcal H$, a
+        distância menor que $\sqrt2$. Para dois pontos à distância $1$ em $\R^p$, calcule a
+        distância em $\mathcal H$ com $\gamma=0{,}5$ e com $\gamma=50$, e interprete o
+        resultado em termos da flexibilidade da SVM.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Sejam $\x_1,\dots,\x_n\in\R^p$, $A=\big[k_1(\x_i,\x_j)\big]$ e
+$B=\big[k_2(\x_i,\x_j)\big]$, simétricas e positivas semidefinidas pelo teorema. A matriz de
+$k$ nesses pontos é o produto entrada a entrada, $(A\circ B)_{ij}=A_{ij}B_{ij}$, que é
+simétrica. Pelo teorema espectral, $B=\sum_{m=1}^n\lambda_m\bm v_m\bm v_m^\top$, com
+autovalores $\lambda_m\ge0$, porque $B$ é positiva semidefinida, e autovetores ortonormais
+$\bm v_m\in\R^n$; em coordenadas, $B_{ij}=\sum_m\lambda_m v_{mi}v_{mj}$. Para $\bm a\in\R^n$,
+\begin{align*}
+  \bm a^\top(A\circ B)\,\bm a
+  &=\sum_{i,j}a_ia_jA_{ij}\sum_m\lambda_mv_{mi}v_{mj}
+   =\sum_m\lambda_m\sum_{i,j}(a_iv_{mi})\,A_{ij}\,(a_jv_{mj})\\
+  &=\sum_m\lambda_m\,\bm u_m^\top A\,\bm u_m\ \ge\ 0,
+\end{align*}
+em que $\bm u_m=(a_1v_{m1},\dots,a_nv_{mn})$, e cada parcela é não negativa porque
+$\lambda_m\ge0$ e $A$ é positiva semidefinida. Como isso vale para todo $n$ e quaisquer
+pontos, o teorema dá que $k_1k_2$ é um \emph{kernel}.
+
+\smallskip
+\textbf{(b)} A função $h(\x)h(\x')k(\x,\x')$ é simétrica, e a sua matriz nos pontos
+$\x_1,\dots,\x_n$ é $DKD$, com $K=\big[k(\x_i,\x_j)\big]$ e
+$D=\operatorname{diag}\big(h(\x_1),\dots,h(\x_n)\big)$. Para $\bm a\in\R^n$,
+$\bm a^\top DKD\,\bm a=(D\bm a)^\top K(D\bm a)\ge0$. (Pela definição, é o mesmo que tomar a
+função $h\varphi$ no lugar de $\varphi$.)
+
+Para a exponencial, $e^{k(\x,\x')}=\sum_{m\ge0}k(\x,\x')^m/m!$. A potência $k^0$ é a
+constante $1$, que é um \emph{kernel}, e, se $k^m$ é um \emph{kernel}, $k^{m+1}=k^m\cdot k$
+também é, pelo item (a); por indução, todas as potências são \emph{kernels}. As somas
+parciais $S_M=\sum_{m=0}^Mk^m/m!$ são, então, \emph{kernels}, como somas de \emph{kernels}
+multiplicados por constantes positivas. Fixados os pontos e $\bm a\in\R^n$, cada número
+$\bm a^\top\big[S_M(\x_i,\x_j)\big]\bm a$ é não negativo, e, quando $M\to\infty$, converge para
+$\bm a^\top\big[e^{k(\x_i,\x_j)}\big]\bm a$, porque é uma soma finita de termos que convergem.
+Um limite de números não negativos é não negativo. A matriz de $e^k$ é, portanto, positiva
+semidefinida, e $e^k$, que é simétrica, é um \emph{kernel}.
+
+\smallskip
+\textbf{(c)} Como $\norm{\x-\x'}^2=\norm{\x}^2-2\inner{\x}{\x'}+\norm{\x'}^2$,
+\[
+  e^{-\gamma\norm{\x-\x'}^2}
+  =e^{-\gamma\norm{\x}^2}\,e^{-\gamma\norm{\x'}^2}\,e^{2\gamma\inner{\x}{\x'}} .
+\]
+O produto interno é um \emph{kernel}, e $2\gamma\inner{\x}{\x'}$ também, porque $2\gamma>0$.
+Pelo item (b), $e^{2\gamma\inner{\x}{\x'}}$ é um \emph{kernel}, e, ainda pelo item (b), com
+$h(\x)=e^{-\gamma\norm{\x}^2}$, o produto acima é um \emph{kernel}. O argumento vale para todo
+$p$ e todo $\gamma>0$, e não precisa exibir $\varphi$; com $p=1$, expandir
+$e^{2\gamma xx'}$ em série reproduz a função $\varphi$ do exemplo das notas.
+
+\smallskip
+\textbf{(d)} Pela bilinearidade e pela simetria do produto interno de $\mathcal H$,
+\begin{align*}
+  \norm{\varphi(\x)-\varphi(\x')}^2
+  &=\inner{\varphi(\x)}{\varphi(\x)}-2\inner{\varphi(\x)}{\varphi(\x')}+\inner{\varphi(\x')}{\varphi(\x')}\\
+  &=k(\x,\x)-2\,k(\x,\x')+k(\x',\x') .
+\end{align*}
+No \emph{kernel} radial, $k(\x,\x)=e^0=1$, de modo que $\norm{\varphi(\x)}=1$ para todo $\x$,
+e
+\[
+  \norm{\varphi(\x)-\varphi(\x')}^2=2\big(1-e^{-\gamma\norm{\x-\x'}^2}\big) .
+\]
+Essa quantidade é nula se e somente se $\x=\x'$, cresce com $\norm{\x-\x'}$ e é sempre menor
+que $2$: os pontos vão para a esfera unitária de $\mathcal H$, a distâncias menores que
+$\sqrt2$, isto é, com produto interno $k(\x,\x')>0$ e ângulo menor que $90^\circ$. Para
+$\norm{\x-\x'}=1$, a distância em $\mathcal H$ é $\sqrt{2(1-e^{-0{,}5})}\approx0{,}887$ com
+$\gamma=0{,}5$ e $\sqrt{2(1-e^{-50})}\approx1{,}4142$ com $\gamma=50$, que é $\sqrt2$ até a
+quarta casa.
+
+Com $\gamma=50$, dois pontos à distância $1$ já são praticamente ortogonais em $\mathcal H$:
+cada observação de treino fica, em $\mathcal H$, tão longe das outras quanto o
+\emph{kernel} permite, e na função de decisão $f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_ik(\x,\x_i)$
+cada parcela só pesa muito perto do seu $\x_i$. A fronteira pode, assim, contornar
+observações isoladas, e o ajuste fica flexível, com risco de superajuste. Com $\gamma$
+pequeno, pontos próximos em $\R^p$ continuam próximos em $\mathcal H$, cada parcela pesa
+numa região grande, e a fronteira é suave.
+\end{solucao}

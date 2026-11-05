@@ -1,0 +1,118 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Lista de Revisão --- Aulas 07 a 10 (Bloco II, classificação)
+%  Material de preparação para a Avaliação Teórica 02, ainda não sorteada.
+%
+%  O gabarito sai de "Lista de revisao 07-10 - gabarito.tex", que apenas liga a
+%  opção [gabarito] e inclui este arquivo --- fonte única, dois PDFs.
+%
+%  O CORPO DE CADA EXERCÍCIO ESTÁ EM exercicios-07-10/ex-NN-slug.tex, como na
+%  lista 01-06 (cuja pasta é exercicios/). A prova sorteada desta lista deve
+%  incluir os MESMOS arquivos por \input; a pontuação por item, que só a prova
+%  mostra, vem do comando \pts do estilo.
+%
+%  Doze exercícios inéditos, três por aula: nenhum repete as listas teóricas e
+%  práticas 07 a 10 nem a E3. Usam só o conteúdo dos slides, mais as caixas que
+%  as notas da aula 07 mantêm de propósito (o preço do ingênuo, a separação
+%  perfeita e a penalização da logística). Cada enunciado é autocontido, para
+%  poder ir à prova: não cita aula pelo número, nem outro exercício, e nenhuma
+%  solução usa \ref.
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../recursos/latex/estilo-avaliacao}
+
+\begin{document}
+\cabecalhorevisao{07 a 10}{Classificadores Gaussianos, Métricas, SVM, KNN e Árvores de
+Classificação}
+
+\medskip\noindent
+Não há ordem obrigatória para a resolução. Cada exercício se resolve com o seu enunciado e as
+notas de aula, e vários deles juntam ideias de aulas diferentes, como o corte ótimo sob custos
+assimétricos, a curva ROC e a validação cruzada.
+
+\medskip\noindent
+Salvo indicação em contrário, $(\X,Y)$ é um vetor aleatório com $\X\in\R^p$ e $Y$ num
+conjunto finito $\mathcal{C}$ de classes; no caso binário, $\mathcal{C}=\{0,1\}$, a classe
+$Y=1$ é a positiva e $\eta(\x)=\Prob(Y=1\mid\X=\x)$. A perda é a 0--1, com risco
+$\risco(g)=\Prob\big(Y\ne g(\X)\big)$, e a amostra de treino
+$\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é i.i.d. Nos exercícios sobre máquinas de vetores de suporte,
+as classes são codificadas por $y\in\{-1,+1\}$.
+
+%==============================================================================
+\section*{Aula 07 --- Classificação e Classificadores Gaussianos}
+%==============================================================================
+
+\begin{exercicio}[A logística sem gaussianas]
+\label{ex:07-logistica}
+\input{exercicios-07-10/ex-01-logistica-sem-gaussianas}
+\end{exercicio}
+
+\begin{exercicio}[O preço do ingênuo]
+\label{ex:07-ingenuo}
+\input{exercicios-07-10/ex-02-preco-ingenuo}
+\end{exercicio}
+
+\begin{exercicio}[A verossimilhança da logística]
+\label{ex:07-verossimilhanca}
+\input{exercicios-07-10/ex-03-verossimilhanca-logistica}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 08 --- Métricas para Classificação}
+%==============================================================================
+
+\begin{exercicio}[A curva ROC não vê a escala]
+\label{ex:08-escala}
+\input{exercicios-07-10/ex-04-roc-escala}
+\end{exercicio}
+
+\begin{exercicio}[Sortear entre dois classificadores]
+\label{ex:08-sorteio}
+\input{exercicios-07-10/ex-05-sorteio-classificadores}
+\end{exercicio}
+
+\begin{exercicio}[Um bom exame que o classificador de Bayes ignora]
+\label{ex:08-exame}
+\input{exercicios-07-10/ex-06-exame-raro}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 09 --- Máquinas de Vetores de Suporte}
+%==============================================================================
+
+\begin{exercicio}[Só os vetores de suporte importam]
+\label{ex:09-suporte}
+\input{exercicios-07-10/ex-07-vetores-suporte}
+\end{exercicio}
+
+\begin{exercicio}[O \emph{kernel} radial em qualquer dimensão]
+\label{ex:09-radial}
+\input{exercicios-07-10/ex-08-kernel-radial}
+\end{exercicio}
+
+\begin{exercicio}[O ou exclusivo]
+\label{ex:09-xor}
+\input{exercicios-07-10/ex-09-ou-exclusivo}
+\end{exercicio}
+
+%==============================================================================
+\section*{Aula 10 --- KNN e Árvores de Classificação}
+%==============================================================================
+
+\begin{exercicio}[O voto dos vizinhos]
+\label{ex:10-voto}
+\input{exercicios-07-10/ex-10-voto-vizinhos}
+\end{exercicio}
+
+\begin{exercicio}[Crescer com Gini, podar com o erro]
+\label{ex:10-poda}
+\input{exercicios-07-10/ex-11-poda-erro}
+\end{exercicio}
+
+\begin{exercicio}[Quando Gini e entropia discordam]
+\label{ex:10-impureza}
+\input{exercicios-07-10/ex-12-gini-entropia}
+\end{exercicio}
+
+\end{document}

@@ -1,0 +1,113 @@
+% Aula 09 --- o ou exclusivo: convexidade, a ampliação pelos quadrados e o termo cruzado.
+Mariana estuda engenharia e quer que um classificador linear preveja quando uma lâmpada
+acende. A lâmpada tem duas chaves, $x_1,x_2\in\{0,1\}$, e acende ($y=+1$) quando exatamente
+uma delas está ligada; com as duas desligadas ou as duas ligadas, fica apagada ($y=-1$). As
+quatro observações são $(0,0)$ e $(1,1)$, na classe $-1$, e $(1,0)$ e $(0,1)$, na classe
+$+1$. Lembre que observações $(\bm z_i,y_i)$ de $\R^q$ são linearmente separáveis se existe
+$(\beta_0,\bbeta)$, com $\bbeta\ne\bm0$, tal que $y_i(\beta_0+\bbeta^\top\bm z_i)>0$ para todo
+$i$, e que, nesse caso, o classificador de margem máxima é dado pela solução de
+\[
+  \max_{\beta_0,\,\bbeta,\,M}\ M
+  \quad\text{sujeito a}\quad
+  \norm{\bbeta}=1
+  \quad\text{e}\quad
+  y_i\,(\beta_0+\bbeta^\top\bm z_i)\ge M\ \text{ para todo } i .
+\]
+\begin{itens}
+  \item \pts{1,0} Suponha que algum ponto $\bm z\in\R^q$ seja combinação convexa de
+        observações da classe $+1$ e também combinação convexa de observações da classe
+        $-1$. Mostre que as observações não são linearmente separáveis. Por que isso vale,
+        em particular, quando uma observação de uma classe está no interior de um triângulo
+        formado por observações da outra?
+  \item \pts{0,6} Mostre que as quatro observações de Mariana não são linearmente separáveis.
+  \item \pts{1,0} Mariana segue a primeira ideia das notas para obter fronteiras não lineares:
+        acrescenta os quadrados e trabalha com as covariáveis $(x_1,x_2,x_1^2,x_2^2)$. Mostre
+        que as observações continuam não separáveis nesse espaço ampliado.
+  \item \pts{1,4} Ela troca os quadrados pelo produto e usa as três covariáveis
+        $\bm z=(x_1,\,x_2,\,x_1x_2)$. Mostre que $f(\bm z)=2z_1+2z_2-4z_3-1$ satisfaz
+        $y_if(\bm z_i)=1$ nas quatro observações. Mostre que o classificador de margem
+        máxima nesse espaço é o hiperplano $f(\bm z)=0$, com $M=1/\sqrt{24}\approx0{,}204$,
+        e que as quatro observações são vetores de suporte. (Para a cota superior, multiplique
+        as restrições das observações $(0,0)$, $(1,1)$, $(1,0)$ e $(0,1)$ pelos pesos $8$,
+        $4$, $6$ e $6$, some e use a desigualdade de Cauchy--Schwarz.) Que fronteira esse
+        hiperplano define no plano $(x_1,x_2)$?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Escreva $\bm z=\sum_j\lambda_j\bm z_j^+=\sum_k\mu_k\bm z_k^-$, com
+$\bm z_j^+$ observações da classe $+1$, $\bm z_k^-$ observações da classe $-1$, pesos
+$\lambda_j,\mu_k\ge0$ e $\sum_j\lambda_j=\sum_k\mu_k=1$. Suponha, por absurdo, que
+$f(\bm z)=\beta_0+\bbeta^\top\bm z$ separe as classes: $f(\bm z_j^+)>0$ para todo $j$ e
+$f(\bm z_k^-)<0$ para todo $k$. Como os pesos somam $1$,
+\[
+  f\Big(\sum_j\lambda_j\bm z_j^+\Big)=\sum_j\lambda_j\beta_0+\sum_j\lambda_j\bbeta^\top\bm z_j^+
+  =\sum_j\lambda_jf(\bm z_j^+) ,
+\]
+e uma combinação convexa de números positivos é positiva: $f(\bm z)>0$. Pela mesma conta com
+os $\mu_k$, $f(\bm z)<0$, o que é absurdo. Em termos geométricos, cada lado de um hiperplano é
+convexo, e um ponto que é combinação convexa das duas classes teria de estar dos dois lados
+ao mesmo tempo. Se uma observação $\bm z^+$ está no interior de um triângulo de observações
+da classe $-1$, ela é combinação convexa dos três vértices, e também, trivialmente, de si
+mesma, com peso $1$: a hipótese vale com $\bm z=\bm z^+$.
+
+\smallskip
+\textbf{(b)} O centro do quadrado é combinação convexa das duas classes:
+\[
+  \big(\tfrac12,\tfrac12\big)=\tfrac12(1,0)+\tfrac12(0,1)=\tfrac12(0,0)+\tfrac12(1,1) .
+\]
+Pelo item (a), nenhuma reta separa as observações.
+
+\smallskip
+\textbf{(c)} Em $\{0,1\}$, $x_j^2=x_j$. Cada observação ampliada é, então,
+$T(\x)=(x_1,x_2,x_1,x_2)$, em que $T:\R^2\to\R^4$ é linear. Uma aplicação linear preserva
+combinações convexas, e, aplicando $T$ à identidade do item (b),
+\[
+  T\big(\tfrac12,\tfrac12\big)=\tfrac12T(1,0)+\tfrac12T(0,1)=\tfrac12T(0,0)+\tfrac12T(1,1),
+\]
+um ponto de $\R^4$ que é combinação convexa das duas classes ampliadas. Pelo item (a), que vale
+em qualquer dimensão, as observações ampliadas não são separáveis. Dito de outro modo, um
+hiperplano de $\R^4$ calculado nas observações ampliadas vale
+$\beta_0+(\beta_1+\beta_3)x_1+(\beta_2+\beta_4)x_2$: é uma função afim de $(x_1,x_2)$, que o
+item (b) já mostrou incapaz de separar as classes. Os quadrados não acrescentam nada a
+variáveis binárias.
+
+\smallskip
+\textbf{(d)} As observações ampliadas são $(0,0,0)$ e $(1,1,1)$, na classe $-1$, e
+$(1,0,0)$ e $(0,1,0)$, na classe $+1$, e
+\[
+  f(0,0,0)=-1,\qquad f(1,1,1)=2+2-4-1=-1,\qquad f(1,0,0)=f(0,1,0)=2-1=1 :
+\]
+$y_if(\bm z_i)=1$ nas quatro. Dividindo os coeficientes por $\norm{(2,2,-4)}=\sqrt{24}$,
+obtém-se $\bbeta=(2,2,-4)/\sqrt{24}$, de norma $1$, e $\beta_0=-1/\sqrt{24}$, com
+$y_i(\beta_0+\bbeta^\top\bm z_i)=1/\sqrt{24}$ para todo $i$: o valor $M=1/\sqrt{24}$ é
+atingido.
+
+Para a cota, seja $(\beta_0,\bbeta,M)$ qualquer ponto que satisfaça as restrições.
+Multiplicando a restrição de cada observação pelo seu peso $\alpha_i>0$ e somando,
+\[
+  \beta_0\sum_i\alpha_iy_i+\bbeta^\top\Big(\sum_i\alpha_iy_i\bm z_i\Big)\ \ge\ M\sum_i\alpha_i .
+\]
+Com os pesos $8$, $4$, $6$ e $6$, $\sum_i\alpha_iy_i=-8-4+6+6=0$, e $\beta_0$ desaparece;
+$\sum_i\alpha_iy_i\bm z_i=-4(1,1,1)+6(1,0,0)+6(0,1,0)=(2,2,-4)$; e $\sum_i\alpha_i=24$. Pela
+desigualdade de Cauchy--Schwarz e por $\norm{\bbeta}=1$,
+\[
+  24\,M\ \le\ \bbeta^\top(2,2,-4)\ \le\ \norm{(2,2,-4)}=\sqrt{24},
+  \qquad\text{isto é,}\qquad M\le\frac1{\sqrt{24}} .
+\]
+O ponto encontrado acima é, portanto, ótimo. É também a única solução: a igualdade em
+Cauchy--Schwarz exige $\bbeta=(2,2,-4)/\sqrt{24}$, e, como todos os pesos são positivos, a
+igualdade na soma exige que as quatro restrições valham com igualdade, o que determina
+$\beta_0=-1/\sqrt{24}$. As quatro observações estão sobre a margem: todas são vetores de
+suporte. Os pesos não são arbitrários: com o sinal de cada classe, $-8$, $-4$, $6$ e $6$ são,
+a menos de um fator comum, os coeficientes $\alpha_i$ da representação de $f$ por produtos
+internos que as notas admitem sem demonstração, e é isso que faz o $\beta_0$ sumir da soma.
+
+No plano original, $f=2x_1+2x_2-4x_1x_2-1=-4\big(x_1-\tfrac12\big)\big(x_2-\tfrac12\big)$. A
+fronteira $f=0$ é o par de retas $x_1=\tfrac12$ e $x_2=\tfrac12$, e o classificador acende a
+lâmpada quando $(x_1-\tfrac12)(x_2-\tfrac12)<0$, isto é, quando exatamente uma das chaves está
+acima de $\tfrac12$. O que o ou exclusivo pede é a interação $x_1x_2$, e não os quadrados. O
+\emph{kernel} polinomial de grau $2$, $\big(1+\inner{\x}{\x'}\big)^2$, contém o monômio $x_1x_2$
+entre as coordenadas da sua função $\varphi$, e uma SVM com ele também separa estas
+observações, embora com coeficientes diferentes, porque as coordenadas de $\varphi$ vêm
+multiplicadas por constantes.
+\end{solucao}

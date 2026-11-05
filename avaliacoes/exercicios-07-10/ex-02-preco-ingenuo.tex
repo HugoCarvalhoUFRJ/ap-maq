@@ -1,0 +1,139 @@
+% Aula 07 --- uma covariável duplicada: o Bayes ingênuo conta a mesma evidência duas vezes.
+Lucas é analista de crédito e quer prever a inadimplência, $Y=1$, a partir da renda
+mensal $X_1$ do cliente, em milhares de reais. Na população de clientes,
+$X_1\mid Y=1\sim N(3,1)$ e $X_1\mid Y=0\sim N(5,1)$. Ao juntar duas bases, Lucas fica,
+sem perceber, com a renda duas vezes: em $X_1$, em milhares de reais, e em $X_2=1000\,X_1$,
+em reais. Ele ajusta um Bayes ingênuo gaussiano às duas colunas. Para separar o erro do
+modelo do erro de estimação, suponha que a amostra é tão grande que o ingênuo usa as
+distribuições verdadeiras de $X_1$ e de $X_2$ em cada classe. Seja
+\[
+  L(x_1)=\log\frac{f_1(x_1)}{f_0(x_1)}
+\]
+a razão de log-verossimilhanças da renda, em que $f_c$ é a densidade de $X_1$ dado $Y=c$
+e $\log$ é o logaritmo natural, e sejam $\pi_c=\Prob(Y=c)$ e $\sigma(u)=e^u/(1+e^u)$.
+\begin{itens}
+  \item \pts{1,0} Mostre que $L(x_1)=8-2x_1$. Mostre que, num cliente com renda $x_1$, o
+        \emph{log-odds} verdadeiro é $\log(\pi_1/\pi_0)+L(x_1)$ e o calculado pelo
+        ingênuo é $\log(\pi_1/\pi_0)+2L(x_1)$.
+  \item \pts{1,0} Suponha $\pi_0=\pi_1=1/2$ e seja $\eta=\Prob(Y=1\mid X_1=x_1)$. Mostre
+        que a probabilidade calculada pelo ingênuo é
+        $\widehat P=\eta^2/\big(\eta^2+(1-\eta)^2\big)$. Conclua que ela ordena os
+        clientes como $\eta$, que classifica cada um como o classificador de Bayes, e que
+        $\abs{\widehat P-1/2}>\abs{\eta-1/2}$ sempre que $\eta\notin\{0,1/2,1\}$.
+        Calcule $\widehat P$ para $\eta=0{,}6$ e para $\eta=0{,}8$.
+  \item \pts{1,2} Na carteira de Lucas, porém, só $20\%$ dos clientes são inadimplentes:
+        $\pi_1=0{,}2$. Determine as rendas que o classificador de Bayes classifica como
+        inadimplentes e as que o ingênuo classifica assim, e mostre que as duas decisões
+        diferem num intervalo de rendas. Calcule a probabilidade de um cliente cair nesse
+        intervalo e diga qual das duas decisões erra mais nele. \emph{Dados:}
+        $\log2\approx0{,}6931$, $\Phi(-1{,}3466)\approx0{,}0891$,
+        $\Phi(-1{,}6931)\approx0{,}0452$, $\Phi(0{,}6534)\approx0{,}7433$ e
+        $\Phi(0{,}3069)\approx0{,}6205$, em que $\Phi$ é a função de distribuição da
+        normal padrão.
+  \item \pts{0,8} Se a renda aparecesse em $m$ colunas, todas proporcionais a $X_1$, o que
+        aconteceria com o \emph{log-odds} do ingênuo? E com a sua decisão quando
+        $m\to\infty$? Resuma o que o exercício mostra sobre o Bayes ingênuo com
+        covariáveis redundantes: o que ele preserva e o que ele estraga.
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Com as densidades $N(3,1)$ e $N(5,1)$, as constantes de normalização se
+cancelam no quociente, e
+\[
+  L(x_1)=-\tfrac12(x_1-3)^2+\tfrac12(x_1-5)^2
+        =\tfrac12\big[(x_1-5)^2-(x_1-3)^2\big]
+        =\tfrac12\,(-2)(2x_1-8)=8-2x_1 ,
+\]
+em que se usou $a^2-b^2=(a-b)(a+b)$ com $a=x_1-5$ e $b=x_1-3$.
+
+O par $(X_1,X_2)$ carrega a mesma informação que $X_1$, porque $X_2=1000\,X_1$ é uma
+função de $X_1$, e $X_1$ é função do par. Saber que $(X_1,X_2)=(x_1,1000\,x_1)$ é,
+portanto, o mesmo que saber que $X_1=x_1$, e o \emph{log-odds} verdadeiro é o da renda
+sozinha:
+\[
+  \log\frac{\Prob(Y=1\mid X_1=x_1)}{\Prob(Y=0\mid X_1=x_1)}
+  =\log\frac{\pi_1f_1(x_1)}{\pi_0f_0(x_1)}=\log\frac{\pi_1}{\pi_0}+L(x_1).
+\]
+O ingênuo, por sua vez, trata as duas colunas como independentes dentro de cada classe e
+usa o produto das densidades marginais. A densidade de $X_2=1000\,X_1$ dado $Y=c$ é
+$h_c(x_2)=\frac{1}{1000}f_c\big(x_2/1000\big)$, pela fórmula da mudança de variável, e o
+fator $1/1000$ se cancela no quociente: $h_1(1000\,x_1)/h_0(1000\,x_1)=f_1(x_1)/f_0(x_1)$. O
+\emph{log-odds} do ingênuo é então
+\[
+  \log\frac{\pi_1f_1(x_1)\,h_1(1000\,x_1)}{\pi_0f_0(x_1)\,h_0(1000\,x_1)}
+  =\log\frac{\pi_1}{\pi_0}+2L(x_1).
+\]
+A mudança de unidade não altera a razão de verossimilhanças, e a segunda coluna repete a
+evidência da primeira; o ingênuo a soma de novo, como se fosse uma testemunha
+independente.
+
+\smallskip
+\textbf{(b)} Com prioris iguais, $\log(\pi_1/\pi_0)=0$, o \emph{log-odds} verdadeiro é
+$u=L(x_1)$ e o do ingênuo é $2u$. Como $\eta=\sigma(u)$, vale $e^u=\eta/(1-\eta)$, e
+\[
+  \widehat P=\sigma(2u)=\frac{e^{2u}}{1+e^{2u}}
+  =\frac{\eta^2/(1-\eta)^2}{1+\eta^2/(1-\eta)^2}
+  =\frac{\eta^2}{\eta^2+(1-\eta)^2}.
+\]
+A função $u\mapsto\sigma(2u)$ é estritamente crescente, e $u\mapsto\sigma(u)$ também; logo
+$\widehat P$ é uma função estritamente crescente de $\eta$, e os dois ordenam os clientes
+da mesma maneira. Em particular, $\widehat P>1/2\iff 2u>0\iff u>0\iff\eta>1/2$, e o
+ingênuo classifica cada cliente como o classificador de Bayes.
+
+Para $1/2<\eta<1$, dividindo por $\eta>0$,
+\[
+  \widehat P>\eta
+  \iff \eta>\eta^2+(1-\eta)^2
+  \iff 2\eta^2-3\eta+1<0
+  \iff (2\eta-1)(\eta-1)<0,
+\]
+o que vale, porque o primeiro fator é positivo e o segundo é negativo. Para
+$0<\eta<1/2$, a simetria $\widehat P(1-\eta)=1-\widehat P(\eta)$ dá $\widehat P<\eta$. Nos
+dois casos $\widehat P$ fica mais longe de $1/2$ que $\eta$. Com $\eta=0{,}6$,
+$\widehat P=0{,}36/0{,}52\approx0{,}692$; com $\eta=0{,}8$,
+$\widehat P=0{,}64/0{,}68\approx0{,}941$. O ingênuo acerta a ordem e a decisão, mas exagera
+a certeza.
+
+\smallskip
+\textbf{(c)} Com $\pi_1=0{,}2$, $\log(\pi_1/\pi_0)=\log(1/4)=-2\log2$. O classificador de
+Bayes declara inadimplente quando o \emph{log-odds} verdadeiro é positivo:
+\[
+  -2\log2+8-2x_1>0\iff x_1<4-\log2\approx3{,}3069 .
+\]
+O ingênuo declara quando o seu \emph{log-odds} é positivo:
+\[
+  -2\log2+2(8-2x_1)>0\iff x_1<4-\tfrac12\log2\approx3{,}6534 .
+\]
+As decisões diferem no intervalo $I=[3{,}3069;\ 3{,}6534)$, de rendas entre cerca de
+R\$~3\,307 e R\$~3\,653: ali o ingênuo declara inadimplente quem o classificador de Bayes
+declara adimplente. Com prioris iguais isso não acontecia, porque multiplicar o
+\emph{log-odds} por $2$ não muda o seu sinal; com prioris diferentes, o termo
+$\log(\pi_1/\pi_0)$ não é dobrado, e o ponto em que a soma troca de sinal se desloca.
+
+Pela lei da probabilidade total, com os dados do enunciado,
+\begin{align*}
+  \Prob(X_1\in I\mid Y=0)&=\Phi(3{,}6534-5)-\Phi(3{,}3069-5)\approx0{,}0891-0{,}0452=0{,}0439,\\
+  \Prob(X_1\in I\mid Y=1)&=\Phi(3{,}6534-3)-\Phi(3{,}3069-3)\approx0{,}7433-0{,}6205=0{,}1228,
+\end{align*}
+e $\Prob(X_1\in I)\approx0{,}8\cdot0{,}0439+0{,}2\cdot0{,}1228\approx0{,}035+0{,}025=0{,}060$:
+a decisão muda para cerca de $6\%$ dos clientes. Em $I$, o ingênuo erra nos adimplentes,
+com probabilidade $\Prob(Y=0,\,X_1\in I)\approx0{,}035$, e o classificador de Bayes erra nos
+inadimplentes, com probabilidade $\Prob(Y=1,\,X_1\in I)\approx0{,}025$. O ingênuo erra mais,
+e a sua probabilidade de erro fica cerca de $0{,}011$ acima da de Bayes, como tinha de ser,
+porque nenhum classificador erra menos que o de Bayes.
+
+\smallskip
+\textbf{(d)} Com $m$ colunas proporcionais a $X_1$, o argumento do item (a) se repete para
+cada uma, e o \emph{log-odds} do ingênuo passa a $\log(\pi_1/\pi_0)+m\,L(x_1)$. Quando
+$m\to\infty$, o segundo termo domina sempre que $L(x_1)\ne0$: o \emph{log-odds} vai a
+$+\infty$ se $L(x_1)>0$ e a $-\infty$ se $L(x_1)<0$, e a probabilidade calculada vai a $1$ ou
+a $0$. A decisão passa a ser $x_1<4$, a de prioris iguais, como se a priori tivesse sumido.
+
+O Bayes ingênuo com covariáveis redundantes preserva a ordenação das observações, porque o
+seu \emph{log-odds} continua sendo uma função crescente do verdadeiro. Estraga as
+probabilidades, que saem empurradas para $0$ e $1$, e, quando as classes têm tamanhos
+diferentes, estraga também algumas decisões, porque a evidência é contada mais de uma vez e
+a priori, uma vez só. Covariáveis apenas correlacionadas produzem uma versão mais branda do
+mesmo efeito; com colunas repetidas ou quase repetidas, convém retirá-las antes do ajuste ou
+usar um modelo que leve a correlação em conta.
+\end{solucao}

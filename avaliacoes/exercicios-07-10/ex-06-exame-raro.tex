@@ -1,0 +1,92 @@
+% Aula 08 --- doença rara: o classificador de Bayes é o trivial, e os custos mudam isso.
+Helena é médica e coordena o rastreamento de uma doença que atinge $1\%$ da população:
+$\Prob(Y=1)=0{,}01$, com $Y=1$ para doente. O exame disponível tem resultado $X\in\{0,1\}$ e,
+seguindo o resultado (isto é, declarando doente quem tem $X=1$), detecta $90\%$ dos doentes
+e dá alarme falso para $10\%$ dos saudáveis:
+$\Prob(X=1\mid Y=1)=0{,}9$ e $\Prob(X=1\mid Y=0)=0{,}1$. Seja
+$\eta(x)=\Prob(Y=1\mid X=x)$.
+\begin{itens}
+  \item \pts{1,0} Calcule $\eta(1)$ e $\eta(0)$.
+  \item \pts{0,8} Determine o classificador de Bayes, o que minimiza a probabilidade de erro.
+        Compare a probabilidade de erro dele com a do classificador que segue o exame. Um
+        colega conclui que o exame não serve para nada. O que há de errado nessa conclusão?
+  \item \pts{1,2} Sejam $\ell_0$ o custo de deixar passar um doente e $\ell_1$ o de um alarme
+        falso, e $r=\ell_0/\ell_1$. Lembre que o classificador de menor custo esperado declara
+        doente quando $\eta(x)>\ell_1/(\ell_0+\ell_1)$. Mostre que seguir o exame é a decisão
+        de menor custo esperado se e somente se $11<r\le891$, e diga qual é a decisão ótima
+        fora dessa faixa. Para $\ell_0=20$ e $\ell_1=1$, calcule o custo esperado de declarar
+        todos saudáveis, de seguir o exame e de declarar todos doentes, numa população de
+        $10\,000$ pessoas.
+  \item \pts{1,0} Os cortes aplicados a $\eta(X)$ produzem só três classificadores. Encontre
+        os seus pontos (FPR, TPR), desenhe a curva ROC que os liga por segmentos e calcule a
+        AUC. Como uma AUC alta e um classificador de Bayes que ignora o exame podem conviver?
+\end{itens}
+
+\begin{solucao}
+\textbf{(a)} Pelo Teorema de Bayes,
+\[
+  \eta(1)=\frac{0{,}9\cdot0{,}01}{0{,}9\cdot0{,}01+0{,}1\cdot0{,}99}
+        =\frac{0{,}009}{0{,}108}=\frac1{12}\approx0{,}083,
+\]
+\[
+  \eta(0)=\frac{0{,}1\cdot0{,}01}{0{,}1\cdot0{,}01+0{,}9\cdot0{,}99}
+        =\frac{0{,}001}{0{,}892}=\frac1{892}\approx0{,}0011 .
+\]
+Um resultado positivo multiplica a probabilidade de doença por cerca de $8$, de $1\%$ para
+$8{,}3\%$, e um negativo a divide por cerca de $9$; ainda assim, mesmo com o exame positivo,
+a doença continua improvável, porque ela é rara: entre os positivos, os $9$ doentes em cada
+mil pessoas são superados pelos $99$ saudáveis com alarme falso.
+
+\smallskip
+\textbf{(b)} O classificador de Bayes declara doente quando $\eta(x)\ge1/2$. Como
+$\eta(0)$ e $\eta(1)$ estão abaixo de $1/2$, ele é $g\equiv0$: declara todos saudáveis,
+qualquer que seja o resultado do exame. A probabilidade de erro dele é
+$\Prob(Y=1)=0{,}01$. Seguir o exame erra nos doentes com $X=0$ e nos saudáveis com $X=1$:
+\[
+  \Prob(X\ne Y)=0{,}01\cdot0{,}1+0{,}99\cdot0{,}1=0{,}001+0{,}099=0{,}1 ,
+\]
+dez vezes mais. A conclusão do colega confunde a probabilidade de erro com a utilidade. O
+classificador de Bayes minimiza a probabilidade de erro, que dá o mesmo peso a um doente não
+detectado e a um alarme falso; com uma doença rara, a maneira mais barata de errar pouco é
+nunca acusar ninguém, ao preço de não detectar doente nenhum. O exame detecta $90\%$ dos
+doentes: o que falta saber é quanto vale cada um deles comparado a um alarme falso.
+
+\smallskip
+\textbf{(c)} O corte é $\ell_1/(\ell_0+\ell_1)=1/(1+r)$, e a decisão ótima é tomada em cada
+valor de $x$ separadamente. Seguir o exame significa declarar doente em $x=1$ e saudável em
+$x=0$, o que é ótimo quando
+\[
+  \eta(1)>\frac1{1+r}\iff1+r>12\iff r>11
+  \qquad\text{e}\qquad
+  \eta(0)\le\frac1{1+r}\iff r\le891 .
+\]
+Com $r<11$, a decisão ótima é declarar todos saudáveis; com $r=11$, as duas decisões em
+$x=1$ custam o mesmo; com $r>891$, é declarar todos doentes, porque, quando um doente não
+detectado custa mais que $891$ alarmes falsos, até a chance de $1/892$ que resta depois de
+um exame negativo justifica declarar doente. Seguir o exame é ótimo exatamente quando deixar
+passar um doente custa entre $11$ e $891$ alarmes falsos.
+
+Com $\ell_0=20$ e $\ell_1=1$, $r=20$ está na faixa, e seguir o exame é o ótimo. Numa
+população de $10\,000$ pessoas há, em média, $P=100$ doentes e $N=9\,900$ saudáveis, e as
+contagens esperadas saem das taxas: $\mathrm{FN}=(1-\mathrm{TPR})\,P$ e
+$\mathrm{FP}=\mathrm{FPR}\cdot N$. Declarar todos saudáveis dá $\mathrm{FN}=100$ e custo
+$20\cdot100=2\,000$. Seguir o exame dá $\mathrm{FN}=0{,}1\cdot100=10$ e
+$\mathrm{FP}=0{,}1\cdot9\,900=990$, com custo $20\cdot10+990=1\,190$. Declarar todos doentes dá
+$\mathrm{FP}=9\,900$ e custo $9\,900$. O exame economiza $810$ unidades de custo a cada dez mil
+pessoas em relação ao classificador de Bayes, embora erre dez vezes mais que ele.
+
+\smallskip
+\textbf{(d)} O escore $\eta(X)$ assume só os valores $1/892$ e $1/12$. Um corte acima de
+$1/12$ não declara ninguém doente, o ponto $(0,0)$; um corte em $(1/892,\,1/12]$ declara doentes
+os que têm $X=1$, o ponto $(0{,}1;\ 0{,}9)$; um corte até $1/892$ declara todos doentes, o
+ponto $(1,1)$. A curva liga $(0,0)$ a $(0{,}1;\,0{,}9)$ e este a $(1,1)$, e a área sob ela é a
+de um triângulo e um trapézio:
+\[
+  \mathrm{AUC}=\tfrac12\cdot0{,}1\cdot0{,}9+\tfrac12\,(0{,}9+1)\cdot0{,}9=0{,}045+0{,}855=0{,}9 .
+\]
+As duas coisas convivem porque medem coisas diferentes. A AUC avalia o exame ao longo de
+todos os cortes, e o exame separa bem doentes de saudáveis. O classificador de Bayes usa um
+único corte, $1/2$, que é o corte certo quando os dois erros custam o mesmo; com uma doença
+rara, esse corte fica acima de qualquer probabilidade que o exame produza. O exame é bom; o
+que decide se vale a pena usá-lo é a razão de custos, pelo item (c).
+\end{solucao}
