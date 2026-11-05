@@ -32,6 +32,8 @@ avaliacoes/                       Avaliações do curso, com gabarito
 ├── Lista de revisao 01-06.tex    lista de revisão do Bloco I (11 exercícios)
 ├── Avaliacao teorica 01.tex      a prova, com 3 questões sorteadas dessa lista
 ├── exercicios/                   o corpo de cada exercício, incluído pelos dois
+├── Lista de revisao 07-10.tex    lista de revisão do Bloco II (12 exercícios)
+├── exercicios-07-10/             o corpo de cada exercício dessa lista
 └── Trabalho pratico 01.tex       o trabalho prático (aulas 01 a 10), com dois notebooks
 
 recursos/
@@ -141,24 +143,29 @@ Presenciais de 2025-02, que são herdadas e continuam em `recursos/avaliacoes/`.
 | `Lista de revisao 01-06 - gabarito.pdf` | a mesma lista com as soluções |
 | `Avaliacao teorica 01.tex` / `.pdf` | a prova: 3 questões **sorteadas** da lista de revisão, 12,0 pontos, 2 horas |
 | `Avaliacao teorica 01 - gabarito.pdf` | as soluções, com critério de correção por questão |
+| `Lista de revisao 07-10.tex` / `.pdf` | 12 exercícios inéditos de nível intermediário, três por aula, cobrindo o Bloco II (classificação) |
+| `Lista de revisao 07-10 - gabarito.pdf` | a mesma lista com as soluções |
 | `Trabalho pratico 01.tex` / `.pdf` | o trabalho prático: 15 tarefas sobre as aulas 01 a 10, em dois conjuntos de dados reais, um de regressão e um de classificação, com entrega em notebook |
 | `Trabalho pratico 01 - gabarito.pdf` | o roteiro de correção: o esperado em cada tarefa e a distribuição dos pontos |
 | `Trabalho pratico 01 - modelo.ipynb` | o ponto de partida do aluno: carrega os dados e tem uma seção por tarefa |
 | `Trabalho pratico 01 - resolucao.ipynb` | a resolução de referência, de onde saem os números do roteiro |
 
-A lista de revisão não repete nenhum dos exercícios das listas de cada aula: boa
-parte dela pede que o aluno **demonstre** resultados que as notas usaram sem
-demonstrar — o atalho do LOOCV, as fórmulas do lasso no caso ortonormal, as duas
-formas da fórmula de $k$ dobras.
+As listas de revisão não repetem nenhum dos exercícios das listas de cada aula: boa
+parte delas pede que o aluno **demonstre** resultados que as notas usaram sem
+demonstrar. Na primeira, o atalho do LOOCV, as fórmulas do lasso no caso
+ortonormal e as duas formas da fórmula de $k$ dobras; na segunda, que a margem
+máxima depende só dos vetores de suporte, que o *kernel* radial é um *kernel* em
+qualquer dimensão e o preço do Bayes ingênuo com covariáveis redundantes. A prova
+das aulas 07 a 10 ainda não foi sorteada.
 
 As questões da prova foram sorteadas com semente registrada no cabeçalho do
 `.tex`, com a restrição de que cada uma venha de uma aula diferente. Como nas
 listas, o gabarito sai do mesmo arquivo-fonte do enunciado.
 
 **A prova e a lista compartilham os exercícios, literalmente.** O corpo de cada
-um — enunciado, itens e solução — mora em `avaliacoes/exercicios/`, e os dois
-documentos o incluem por `\input`: a lista inclui os onze, a prova inclui os três
-sorteados. Não há duas cópias, então não há como divergirem; corrigir um exercício
+um — enunciado, itens e solução — mora em `avaliacoes/exercicios/` (lista 01-06)
+ou em `avaliacoes/exercicios-07-10/` (lista 07-10), e os documentos o incluem por
+`\input`: a lista 01-06 inclui os onze, a prova inclui os três sorteados. Não há duas cópias, então não há como divergirem; corrigir um exercício
 é mexer num arquivo só. A única diferença entre os dois usos é a pontuação por
 item, que a prova mostra e a lista não — ela vem de um comando do estilo, que some
 quando o documento não é uma prova.
@@ -169,6 +176,8 @@ Para compilar, de dentro de `avaliacoes/`:
 cd avaliacoes
 pdflatex "Lista de revisao 01-06.tex"
 pdflatex "Lista de revisao 01-06 - gabarito.tex"
+pdflatex "Lista de revisao 07-10.tex"
+pdflatex "Lista de revisao 07-10 - gabarito.tex"
 ```
 
 ## Notas de aula (LaTeX)
