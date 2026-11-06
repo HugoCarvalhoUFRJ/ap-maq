@@ -141,7 +141,7 @@ Presenciais de 2025-02, que são herdadas e continuam em `recursos/avaliacoes/`.
 | --- | --- |
 | `Lista de revisao 01-06.tex` / `.pdf` | 11 exercícios inéditos de nível intermediário, cobrindo o Bloco I |
 | `Lista de revisao 01-06 - gabarito.pdf` | a mesma lista com as soluções |
-| `Avaliacao teorica 01.tex` / `.pdf` | a prova: 3 questões **sorteadas** da lista de revisão, 12,0 pontos, 2 horas |
+| `Avaliacao teorica 01.tex` / `.pdf` | a prova: 3 questões **sorteadas** da lista de revisão 01-06, 12,0 pontos, 2 horas |
 | `Avaliacao teorica 01 - gabarito.pdf` | as soluções, com critério de correção por questão |
 | `Lista de revisao 07-10.tex` / `.pdf` | 12 exercícios inéditos de nível intermediário, três por aula, cobrindo o Bloco II (classificação) |
 | `Lista de revisao 07-10 - gabarito.pdf` | a mesma lista com as soluções |
@@ -158,17 +158,18 @@ máxima depende só dos vetores de suporte, que o *kernel* radial é um *kernel*
 qualquer dimensão e o preço do Bayes ingênuo com covariáveis redundantes. A prova
 das aulas 07 a 10 ainda não foi sorteada.
 
-As questões da prova foram sorteadas com semente registrada no cabeçalho do
+As questões da primeira prova foram sorteadas com semente registrada no cabeçalho do
 `.tex`, com a restrição de que cada uma venha de uma aula diferente. Como nas
 listas, o gabarito sai do mesmo arquivo-fonte do enunciado.
 
 **A prova e a lista compartilham os exercícios, literalmente.** O corpo de cada
 um — enunciado, itens e solução — mora em `avaliacoes/exercicios/` (lista 01-06)
 ou em `avaliacoes/exercicios-07-10/` (lista 07-10), e os documentos o incluem por
-`\input`: a lista 01-06 inclui os onze, a prova inclui os três sorteados. Não há duas cópias, então não há como divergirem; corrigir um exercício
-é mexer num arquivo só. A única diferença entre os dois usos é a pontuação por
-item, que a prova mostra e a lista não — ela vem de um comando do estilo, que some
-quando o documento não é uma prova.
+`\input`: a lista 01-06 inclui os onze e a prova, os três sorteados; a lista 07-10
+inclui os doze. Não há duas cópias, então não há como divergirem; corrigir um
+exercício é mexer num arquivo só. A única diferença entre os dois usos é a
+pontuação por item, que a prova mostra e a lista não — ela vem de um comando do
+estilo, que some quando o documento não é uma prova.
 
 Para compilar, de dentro de `avaliacoes/`:
 

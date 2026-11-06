@@ -18,7 +18,7 @@ existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
 - **O repositório não é entregue aos alunos.** Eles recebem só o que o Gabriel escolhe,
   quando escolhe; por isso gabaritos, prova, roteiros de correção e roteiros do docente
   convivem aqui de propósito. O que liberar é decisão dele: informe, não alerte (ex.: o
-  gabarito da lista de revisão resolve as três questões da prova). **Mas o remote é
+  gabarito da lista de revisão 01-06 resolve as três questões da P1). **Mas o remote é
   público** (`HugoCarvalhoUFRJ/ap-maq`, conferido em 08/10/2026): quem tem o endereço lê
   tudo. Mudar a visibilidade é com o dono da conta, e levaria a `main` junto.
 - **Os alunos não conhecem os blocos.** Blocos I, II e III são do planejamento e do README.
@@ -95,7 +95,7 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   `confusion_matrix` devolve a transposta, e o material avisa.
 - **O conjunto dos $k$ vizinhos é $\mathcal{N}_{\x}^{(k)}$**, como nos decks 04 e 10, com
   $d^k_{\x}$ a distância do $k$-ésimo vizinho: notas 04 e 10, Aula prática 04 e o Ex. 8 da
-  lista de revisão. Ao procurar a forma antiga, procure também `\mathcal N` sem chaves.
+  lista de revisão 01-06. Ao procurar a forma antiga, procure também `\mathcal N` sem chaves.
 
 ## O que cada aula cobre, e o que não volta
 
