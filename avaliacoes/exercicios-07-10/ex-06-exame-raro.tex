@@ -38,7 +38,7 @@ a doença continua improvável, porque ela é rara: entre os positivos, os $9$ d
 mil pessoas são superados pelos $99$ saudáveis com alarme falso.
 
 \smallskip
-\textbf{(b)} O classificador de Bayes declara doente quando $\eta(x)\ge1/2$. Como
+\textbf{(b)} O classificador de Bayes declara doente quando $\eta(x)>1/2$. Como
 $\eta(0)$ e $\eta(1)$ estão abaixo de $1/2$, ele é $g\equiv0$: declara todos saudáveis,
 qualquer que seja o resultado do exame. A probabilidade de erro dele é
 $\Prob(Y=1)=0{,}01$. Seguir o exame erra nos doentes com $X=0$ e nos saudáveis com $X=1$:
@@ -76,10 +76,11 @@ $\mathrm{FP}=9\,900$ e custo $9\,900$. O exame economiza $810$ unidades de custo
 pessoas em relação ao classificador de Bayes, embora erre dez vezes mais que ele.
 
 \smallskip
-\textbf{(d)} O escore $\eta(X)$ assume só os valores $1/892$ e $1/12$. Um corte acima de
-$1/12$ não declara ninguém doente, o ponto $(0,0)$; um corte em $(1/892,\,1/12]$ declara doentes
-os que têm $X=1$, o ponto $(0{,}1;\ 0{,}9)$; um corte até $1/892$ declara todos doentes, o
-ponto $(1,1)$. A curva liga $(0,0)$ a $(0{,}1;\,0{,}9)$ e este a $(1,1)$, e a área sob ela é a
+\textbf{(d)} O escore $\eta(X)$ assume só os valores $1/892$ e $1/12$, e, como no item (c), o
+classificador de corte $p_0$ declara doente quem tem $\eta(X)>p_0$. Um corte $p_0\ge1/12$ não
+declara ninguém doente, o ponto $(0,0)$; um corte $1/892\le p_0<1/12$ declara doentes os que
+têm $X=1$, o ponto $(0{,}1;\ 0{,}9)$; um corte $p_0<1/892$ declara todos doentes, o ponto
+$(1,1)$. A curva liga $(0,0)$ a $(0{,}1;\,0{,}9)$ e este a $(1,1)$, e a área sob ela é a
 de um triângulo e um trapézio:
 \[
   \mathrm{AUC}=\tfrac12\cdot0{,}1\cdot0{,}9+\tfrac12\,(0{,}9+1)\cdot0{,}9=0{,}045+0{,}855=0{,}9 .
