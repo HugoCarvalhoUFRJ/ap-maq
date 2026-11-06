@@ -1,4 +1,4 @@
-% Aula 07 --- sob o LDA o log-odds é linear; a recíproca é falsa, e as estimativas diferem.
+% Aula 07 --- sob o LDA o log-odds é linear; a recíproca é falsa.
 Renata é atuária numa seguradora e quer classificar os segurados de um ramo em dois
 perfis, $Y=1$ (risco alto) e $Y=0$ (risco baixo), a partir de uma única covariável: o
 tempo $X$, em anos, entre a contratação da apólice e o primeiro sinistro. Ela hesita
@@ -7,36 +7,26 @@ chegam a uma fronteira linear por caminhos diferentes. Ao longo do exercício,
 $\sigma(u)=e^u/(1+e^u)$ é a função logística, $\log$ é o logaritmo natural e
 $\pi_c=\Prob(Y=c)$.
 \begin{itens}
-  \item \pts{1,0} Suponha que $\X\in\R^p$ e que, como no LDA,
+  \item \pts{2,2} Suponha que $\X\in\R^p$ e que, como no LDA,
         $\X\mid Y=c\sim N(\bm\mu_c,\bm\Sigma)$ para $c\in\{0,1\}$, com $\bm\Sigma$
         simétrica e positiva definida. Mostre que
         $\Prob(Y=1\mid\X=\x)=\sigma(\beta_0+\bbeta^\top\x)$ e escreva $\beta_0$ e
         $\bbeta$ em função de $\pi_0$, $\pi_1$, $\bm\mu_0$, $\bm\mu_1$ e $\bm\Sigma$.
         Conclua que, sob as hipóteses do LDA, o modelo da regressão logística vale
-        exatamente.
-  \item \pts{0,8} Os tempos de Renata não se parecem com uma normal: são positivos e
+        exatamente. (\textit{Dica: }Escreva $\Prob(Y=1\mid\X=\x)$ pelo Teorema de Bayes, com $f_c$ a
+        densidade de $\X$ dado $Y=c$, divida o numerador e o denominador por
+        $\pi_1f_1(\x)$ e ponha o resultado na forma $\sigma\big(u(\x)\big)$. Depois,
+        substitua as densidades normais em $u(\x)$, expanda as duas formas quadráticas e
+        observe o que se cancela porque a covariância é a mesma nas duas classes.)
+  \item \pts{1,8} Os tempos de Renata não se parecem com uma normal: são positivos e
         muito assimétricos. Suponha agora que $X\mid Y=c$ tenha distribuição
         exponencial de taxa $\lambda_c$, com densidade $\lambda_c e^{-\lambda_c x}$ para
         $x>0$, com $\lambda_0=1$, $\lambda_1=3$ e $\pi_0=\pi_1=1/2$: em média, o
         primeiro sinistro do perfil de risco alto chega três vezes mais cedo. Mostre que
-        $\Prob(Y=1\mid X=x)=\sigma(\log3-2x)$ para $x>0$. O modelo logístico continua
-        valendo? E as hipóteses do LDA?
-  \item \pts{1,4} Com uma amostra muito grande dessa população, as estimativas de
-        máxima verossimilhança do LDA se aproximam dos valores populacionais: as médias
-        de $\E[X\mid Y=c]=1/\lambda_c$, a variância comum de
-        $v=\pi_0\Var(X\mid Y=0)+\pi_1\Var(X\mid Y=1)$, com
-        $\Var(X\mid Y=c)=1/\lambda_c^2$, e as prioris de $1/2$. Admita também que,
-        quando o modelo logístico vale, os coeficientes estimados pela logística se
-        aproximam dos verdadeiros. Calcule os coeficientes $(\beta_0,\beta_1)$ de que
-        cada método se aproxima, o corte de cada um no nível $1/2$ (o tempo abaixo do
-        qual ele classifica o segurado como de risco alto) e a probabilidade de erro de
-        cada corte.
-  \item \pts{0,8} Renata quer acompanhar de perto os segurados cuja probabilidade de
-        risco alto passe de $p_0=0{,}1$. Determine, para cada método, os tempos $x$
-        marcados para acompanhamento e compare a diferença entre os dois cortes com a
-        que você encontrou no nível $1/2$. O que isso diz sobre a frase ``sob as
-        hipóteses do LDA, os dois métodos têm a mesma forma e diferem só na
-        estimação''?
+        $\Prob(Y=1\mid X=x)=\sigma(\log3-2x)$ para $x>0$. O modelo da regressão
+        logística vale nesta população, isto é, existem constantes $\beta_0$ e $\beta_1$
+        com $\Prob(Y=1\mid X=x)=\sigma(\beta_0+\beta_1x)$ para todo $x>0$? As hipóteses do
+        LDA, de que $X$ é normal em cada classe e tem a mesma variância nas duas, valem?
 \end{itens}
 
 \begin{solucao}
@@ -87,62 +77,4 @@ $X\mid Y=c$ não é normal (vive em $(0,\infty)$ e é assimétrica), e as variâ
 classes, $1$ e $1/9$, são diferentes. O item (a) mostra que as hipóteses do LDA bastam
 para o modelo logístico, e este item mostra que não são necessárias: a logística supõe
 apenas que o \emph{log-odds} seja afim, e isso acontece aqui sem nada de normal.
-
-\smallskip
-\textbf{(c)} Para o LDA, os valores populacionais são $\mu_0=1$, $\mu_1=1/3$,
-$\pi_0=\pi_1=1/2$ e
-\[
-  v=\tfrac12\cdot1+\tfrac12\cdot\tfrac19=\tfrac59 .
-\]
-Com $p=1$, as fórmulas do item (a) dão
-\[
-  \beta_1=\frac{\mu_1-\mu_0}{v}=\frac{-2/3}{5/9}=-\frac65=-1{,}2,
-  \qquad
-  \beta_0=\log1-\frac{\mu_1^2-\mu_0^2}{2v}=-\frac{1/9-1}{10/9}=\frac45=0{,}8 .
-\]
-A logística se aproxima dos coeficientes verdadeiros, $(\log3;\,-2)\approx(1{,}0986;\,-2)$.
-Como $\beta_1<0$ nos dois casos, o \emph{log-odds} decresce em $x$, e cada método classifica
-como risco alto os tempos abaixo do ponto em que o \emph{log-odds} se anula:
-\[
-  t^*=\frac{\log3}{2}\approx0{,}5493\quad\text{(logística)},
-  \qquad
-  t_{\mathrm{LDA}}=\frac{0{,}8}{1{,}2}=\frac23\approx0{,}6667\quad\text{(LDA)}.
-\]
-A regra ``risco alto se $x<t$'' erra quando um segurado de risco baixo tem $X<t$ ou um de
-risco alto tem $X\ge t$. Pela lei da probabilidade total e pela função de distribuição da
-exponencial, $\Prob(X<t\mid Y=c)=1-e^{-\lambda_ct}$, a probabilidade de erro é
-\[
-  e(t)=\tfrac12\big(1-e^{-t}\big)+\tfrac12\,e^{-3t},
-\]
-e vale $e(t^*)\approx0{,}3075$ e $e(2/3)\approx0{,}3110$. O corte da logística é o do
-classificador de Bayes, porque usa a probabilidade verdadeira, e $0{,}3075$ é o erro de
-Bayes; o LDA perde $0{,}0034$, muito pouco. Uma simulação com $400\,000$ observações
-confirma os limites: o LDA estima $(0{,}800;\,-1{,}204)$ e a logística
-$(1{,}101;\,-2{,}008)$.
-
-\smallskip
-\textbf{(d)} A probabilidade passa de $0{,}1$ quando o \emph{log-odds} passa de
-$\log(0{,}1/0{,}9)=-\log9$. Pela probabilidade verdadeira,
-\[
-  \log3-2x>-\log9
-  \iff x<\frac{\log3+\log9}{2}=\frac{\log27}{2}\approx1{,}648,
-\]
-e pelo limite do LDA,
-\[
-  0{,}8-1{,}2\,x>-\log9
-  \iff x<\frac{0{,}8+\log9}{1{,}2}\approx2{,}498 .
-\]
-No nível $1/2$, os cortes diferiam em $0{,}12$ ano; no nível $0{,}1$, diferem em $0{,}85$
-ano. O LDA marcaria para acompanhamento, por exemplo, quem teve o primeiro sinistro com
-dois anos de apólice, a quem ele atribui probabilidade $\sigma(0{,}8-2{,}4)\approx0{,}168$,
-quando a verdadeira é $\sigma(\log3-4)\approx0{,}052$.
-
-A frase está correta, e este exercício mostra o seu alcance. Sob as hipóteses do LDA, os
-dois métodos estimam a mesma família de funções, $\sigma(\beta_0+\beta_1x)$. Mas o LDA
-estima os coeficientes pelo modelo completo de $X$ em cada classe, e, quando esse modelo é
-falso, se aproxima de coeficientes errados; a logística estima só o modelo de $Y$ dado
-$X$, que aqui está certo. O erro do LDA quase não aparece no corte $1/2$, mas aparece nas
-probabilidades longe de $1/2$, que são as que um corte como $0{,}1$ usa. Quem vai usar as
-probabilidades, e não só a classe, deve compará-las por validação cruzada antes de escolher
-o método.
 \end{solucao}
