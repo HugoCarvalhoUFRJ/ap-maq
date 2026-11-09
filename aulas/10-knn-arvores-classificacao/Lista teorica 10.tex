@@ -11,347 +11,271 @@
 \cabecalholista{10}{KNN e Árvores de Classificação}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[o corte que o erro de classificação não enxerga]
-Um nó tem $400$ observações, das quais $300$ são da classe~1 --- logo
-$p=0{,}75$. Um corte candidato o divide em dois filhos de $200$ observações
-cada:
+\begin{exercicio}
+Uma engenheira de qualidade de uma fábrica de cerâmica usa uma árvore de
+classificação para prever se um lote de peças será reprovado ($Y=1$) ou aprovado
+($Y=0$) na inspeção final, a partir de medidas do processo de produção. Para uma região $R$ do espaço das covariáveis, sejam $n_R$ o número
+de lotes de treino em $R$, $n_{R,c}$ o número deles na classe $c\in\{0,1\}$ e
+$\widehat p_{R,c}=n_{R,c}/n_R$. O erro de classificação, o índice de Gini e a
+entropia de $R$ são
+\[
+  E(R)=1-\max_{c}\,\widehat p_{R,c},\qquad
+  G(R)=\sum_{c}\widehat p_{R,c}\,(1-\widehat p_{R,c}),\qquad
+  D(R)=-\sum_{c}\widehat p_{R,c}\log_2\widehat p_{R,c},
+\]
+com a convenção $0\log_20=0$. Se $I$ é uma das três medidas e $R$ é dividida em $R_1$
+e $R_2$, com $n_1$ e $n_2$ lotes, a impureza ponderada do corte é
+$n_1I(R_1)+n_2I(R_2)$, e a redução de impureza é
+$n_RI(R)-\big[n_1I(R_1)+n_2I(R_2)\big]$. Como $n_RI(R)$ não depende do corte, o corte
+de menor impureza ponderada é o de maior redução.
+
+Durante o crescimento da árvore, a engenheira examina uma região $R$ com $180$ lotes e
+um corte pela umidade da argila, que divide $R$ em $R_1$ e $R_2$:
 \begin{center}\small
-\renewcommand{\arraystretch}{1.3}
+\renewcommand{\arraystretch}{1.25}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-        & $n$ & classe 1 & classe 0 \\
+região & lotes & reprovados & aprovados \\
 \midrule
-pai     & $400$ & $300$ & $100$ \\
-esquerda& $200$ & $100$ & $100$ \\
-direita & $200$ & $200$ & $0$ \\
+$R$   & $180$ & $30$ & $150$ \\
+$R_1$ & $90$  & $0$  & $90$ \\
+$R_2$ & $90$  & $30$ & $60$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-As três medidas de impureza de um nó com proporção $p$ são
-\[
-  \text{erro} = \min(p,\,1-p), \qquad
-  \text{Gini} = 2p(1-p), \qquad
-  \text{entropia} = -p\log_2 p - (1-p)\log_2(1-p).
-\]
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Calcule a impureza do pai e a impureza ponderada dos filhos, pelas três
-        medidas, e obtenha as três reduções.
-  \item O corte é bom? (Olhe o filho da direita.) Qual das três medidas
-        \emph{não percebe} isso, e qual é exatamente a redução que ela indica?
-  \item Que consequência isso tem para o algoritmo que \textbf{cresce} a árvore?
-  \item Ainda assim, o erro de classificação é a medida recomendada para
-        \textbf{podar}. Por quê?
+  \item Com duas classes, escreva $p=\widehat p_{R,1}$ e mostre que
+        $E(R)=\min\{p,1-p\}$, $G(R)=2p(1-p)$ e
+        $D(R)=-p\log_2p-(1-p)\log_2(1-p)$. Mostre também que $n_RE(R)$ é o número de
+        lotes de treino de $R$ que a moda de $R$ classifica errado.
+  \item Calcule, para cada uma das três medidas, $n_RI(R)$, a impureza ponderada
+        $n_1I(R_1)+n_2I(R_2)$ e a redução de impureza do corte da engenheira. Use
+        $\log_23\approx1{,}585$ e $\log_25\approx2{,}322$.
+  \item O corte é bom? Qual das três medidas não registra isso? Explique o valor que
+        ela dá contando os erros de treino da moda em $R$, em $R_1$ e em $R_2$.
+  \item Considere também um segundo corte, por outra covariável, que divide $R$ em duas
+        regiões de $90$ lotes, cada uma com $15$ reprovados. Calcule as três reduções
+        desse corte e compare os dois cortes por cada uma das medidas. O que
+        aconteceria se o algoritmo que cresce a árvore usasse o erro de classificação?
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Proporções: pai $p=0{,}75$, esquerda $p=0{,}50$, direita $p=1{,}00$.
-Os pesos são $200/400 = 1/2$ para cada filho.
+\textbf{(a)} Com duas classes, $\widehat p_{R,1}=p$ e $\widehat p_{R,0}=1-p$, porque
+cada lote de $R$ pertence a exatamente uma delas. Como $1-\max\{a,b\}=\min\{1-a,1-b\}$,
+\[
+  E(R)=1-\max\{p,1-p\}=\min\{1-p,\,p\},
+\]
+e, somando as parcelas das duas classes,
+\[
+  G(R)=p\,(1-p)+(1-p)\,\big(1-(1-p)\big)=2p(1-p).
+\]
+A expressão de $D(R)$ é a própria definição, escrita com as suas duas parcelas.
+
+Se $R$ for uma folha, a árvore prediz para todos os lotes de $R$ a sua moda, uma classe
+$c^*$ com $n_{R,c^*}=\max_cn_{R,c}$. Ela acerta os $n_{R,c^*}$ lotes dessa classe e erra
+todos os outros, que são
+\[
+  n_R-\max_cn_{R,c}=n_R\Big(1-\max_c\widehat p_{R,c}\Big)=n_RE(R).
+\]
+Se houver empate entre as classes, o número de erros é o mesmo qualquer que seja a
+classe escolhida. Assim, $E(R)$ é a taxa de erro de treino da moda de $R$, e $n_RE(R)$
+é o número desses erros.
+
+\smallskip
+\textbf{(b)} A proporção de reprovados é $30/180=1/6$ em $R$, $0$ em $R_1$ e
+$30/90=1/3$ em $R_2$. A região $R_1$ é pura, e as suas três impurezas são nulas: o
+item (a) dá $E(R_1)=G(R_1)=0$ e, com a convenção $0\log_20=0$, $D(R_1)=0$. Nas outras
+duas regiões,
+\[
+  G(R)=2\cdot\tfrac16\cdot\tfrac56=\tfrac5{18},
+  \qquad
+  G(R_2)=2\cdot\tfrac13\cdot\tfrac23=\tfrac49,
+\]
+e, como $-\log_2p=\log_2(1/p)$,
+\[
+  D(R)=\tfrac16\log_26+\tfrac56\log_2\tfrac65=\log_26-\tfrac56\log_25
+       =1+\log_23-\tfrac56\log_25\approx0{,}650,
+\]
+\[
+  D(R_2)=\tfrac13\log_23+\tfrac23\log_2\tfrac32=\log_23-\tfrac23\approx0{,}918 .
+\]
+Multiplicando cada impureza pelo número de lotes da região:
 \begin{center}\small
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-medida & pai & filhos (ponderado) & redução \\
+medida & $n_RI(R)$ & $n_1I(R_1)+n_2I(R_2)$ & redução \\
 \midrule
-erro       & $\min(0{,}75;0{,}25)=0{,}2500$
-           & $\tfrac12(0{,}50)+\tfrac12(0)=0{,}2500$
-           & $\mathbf{0{,}0000}$ \\
-Gini       & $2(0{,}75)(0{,}25)=0{,}3750$
-           & $\tfrac12(0{,}50)+\tfrac12(0)=0{,}2500$
-           & $\mathbf{0{,}1250}$ \\
-entropia   & $0{,}8113$
-           & $\tfrac12(1{,}0000)+\tfrac12(0)=0{,}5000$
-           & $\mathbf{0{,}3113}$ \\
+$E$ & $180\cdot\frac16=30$ & $90\cdot0+90\cdot\frac13=30$ & $0$ \\
+$G$ & $180\cdot\frac5{18}=50$ & $90\cdot0+90\cdot\frac49=40$ & $10$ \\
+$D$ & $180\cdot0{,}650\approx117{,}0$ & $90\cdot0+90\cdot0{,}918\approx82{,}6$ & $\approx34{,}4$ \\
 \bottomrule
 \end{tabular}
 \end{center}
+Em forma exata, a redução da entropia é $240+90\log_23-150\log_25\approx34{,}36$.
+
+As reduções de medidas diferentes não se comparam entre si, porque cada medida tem a
+sua escala: com duas classes, $E$ e $G$ valem no máximo $1/2$, e $D$, no máximo $1$.
+O que se compara são cortes diferentes pela mesma medida, como no item (d).
 
 \smallskip
-\textbf{(b)} O corte é \textbf{claramente bom}: o filho da direita é
-\emph{puro} --- $200$ observações, todas da classe~1. Separar 200 observações com
-certeza absoluta da classe é exatamente o que uma árvore deveria querer fazer.
+\textbf{(c)} O corte é bom. A região $R_1$ é pura: os $90$ lotes que ela contém, metade
+dos lotes de $R$, foram todos aprovados. Para um lote novo com umidade abaixo do corte,
+os dados de treino não registram nenhuma reprovação; antes do corte, a mesma pergunta
+tinha como resposta a proporção de $R$, um lote reprovado em cada seis. As $30$
+reprovações ficam concentradas em $R_2$.
 
-A medida que não percebe é o \textbf{erro de classificação}, e a redução que ela
-indica é \textbf{exatamente zero}. Não é ``pequena'': é zero, na precisão de
-máquina. A razão é que, em ambos os filhos, a classe majoritária continua sendo
-a classe~1 --- na esquerda por empate, na direita por unanimidade --- e o erro de
-classificação só olha a classe majoritária de cada nó. Ele conta $100$ erros no
-pai e $100+0=100$ erros nos filhos.
+A medida que não registra isso é o erro de classificação, cuja redução é exatamente
+zero. Pelo item (a), $n_RE(R)$, $n_1E(R_1)$ e $n_2E(R_2)$ são os números de erros de
+treino das modas das três regiões. A moda é ``aprovado'' em todas elas: $150$ contra
+$30$ em $R$, $90$ contra $0$ em $R_1$ e $60$ contra $30$ em $R_2$. Antes do corte, a
+moda de $R$ erra os $30$ lotes reprovados; depois, a de $R_1$ não erra nenhum lote, e a
+de $R_2$ erra os mesmos $30$. O corte não muda a classe prevista para nenhum lote de
+treino, e por isso não pode mudar o número de erros, que é tudo o que $E$ mede.
+
+O Gini e a entropia, ao contrário, registram o ganho. Para ver de onde ele vem, use
+$n_R=n_1+n_2$ e escreva a redução região por região:
+\[
+  n_RI(R)-\big[n_1I(R_1)+n_2I(R_2)\big]
+  =n_1\big[I(R)-I(R_1)\big]-n_2\big[I(R_2)-I(R)\big].
+\]
+O primeiro termo é o ganho de pureza dos lotes que foram para $R_1$, e o segundo, a
+perda dos que foram para $R_2$, onde a proporção de reprovados subiu de $1/6$ para
+$1/3$. As três medidas concordam que $R_1$ melhorou e $R_2$ piorou; o que muda é o peso
+de cada parte. Para o erro de classificação,
+$90\big(\tfrac16-0\big)-90\big(\tfrac13-\tfrac16\big)=15-15=0$, e o ganho e a perda se
+cancelam. Para o Gini, $90\big(\tfrac5{18}-0\big)-90\big(\tfrac49-\tfrac5{18}\big)=25-15=10$,
+e, para a entropia, $90\,(0{,}650-0)-90\,(0{,}918-0{,}650)\approx58{,}5-24{,}1=34{,}4$:
+o ganho supera a perda.
+
+É a mesma situação do exemplo dos dados \texttt{Heart} no [ISLP] §8.1.2: um corte cujas
+duas folhas preveem a mesma classe não reduz o erro de classificação e, ainda assim, é
+feito, porque aumenta a pureza.
 
 \smallskip
-\textbf{(c)} Se a árvore usasse o erro de classificação como critério de corte,
-ela avaliaria este corte como \textbf{inútil} e possivelmente escolheria outro,
-ou pararia de crescer (se todos os cortes candidatos dessem redução zero, o que é
-comum). Um filho puro seria descartado.
+\textbf{(d)} No segundo corte, as duas regiões têm a mesma proporção de reprovados que
+$R$, $15/90=1/6$. Como as três medidas dependem da região só pelas proporções das
+classes, cada região tem a mesma impureza que $R$, e
+\[
+  n_1I(R_1)+n_2I(R_2)=90\,I(R)+90\,I(R)=n_RI(R):
+\]
+as três reduções são nulas. O corte não separa nada, e as duas regiões reproduzem, em
+proporção, a região original.
 
-É por isso que o \texttt{DecisionTreeClassifier} do \texttt{scikit-learn} oferece
-apenas \texttt{criterion="gini"} e \texttt{"entropy"} (ou \texttt{"log\_loss"})
-para crescer --- \textbf{o erro de classificação não está entre as opções}. Gini e
-entropia são \emph{estritamente} côncavas, e o Exercício~4 mostra que isso garante
-redução positiva sempre que os filhos diferirem.
-
-\smallskip
-\textbf{(d)} Porque podar e crescer respondem a perguntas diferentes.
-
-Crescer é uma busca gulosa: precisa de um critério \textbf{sensível}, capaz de
-distinguir um corte bom de um corte medíocre mesmo quando nenhum dos dois muda a
-classe majoritária. Um critério que devolve zero com frequência não orienta a
-busca.
-
-Podar é uma decisão sobre o \textbf{desempenho final} da árvore, e o desempenho
-final é medido pelo erro que ela vai cometer --- que é, literalmente, o erro de
-classificação. Usar Gini para podar otimizaria uma quantidade que não é a que
-interessa ao usuário.
-
-Em uma frase: \emph{Gini e entropia são bons guias, o erro de classificação é o
-bom juiz.}
+Pelo Gini e pela entropia, os dois cortes ficam bem distintos, com reduções $10$ contra
+$0$ e $34{,}4$ contra $0$. Pelo erro de classificação, os dois têm redução zero e ficam
+empatados. Se o algoritmo que cresce a árvore usasse o erro de classificação, ele não
+teria como preferir o corte da engenheira, que isola $90$ lotes sem nenhuma reprovação,
+a um corte que não muda nada. O argumento do item (c) mostra mais: sempre que as duas
+partes de um corte mantêm a classe prevista em $R$, nenhuma previsão de treino muda, e a
+redução do erro de classificação é zero. Numa região em que todos os cortes candidatos
+fossem desse tipo, esse critério não distinguiria corte nenhum. É por isso que a árvore
+cresce com o Gini ou com a entropia.
 \end{solucao}
 
 %------------------------------------------------------------------------------
-\begin{exercicio}[KNN nos extremos, em classificação]
+\begin{exercicio}
+Um estudante quer entender o papel de $k$ no KNN de classificação e começa pelos dois
+valores extremos, $k=1$ e $k=n$. Ele tem $n=301$ observações de treino de duas classes,
+$181$ da classe~$1$ e $120$ da classe~$0$, com vetores de covariáveis
+$\X_1,\dots,\X_n$ distintos dois a dois, e usa a distância euclidiana $d$. Lembre-se que o
+classificador é
+\[
+  \ghat(\x)=\operatorname{moda}\{Y_i:i\in\mathcal{N}_{\x}^{(k)}\},
+  \qquad\text{com}\qquad
+  \mathcal{N}_{\x}^{(k)}=\{i:d(\X_i,\x)\le d^k_{\x}\},
+\]
+em que $d^k_{\x}$ é a distância de $\x$ à $k$-ésima observação de treino mais próxima.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Qual é o erro de \emph{treino} do KNN com $k=1$, num conjunto sem pontos
-        repetidos? E com $k=n$ (supondo $n$ ímpar)?
-  \item Descreva a fronteira de decisão nos dois extremos, em termos de viés e
-        variância.
-  \item Um resultado clássico (Cover e Hart, 1967) diz que, quando
-        $n\to\infty$, o erro do classificador de 1 vizinho mais próximo,
-        $\risco_{1\text{NN}}$, satisfaz
-        \[
-          \risco^\ast \;\le\; \risco_{1\text{NN}} \;\le\; 2\,\risco^\ast ,
-        \]
-        onde $\risco^\ast$ é o erro de Bayes. Se $\risco^\ast=0{,}10$, em que
-        intervalo está o erro assintótico do 1-NN? Comente: isso é uma boa ou uma
-        má notícia sobre o 1-NN?
-  \item Por que, na prática, o KNN com $k$ escolhido por validação cruzada
-        costuma bater o 1-NN, se o teorema já garante um fator 2?
+  \item Mostre que, com $k=1$, o classificador acerta todas as observações de treino.
+        Mostre que, com $k=n$, ele atribui a mesma classe a todo $\x$. Calcule o erro de treino
+        para cada um desses casos.
+  \item Descreva a fronteira de decisão nos dois casos. Suponha, em seguida, que o
+        estudante descubra que alguns rótulos foram registrados errado e os corrija,
+        trocando $1$ por $0$. Qual é o menor número de rótulos trocados que muda o
+        classificador com $k=1$? E com $k=n$? Relacione as respostas com o viés e a
+        variância de cada caso.
+  \item Pelo item (a), o estudante conclui que $k=1$ é a melhor escolha, porque com ela
+        o classificador não erra nenhuma observação de treino. O argumento está certo?
+        Como $k$ deve ser escolhido, e por que esse procedimento não teria o mesmo problema de $k=1$?
 \end{enumerate}
 \end{exercicio}
 
 \begin{solucao}
-\textbf{(a)} Com $k=1$ o erro de treino é \textbf{exatamente zero}: o vizinho
-mais próximo de $\X_i$ é o próprio $\X_i$, a distância $0$, então
-$\ghat(\X_i)=Y_i$ sempre. Com $k=n$, todos os pontos são vizinhos de todos e o
-classificador devolve sempre a classe majoritária do conjunto inteiro; o erro de
-treino é a proporção da classe \emph{minoritária}.
+\textbf{(a)} Com $k=1$, tome uma observação de treino $\X_i$. Como $d$ é uma distância,
+$d(\X_i,\X_i)=0$, e $d(\X_j,\X_i)>0$ para todo $j\ne i$, porque os vetores são
+distintos. Logo $d^1_{\X_i}=0$, $\mathcal{N}^{(1)}_{\X_i}=\{i\}$ e
+$\ghat(\X_i)=\operatorname{moda}\{Y_i\}=Y_i$: cada observação de treino é a sua própria
+vizinha mais próxima, e a taxa de erro de treino é zero. A hipótese de vetores distintos
+é necessária. Se $\X_i=\X_j$ com $Y_i\ne Y_j$, o classificador atribui uma única classe a
+esse ponto e erra ao menos uma das duas observações, qualquer que seja a regra de
+desempate.
+
+Com $k=n$, $d^n_{\x}$ é a distância de $\x$ à observação de treino mais distante, e
+todas as observações satisfazem $d(\X_i,\x)\le d^n_{\x}$. Então
+$\mathcal{N}^{(n)}_{\x}=\{1,\dots,n\}$ para todo $\x$, e $\ghat(\x)$ é a moda de todos
+os rótulos de treino: a classe~$1$, com $181$ observações contra $120$. O classificador
+não depende de $\x$; é o classificador constante que prediz a classe majoritária. Ele
+erra exatamente as $120$ observações da classe~$0$, e a taxa de erro de treino é
+$120/301\approx0{,}399$, a proporção da classe minoritária.
 
 \smallskip
-\textbf{(b)} Com $k=1$ a fronteira é o contorno do diagrama de Voronoi entre
-pontos de classes diferentes: extremamente recortada, com ilhas em torno de
-observações isoladas. \textbf{Viés baixo, variância altíssima} --- trocar uma
-observação muda a fronteira na vizinhança dela.
+\textbf{(b)} Com $k=1$, cada $\x$ recebe a classe da observação de treino mais próxima.
+O espaço fica dividido em regiões, uma para cada $\X_i$, formadas pelos pontos mais
+próximos de $\X_i$ do que de qualquer outra observação de treino, e a fronteira de
+decisão é formada pelas bordas comuns a regiões de observações de classes diferentes.
+Ela acompanha cada observação: é muito recortada, e uma observação isolada no meio da
+outra classe cria uma ilha em torno de si, como na Figura~1 da Aula~10. Com $k=n$, não
+há fronteira: todo $\x$ é atribuído à classe~$1$.
 
-Com $k=n$ a fronteira \emph{não existe}: o classificador é constante. \textbf{Viés
-máximo, variância zero}. É o análogo em classificação do preditor constante do
-Exercício~2 da Lista Teórica~01.
+Com $k=1$, um único rótulo trocado já muda o classificador. Se $Y_i$ passa de $1$ a $0$,
+o item (a) dá $\ghat(\X_i)=0$, onde antes era $1$. A mudança não se restringe ao ponto
+$\X_i$. Seja $\delta=\min_{j\ne i}d(\X_i,\X_j)$, que é positivo porque os vetores são
+distintos. Se $d(\x,\X_i)<\delta/2$, a desigualdade triangular dá, para todo $j\ne i$,
+\[
+  d(\x,\X_j)\ \ge\ d(\X_i,\X_j)-d(\x,\X_i)\ >\ \delta-\frac{\delta}{2}
+  \ =\ \frac{\delta}{2}\ >\ d(\x,\X_i),
+\]
+de modo que $\X_i$ é a vizinha mais próxima de $\x$, e a previsão muda em toda a bola de
+raio $\delta/2$ centrada em $\X_i$.
+
+Com $k=n$, o classificador só muda se mudar a classe majoritária. Com $m$ rótulos
+trocados, as classes passam a ter $181-m$ e $120+m$ observações, e a classe~$0$ se torna
+majoritária se e somente se $120+m>181-m$, isto é, $m>30{,}5$. Com até $30$ trocas, o
+classificador não muda em ponto nenhum; com $31$, quaisquer que sejam, muda em todos.
+
+Em classificação, a aula usa viés e variância no mesmo sentido da regressão: a variância
+diz o quanto o classificador ajustado muda quando a amostra de treino muda, e o viés, o
+quanto ele erra de forma sistemática, mesmo com muitos dados. As contagens acima medem a
+variância de forma direta. Com $k=1$, o classificador depende de cada observação
+individualmente, e um rótulo diferente basta para mudá-lo numa região inteira: a
+variância é alta. Com $k=n$, ele depende da amostra só pela classe majoritária, que
+resiste a $30$ trocas em $301$: a variância é baixa. O viés vai no sentido oposto. Com
+$k=n$, o classificador ignora $\x$; se a proporção de cada classe varia ao longo do
+espaço das covariáveis, ele erra sistematicamente onde a classe~$0$ predomina, por maior
+que seja $n$, e o viés é alto. Com $k=1$, a decisão em $\x$ vem da observação de treino
+mais próxima, e, quando há observações perto de $\x$, ela acompanha essa variação: o viés
+é baixo.
 
 \smallskip
-\textbf{(c)} Com $\risco^\ast = 0{,}10$, o erro assintótico do 1-NN está em
-$[0{,}10;\ 0{,}20]$.
+\textbf{(c)} O argumento não está certo. O item (a) mostrou que o erro de treino do
+$1$-NN é zero em qualquer conjunto de treino com vetores distintos, qualquer que seja a
+relação entre $\X$ e $Y$. Ele seria zero mesmo que $Y$ fosse independente de $\X$. Nesse
+caso, as covariáveis não trazem informação nenhuma sobre a classe, o classificador de
+Bayes da Aula~07 prediz sempre a classe mais provável, e nenhum classificador erra menos
+do que ele em observações novas. Um número que vale zero em qualquer situação não informa
+nada sobre o desempenho em observações novas, que é o que o risco mede. O erro de treino
+do $1$-NN é zero porque cada observação de treino é usada para prever a si mesma.
 
-É uma notícia \textbf{surpreendentemente boa}, e vale apreciar por quê: o 1-NN é
-o classificador mais ingênuo que se pode imaginar --- ele não estima nada, não
-tem parâmetros, não faz suposição nenhuma sobre a distribuição --- e mesmo assim,
-com dados suficientes, nunca erra mais que o \emph{dobro} do classificador ótimo,
-que conhece as densidades. Não existe resultado análogo para a regressão linear
-ou para o LDA: se as suposições deles falharem, o erro pode ser arbitrariamente
-ruim.
-
-A má notícia está na palavra \emph{assintótico}. A garantia
-é real e o $n$ que a torna operante, não.
-
-\smallskip
-\textbf{(d)} Por três razões que se somam.
-
-Primeiro, o teorema é \textbf{assintótico}: com $n$ finito o 1-NN está bem acima
-do seu próprio limite, porque a variância domina.
-
-Segundo, o fator $2$ é uma \textbf{cota}, e cotas costumam ser folgadas. Um $k$
-maior tipicamente chega bem mais perto de $\risco^\ast$ do que de $2\risco^\ast$
---- a média sobre $k$ vizinhos reduz a variância por um fator próximo de $k$, ao
-preço de um viés que cresce devagar enquanto os vizinhos ainda estiverem próximos.
-
-Terceiro, e mais importante na prática: o $k$ ótimo depende de $n$, de $p$ e do
-nível de ruído, e ninguém sabe qual é. A validação cruzada o encontra sem precisar
-conhecer nada disso --- e, como a Lista prática~03 mediu, a curva de erro contra
-$k$ costuma ser \emph{plana} numa faixa larga, o que significa que basta acertar
-a ordem de grandeza.
+Como a aula indica, $k$ deve ser escolhido por validação cruzada. Nela, cada observação
+é prevista por um classificador ajustado sem ela. No LOOCV com $k=1$, por exemplo, a
+observação $i$ é prevista pelo rótulo da mais próxima entre as outras $n-1$, e há erro
+sempre que esse rótulo é diferente de $Y_i$. Como a observação deixada de fora não é
+mais vizinha de si mesma, todos os valores de $k$ passam a ser comparados pelo erro em
+observações que não participaram do ajuste, que estima o risco (Aula~03). Na Figura~1 da
+Aula~10, com $n=300$, o $1$-NN tem acurácia de treino $1{,}000$ e a pior acurácia de
+teste das três, $0{,}826$, contra $0{,}888$ com $k=15$ e $0{,}889$ com $k=120$.
 \end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[o que cada classificador supõe]
-Complete a tabela abaixo para os classificadores vistos no curso.
-\begin{center}\small
-\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{@{}lp{4.3cm}cc@{}}
-\toprule
-classificador & suposição principal & forma da fronteira & gera./discr. \\
-\midrule
-regressão logística & & & \\
-LDA                 & & & \\
-QDA                 & & & \\
-naive Bayes gaussiano & & & \\
-KNN                 & & & \\
-árvore              & & & \\
-SVM linear          & & & \\
-SVM com RBF         & & & \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Preencha as três colunas.
-  \item Quais desses métodos produzem estimativas de $\Prob(Y=1\mid\X=\x)$
-        diretamente? Quais delas você usaria numa conta de custo esperado, à luz
-        da Aula~08?
-  \item Um deles é \emph{invariante} a transformações crescentes de cada
-        covariável separadamente (trocar $x_j$ por $\log x_j$, por exemplo). Qual
-        é, e por quê? Que consequência prática isso tem?
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)}
-\begin{center}\footnotesize
-\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{@{}lp{5.2cm}ll@{}}
-\toprule
-classificador & suposição principal & fronteira & tipo \\
-\midrule
-logística  & $\log\frac{p}{1-p}$ é linear em $\x$; nada sobre a distribuição de $\X$ & linear & discriminativo \\
-LDA        & $\X\mid Y=k$ gaussiana, covariância \emph{comum} & linear & generativo \\
-QDA        & $\X\mid Y=k$ gaussiana, covariâncias distintas & quadrática & generativo \\
-naive Bayes & $\X\mid Y=k$ gaussiana com covariância \emph{diagonal} & quadrática & generativo \\
-KNN        & $r$ varia devagar (Lipschitz); a métrica de distância faz sentido & arbitrária, recortada & discriminativo \\
-árvore     & $r$ é aproximadamente constante em blocos \emph{alinhados aos eixos} & escada ortogonal & discriminativo \\
-SVM linear & fronteira linear; só os pontos da margem importam & linear & discriminativo \\
-SVM com RBF & fronteira suave; similaridade decai com a distância euclidiana & suave, arbitrária & discriminativo \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\smallskip
-\textbf{(b)} Dão probabilidades \textbf{diretamente}: logística, LDA, QDA, naive
-Bayes e KNN (a proporção entre os $k$ vizinhos). A árvore dá a proporção da folha.
-A \textbf{SVM não dá}: ela devolve uma distância com sinal, não uma
-probabilidade, e o \texttt{predict\_proba} do \texttt{scikit-learn} só existe com
-\texttt{probability=True}, que ajusta \emph{por cima} do modelo, com validação
-cruzada interna, uma regressão logística sobre essa distância (o método de Platt).
-
-Numa conta de custo esperado (Exercício~2 da Lista Teórica~08) o que importa não
-é ter um número entre 0 e 1, é ele \textbf{estimar bem} $\Prob(Y=1\mid\X=\x)$,
-porque o corte ótimo da Proposição~3.1 da Aula~08 foi deduzido para as
-probabilidades verdadeiras. Entre os métodos da tabela, a logística é a que as
-estima com menos suposições: modela $\Prob(Y=1\mid\X=\x)$ diretamente, sem supor
-nada sobre a distribuição de $\X$, enquanto LDA, QDA e naive Bayes só acertam a
-probabilidade se a forma suposta para $\X\mid Y$ estiver certa. O naive Bayes é o
-caso mais delicado: com covariáveis correlacionadas, ele conta a mesma evidência
-várias vezes e empurra as probabilidades para $0$ e $1$ (Aula~07). KNN e árvores
-dão probabilidades grosseiras, com granularidade $1/k$ e $1/n_{\text{folha}}$
-respectivamente.
-
-\smallskip
-\textbf{(c)} É a \textbf{árvore}. (Fora da tabela, os \emph{ensembles} de árvores
-herdam dela a mesma propriedade.)
-
-A razão é que a árvore só usa as covariáveis por meio de comparações
-$x_j < c$. Se $g$ é estritamente crescente, então $x_j < c \iff g(x_j) < g(c)$:
-o mesmo conjunto de partições continua disponível, e o corte ótimo separa as
-mesmas observações, com o limiar transformado. A árvore ajustada é a mesma: as
-mesmas folhas, com as mesmas observações de treino e as mesmas predições nelas. O
-único detalhe fica por conta da implementação: o \texttt{scikit-learn} põe cada
-limiar no meio do caminho entre os dois valores observados vizinhos, e o ponto
-médio não se transforma junto --- um ponto \emph{novo} que caia exatamente entre
-esses dois valores pode mudar de lado.
-
-A consequência prática é grande: \textbf{árvores não precisam de padronização},
-nem de correção de assimetria, nem de tratamento de escala. Compare com o LDA (a
-matriz de covariância muda), com a SVM com RBF (a distância euclidiana muda) ou
-com o KNN (idem) --- todos precisam. É uma das razões de florestas e
-\emph{boosting} serem tão populares em dados tabulares heterogêneos: eles
-dispensam metade do \texttt{Pipeline} da Aula~06.
-
-(A ressalva: a invariância vale para transformações de \emph{uma} covariável de
-cada vez. Rotacionar o espaço --- misturar $x_1$ e $x_2$ --- muda tudo, porque os
-cortes são obrigatoriamente alinhados aos eixos. É por isso que árvores vão mal
-em fronteiras diagonais, e é exatamente a fragilidade oposta à do LDA.)
-\end{solucao}
-
-%------------------------------------------------------------------------------
-\begin{exercicio}[concavidade: por que Gini sempre ganha algo]
-Seja $\phi:[0,1]\to\R$ uma medida de impureza e considere um nó com proporção
-$p$ dividido em dois filhos de pesos $w$ e $1-w$ e proporções $p_E$ e $p_D$, com
-\[
-  p = w\,p_E + (1-w)\,p_D
-\]
-(a proporção do pai é sempre a média ponderada das dos filhos --- confira isso no
-Exercício~1).
-\begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
-  \item Mostre que, se $\phi$ é \textbf{côncava}, a redução de impureza
-        $\phi(p) - \big[w\,\phi(p_E) + (1-w)\,\phi(p_D)\big]$ é sempre $\ge 0$.
-  \item Mostre que, se $\phi$ é \textbf{estritamente} côncava, a redução é
-        $>0$ sempre que $p_E \neq p_D$.
-  \item Verifique que $\phi(p)=\min(p,1-p)$ é côncava mas \textbf{não}
-        estritamente. Use isso para explicar, em uma linha, o resultado do
-        Exercício~1.
-  \item Mostre que o Gini $2p(1-p)$ é o \textbf{dobro da variância} de uma Bernoulli$(p)$.
-        Que interpretação isso dá à ``redução de impureza de Gini''?
-\end{enumerate}
-\end{exercicio}
-
-\begin{solucao}
-\textbf{(a)} É exatamente a desigualdade de Jensen. Por definição, $\phi$ côncava
-significa
-\[
-  \phi\big(w\,p_E + (1-w)\,p_D\big) \;\ge\; w\,\phi(p_E) + (1-w)\,\phi(p_D)
-\]
-para todo $w\in[0,1]$. Como $p = w\,p_E+(1-w)\,p_D$, o lado esquerdo é $\phi(p)$,
-e a redução
-\[
-  \phi(p) - \big[w\,\phi(p_E)+(1-w)\,\phi(p_D)\big] \;\ge\; 0 .
-\]
-Ou seja: \textbf{cortar nunca aumenta a impureza}, qualquer que seja a medida
-côncava. É a garantia mínima que se pede de um critério de corte.
-
-\smallskip
-\textbf{(b)} Concavidade estrita é a mesma desigualdade com $>$ no lugar de
-$\ge$, desde que $p_E\neq p_D$ e $0<w<1$. Logo a redução é estritamente positiva
-nessas condições. Em palavras: \textbf{qualquer corte que separe os filhos em
-proporções diferentes é premiado}, mesmo que a classe majoritária não mude.
-
-\smallskip
-\textbf{(c)} A função $\min(p,1-p)$ é linear por partes:
-\[
-  \min(p,1-p) = \begin{cases} p, & 0\le p\le \tfrac12,\\[2pt] 1-p, & \tfrac12\le p\le 1.\end{cases}
-\]
-É côncava (o gráfico é um ``$\wedge$'' com vértice em $p=1/2$), mas em cada uma
-das duas metades ela é \emph{linear} --- e função linear satisfaz Jensen com
-igualdade.
-
-No Exercício~1, $p_E = 0{,}50$ e $p_D=1{,}00$ estão \textbf{os dois no ramo
-$[\tfrac12, 1]$}, onde $\phi(p)=1-p$ é linear. Então a média ponderada de
-$\phi$ é igual a $\phi$ da média ponderada:
-\[
-  \tfrac12(1-0{,}5)+\tfrac12(1-1{,}0) = 0{,}25 = 1-0{,}75 = \phi(0{,}75),
-\]
-e a redução é exatamente zero. Não foi coincidência da escolha dos números: é o
-que \emph{sempre} acontece quando os dois filhos caem do mesmo lado de $1/2$.
-
-\smallskip
-\textbf{(d)} Se $Z\sim\text{Bernoulli}(p)$, então $\E[Z]=p$ e
-$\E[Z^2]=\E[Z]=p$ (porque $Z^2=Z$), logo
-\[
-  \Var(Z) = p - p^2 = p(1-p) = \tfrac12\cdot 2p(1-p) = \tfrac12\,\text{Gini}(p).
-\]
-O índice de Gini é, portanto, o dobro da variância de uma Bernoulli --- e, a menos
-desse fator 2, \emph{é} a variância.
-
-A interpretação é bonita e unifica o curso: a redução de impureza de Gini é
-exatamente a \textbf{redução da soma de quadrados dentro dos grupos} que a árvore
-de \emph{regressão} da Aula~05 usa, aplicada à variável indicadora $\1{Y=1}$.
-Crescer uma árvore de classificação por Gini é a mesma coisa que crescer uma
-árvore de regressão sobre o indicador da classe --- o mesmo algoritmo, o mesmo
-critério, escrito de outro jeito.
-\end{solucao}
-
 
 \end{document}
