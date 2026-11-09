@@ -26,8 +26,9 @@ existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
   fica). Do mesmo modo, a prova e o Trabalho Prático 01 não citam aula pelo número.
 - **O deck manda.** Os slides são o que os alunos veem. Assunto que não está no deck não
   entra nas notas, no laboratório nem nas listas sem falar com o Gabriel; se entra no deck,
-  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07, 08 e 09; nas
-  outras não corte por conta própria. Se uma medição contradiz o deck, o que
+  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07, 08 e 09 e à
+  Lista teorica 10; no resto, não corte por conta própria. Se uma medição contradiz o
+  deck, o que
   fazer é decisão dele.
 - **Meça antes de afirmar.** Os números do material foram medidos rodando o código, e várias
   afirmações de livro não se reproduziram. Medição nova é afirmação nova: confira-a contra
@@ -64,7 +65,7 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   conferir texto, compare por multiconjunto de caracteres ou use `-bbox`.
 - **Numeração citada de fora:** a Prop. 3.2 das notas do aluno da 03 (atalho do LOOCV) é
   citada pelas da 04; a Prop. 3.1 da 08 (corte ótimo) é citada pelo laboratório e pela
-  Lista teorica da 08, pelas notas e pela Lista teorica da 10 e pela E3. Fórmula nova
+  Lista teorica da 08, pelas notas da 10 e pela E3. Fórmula nova
   nessas notas entra sem número. Ao procurar remissão num `.tex`, procure também com
   quebra de linha no meio (`Aula` / `prática 11`).
 
@@ -134,7 +135,7 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   logística). Fora de propósito: regressão sobre indicadores, a comparação de escala no
   laboratório e o `C` (nenhum material do aluno da 07 o define). Nas notas sem estar no
   deck, de propósito: as caixas "a acurácia engana" (a 08 a cita) e "o preço do ingênuo"
-  (a 10, a E3 e as listas teóricas 10 e E3 se apoiam nela para dizer que o Bayes ingênuo
+  (a 10, a E3 e a Lista teorica E3 se apoiam nela para dizer que o Bayes ingênuo
   empurra as probabilidades para 0 e 1), a observação do que se transfere da regressão e,
   por decisão dele, a razão de chances e a penalização $\ell_1/\ell_2$ da logística, que é
   o remédio da caixa da separação perfeita.
@@ -185,7 +186,13 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   o $\sum_R$ do [AME]) e o $E$ é "usado na poda; para crescer, usa-se $G$ ou $D$"; o slide
   seguinte mostra a impureza ponderada $n_1G(R_1)+n_2G(R_2)$. As notas vão além do deck
   (*ensembles*, a comparação dos classificadores e a caixa sobre probabilidade e escore), e
-  a reescrita no registro novo não mexeu nisso. Notas, laboratório e listas não usam AP,
+  a reescrita no registro novo não mexeu nisso. A Lista teorica 10, ao contrário, segue o
+  deck, na notação dele, em dois exercícios sem título: as três medidas num corte com uma
+  região pura (180 lotes, 30 reprovados, 90 lotes sem reprovação; reduções $0$, $10$ e
+  cerca de $34{,}4$) e o KNN com $k=1$ e $k=n$ (um rótulo trocado muda o 1-NN; com $k=n$
+  são precisos $31$). Os números do Ex. 1 são novos de propósito: o nó de 400 observações
+  está resolvido nas notas e no laboratório. O Ex. 1 é citado pela Lista prática 10, nas
+  duas versões, e o Ex. 2(a), pelo gabarito dela. Notas, laboratório e listas não usam AP,
   Brier nem calibração (04/11/2026): a comparação no banco usa acurácia e AUC, e o Ex. 4 da
   Lista prática 10 lê as probabilidades do AdaBoost (de $0{,}21$ a $0{,}81$) como
   impróprias para o corte de custo da 08. Com $0{,}9702$ de acurácia, o AdaBoost é o
@@ -296,8 +303,8 @@ confira as fontes contra a sua última versão antes de continuar.
 
 ## Listas de exercícios
 
-Uma por aula, na pasta da aula: `Lista teorica NN.tex` (quatro exercícios; dois na 04, 06 e
-08, três na 07) e `Lista prática NN.ipynb` (lacunas `...`), cada uma com gabarito. Estilo:
+Uma por aula, na pasta da aula: `Lista teorica NN.tex` (quatro exercícios; dois na 04, 06,
+08 e 10, três na 07) e `Lista prática NN.ipynb` (lacunas `...`), cada uma com gabarito. Estilo:
 `estilo-lista.sty`, que carrega o `estilo-notas`.
 
 - Os `.tex` das listas **não têm acento no nome**: o invólucro do gabarito faz
@@ -412,9 +419,9 @@ vigilância.
 ## Pendências que são do Gabriel
 
 - **Aula 10, o escopo.** O deck só cita *bagging* e florestas ("podem ser acopladas"). As
-  notas, o laboratório e as listas têm AdaBoost, o `max_features`, a comparação dos
-  classificadores do curso e o caso real da §7 do laboratório. Ou o deck cresce, ou esse
-  conteúdo sai.
+  notas, o laboratório e a Lista prática têm AdaBoost, o `max_features`, a comparação dos
+  classificadores do curso e o caso real da §7 do laboratório (a Lista teorica já segue o
+  deck). Ou o deck cresce, ou esse conteúdo sai.
 
 ## Slides em HTML
 
