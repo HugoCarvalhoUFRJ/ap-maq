@@ -392,32 +392,6 @@ Em qualquer caso, compare os candidatos por validação cruzada, com a métrica 
 ao problema.
 \end{ideia}
 
-\begin{atencao}[o que a tabela não mostra: probabilidade não é escore]
-A primeira das quatro perguntas, sobre as probabilidades, parece uma preferência
-de estilo, mas é uma restrição. A §7 da \texttt{Aula prática 10} compara
-os sete métodos numa base em que a classe positiva é rara ($10\%$ das observações) e
-mede duas coisas que vale guardar.
-
-\emph{A acurácia deixa de distinguir os métodos.} Ela varia de $0{,}8989$ a
-$0{,}9072$ entre os sete, uma faixa de menos de um ponto percentual, e quatro deles
-empatam exatamente em $0{,}8989$, a acurácia de quem responde ``não'' para todos,
-porque nunca preveem a classe positiva. Na mesma tabela, a AUC vai de $0{,}554$, perto
-do sorteio, a $0{,}834$. Com uma classe rara, a acurácia é dominada pela classe
-majoritária e não mede o que interessa.
-
-\emph{O corte por custo pode não separar ninguém.} Para um falso negativo que custa
-vinte falsos positivos, o corte ótimo da Aula~08 é
-$\ell_1/(\ell_0+\ell_1)=1/21\approx0{,}0476$. Com ele, a árvore podada e o AdaBoost
-mandam investigar todos os clientes, porque as probabilidades que eles produzem quase
-nunca ficam abaixo de $0{,}05$. A cada mil clientes, entre os quais há $101$
-positivos, a logística manda investigar $410$ e encontra $82$, e a SVM manda $493$ e
-encontra $89$.
-
-O corte $\ell_1/(\ell_0+\ell_1)$ é ótimo para as probabilidades verdadeiras
-(Proposição~3.1 da Aula~08). Aplicado às estimativas de um modelo, ele herda os erros
-delas, e só faz sentido com um modelo que estime bem $\Prob(Y=1\mid\x)$.
-\end{atencao}
-
 %==============================================================================
 \section*{Resumo}
 %==============================================================================

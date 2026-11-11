@@ -22,7 +22,7 @@ numpy>=1.23
 pandas>=1.5
 matplotlib>=3.4          # pcolormesh(shading="auto"), aula 09
 scikit-learn>=1.2        # ver a lista de APIs no fim do arquivo
-scipy>=1.7               # aulas 05, 08, E1 e E2
+scipy>=1.7               # aulas 07, 10, E1 e E2
 
 # ----- usados em algumas aulas ----------------------------------------------
 statsmodels>=0.13        # OLS (summary) e VIF: aulas 01 e 02
@@ -139,7 +139,7 @@ ipykernel>=6.0
 # Três arquivos .csv ficam em recursos/dados/:
 #
 #   superconductivity.csv    aulas 01 a 05  (23 MB, 9 notebooks)
-#   bank_train_redux.csv     aulas 08 e 10  (96 MB, 4 notebooks)
+#   bank_train_redux.csv     aula 08        (96 MB, 3 notebooks)
 #   spam.csv                 aula E3        (0,5 MB, 3 notebooks)
 #
 # e mais dois, do Trabalho Prático 01 (avaliacoes/), lidos pelos dois notebooks

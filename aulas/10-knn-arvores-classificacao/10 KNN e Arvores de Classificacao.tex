@@ -178,31 +178,10 @@ métricas adequadas (Aula~08).
 
 \begin{emsala}
 \raggedright
-Use os notebooks \texttt{Aula prática 10}, \texttt{Comparação entre classificadores
-paramétricos} e \texttt{Exemplo - KNN e árvores em dados artificiais} para mostrar as
-fronteiras de decisão lado a lado. É o melhor jeito de fixar a oposição entre métodos
-flexíveis e rígidos, que percorreu o curso inteiro.
-\end{emsala}
-
-\begin{emsala}[o item das probabilidades não é preferência]
-A §7 da \texttt{Aula prática 10} refaz a tabela numa base em que a classe positiva é
-rara ($10\%$ das observações). Vale mostrar as duas medições:
-
-\begin{itemize}[leftmargin=1.2cm,nosep]
-  \item a acurácia varia de $0{,}8989$ a $0{,}9072$ entre os sete métodos, e quatro
-        deles empatam exatamente com quem responde ``não'' para todos, porque nunca
-        preveem a classe positiva; na mesma tabela, a AUC vai de $0{,}554$ a
-        $0{,}834$;
-  \item com o corte de custo $1{:}20$ da Aula~08, $1/21\approx0{,}0476$, a árvore
-        podada e o AdaBoost mandam investigar todos os clientes, porque as
-        probabilidades deles quase nunca ficam abaixo de $0{,}05$; a cada mil
-        clientes, entre os quais há $101$ positivos, a logística manda investigar
-        $410$ e encontra $82$, e a SVM manda $493$ e encontra $89$.
-\end{itemize}
-
-O ponto a registrar no quadro: o corte ótimo da Aula~08 é ótimo para as
-probabilidades verdadeiras e, aplicado a estimativas, herda os erros delas. Pergunte à
-turma por que a árvore podada e o AdaBoost mandam investigar todos os clientes.
+Use os notebooks \texttt{Comparação entre classificadores paramétricos} e
+\texttt{Exemplo - KNN e árvores em dados artificiais} para mostrar as fronteiras de
+decisão lado a lado. É o melhor jeito de fixar a oposição entre métodos flexíveis e
+rígidos, que percorreu o curso inteiro.
 \end{emsala}
 
 %==============================================================================
