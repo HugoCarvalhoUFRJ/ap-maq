@@ -26,10 +26,9 @@ existiu até 07/10/2026 é `git show b291d5a:CLAUDE.md`.
   fica). Do mesmo modo, a prova e o Trabalho Prático 01 não citam aula pelo número.
 - **O deck manda.** Os slides são o que os alunos veem. Assunto que não está no deck não
   entra nas notas, no laboratório nem nas listas sem falar com o Gabriel; se entra no deck,
-  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07, 08 e 09 e à
-  Lista teorica 10; no resto, não corte por conta própria. Se uma medição contradiz o
-  deck, o que
-  fazer é decisão dele.
+  o resto da aula vai atrás. Foi aplicado, a pedido dele, às aulas 06, 07, 08 e 09 e, na
+  10, às duas listas e ao laboratório (as notas da 10 ainda vão além do deck); no resto,
+  não corte por conta própria. Se uma medição contradiz o deck, o que fazer é decisão dele.
 - **Meça antes de afirmar.** Os números do material foram medidos rodando o código, e várias
   afirmações de livro não se reproduziram. Medição nova é afirmação nova: confira-a contra
   as notas (as duas versões), as listas, os gabaritos e o deck.
@@ -65,7 +64,7 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   conferir texto, compare por multiconjunto de caracteres ou use `-bbox`.
 - **Numeração citada de fora:** a Prop. 3.2 das notas do aluno da 03 (atalho do LOOCV) é
   citada pelas da 04; a Prop. 3.1 da 08 (corte ótimo) é citada pelo laboratório e pela
-  Lista teorica da 08, pelas notas da 10 e pela E3. Fórmula nova
+  Lista teorica da 08 e pela E3. Fórmula nova
   nessas notas entra sem número. Ao procurar remissão num `.tex`, procure também com
   quebra de linha no meio (`Aula` / `prática 11`).
 
@@ -185,28 +184,44 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   04 e 05. No slide "Criação da árvore", as três medidas são de uma região (o Gini não tem
   o $\sum_R$ do [AME]) e o $E$ é "usado na poda; para crescer, usa-se $G$ ou $D$"; o slide
   seguinte mostra a impureza ponderada $n_1G(R_1)+n_2G(R_2)$. As notas vão além do deck
-  (*ensembles*, a comparação dos classificadores e a caixa sobre probabilidade e escore), e
-  a reescrita no registro novo não mexeu nisso. A Lista teorica 10, ao contrário, segue o
+  (*ensembles*, com o AdaBoost e a perda exponencial, e a comparação dos classificadores),
+  e a reescrita no registro novo não mexeu nisso; em 11/11/2026 saíram delas só as caixas
+  que citavam a §7 do laboratório antigo. A Lista teorica 10, ao contrário, segue o
   deck, na notação dele, em dois exercícios sem título: as três medidas num corte com uma
   região pura (180 lotes, 30 reprovados, 90 lotes sem reprovação; reduções $0$, $10$ e
   cerca de $34{,}4$) e o KNN com $k=1$ e $k=n$ (um rótulo trocado muda o 1-NN; com $k=n$
   são precisos $31$). Os números do Ex. 1 são novos de propósito: o nó de 400 observações
   está resolvido nas notas e no laboratório. O Ex. 1 é citado pela Lista prática 10, nas
-  duas versões, e o Ex. 2(a), pelo gabarito dela. Notas, laboratório e listas não usam AP,
-  Brier nem calibração (04/11/2026): a comparação no banco usa acurácia e AUC, e o Ex. 4 da
-  Lista prática 10 lê as probabilidades do AdaBoost (de $0{,}21$ a $0{,}81$) como
-  impróprias para o corte de custo da 08. Com $0{,}9702$ de acurácia, o AdaBoost é o
-  quarto, atrás da logística e das duas SVM; na AUC, o terceiro. Nelas, a pergunta "como uma árvore decide..." abre a
-  seção 2.2, onde é respondida, e a entropia é em $\log_2$, como na figura `10-impureza`. O
+  duas versões, e o Ex. 2(a), pelo gabarito dela e pelo laboratório. Notas, laboratório e
+  listas não usam AP, Brier nem calibração (04/11/2026).
+  O laboratório segue o deck e as notas, em cinco seções (11/11/2026). A §2 é o KNN nos
+  dados da Figura 1 das notas, com o classificador de Bayes como teto
+  ($\Phi(\|\mu_1-\mu_0\|/2\sigma)\approx0{,}890$), o voto e o `predict_proba` no ponto médio
+  entre os centros, a variância da proporção ali em mil amostras, $k=1$, $k=n$ (empate: o
+  `scikit-learn` responde a classe 0), $k$ por validação cruzada (escolhe 15) e covariáveis
+  irrelevantes; a §3, as três impurezas, o nó de 400 das notas e a enumeração das 30 399
+  divisões dele (redução do erro zero em 20 299, exatamente as de partes na mesma metade);
+  a §4, crescer e podar no exemplo do deck (`make_moons`, 350 de treino e 10 000 novas, a
+  árvore de `min_samples_leaf=5`, a cheia e a podada, Gini contra entropia e 50 amostras de
+  treino); a §5, *bagging* e floresta, com o voto contra a média das probabilidades. O
+  `ccp_alpha` poda pela soma ponderada das impurezas das folhas (o `impurities` do
+  caminho), não pelo erro de classificação; o erro entra quando a validação cruzada escolhe
+  o $\alpha$ pela acurácia, como dizem a Observação 8.2 do [AME] e o §8.3.1 do [ISLP]. Por
+  decisão dele, saíram do laboratório e da Lista prática o `max_features`, o AdaBoost, a
+  comparação dos classificadores do curso e o caso real (o `breast_cancer` com sete
+  modelos e o banco com AUC e corte de custo); não os reintroduza. A Lista prática 10
+  acompanha o laboratório, na história de Helena, em três exercícios: o $k$ do KNN em
+  meias-luas com as contagens do Ex. 2 da Lista teorica 10 (181 e 120; a validação cruzada
+  escolhe $k=63$, pior no teste que $k=5$, e a leitura diz por quê), Gini contra entropia no
+  `breast_cancer` (o Gini vence na partição da lista e só em 4, 9 e 4 de 20 partições) e a
+  poda por `ccp_alpha` (9 folhas com 10 dobras, 3 com 5). Nas notas, a pergunta "como uma
+  árvore decide..." abre a seção 2.2, onde é respondida, e a entropia é em $\log_2$, como
+  na figura `10-impureza` e no `scikit-learn`. O
   exemplo do tomógrafo usa o Gini ponderado, $19/60\approx0{,}317$ (leitos) e
   $7/15\approx0{,}467$ (cardiologia); os $0{,}326$ e $0{,}472$ do [AME] somam
   $\widehat p(1-\widehat p)$ sem ponderar e não voltam. As notas do aluno carregam o
   `placeins` de propósito: o `\FloatBarrier` antes da seção 2 segura a Figura 1 na seção do
-  KNN. O [ISLP] não tem figura das medidas de impureza. Pendente no laboratório: ele
-  atribui ao scikit-learn "Gini ou entropia para crescer, erro de classificação para podar
-  e avaliar", mas o `ccp_alpha` poda pela impureza das folhas (o
-  `cost_complexity_pruning_path` devolve a soma delas); o erro só entra quando a validação
-  cruzada escolhe o `ccp_alpha`.
+  KNN. O [ISLP] não tem figura das medidas de impureza.
 - **E3.** As notas definem, na seção de avaliação, a precisão, a revocação (a
   sensibilidade da 08), o $F_1$ e a precisão média (AP), que o laboratório e as listas da E3
   usam e que a 08 não tem. As remissões à 08 ficam para a matriz de confusão e o corte
@@ -242,6 +257,9 @@ $\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Casos que engan
   $(1+\langle\mathbf{x},\mathbf{x}'\rangle)^2$, não o da figura, que não tem termo
   constante. A `09-margem` não é reproduzida: a §3 usa 40 pontos próprios, não separáveis
   (semente 43).
+- **10:** a §2 do laboratório reproduz a `10-fronteiras-knn` (semente 61, os mesmos três
+  $k$ e os números da legenda), e a §3 desenha as curvas da `10-impureza`. As §4 e §5 usam
+  o exemplo do deck, um `make_moons` que não é figura das notas.
 - As **listas práticas usam semente diferente** da do laboratório (salvo o Ex. 3 da 05): todo
   número de gabarito é medido, não previsto.
 
@@ -380,7 +398,7 @@ Quem carrega o quê:
 | arquivo | notebooks |
 | --- | --- |
 | `superconductivity.csv` (23 MB) | aulas 01 a 05 |
-| `bank_train_redux.csv` (96 MB) | aula 08 (laboratório e lista) e Aula prática 10 |
+| `bank_train_redux.csv` (96 MB) | aula 08 (laboratório e lista) |
 | `spam.csv` | aula E3 |
 
 O `bank_train_redux.csv` é um excerto da competição *Santander Customer Transaction
@@ -418,10 +436,10 @@ vigilância.
 
 ## Pendências que são do Gabriel
 
-- **Aula 10, o escopo.** O deck só cita *bagging* e florestas ("podem ser acopladas"). As
-  notas, o laboratório e a Lista prática têm AdaBoost, o `max_features`, a comparação dos
-  classificadores do curso e o caso real da §7 do laboratório (a Lista teorica já segue o
-  deck). Ou o deck cresce, ou esse conteúdo sai.
+- **Aula 10, as notas.** O deck só cita *bagging* e florestas ("podem ser acopladas"). As
+  notas, nas duas versões, ainda têm o AdaBoost (com a perda exponencial), a comparação dos
+  classificadores do curso e as perguntas para escolher entre eles; as listas e o
+  laboratório já seguem o deck. Ou o deck cresce, ou esse conteúdo sai das notas.
 
 ## Slides em HTML
 
