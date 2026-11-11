@@ -197,13 +197,19 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   O laboratório segue o deck e as notas, em cinco seções (11/11/2026). A §2 é o KNN nos
   dados da Figura 1 das notas, com o classificador de Bayes como teto
   ($\Phi(\|\mu_1-\mu_0\|/2\sigma)\approx0{,}890$), o voto e o `predict_proba` no ponto médio
-  entre os centros, a variância da proporção ali em mil amostras, $k=1$, $k=n$ (empate: o
-  `scikit-learn` responde a classe 0), $k$ por validação cruzada (escolhe 15) e covariáveis
-  irrelevantes; a §3, as três impurezas, o nó de 400 das notas e a enumeração das 30 399
-  divisões dele (redução do erro zero em 20 299, exatamente as de partes na mesma metade);
-  a §4, crescer e podar no exemplo do deck (`make_moons`, 350 de treino e 10 000 novas, a
-  árvore de `min_samples_leaf=5`, a cheia e a podada, Gini contra entropia e 50 amostras de
-  treino); a §5, *bagging* e floresta, com o voto contra a média das probabilidades. O
+  entre os centros (com a figura da vizinhança), a própria Figura 1 ($k=1$, $15$ e $120$),
+  as meias-luas do deck com $k=1$, $15$, $120$ e $300$ (lá, ao contrário da Figura 1,
+  $k=120$ achata a fronteira) e $k$ por validação cruzada (escolhe 15); por decisão dele,
+  saíram da §2 a simulação da variância da proporção, o $k=n$ e as covariáveis irrelevantes.
+  A §3 tem as curvas das três impurezas e o nó de 400 das notas desenhado sobre elas (a
+  impureza ponderada das partes é o ponto do segmento entre elas na abscissa $p$, e a
+  redução é a distância até a curva); a enumeração das divisões desse nó saiu, por decisão
+  dele. A §4 cresce e poda nas mesmas meias-luas (350 de treino e 10 000 novas): o toco com a
+  impureza ponderada de todos os cortes, a cheia e a de `min_samples_leaf=5`, Gini contra
+  entropia (com a região em que discordam), a podada (desenhada com o `plot_tree`, de onde
+  se refaz o `impurities`) e 50 amostras de treino; a §5, *bagging* e floresta, com o voto
+  contra a média das probabilidades. A pedido dele, toda célula de código que não é import
+  nem definição de função desenha uma figura, e a `desenhar` traça a fronteira em preto. O
   `ccp_alpha` poda pela soma ponderada das impurezas das folhas (o `impurities` do
   caminho), não pelo erro de classificação; o erro entra quando a validação cruzada escolhe
   o $\alpha$ pela acurácia, como dizem a Observação 8.2 do [AME] e o §8.3.1 do [ISLP]. Por
@@ -214,7 +220,11 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   meias-luas com as contagens do Ex. 2 da Lista teorica 10 (181 e 120; a validação cruzada
   escolhe $k=63$, pior no teste que $k=5$, e a leitura diz por quê), Gini contra entropia no
   `breast_cancer` (o Gini vence na partição da lista e só em 4, 9 e 4 de 20 partições) e a
-  poda por `ccp_alpha` (9 folhas com 10 dobras, 3 com 5). Nas notas, a pergunta "como uma
+  poda por `ccp_alpha` (9 folhas com 10 dobras, 3 com 5). Como no laboratório, cada célula de
+  código da lista desenha uma figura (salvo os imports e a do `criterion` recusado), entre elas
+  a subárvore de 9 folhas pelo `plot_tree`; o "Sua vez" do Ex. 3 repete a escolha de $\alpha$
+  com dez partições. O $k=n$ continua no Ex. 1, embora tenha saído do laboratório, porque
+  confirma o Ex. 2(a) da Lista teorica 10. Nas notas, a pergunta "como uma
   árvore decide..." abre a seção 2.2, onde é respondida, e a entropia é em $\log_2$, como
   na figura `10-impureza` e no `scikit-learn`. O
   exemplo do tomógrafo usa o Gini ponderado, $19/60\approx0{,}317$ (leitos) e
@@ -258,8 +268,9 @@ $\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Casos que engan
   constante. A `09-margem` não é reproduzida: a §3 usa 40 pontos próprios, não separáveis
   (semente 43).
 - **10:** a §2 do laboratório reproduz a `10-fronteiras-knn` (semente 61, os mesmos três
-  $k$ e os números da legenda), e a §3 desenha as curvas da `10-impureza`. As §4 e §5 usam
-  o exemplo do deck, um `make_moons` que não é figura das notas.
+  $k$ e os números da legenda), e a §3 desenha as curvas da `10-impureza`. As meias-luas do
+  exemplo do deck (`make_moons`, semente 0, e 10 000 novas, semente 1) não são figura das
+  notas: entram na §2 e voltam nas §4 e §5.
 - As **listas práticas usam semente diferente** da do laboratório (salvo o Ex. 3 da 05): todo
   número de gabarito é medido, não previsto.
 
