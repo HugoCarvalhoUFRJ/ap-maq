@@ -60,11 +60,14 @@ $x=0$, o que é ótimo quando
   \qquad\text{e}\qquad
   \eta(0)\le\frac1{1+r}\iff r\le891 .
 \]
-Com $r<11$, a decisão ótima é declarar todos saudáveis; com $r=11$, as duas decisões em
-$x=1$ custam o mesmo; com $r>891$, é declarar todos doentes, porque, quando um doente não
-detectado custa mais que $891$ alarmes falsos, até a chance de $1/892$ que resta depois de
-um exame negativo justifica declarar doente. Seguir o exame é ótimo exatamente quando deixar
-passar um doente custa entre $11$ e $891$ alarmes falsos.
+Com $r<11$, a decisão ótima é declarar todos saudáveis; com $r>891$, é declarar todos
+doentes, porque, quando um doente não detectado custa mais que $891$ alarmes falsos, até a
+chance de $1/892$ que resta depois de um exame negativo justifica declarar doente. Nos
+extremos da faixa há empate: com $r=11$, as duas decisões custam o mesmo em $x=1$, e, com
+$r=891$, em $x=0$. Nos dois empates a regra declara saudável, porque só declara doente
+quando $\eta(x)$ passa do corte; por isso a faixa exclui $r=11$, em que a regra declara
+todos saudáveis, e inclui $r=891$, em que ela segue o exame. Seguir o exame é ótimo
+exatamente quando deixar passar um doente custa entre $11$ e $891$ alarmes falsos.
 
 Com $\ell_0=20$ e $\ell_1=1$, $r=20$ está na faixa, e seguir o exame é o ótimo. Numa
 população de $10\,000$ pessoas há, em média, $P=100$ doentes e $N=9\,900$ saudáveis, e as

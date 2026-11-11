@@ -94,8 +94,8 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
 - **Matriz de confusão: previsto nas linhas, real nas colunas** (como [AME] e [ISLP]); o
   `confusion_matrix` devolve a transposta, e o material avisa.
 - **O conjunto dos $k$ vizinhos é $\mathcal{N}_{\x}^{(k)}$**, como nos decks 04 e 10, com
-  $d^k_{\x}$ a distância do $k$-ésimo vizinho: notas 04 e 10, Aula prática 04 e o Ex. 8 da
-  lista de revisão 01-06. Ao procurar a forma antiga, procure também `\mathcal N` sem chaves.
+  $d^k_{\x}$ a distância do $k$-ésimo vizinho: notas 04 e 10, Aula prática 04 e o Ex. 8 das
+  duas listas de revisão. Ao procurar a forma antiga, procure também `\mathcal N` sem chaves.
 
 ## O que cada aula cobre, e o que não volta
 

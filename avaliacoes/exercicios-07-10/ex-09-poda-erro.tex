@@ -2,8 +2,9 @@
 Rafael é analista numa operadora de planos de saúde e cresceu uma árvore de classificação,
 com o índice de Gini, para prever quais beneficiários serão internados no próximo ano
 ($Y=1$). Agora vai podá-la. Para uma região $R$ com $n_R$ observações de treino, sejam
-$n_{R,c}$ o número delas na classe $c$ e $\widehat p_{R,c}=n_{R,c}/n_R$. A folha $R$ prediz a
-classe majoritária, e $E(R)=1-\max_c\widehat p_{R,c}$ é o seu erro de classificação, de modo
+$n_{R,c}$ o número delas na classe $c$ e $\widehat p_{R,c}=n_{R,c}/n_R$; o índice de Gini de
+$R$ é $G(R)=\sum_c\widehat p_{R,c}(1-\widehat p_{R,c})$. A folha $R$ prediz a classe
+majoritária, e $E(R)=1-\max_c\widehat p_{R,c}$ é o seu erro de classificação, de modo
 que $n_RE(R)=n_R-\max_cn_{R,c}$ é o número de erros de treino na folha. Na poda por
 custo-complexidade com o erro de classificação, escolhe-se, entre as subárvores $T$ da árvore
 crescida, a que minimiza
@@ -19,9 +20,9 @@ folhas; o valor de $\alpha>0$ é escolhido por validação cruzada.
         $c^*$ é majoritária também em $R$.
   \item \pts{1,2} Mostre que, para todo $\alpha>0$, nenhuma subárvore que minimize $C_\alpha$
         tem um nó interno cujas folhas descendentes predigam todas a mesma classe.
-  \item \pts{0,8} Na árvore de Rafael, um nó com $400$ beneficiários, dos quais $100$ foram
-        internados, foi dividido em dois filhos de $200$, com $20$ e com $80$ internados.
-        Calcule a redução do índice de Gini ponderado,
+  \item \pts{0,8} Na árvore de Rafael, um nó $R$ com $400$ beneficiários, dos quais $100$
+        foram internados, foi dividido em dois filhos de $200$, $R_1$ com $20$ internados e
+        $R_2$ com $80$. Calcule a redução do índice de Gini ponderado,
         $G(R)-\big[n_1G(R_1)+n_2G(R_2)\big]/n_R$, e a redução do erro de classificação
         ponderado. Por que o crescimento fez essa divisão, e o que a poda fará com ela?
   \item \pts{1,0} A operadora estima que deixar de prever uma internação custa quatro vezes
@@ -64,8 +65,9 @@ porque $\alpha>0$ e $L\ge2$. Isso contradiz a escolha de $T$. Qualquer que seja 
 poda pelo erro de classificação remove todos os ramos que não mudam nenhuma decisão.
 
 \smallskip
-\textbf{(c)} As proporções de internados são $0{,}25$ no nó e $0{,}1$ e $0{,}4$ nos filhos, e, com
-duas classes, $G=2\widehat p(1-\widehat p)$:
+\textbf{(c)} As proporções de internados são $0{,}25$ no nó e $0{,}1$ e $0{,}4$ nos filhos. Com
+duas classes, as duas parcelas de $G$ são iguais, e $G=2\widehat p(1-\widehat p)$, com
+$\widehat p$ a proporção de internados:
 \[
   G(R)=2\cdot0{,}25\cdot0{,}75=0{,}375,
   \qquad

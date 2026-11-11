@@ -2,13 +2,15 @@
 Otávio é agrônomo e usa o KNN para classificar os talhões de uma fazenda em atacados por uma
 praga ($Y=1$) ou não ($Y=0$), a partir de medidas de solo e de clima. Num talhão novo, com
 covariáveis $\x$, a probabilidade de praga é $\eta(\x)=\Prob(Y=1\mid\X=\x)=0{,}6$. O KNN
-estima essa probabilidade pela proporção de vizinhos com praga,
-$\widehat P=\frac1k\sum_{j=1}^kY_{(j)}$, em que $Y_{(1)},\dots,Y_{(k)}$ são os rótulos dos $k$
-vizinhos de $\x$ no treino, e declara praga quando $\widehat P>1/2$. Tome $k$ ímpar, para que
-não haja empate. Para isolar o papel de $k$, suponha que os rótulos dos vizinhos sejam
-independentes entre si e do rótulo $Y$ do talhão novo, e que, nos itens (a) e (b), cada um
-seja igual a $1$ com probabilidade $0{,}6$, como se todos os vizinhos estivessem no próprio
-$\x$.
+estima essa probabilidade pela proporção de praga entre os $k$ talhões de treino mais
+próximos de $\x$, cujos índices formam o conjunto $\mathcal{N}_{\x}^{(k)}$,
+\[
+  \widehat P=\frac1k\sum_{i\in\mathcal{N}_{\x}^{(k)}}Y_i ,
+\]
+e declara praga quando $\widehat P>1/2$. Tome $k$ ímpar, para que não haja empate. Para
+isolar o papel de $k$, suponha que os rótulos dos vizinhos sejam independentes entre si e
+do rótulo $Y$ do talhão novo, e que, nos itens (a) e (b), cada um seja igual a $1$ com
+probabilidade $0{,}6$, como se todos os vizinhos estivessem no próprio $\x$.
 \begin{itens}
   \item \pts{0,8} Mostre que $\E[\widehat P]=0{,}6$ e $\Var(\widehat P)=0{,}24/k$.
   \item \pts{1,2} Seja $q_k=\Prob(\widehat P>1/2)$. Mostre que a probabilidade de o KNN errar
@@ -43,13 +45,18 @@ $\x$.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Pela linearidade da esperança,
-$\E[\widehat P]=\frac1k\sum_j\E[Y_{(j)}]=\frac1k\cdot k\cdot0{,}6=0{,}6$. Cada $Y_{(j)}$ é uma
-Bernoulli$(0{,}6)$, com variância $0{,}6\cdot0{,}4=0{,}24$, e, como os rótulos são independentes,
-as variâncias se somam:
-$\Var(\widehat P)=\frac1{k^2}\sum_j\Var(Y_{(j)})=\frac{0{,}24}{k}$. Nesta idealização, a
-proporção de vizinhos é um estimador não viesado de $\eta(\x)$, e a sua variância cai como
-$1/k$.
+\textbf{(a)} O conjunto $\mathcal{N}_{\x}^{(k)}$ tem $k$ elementos, e cada $Y_i$, com
+$i\in\mathcal{N}_{\x}^{(k)}$, é uma Bernoulli$(0{,}6)$, com média $0{,}6$ e variância
+$0{,}6\cdot0{,}4=0{,}24$. A esperança sai da linearidade, e a variância, da independência dos
+rótulos, que permite somar as variâncias:
+\[
+  \E[\widehat P]=\frac1k\sum_{i\in\mathcal{N}_{\x}^{(k)}}\E[Y_i]=\frac{k\cdot0{,}6}{k}=0{,}6,
+  \qquad
+  \Var(\widehat P)=\frac1{k^2}\sum_{i\in\mathcal{N}_{\x}^{(k)}}\Var(Y_i)
+  =\frac{k\cdot0{,}24}{k^2}=\frac{0{,}24}{k} .
+\]
+Nesta idealização, a proporção de vizinhos é um estimador não viesado de $\eta(\x)$, e a sua
+variância cai como $1/k$.
 
 \smallskip
 \textbf{(b)} O KNN erra se declara praga num talhão sem praga ou deixa de declarar num talhão

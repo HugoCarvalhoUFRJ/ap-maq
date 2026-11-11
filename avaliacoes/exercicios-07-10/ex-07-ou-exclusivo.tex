@@ -3,7 +3,7 @@ Mariana estuda engenharia e quer que um classificador linear preveja quando uma 
 acende. A lâmpada tem duas chaves, $x_1,x_2\in\{0,1\}$, e acende ($y=+1$) quando exatamente
 uma delas está ligada; com as duas desligadas ou as duas ligadas, fica apagada ($y=-1$). As
 quatro observações são $(0,0)$ e $(1,1)$, na classe $-1$, e $(1,0)$ e $(0,1)$, na classe
-$+1$. Lembre que observações $(\bm z_i,y_i)$ de $\R^q$ são linearmente separáveis se existe
+$+1$. Lembre que observações $(\bm z_i,y_i)$ de $\R^m$ são linearmente separáveis se existe
 $(\beta_0,\bbeta)$, com $\bbeta\ne\bm0$, tal que $y_i(\beta_0+\bbeta^\top\bm z_i)>0$ para todo
 $i$, e que, nesse caso, o classificador de margem máxima é dado pela solução de
 \[
@@ -14,7 +14,7 @@ $i$, e que, nesse caso, o classificador de margem máxima é dado pela solução
   y_i\,(\beta_0+\bbeta^\top\bm z_i)\ge M\ \text{ para todo } i .
 \]
 \begin{itens}
-  \item \pts{1,0} Suponha que algum ponto $\bm z\in\R^q$ seja combinação convexa de
+  \item \pts{1,0} Suponha que algum ponto $\bm z\in\R^m$ seja combinação convexa de
         observações da classe $+1$ e também combinação convexa de observações da classe
         $-1$. Mostre que as observações não são linearmente separáveis. Por que isso vale,
         em particular, quando uma observação de uma classe está no interior de um triângulo
