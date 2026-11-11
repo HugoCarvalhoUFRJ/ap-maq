@@ -42,8 +42,6 @@ ipykernel>=6.0
 # sobraram exige mais que a 1.1, mas o piso fica onde estava, porque baixá-lo
 # exigiria testar o material numa versão mais antiga.
 #
-#   RandomForestRegressor().max_features aula 10  -> vale 1.0 a partir de 1.1
-#                                        (antes era "auto", e a aula comenta o valor)
 #   SplineTransformer                    aula 04  -> >= 1.0
 #   get_feature_names_out                aulas 06 e E3 -> >= 1.0
 #   permutation_importance               aula 05  -> >= 0.22
@@ -91,7 +89,10 @@ ipykernel>=6.0
 #                                           (no breast_cancer da Lista prática 10,
 #                                           0,9935 -> 0,9948 e 0,1480 -> 0,1264).
 #                                           Corrigido em 21/09/2026, sem erro
-#                                           nenhum no caminho.
+#                                           nenhum no caminho. A aula 10 deixou
+#                                           de usar o AdaBoost em 11/11/2026;
+#                                           hoje só a resolução do Trabalho
+#                                           Prático 01 o usa.
 #
 #   TSNE(init=...)              aula E2  -> o padrão passou de "random" para
 #                                           "pca" na 1.2. Não quebra nada: muda
