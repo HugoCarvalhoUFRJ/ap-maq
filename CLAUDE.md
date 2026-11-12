@@ -94,8 +94,9 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
 - **Matriz de confusão: previsto nas linhas, real nas colunas** (como [AME] e [ISLP]); o
   `confusion_matrix` devolve a transposta, e o material avisa.
 - **O conjunto dos $k$ vizinhos é $\mathcal{N}_{\x}^{(k)}$**, como nos decks 04 e 10, com
-  $d^k_{\x}$ a distância do $k$-ésimo vizinho: notas 04 e 10, Aula prática 04 e o Ex. 8 das
-  duas listas de revisão. Ao procurar a forma antiga, procure também `\mathcal N` sem chaves.
+  $d^k_{\x}$ a distância do $k$-ésimo vizinho: notas 04 e 10, Aula prática 04, o Ex. 8 da lista
+  de revisão 01-06 e o Ex. 7 da 07-10. Ao procurar a forma antiga, procure também `\mathcal N`
+  sem chaves.
 
 ## O que cada aula cobre, e o que não volta
 
@@ -363,14 +364,14 @@ não a dois); se mexer num, o outro acompanha.
   enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
   prova, confira o texto dos sorteados. E as soluções dos Ex. 1, 4 e 8 da lista 01-06 usam
   `\ref` com rótulos que só existem na lista: sorteados, imprimiriam `??` no gabarito da prova.
-- **A lista 07-10** tem dez exercícios, dois de cada uma das aulas 07 e 08 e três de cada uma
-  das aulas 09 e 10, e a P2 ainda não foi sorteada dela. Seguem o deck (mais a caixa "o preço
+- **A lista 07-10** tem nove exercícios, dois de cada uma das aulas 07, 08 e 09 e três da aula
+  10, e a P2 ainda não foi sorteada dela. Seguem o deck (mais a caixa "o preço
   do ingênuo", que as notas da 07 mantêm de propósito) e nada do que saiu da 08: os custos saem de contagens, $\ell_1\mathrm{FP}+\ell_0\mathrm{FN}$, e nunca da média das
   taxas ponderada pelas prevalências. Todo enunciado é autocontido (sem aula pelo número, sem
   citar outro exercício) e nenhuma solução usa `\ref`. Antes de montar a P2, o
   `\cabecalhoprova` precisa receber a notação da caixa de instruções como argumento, porque
   ela hoje imprime a de regressão (perda quadrática); a P1 tem de sair idêntica depois disso.
-- **Gini contra entropia, medido em 05/11/2026** (Ex. 10 da lista 07-10): em todos os pares de
+- **Gini contra entropia, medido em 05/11/2026**: em todos os pares de
   divisões possíveis de nós com 10 a 40 observações, as duas medidas discordam em cerca de 2%
   dos pares, e exigir filhos com 5 ou mais observações quase não muda isso. Não afirme que as
   discordâncias se concentram em folhas pequenas: a medição não sustenta.
