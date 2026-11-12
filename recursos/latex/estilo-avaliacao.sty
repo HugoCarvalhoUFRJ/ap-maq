@@ -55,18 +55,26 @@
   \vspace{0.5em}\hrule\vspace{1.2em}}
 
 % ----- Cabeçalho da prova -----------------------------------------------------
-% \cabecalhoprova{número}{intervalo de aulas}{descrição}{duração}{total}
+% \cabecalhoprova[notação]{número}{intervalo de aulas}{descrição}{duração}{total}
 % Produz o título e a caixa de instruções; no gabarito, a caixa dá lugar a um
-% aviso ao professor. Não há campos de identificação, e o 2º e o 3º argumentos
-% não são impressos --- a prova não mostra as aulas nem o conteúdo.
-\newcommand{\cabecalhoprova}[5]{%
+% aviso ao professor. Não há campos de identificação, e o intervalo de aulas e a
+% descrição não são impressos --- a prova não mostra as aulas nem o conteúdo.
+% O argumento opcional é o texto do item "Notação" da caixa de instruções. Sem
+% ele, sai a notação de regressão, \notacaoregressao, que é a da Avaliação
+% Teórica 01; a 02, de classificação, passa a sua.
+\newcommand{\notacaoregressao}{$(\X,Y)$ é um vetor aleatório com distribuição $P$;
+            $r(\x)=\E[Y\mid\X=\x]$ é a função de regressão;
+            $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d.;
+            $p$ é o número de covariáveis; a perda é a quadrática, salvo
+            indicação em contrário.}
+\newcommand{\cabecalhoprova}[6][\notacaoregressao]{%
   \ifgabarito
-    \fancyhead[R]{\small\itshape Avaliação Teórica #1 --- gabarito}%
+    \fancyhead[R]{\small\itshape Avaliação Teórica #2 --- gabarito}%
   \else
-    \fancyhead[R]{\small\itshape Avaliação Teórica #1}%
+    \fancyhead[R]{\small\itshape Avaliação Teórica #2}%
   \fi
   \begin{center}
-    {\Large\bfseries Avaliação Teórica #1\ifgabarito\ --- Gabarito\fi}\\[0.3em]
+    {\Large\bfseries Avaliação Teórica #2\ifgabarito\ --- Gabarito\fi}\\[0.3em]
     {\large Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
     {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
   \end{center}
@@ -83,14 +91,10 @@
     \small
     \textbf{Instruções.}
     \begin{itemize}[leftmargin=1.3cm,nosep]
-      \item Duração: \textbf{#4}. Prova individual e sem consulta.
-      \item A prova vale \textbf{#5}; o valor de cada item está indicado ao lado.
+      \item Duração: \textbf{#5}. Prova individual e sem consulta.
+      \item A prova vale \textbf{#6}; o valor de cada item está indicado ao lado.
       \item \textbf{Justifique todas as respostas.}
-      \item Notação: $(\X,Y)$ é um vetor aleatório com distribuição $P$;
-            $r(\x)=\E[Y\mid\X=\x]$ é a função de regressão;
-            $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d.;
-            $p$ é o número de covariáveis; a perda é a quadrática, salvo
-            indicação em contrário.
+      \item Notação: #1
     \end{itemize}
     \end{tcolorbox}
   \fi
