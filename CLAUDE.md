@@ -360,17 +360,23 @@ não a dois); se mexer num, o outro acompanha.
 - **O sorteio da P1** (semente `20260914`, uma aula por questão, registrado no topo do `.tex`)
   deu os Ex. 5, 7 e 11 da lista 01-06. Rodou uma vez e vale. São 4,0 pontos por questão, 12,0
   no total, 2 horas.
+- **O sorteio da P2** (semente `20261112`, o mesmo algoritmo, com o código inteiro no topo do
+  `.tex`) deu as aulas 08, 09 e 10 e os Ex. 3, 6 e 9 da lista 07-10. Rodou uma vez e vale.
+  Também 4,0 pontos por questão, 12,0 no total, 2 horas, e os títulos ficam vazios, como os
+  dos exercícios da lista.
 - **A prova não revela a aula de cada questão:** sem marcador no título, sem "Aula NN" no
   enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
   prova, confira o texto dos sorteados. E as soluções dos Ex. 1, 4 e 8 da lista 01-06 usam
   `\ref` com rótulos que só existem na lista: sorteados, imprimiriam `??` no gabarito da prova.
 - **A lista 07-10** tem nove exercícios, dois de cada uma das aulas 07, 08 e 09 e três da aula
-  10, e a P2 ainda não foi sorteada dela. Seguem o deck (mais a caixa "o preço
-  do ingênuo", que as notas da 07 mantêm de propósito) e nada do que saiu da 08: os custos saem de contagens, $\ell_1\mathrm{FP}+\ell_0\mathrm{FN}$, e nunca da média das
-  taxas ponderada pelas prevalências. Todo enunciado é autocontido (sem aula pelo número, sem
-  citar outro exercício) e nenhuma solução usa `\ref`. Antes de montar a P2, o
-  `\cabecalhoprova` precisa receber a notação da caixa de instruções como argumento, porque
-  ela hoje imprime a de regressão (perda quadrática); a P1 tem de sair idêntica depois disso.
+  10. Seguem o deck (mais a caixa "o preço do ingênuo", que as notas da 07 mantêm de
+  propósito) e nada do que saiu da 08: os custos saem de contagens,
+  $\ell_1\mathrm{FP}+\ell_0\mathrm{FN}$, e nunca da média das taxas ponderada pelas
+  prevalências. Todo enunciado é autocontido (sem aula pelo número, sem citar outro
+  exercício) e nenhuma solução usa `\ref`.
+- **A notação da caixa de instruções** é o argumento opcional do `\cabecalhoprova`. A P2
+  passa a de classificação; sem o argumento sai a de regressão (`\notacaoregressao`), e a
+  P1, que não o passa, sai idêntica ao que era.
 - **Gini contra entropia, medido em 05/11/2026**: em todos os pares de
   divisões possíveis de nós com 10 a 40 observações, as duas medidas discordam em cerca de 2%
   dos pares, e exigir filhos com 5 ou mais observações quase não muda isso. Não afirme que as
