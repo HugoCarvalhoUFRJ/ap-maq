@@ -1,4 +1,4 @@
-% Aula 10 --- crescer com Gini, podar com o erro: o que a poda remove, e o que muda com custos.
+% Aula 10 --- crescer com Gini, podar com o erro: a poda remove os ramos que não mudam nenhuma decisão.
 Rafael é analista numa operadora de planos de saúde e cresceu uma árvore de classificação,
 com o índice de Gini, para prever quais beneficiários serão internados no próximo ano
 ($Y=1$). Agora vai podá-la. Para uma região $R$ com $n_R$ observações de treino, sejam
@@ -14,25 +14,18 @@ crescida, a que minimiza
 em que $R_1,\dots,R_{\abs{T}}$ são as folhas de $T$, $n_m=n_{R_m}$ e $\abs{T}$ é o número de
 folhas; o valor de $\alpha>0$ é escolhido por validação cruzada.
 \begin{itens}
-  \item \pts{1,0} Seja $R$ uma região dividida em regiões disjuntas $R_1,\dots,R_L$. Mostre
+  \item \pts{1,3} Seja $R$ uma região dividida em regiões disjuntas $R_1,\dots,R_L$. Mostre
         que $\sum_ln_{R_l}E(R_l)\le n_RE(R)$, com qualquer número de classes, e que vale a
         igualdade quando uma mesma classe $c^*$ é majoritária em todas as $R_l$; nesse caso,
         $c^*$ é majoritária também em $R$.
-  \item \pts{1,2} Mostre que, para todo $\alpha>0$, nenhuma subárvore que minimize $C_\alpha$
-        tem um nó interno cujas folhas descendentes predigam todas a mesma classe.
-  \item \pts{0,8} Na árvore de Rafael, um nó $R$ com $400$ beneficiários, dos quais $100$
+  \item \pts{1,6} Mostre que, para todo $\alpha>0$, nenhuma subárvore que minimize $C_\alpha$
+        tem um nó interno cujas folhas descendentes predizem todas a mesma classe.
+  \item \pts{1,1} Na árvore de Rafael, um nó $R$ com $400$ beneficiários, dos quais $100$
         foram internados, foi dividido em dois filhos de $200$, que são folhas da árvore
         crescida: $R_1$, com $20$ internados, e $R_2$, com $80$. Calcule a redução do índice
         de Gini ponderado,
         $G(R)-\big[n_1G(R_1)+n_2G(R_2)\big]/n_R$, e a redução do erro de classificação
         ponderado. Por que o crescimento fez essa divisão, e o que a poda fará com ela?
-  \item \pts{1,0} A operadora estima que deixar de prever uma internação custa quatro vezes
-        mais que prever uma que não acontece: $\ell_0=4$ e $\ell_1=1$. Cada folha passa a
-        prever internação quando a sua proporção de internados passa de
-        $\ell_1/(\ell_0+\ell_1)$, e o custo da folha é $\ell_1\,\mathrm{FP}+\ell_0\,\mathrm{FN}$
-        nas suas observações de treino. Calcule o custo do nó do item (c) antes e depois da
-        divisão. Se a poda usar esse custo no lugar do número de erros, para que valores de
-        $\alpha$ a divisão sobrevive? O que isso diz sobre podar pelo erro de classificação?
 \end{itens}
 
 \begin{solucao}
@@ -82,21 +75,4 @@ estritamente côncavo e registra o ganho de pureza de separar um grupo de risco 
 Como os filhos são folhas da árvore crescida, numa subárvore que mantenha a divisão eles são
 as únicas folhas descendentes de $R$, e os dois predizem a mesma classe. Pelo item (b), a poda
 pelo erro remove a divisão, qualquer que seja $\alpha>0$.
-
-\smallskip
-\textbf{(d)} O corte é $\ell_1/(\ell_0+\ell_1)=1/5$. Antes da divisão, a proporção $0{,}25$
-passa do corte, e o nó prevê internação para os $400$: os $300$ não internados são falsos
-positivos, com custo $1\cdot300=300$. Depois, o filho com proporção $0{,}1$ prevê não internação
-e erra nos $20$ internados, com custo $4\cdot20=80$, e o filho com $0{,}4$ prevê internação e erra
-nos $120$ não internados, com custo $1\cdot120=120$: são $200$ no total. Com o custo no lugar
-dos erros, a subárvore que mantém a divisão e a que faz de $R$ uma folha só diferem nessa
-parte da árvore: a primeira contribui com $200+2\alpha$ para o critério, e a segunda, com
-$300+\alpha$. A divisão sobrevive para $\alpha<100$.
-
-O número de erros conta um falso negativo e um falso positivo como iguais, e por isso
-corresponde ao corte $1/2$. Com custos assimétricos, a divisão que o erro de classificação
-manda remover é justamente a que muda a decisão no corte relevante. A poda deve usar o mesmo
-critério que vai guiar as decisões: o erro de classificação quando os dois erros custam o
-mesmo, o custo quando não custam. O argumento do item (b) continua valendo com o custo: a poda
-remove os ramos cujas folhas tomam todas a mesma decisão no corte de custo.
 \end{solucao}

@@ -6,20 +6,17 @@ e dá alarme falso para $10\%$ dos saudáveis:
 $\Prob(X=1\mid Y=1)=0{,}9$ e $\Prob(X=1\mid Y=0)=0{,}1$. Seja
 $\eta(x)=\Prob(Y=1\mid X=x)$.
 \begin{itens}
-  \item \pts{1,0} Calcule $\eta(1)$ e $\eta(0)$.
-  \item \pts{0,8} Determine o classificador de Bayes, o que minimiza a probabilidade de erro.
+  \item \pts{1,2} Calcule $\eta(1)$ e $\eta(0)$.
+  \item \pts{1,2} Determine o classificador de Bayes, o que minimiza a probabilidade de erro.
         Compare a probabilidade de erro dele com a do classificador que segue o exame. Um
         colega conclui que o exame não serve para nada. O que há de errado nessa conclusão?
-  \item \pts{1,2} Sejam $\ell_0$ o custo de deixar passar um doente e $\ell_1$ o de um alarme
+  \item \pts{1,6} Sejam $\ell_0$ o custo de deixar passar um doente e $\ell_1$ o de um alarme
         falso, e $r=\ell_0/\ell_1$. Lembre que o classificador que declara doente quando
         $\eta(x)>\ell_1/(\ell_0+\ell_1)$ minimiza o custo esperado. Mostre que esse
         classificador segue o exame, isto é, declara doente exatamente quem tem $X=1$, se e
         somente se $11<r\le891$, e diga o que ele faz fora dessa faixa. Para $\ell_0=20$ e
         $\ell_1=1$, calcule o custo esperado de declarar todos saudáveis, de seguir o exame e
         de declarar todos doentes, numa população de $10\,000$ pessoas.
-  \item \pts{1,0} Os cortes aplicados a $\eta(X)$ produzem só três classificadores. Encontre
-        os seus pontos (FPR, TPR), desenhe a curva ROC que os liga por segmentos e calcule a
-        AUC. Como uma AUC alta e um classificador de Bayes que ignora o exame podem conviver?
 \end{itens}
 
 \begin{solucao}
@@ -78,20 +75,4 @@ $20\cdot100=2\,000$. Seguir o exame dá $\mathrm{FN}=0{,}1\cdot100=10$ e
 $\mathrm{FP}=0{,}1\cdot9\,900=990$, com custo $20\cdot10+990=1\,190$. Declarar todos doentes dá
 $\mathrm{FP}=9\,900$ e custo $9\,900$. O exame economiza $810$ unidades de custo a cada dez mil
 pessoas em relação ao classificador de Bayes, embora erre dez vezes mais que ele.
-
-\smallskip
-\textbf{(d)} O escore $\eta(X)$ assume só os valores $1/892$ e $1/12$, e, como no item (c), o
-classificador de corte $p_0$ declara doente quem tem $\eta(X)>p_0$. Um corte $p_0\ge1/12$ não
-declara ninguém doente, o ponto $(0,0)$; um corte $1/892\le p_0<1/12$ declara doentes os que
-têm $X=1$, o ponto $(0{,}1;\ 0{,}9)$; um corte $p_0<1/892$ declara todos doentes, o ponto
-$(1,1)$. A curva liga $(0,0)$ a $(0{,}1;\,0{,}9)$ e este a $(1,1)$, e a área sob ela é a
-de um triângulo e um trapézio:
-\[
-  \mathrm{AUC}=\tfrac12\cdot0{,}1\cdot0{,}9+\tfrac12\,(0{,}9+1)\cdot0{,}9=0{,}045+0{,}855=0{,}9 .
-\]
-As duas coisas convivem porque medem coisas diferentes. A AUC avalia o exame ao longo de
-todos os cortes, e o exame separa bem doentes de saudáveis. O classificador de Bayes usa um
-único corte, $1/2$, que é o corte certo quando os dois erros custam o mesmo; com uma doença
-rara, esse corte fica acima de qualquer probabilidade que o exame produza. O exame é bom; o
-que decide se vale a pena usá-lo é a razão de custos, pelo item (c).
 \end{solucao}

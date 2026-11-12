@@ -10,30 +10,26 @@ classificador de margem máxima é dado pela solução do problema
   \quad\text{e}\quad
   y_i\,(\beta_0+\bbeta^\top\x_i)\ge M,\ \ i=1,\dots,n .
 \]
-Escreva $f(\x)=\beta_0+\bbeta^\top\x$. Os vetores de suporte são as observações com
+Defina $f(\x)=\beta_0+\bbeta^\top\x$. Os vetores de suporte são as observações com
 $y_if(\x_i)=M$, e $\mathcal S$ é o conjunto dos seus índices. Admita que, para observações
 separáveis com as duas classes presentes, o problema tem solução, e seja $M^*>0$ o valor
-ótimo. As notas afirmam, sem demonstrar, que essa solução depende apenas dos vetores de
-suporte; Tiago quer a demonstração e quer saber o que ela lhe dá.
+ótimo. Durante as aulas afirmamos, sem demonstrar, que essa solução depende apenas dos vetores de
+suporte. Este exercício pretende elucidar esse resultado.
 \begin{itens}
-  \item \pts{1,0} Mostre que a solução é única. (Se houvesse duas soluções com vetores
+  \item \pts{1,2} Mostre que a solução é única. (Se houvesse duas soluções com vetores
         $\bbeta$ diferentes, compare-as com o ponto médio entre elas. Se tivessem o mesmo
         $\bbeta$, olhe, como funções de $\beta_0$, o menor valor de $y_if(\x_i)$ em cada
         classe.)
-  \item \pts{1,4} Seja $i_0\notin\mathcal S$. Mostre que o classificador de margem máxima
+  \item \pts{1,6} Seja $i_0\notin\mathcal S$. Mostre que o classificador de margem máxima
         das $n-1$ observações sem a observação $i_0$ é o mesmo das $n$ observações. (Se o
         valor ótimo sem $i_0$ fosse maior que $M^*$, combine a solução nova com a antiga, com
         peso pequeno na nova.) Mostre também que deslocar $\x_{i_0}$ para qualquer ponto
         $\x'$ com $y_{i_0}f(\x')>M^*$, em que $f$ é a função da solução, não muda o
         classificador.
-  \item \pts{1,0} A estimativa do risco por validação cruzada com uma observação deixada de
+  \item \pts{1,2} A estimativa do risco por validação cruzada com uma observação deixada de
         fora (LOOCV) é a proporção das observações $i$ que o classificador ajustado sem $i$
         classifica errado. Mostre que, para o classificador de margem máxima, ela é no
         máximo $\abs{\mathcal S}/n$.
-  \item \pts{0,6} Tiago ajusta o classificador a $60$ peças e encontra $3$ vetores de
-        suporte. O que ele pode afirmar sobre a estimativa LOOCV sem fazer mais nenhum ajuste?
-        Ele refaz os $60$ ajustes e não encontra erro nenhum. Isso contradiz o item (c)? O que
-        a cota não garante?
 \end{itens}
 
 \begin{solucao}
@@ -107,17 +103,7 @@ $i\in\mathcal S$, e
   \frac1n\sum_{i=1}^n\1{g_{-i}(\x_i)\ne y_i}
   =\frac1n\sum_{i\in\mathcal S}\1{g_{-i}(\x_i)\ne y_i}\ \le\ \frac{\abs{\mathcal S}}{n} .
 \]
-
-\smallskip
-\textbf{(d)} Com um único ajuste, Tiago sabe que a estimativa LOOCV é no máximo
-$3/60=0{,}05$: das $60$ retiradas, $57$ deixam o classificador intacto e não erram, e só as
-$3$ de vetores de suporte podem errar. Os $60$ ajustes, que mostram erro zero, não contradizem
-nada: a cota é uma desigualdade, e os vetores de suporte deixados de fora podem continuar do
-lado certo do hiperplano recalculado. Neste conjunto de dados, nenhum deles muda de lado.
-
-A cota limita uma estimativa do risco, não o risco. Ela não diz que peças futuras serão
-classificadas sem erro: o treino ser separável não significa que a população seja, e uma peça
-nova perto da fronteira pode deslocar muito o hiperplano, que é a sensibilidade a observações
-novas apontada nas notas. O que ela mostra é que a estimativa LOOCV deste classificador
-custa um ajuste em vez de $n$, desde que se aceite uma cota no lugar do número.
+A cota sai de um único ajuste, o das $n$ observações: das $n$ retiradas que a validação
+cruzada faria, só as dos vetores de suporte podem alterar o classificador e, com isso,
+produzir um erro.
 \end{solucao}

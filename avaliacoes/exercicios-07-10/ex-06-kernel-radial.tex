@@ -1,8 +1,7 @@
 % Aula 09 --- produtos e exponenciais de kernels; o kernel radial em qualquer dimensão.
 Júlia estuda matemática aplicada e lê nas notas que o \emph{kernel} radial
 $k(\x,\x')=\exp\!\big(-\gamma\norm{\x-\x'}^2\big)$, com $\gamma>0$, é um \emph{kernel} em
-$\R^p$; o exemplo das notas, porém, só exibe a função $\varphi$ para $p=1$. Ela decide provar
-o caso geral. Lembre que $k:\R^p\times\R^p\to\R$ é um \emph{kernel} se existem um espaço de
+$\R^p$; e decide tentar demonstrar o resultado. Lembre que $k:\R^p\times\R^p\to\R$ é um \emph{kernel} se existem um espaço de
 Hilbert $\mathcal H$ e uma função $\varphi:\R^p\to\mathcal H$ com
 $k(\x,\x')=\inner{\varphi(\x)}{\varphi(\x')}_{\mathcal H}$ para todos $\x,\x'$, e que, pelo
 teorema visto em aula, isso acontece se e somente se $k$ é simétrica e, para todo $n\ge1$ e
@@ -11,24 +10,16 @@ semidefinida. Use à vontade que o produto interno $\inner{\x}{\x'}$ e as funç�
 iguais a $c\ge0$ são \emph{kernels}, e que a soma de dois \emph{kernels} e o produto de um
 \emph{kernel} por uma constante $c\ge0$ também são.
 \begin{itens}
-  \item \pts{1,2} Mostre que, se $k_1$ e $k_2$ são \emph{kernels}, o produto
+  \item \pts{1,6} Mostre que, se $k_1$ e $k_2$ são \emph{kernels}, o produto
         $k(\x,\x')=k_1(\x,\x')\,k_2(\x,\x')$ também é. (Escreva uma das duas matrizes pela
         decomposição espectral.)
-  \item \pts{1,0} Mostre que, se $k$ é um \emph{kernel} e $h:\R^p\to\R$ é uma função
+  \item \pts{1,3} Mostre que, se $k$ é um \emph{kernel} e $h:\R^p\to\R$ é uma função
         qualquer, então $h(\x)\,h(\x')\,k(\x,\x')$ é um \emph{kernel}. Mostre também que
         $e^{k(\x,\x')}$ é um \emph{kernel}, usando a série da exponencial e o fato de que um
         limite de matrizes positivas semidefinidas é positivo semidefinido.
-  \item \pts{0,8} Conclua que o \emph{kernel} radial é um \emph{kernel} em $\R^p$, para todo
+  \item \pts{1,1} Conclua que o \emph{kernel} radial é um \emph{kernel} em $\R^p$, para todo
         $p$ e todo $\gamma>0$. (Escreva $\norm{\x-\x'}^2$ em termos de $\norm{\x}^2$,
         $\norm{\x'}^2$ e $\inner{\x}{\x'}$.)
-  \item \pts{1,0} Mostre que, para todo \emph{kernel},
-        $\norm{\varphi(\x)-\varphi(\x')}_{\mathcal H}^2=k(\x,\x)-2\,k(\x,\x')+k(\x',\x')$, e
-        calcule essa distância para o \emph{kernel} radial. Conclua que $\varphi$ leva $\R^p$
-        na esfera unitária de $\mathcal H$ e que pontos distintos ficam, em $\mathcal H$, a
-        distância menor que $\sqrt2$. Com $\gamma=0{,}5$ e com $\gamma=50$, a que distância
-        dois pontos precisam estar em $\R^p$ para ficarem à distância $1$ em $\mathcal H$?
-        Interprete o resultado em termos da flexibilidade da SVM. \emph{Dado:}
-        $\sqrt{2\log2}\approx1{,}177$, com $\log$ o logaritmo natural.
 \end{itens}
 
 \begin{solucao}
@@ -76,40 +67,4 @@ Pelo item (b), $e^{2\gamma\inner{\x}{\x'}}$ é um \emph{kernel}, e, ainda pelo i
 $h(\x)=e^{-\gamma\norm{\x}^2}$, o produto acima é um \emph{kernel}. O argumento vale para todo
 $p$ e todo $\gamma>0$, e não precisa exibir $\varphi$; com $p=1$, expandir
 $e^{2\gamma xx'}$ em série reproduz a função $\varphi$ do exemplo das notas.
-
-\smallskip
-\textbf{(d)} Pela bilinearidade e pela simetria do produto interno de $\mathcal H$,
-\begin{align*}
-  \norm{\varphi(\x)-\varphi(\x')}^2
-  &=\inner{\varphi(\x)}{\varphi(\x)}-2\inner{\varphi(\x)}{\varphi(\x')}+\inner{\varphi(\x')}{\varphi(\x')}\\
-  &=k(\x,\x)-2\,k(\x,\x')+k(\x',\x') .
-\end{align*}
-No \emph{kernel} radial, $k(\x,\x)=e^0=1$, de modo que $\norm{\varphi(\x)}=1$ para todo $\x$,
-e
-\[
-  \norm{\varphi(\x)-\varphi(\x')}^2=2\big(1-e^{-\gamma\norm{\x-\x'}^2}\big) .
-\]
-Essa quantidade é nula se e somente se $\x=\x'$, cresce com $\norm{\x-\x'}$ e é sempre menor
-que $2$: os pontos vão para a esfera unitária de $\mathcal H$, a distâncias menores que
-$\sqrt2$, isto é, com produto interno $k(\x,\x')>0$ e ângulo menor que $90^\circ$.
-
-Dois pontos ficam à distância $1$ em $\mathcal H$ quando
-$2\big(1-e^{-\gamma\norm{\x-\x'}^2}\big)=1$, isto é, quando $k(\x,\x')=1/2$, a meio caminho
-entre pontos iguais ($k=1$) e ortogonais ($k=0$). Isso acontece se e somente se
-\[
-  \norm{\x-\x'}=\sqrt{\frac{\log2}{\gamma}} ,
-\]
-que vale $\sqrt{2\log2}\approx1{,}177$ com $\gamma=0{,}5$ e $\sqrt{2\log2}/10\approx0{,}118$
-com $\gamma=50$, dez vezes menos.
-
-A distância em $\mathcal H$ depende de $\x$ e $\x'$ só por meio de
-$\sqrt\gamma\,\norm{\x-\x'}$: multiplicar $\gamma$ por $100$ tem o mesmo efeito que
-multiplicar todas as covariáveis por $10$, e $1/\sqrt\gamma$ faz o papel de uma unidade de
-comprimento em $\R^p$. É também a escala em que age cada parcela da função de decisão
-$f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_ik(\x,\x_i)$: $k(\x,\x_i)$ cai à metade quando
-$\norm{\x-\x_i}=\sqrt{\log2/\gamma}$ e decai depressa a partir daí. Com $\gamma=50$, a
-influência de cada vetor de suporte se restringe a uma vizinhança de raio da ordem de
-$0{,}1$ em torno dele, a fronteira pode contornar observações isoladas, e o ajuste fica
-flexível, com risco de superajuste. Com $\gamma=0{,}5$, o raio é dez vezes maior, muitos
-vetores de suporte pesam em cada ponto, e a fronteira é suave.
 \end{solucao}
