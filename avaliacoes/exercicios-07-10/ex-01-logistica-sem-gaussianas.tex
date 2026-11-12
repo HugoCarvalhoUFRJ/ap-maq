@@ -7,13 +7,13 @@ chegam a uma fronteira linear por caminhos diferentes. Ao longo do exercício,
 $\sigma(u)=e^u/(1+e^u)$ é a função logística, $\log$ é o logaritmo natural e
 $\pi_c=\Prob(Y=c)$.
 \begin{itens}
-  \item \pts{2,2} Suponha que $\X\in\R^p$ e que, como no LDA,
-        $\X\mid Y=c\sim N(\bm\mu_c,\bm\Sigma)$ para $c\in\{0,1\}$, com $\bm\Sigma$
-        simétrica e positiva definida. Mostre que
+  \item \pts{2,2} Comece pelo caso geral, com $p$ covariáveis: suponha que $\X\in\R^p$ e
+        que, como no LDA, $\X\mid Y=c\sim N(\bm\mu_c,\bm\Sigma)$ para $c\in\{0,1\}$, com
+        $\bm\Sigma$ simétrica e positiva definida. Mostre que
         $\Prob(Y=1\mid\X=\x)=\sigma(\beta_0+\bbeta^\top\x)$ e escreva $\beta_0$ e
         $\bbeta$ em função de $\pi_0$, $\pi_1$, $\bm\mu_0$, $\bm\mu_1$ e $\bm\Sigma$.
         Conclua que, sob as hipóteses do LDA, o modelo da regressão logística vale
-        exatamente. (\textit{Dica: }Escreva $\Prob(Y=1\mid\X=\x)$ pelo Teorema de Bayes, com $f_c$ a
+        exatamente. (Escreva $\Prob(Y=1\mid\X=\x)$ pelo Teorema de Bayes, com $f_c$ a
         densidade de $\X$ dado $Y=c$, divida o numerador e o denominador por
         $\pi_1f_1(\x)$ e ponha o resultado na forma $\sigma\big(u(\x)\big)$. Depois,
         substitua as densidades normais em $u(\x)$, expanda as duas formas quadráticas e
@@ -60,9 +60,13 @@ termo quadrático $\x^\top\bm\Sigma^{-1}\x$ aparece nas duas formas e se cancela
      -\tfrac12\big(\bm\mu_1^\top\bm\Sigma^{-1}\bm\mu_1-\bm\mu_0^\top\bm\Sigma^{-1}\bm\mu_0\big).
 \]
 Logo $\Prob(Y=1\mid\X=\x)=\sigma(\beta_0+\bbeta^\top\x)$, que é exatamente o modelo da
-regressão logística. A covariância comum foi usada uma única vez, no cancelamento do termo
-quadrático; com covariâncias diferentes, esse termo e os determinantes sobreviveriam, e o
-\emph{log-odds} seria quadrático, como no QDA.
+regressão logística. A covariância comum foi usada duas vezes, para cancelar as constantes de
+normalização e para cancelar o termo quadrático, e só o segundo uso é indispensável para que
+o \emph{log-odds} seja afim. Com covariâncias $\bm\Sigma_0\ne\bm\Sigma_1$, as constantes
+deixariam em $u(\x)$ a parcela $\tfrac12\log(\det\bm\Sigma_0/\det\bm\Sigma_1)$, que não
+depende de $\x$ e iria para $\beta_0$; já o termo
+$-\tfrac12\,\x^\top\big(\bm\Sigma_1^{-1}-\bm\Sigma_0^{-1}\big)\x$ não seria identicamente nulo,
+e o \emph{log-odds} seria quadrático em $\x$, como no QDA.
 
 \smallskip
 \textbf{(b)} Pela mesma fórmula de Bayes, para $x>0$,

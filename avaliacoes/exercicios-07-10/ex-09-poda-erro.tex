@@ -21,8 +21,9 @@ folhas; o valor de $\alpha>0$ é escolhido por validação cruzada.
   \item \pts{1,2} Mostre que, para todo $\alpha>0$, nenhuma subárvore que minimize $C_\alpha$
         tem um nó interno cujas folhas descendentes predigam todas a mesma classe.
   \item \pts{0,8} Na árvore de Rafael, um nó $R$ com $400$ beneficiários, dos quais $100$
-        foram internados, foi dividido em dois filhos de $200$, $R_1$ com $20$ internados e
-        $R_2$ com $80$. Calcule a redução do índice de Gini ponderado,
+        foram internados, foi dividido em dois filhos de $200$, que são folhas da árvore
+        crescida: $R_1$, com $20$ internados, e $R_2$, com $80$. Calcule a redução do índice
+        de Gini ponderado,
         $G(R)-\big[n_1G(R_1)+n_2G(R_2)\big]/n_R$, e a redução do erro de classificação
         ponderado. Por que o crescimento fez essa divisão, e o que a poda fará com ela?
   \item \pts{1,0} A operadora estima que deixar de prever uma internação custa quatro vezes
@@ -77,9 +78,10 @@ uma redução de $0{,}045$. A classe majoritária é ``não internado'' no nó (
 nos dois filhos ($180$ contra $20$ e $120$ contra $80$). Os erros são $100$ no nó e
 $20+80=100$ nos filhos: a redução do erro é zero, como o item (a) previa. O Gini é
 estritamente côncavo e registra o ganho de pureza de separar um grupo de risco baixo
-($10\%$ de internações) de um de risco alto ($40\%$); por isso o crescimento fez a divisão. Os
-dois filhos, porém, predizem a mesma classe, e, pelo item (b), a poda pelo erro remove a
-divisão qualquer que seja $\alpha>0$.
+($10\%$ de internações) de um de risco alto ($40\%$); por isso o crescimento fez a divisão.
+Como os filhos são folhas da árvore crescida, numa subárvore que mantenha a divisão eles são
+as únicas folhas descendentes de $R$, e os dois predizem a mesma classe. Pelo item (b), a poda
+pelo erro remove a divisão, qualquer que seja $\alpha>0$.
 
 \smallskip
 \textbf{(d)} O corte é $\ell_1/(\ell_0+\ell_1)=1/5$. Antes da divisão, a proporção $0{,}25$
@@ -87,8 +89,9 @@ passa do corte, e o nó prevê internação para os $400$: os $300$ não interna
 positivos, com custo $1\cdot300=300$. Depois, o filho com proporção $0{,}1$ prevê não internação
 e erra nos $20$ internados, com custo $4\cdot20=80$, e o filho com $0{,}4$ prevê internação e erra
 nos $120$ não internados, com custo $1\cdot120=120$: são $200$ no total. Com o custo no lugar
-dos erros, manter a divisão contribui com $200+2\alpha$ para o critério e removê-la, com
-$300+\alpha$, e a divisão sobrevive para $\alpha<100$.
+dos erros, a subárvore que mantém a divisão e a que faz de $R$ uma folha só diferem nessa
+parte da árvore: a primeira contribui com $200+2\alpha$ para o critério, e a segunda, com
+$300+\alpha$. A divisão sobrevive para $\alpha<100$.
 
 O número de erros conta um falso negativo e um falso positivo como iguais, e por isso
 corresponde ao corte $1/2$. Com custos assimétricos, a divisão que o erro de classificação

@@ -83,12 +83,12 @@ $y_i(\beta_0+\bbeta^\top\bm z_i)=1/\sqrt{24}$ para todo $i$: o valor $M=1/\sqrt{
 atingido.
 
 Para a cota, seja $(\beta_0,\bbeta,M)$ qualquer ponto que satisfaça as restrições.
-Multiplicando a restrição de cada observação pelo seu peso $\alpha_i>0$ e somando,
+Multiplicando a restrição de cada observação pelo seu peso $c_i>0$ e somando,
 \[
-  \beta_0\sum_i\alpha_iy_i+\bbeta^\top\Big(\sum_i\alpha_iy_i\bm z_i\Big)\ \ge\ M\sum_i\alpha_i .
+  \beta_0\sum_ic_iy_i+\bbeta^\top\Big(\sum_ic_iy_i\bm z_i\Big)\ \ge\ M\sum_ic_i .
 \]
-Com os pesos $8$, $4$, $6$ e $6$, $\sum_i\alpha_iy_i=-8-4+6+6=0$, e $\beta_0$ desaparece;
-$\sum_i\alpha_iy_i\bm z_i=-4(1,1,1)+6(1,0,0)+6(0,1,0)=(2,2,-4)$; e $\sum_i\alpha_i=24$. Pela
+Com os pesos $8$, $4$, $6$ e $6$, $\sum_ic_iy_i=-8-4+6+6=0$, e $\beta_0$ desaparece;
+$\sum_ic_iy_i\bm z_i=-4(1,1,1)+6(1,0,0)+6(0,1,0)=(2,2,-4)$; e $\sum_ic_i=24$. Pela
 desigualdade de Cauchy--Schwarz e por $\norm{\bbeta}=1$,
 \[
   24\,M\ \le\ \bbeta^\top(2,2,-4)\ \le\ \norm{(2,2,-4)}=\sqrt{24},
@@ -98,9 +98,14 @@ O ponto encontrado acima é, portanto, ótimo. É também a única solução: a 
 Cauchy--Schwarz exige $\bbeta=(2,2,-4)/\sqrt{24}$, e, como todos os pesos são positivos, a
 igualdade na soma exige que as quatro restrições valham com igualdade, o que determina
 $\beta_0=-1/\sqrt{24}$. As quatro observações estão sobre a margem: todas são vetores de
-suporte. Os pesos não são arbitrários: com o sinal de cada classe, $-8$, $-4$, $6$ e $6$ são,
-a menos de um fator comum, os coeficientes $\alpha_i$ da representação de $f$ por produtos
-internos que as notas admitem sem demonstração, e é isso que faz o $\beta_0$ sumir da soma.
+suporte.
+
+Os pesos não são arbitrários. Como $\sum_ic_iy_i\bm z_i=(2,2,-4)$, vale
+$f(\bm z)=-1+\sum_ic_iy_i\inner{\bm z}{\bm z_i}$: os números $c_iy_i$, isto é, $-8$, $-4$, $6$
+e $6$, dão uma representação de $f$ por produtos internos com as observações, como a que as
+notas admitem sem demonstração. Ela não é a única, porque $\inner{\bm z}{\bm 0}=0$ e o
+coeficiente da observação $(0,0,0)$ pode ser qualquer; o valor $-8$ é o que faz os
+coeficientes somarem zero, e é essa soma nula que elimina $\beta_0$ da cota.
 
 No plano original, $f=2x_1+2x_2-4x_1x_2-1=-4\big(x_1-\tfrac12\big)\big(x_2-\tfrac12\big)$. A
 fronteira $f=0$ é o par de retas $x_1=\tfrac12$ e $x_2=\tfrac12$, e o classificador acende a

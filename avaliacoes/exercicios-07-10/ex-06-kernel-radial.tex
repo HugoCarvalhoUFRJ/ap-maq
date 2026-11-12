@@ -25,9 +25,10 @@ iguais a $c\ge0$ são \emph{kernels}, e que a soma de dois \emph{kernels} e o pr
         $\norm{\varphi(\x)-\varphi(\x')}_{\mathcal H}^2=k(\x,\x)-2\,k(\x,\x')+k(\x',\x')$, e
         calcule essa distância para o \emph{kernel} radial. Conclua que $\varphi$ leva $\R^p$
         na esfera unitária de $\mathcal H$ e que pontos distintos ficam, em $\mathcal H$, a
-        distância menor que $\sqrt2$. Para dois pontos à distância $1$ em $\R^p$, calcule a
-        distância em $\mathcal H$ com $\gamma=0{,}5$ e com $\gamma=50$, e interprete o
-        resultado em termos da flexibilidade da SVM.
+        distância menor que $\sqrt2$. Com $\gamma=0{,}5$ e com $\gamma=50$, a que distância
+        dois pontos precisam estar em $\R^p$ para ficarem à distância $1$ em $\mathcal H$?
+        Interprete o resultado em termos da flexibilidade da SVM. \emph{Dado:}
+        $\sqrt{2\log2}\approx1{,}177$, com $\log$ o logaritmo natural.
 \end{itens}
 
 \begin{solucao}
@@ -90,16 +91,25 @@ e
 \]
 Essa quantidade é nula se e somente se $\x=\x'$, cresce com $\norm{\x-\x'}$ e é sempre menor
 que $2$: os pontos vão para a esfera unitária de $\mathcal H$, a distâncias menores que
-$\sqrt2$, isto é, com produto interno $k(\x,\x')>0$ e ângulo menor que $90^\circ$. Para
-$\norm{\x-\x'}=1$, a distância em $\mathcal H$ é $\sqrt{2(1-e^{-0{,}5})}\approx0{,}887$ com
-$\gamma=0{,}5$ e $\sqrt{2(1-e^{-50})}\approx1{,}4142$ com $\gamma=50$, que é $\sqrt2$ até a
-quarta casa.
+$\sqrt2$, isto é, com produto interno $k(\x,\x')>0$ e ângulo menor que $90^\circ$.
 
-Com $\gamma=50$, dois pontos à distância $1$ já são praticamente ortogonais em $\mathcal H$:
-cada observação de treino fica, em $\mathcal H$, tão longe das outras quanto o
-\emph{kernel} permite, e na função de decisão $f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_ik(\x,\x_i)$
-cada parcela só pesa muito perto do seu $\x_i$. A fronteira pode, assim, contornar
-observações isoladas, e o ajuste fica flexível, com risco de superajuste. Com $\gamma$
-pequeno, pontos próximos em $\R^p$ continuam próximos em $\mathcal H$, cada parcela pesa
-numa região grande, e a fronteira é suave.
+Dois pontos ficam à distância $1$ em $\mathcal H$ quando
+$2\big(1-e^{-\gamma\norm{\x-\x'}^2}\big)=1$, isto é, quando $k(\x,\x')=1/2$, a meio caminho
+entre pontos iguais ($k=1$) e ortogonais ($k=0$). Isso acontece se e somente se
+\[
+  \norm{\x-\x'}=\sqrt{\frac{\log2}{\gamma}} ,
+\]
+que vale $\sqrt{2\log2}\approx1{,}177$ com $\gamma=0{,}5$ e $\sqrt{2\log2}/10\approx0{,}118$
+com $\gamma=50$, dez vezes menos.
+
+A distância em $\mathcal H$ depende de $\x$ e $\x'$ só por meio de
+$\sqrt\gamma\,\norm{\x-\x'}$: multiplicar $\gamma$ por $100$ tem o mesmo efeito que
+multiplicar todas as covariáveis por $10$, e $1/\sqrt\gamma$ faz o papel de uma unidade de
+comprimento em $\R^p$. É também a escala em que age cada parcela da função de decisão
+$f(\x)=\beta_0+\sum_{i\in\mathcal S}\alpha_ik(\x,\x_i)$: $k(\x,\x_i)$ cai à metade quando
+$\norm{\x-\x_i}=\sqrt{\log2/\gamma}$ e decai depressa a partir daí. Com $\gamma=50$, a
+influência de cada vetor de suporte se restringe a uma vizinhança de raio da ordem de
+$0{,}1$ em torno dele, a fronteira pode contornar observações isoladas, e o ajuste fica
+flexível, com risco de superajuste. Com $\gamma=0{,}5$, o raio é dez vezes maior, muitos
+vetores de suporte pesam em cada ponto, e a fronteira é suave.
 \end{solucao}
