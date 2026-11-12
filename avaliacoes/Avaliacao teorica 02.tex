@@ -1,0 +1,146 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Avaliação Teórica 02 --- Aulas 07 a 10 (Bloco II, classificação)
+%
+%  O gabarito sai de "Avaliacao teorica 02 - gabarito.tex", que apenas liga a
+%  opção [gabarito] e inclui este arquivo --- fonte única, dois PDFs.
+%
+%  AS TRÊS QUESTÕES FORAM SORTEADAS da "Lista de revisao 07-10", com cobertura
+%  (uma aula por questão, três das quatro aulas). O sorteio é reproduzível:
+%
+%      import numpy as np
+%      rng = np.random.default_rng(20261112)      # a data, aaaammdd
+%      aulas = sorted(rng.choice([7, 8, 9, 10], size=3, replace=False).tolist())
+%      exercicios = {7: [1, 2], 8: [3, 4], 9: [5, 6], 10: [7, 8, 9]}
+%      sorteados = [int(rng.choice(exercicios[a])) for a in aulas]
+%      # -> aulas [8, 9, 10]; exercícios [3, 6, 9]
+%
+%  Resultado:
+%      Aula 08 -> Exercício 3  ex-03-sorteio-classificadores (sortear entre
+%                              dois classificadores)
+%      Aula 09 -> Exercício 6  ex-06-kernel-radial (o kernel radial em
+%                              qualquer dimensão)
+%      Aula 10 -> Exercício 9  ex-09-gini-entropia (quando o Gini e a entropia
+%                              discordam)
+%
+%  O sorteio rodou uma vez e vale. O algoritmo é o da Avaliação Teórica 01: com
+%  a semente 20260914 e a lista 01-06 de então, ele dá as aulas [2, 3, 6] e os
+%  Ex. 5, 7 e 13 registrados lá.
+%
+%  NÃO HÁ TEXTO DE EXERCÍCIO NESTE ARQUIVO. Os enunciados e as soluções vêm por
+%  \input dos MESMOS arquivos que a lista de revisão usa, em exercicios-07-10/.
+%  Aqui ficam só o cabeçalho da prova, com a notação da caixa de instruções, as
+%  questões e os critérios de correção, que são específicos da avaliação.
+%
+%  O \provatrue abaixo liga a pontuação por item: o comando \pts, escrito dentro
+%  dos arquivos de exercício, some na lista e aparece aqui.
+%
+%  A PROVA NÃO REVELA DE QUE AULA VEM CADA QUESTÃO: o \questao não leva marcador
+%  de aula, e os títulos ficam vazios porque os exercícios da lista 07-10 não
+%  têm título. A notação de classificação entra como argumento opcional do
+%  \cabecalhoprova; sem ele, a caixa imprimiria a de regressão, da prova 01.
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../recursos/latex/estilo-avaliacao}
+
+\provatrue
+
+\begin{document}
+\cabecalhoprova[{$(\X,Y)$ é um vetor aleatório com $\X\in\R^p$ e $Y$ num conjunto finito
+            $\mathcal{C}$ de classes; no caso binário, $\mathcal{C}=\{0,1\}$, a classe
+            $Y=1$ é a positiva e $\eta(\x)=\Prob(Y=1\mid\X=\x)$;
+            $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d.; a perda é a
+            0--1, com risco $\risco(g)=\Prob\big(Y\ne g(\X)\big)$, salvo indicação em
+            contrário.}]{02}{07 a 10}{Classificadores Gaussianos, Métricas, SVM, KNN e
+Árvores de Classificação}{2 horas}{12,0 pontos}
+
+%==============================================================================
+\questao{}{4,0 pontos}
+%==============================================================================
+\input{exercicios-07-10/ex-03-sorteio-classificadores}
+
+\begin{criterio}
+\textbf{(a)} 0,8 pela fórmula da FPR: 0,4 por condicionar na moeda, com
+$\Prob(Z=1\mid Y=0)=\lambda$, e 0,4 por justificar, pela independência, que as duas
+probabilidades condicionais são as taxas de falsos positivos de $A$ e de $B$. Afirmar a
+combinação convexa sem usar a independência vale 0,3 desses 0,8, e a TPR, que sai da
+mesma conta, não precisa ser refeita. 0,5 pelos números: 0,3 por $\lambda=1/2$ e 0,2 pela
+TPR de $0{,}65$. 0,3 pela diagonal: sortear entre $g\equiv0$ e $g\equiv1$, isto é, declarar
+positivo com probabilidade $q$ sem olhar $\x$, dá o ponto $(q,q)$.
+
+\textbf{(b)} 0,3 pelo ponto $(0{,}30;\ 0{,}60)$; 0,4 pelo caso geral,
+$\mathrm{TPR}(1-g)=1-\mathrm{TPR}(g)$ e o mesmo para a FPR; 0,5 pelo escore com o sinal
+trocado, 0,25 pela curva, a simétrica da original em relação a $(\tfrac12,\tfrac12)$, e
+0,25 pela área, $1-\mathrm{AUC}>1/2$. Aceitar a área justificada pela simetria ou pela
+área acima da curva original; não é exigido tratar empates entre escores.
+
+\textbf{(c)} 0,5 pela linearidade do custo esperado, que repete a conta do item (a) com
+as probabilidades conjuntas; remeter ao item (a) vale integralmente se ficar claro que
+a conta se faz para os dois tipos de erro e que os custos entram como constantes. 0,3
+por concluir que uma média ponderada nunca é menor que o menor dos dois custos. 0,4 pela
+utilidade do sorteio: atingir uma taxa de falsos positivos que nenhum dos dois sistemas
+atinge, como os $0{,}05$ permitidos pelo banco, com $65\%$ das fraudes detectadas contra
+$50\%$ de $A$. Dizer apenas que o sorteio combina os dois sistemas, sem a restrição do
+banco, vale 0,1 desses 0,4.
+\end{criterio}
+
+%==============================================================================
+\questao{}{4,0 pontos}
+%==============================================================================
+\input{exercicios-07-10/ex-06-kernel-radial}
+
+\begin{criterio}
+\textbf{(a)} 0,2 pela simetria de $A\circ B$; 0,4 pela decomposição espectral de $B$,
+com autovalores não negativos porque $B$ é positiva semidefinida; 0,6 por reescrever
+$\bm a^\top(A\circ B)\,\bm a$ como $\sum_m\lambda_m\,\bm u_m^\top A\,\bm u_m$; 0,4 pela
+conclusão, parcela a parcela, e pelo teorema, porque a conta vale para todo $n$ e
+quaisquer pontos. Aceitar integralmente uma prova correta por outro caminho, como a
+construção de uma função $\varphi$ para o produto. Citar o teorema do produto de Schur
+sem demonstrá-lo vale 0,4 do item.
+
+\textbf{(b)} 0,5 por $h(\x)h(\x')k(\x,\x')$: a simetria e a matriz $DKD$, com
+$\bm a^\top DKD\,\bm a=(D\bm a)^\top K(D\bm a)\ge0$, ou a função $h\varphi$ no lugar de
+$\varphi$. 0,8 pela exponencial: 0,3 pelas potências, por indução e pelo item (a); 0,2
+pelas somas parciais, combinações de \emph{kernels} com coeficientes positivos; 0,3 pela
+passagem ao limite, com os pontos e $\bm a$ fixados. Afirmar que um limite de
+\emph{kernels} é um \emph{kernel} sem dizer em que sentido vale 0,1 desses 0,3.
+
+\textbf{(c)} 0,3 pela fatoração
+$e^{-\gamma\norm{\x-\x'}^2}=e^{-\gamma\norm{\x}^2}e^{-\gamma\norm{\x'}^2}e^{2\gamma\inner{\x}{\x'}}$;
+0,4 por $e^{2\gamma\inner{\x}{\x'}}$ ser um \emph{kernel}, porque $2\gamma\inner{\x}{\x'}$ é
+um múltiplo positivo do produto interno e pelo item (b); 0,4 pelo item (b) com
+$h(\x)=e^{-\gamma\norm{\x}^2}$ e pela observação de que o argumento não depende de $p$
+nem do valor de $\gamma>0$. Usar os itens (a) e (b) sem tê-los demonstrado não desconta
+neste item.
+\end{criterio}
+
+%==============================================================================
+\questao{}{4,0 pontos}
+%==============================================================================
+\input{exercicios-07-10/ex-09-gini-entropia}
+
+\begin{criterio}
+\textbf{(a)} 0,5 pelo Gini, $4/9\approx0{,}444$ em A e $5/11\approx0{,}455$ em B; 0,8 pela
+entropia, 0,4 por divisão, $\log_23-2/3\approx0{,}918$ em A e cerca de $0{,}911$ em B; 0,4
+pelo erro de classificação, $1/3$ em A e $5/12$ em B; 0,3 pelas escolhas: o Gini e o erro
+escolhem A, e a entropia escolhe B. Aceitar desvios de até $0{,}002$ nos valores da
+entropia, que dependem dos logaritmos dados, e impurezas sem a divisão por $12$, que
+não mudam a comparação. Uma conta errada que inverta a escolha da entropia perde os
+pontos dessa conta e dessa escolha, mas não os das outras medidas.
+
+\textbf{(b)} 0,5 por escrever as impurezas ponderadas como $I(1/3)$ e
+$\tfrac{11}{12}I(6/11)$, usando a simetria e $I(0)=0$; 0,3 pela equivalência, dividindo
+por $I(6/11)>0$; 0,6 pelas três razões, 0,2 cada ($121/135\approx0{,}896$ no Gini, cerca de
+$0{,}924$ na entropia e $11/15\approx0{,}733$ no erro), com a conclusão de que só a da
+entropia passa de $11/12$; 0,6 pela explicação: perto de $p=1/2$ a entropia é mais
+achatada que o Gini ($D(1/3)/D(1/2)\approx0{,}918$, contra $G(1/3)/G(1/2)=8/9$), e por isso
+dá pouco valor à purificação parcial de A diante da purificação completa de uma única
+muda em B. Dizer apenas que as curvas têm formas diferentes, sem ligar a forma aos
+valores em $1/3$ e perto de $1/2$, vale 0,2 desses 0,6.
+\end{criterio}
+
+\vfill
+\begin{center}\small\itshape Boa prova!\end{center}
+
+\end{document}
