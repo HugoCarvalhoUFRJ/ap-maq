@@ -38,6 +38,34 @@
 \RequirePackage[colorlinks=true,linkcolor=azulufrj,citecolor=azulufrj,%
                 urlcolor=azulufrj]{hyperref}
 
+% ----- Correção do tcolorbox 4.22 (TeX Live 2019) -----------------------------
+% Quando a última parte de uma caixa quebrável só cabe na página com o conteúdo
+% comprimido, o tcolorbox 4.22 informa ao TeX uma altura menor que a desenhada, e
+% o texto seguinte pode sair impresso por cima do fim da caixa (aconteceu num
+% gabarito em 12/11/2026). As versões novas do pacote corrigem isso com um
+% \clearpage depois dessa parte, em \tcb@split@force@last. A mesma correção é
+% aplicada aqui só quando a macro instalada é idêntica à da 4.22; nas outras
+% versões, nada muda.
+\begingroup
+\def\tcb@force@last@antiga{%
+  \tcb@split@setstate@last%
+  \ifdim\tcb@h@total>\tcb@h@page%
+    \tcbdimto\kvtcb@bbbottom{\kvtcb@bbbottom+\tcb@h@page-\tcb@h@total}%
+  \fi%
+}
+\ifx\tcb@split@force@last\tcb@force@last@antiga
+  \endgroup
+  \def\tcb@split@force@last{%
+    \tcb@split@setstate@last%
+    \ifdim\tcb@h@total>\tcb@h@page\relax%
+      \gdef\tcb@after@lastbox{\clearpage}%
+      \tcbdimto\kvtcb@bbbottom{\kvtcb@bbbottom+\tcb@h@page-\tcb@h@total}%
+    \fi%
+  }
+\else
+  \endgroup
+\fi
+
 % ----- Desenho de figuras (apenas na versão do aluno) -------------------------
 \ifaluno
   \RequirePackage{tikz}
