@@ -25,8 +25,8 @@ subtrair a quantidade certa dentro de um quadrado.
         que não há como baixá-lo, e é verdade --- mas a razão não é que os métodos
         atuais sejam ruins. Explique de onde vem essa impossibilidade, e diga o que
         teria de mudar \emph{no problema} para o número diminuir.
-  \item \pts{1,1} Na Lista Teórica~01, mostramos que o melhor preditor
-        \emph{constante} tem risco $\Var(Y)$. Use a identidade de (a) para escrever
+  \item \pts{1,1} Sabe-se que o melhor preditor \emph{constante} tem risco
+        $\Var(Y)$. Use a identidade de (a) para escrever
         a diferença $\Var(Y)-\risco(r)$ como uma esperança, e interprete: que
         pergunta prática essa quantidade responde?
 \end{itens}
@@ -65,8 +65,8 @@ conhecido. O zero vem da \emph{definição} de $r$: $\E[Y\mid\X]=r(\X)$.
 
 Em palavras: o erro $Y-r(\X)$ que sobra depois de acertar a média condicional é
 \textbf{ortogonal a toda função de $\X$} --- nenhuma informação contida em $\X$ ajuda a
-prevê-lo. Guarde a frase: o Exercício~\ref{ex:02-oraculo} tem uma versão dela para
-as funções lineares.
+prevê-lo. Guarde a frase: ela tem uma versão para o melhor preditor linear, cujo
+resíduo é ortogonal a cada covariável.
 
 \smallskip
 \textbf{(b)} A identidade de (a) diz que
@@ -109,7 +109,7 @@ covariável nova, a lei da variância total, aplicada condicionalmente a $\X$, d
 com igualdade só quando $Z$ não muda a média condicional, $\E[Y\mid\X,Z]=\E[Y\mid\X]$.
 Acrescentar informação nunca aumenta o erro irredutível, e o diminui sempre que a
 informação for relevante. Isso vale na população; com $n$ finito, cada covariável
-nova também custa variância de estimação (Aula~02), de modo que medir mais é
+nova também custa variância de estimação, de modo que medir mais é
 necessário, mas não suficiente, para prever melhor.
 
 \smallskip

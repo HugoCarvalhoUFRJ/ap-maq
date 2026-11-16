@@ -71,9 +71,9 @@ ou seja,
   \tag{$\dagger$}
 \]
 O último termo é estritamente positivo para $\bbeta\neq\bbeta^\ast$, o que prova de uma
-vez que $\bbeta^\ast$ é o mínimo e que é o único. É o mesmo "some e subtraia" do
-Exercício~\ref{ex:01-ropt}, e funciona pela mesma razão. Lá, o resíduo $Y-r(\X)$ era
-ortogonal a toda função de $\X$; aqui, $\E\big[\X(Y-\X^\top\bbeta^\ast)\big]=\bm0$ diz
+vez que $\bbeta^\ast$ é o mínimo e que é o único. É o mesmo "some e subtraia" que
+mostra que a função de regressão é o melhor preditor, e funciona pela mesma razão. Lá,
+o resíduo $Y-r(\X)$ é ortogonal a toda função de $\X$; aqui, $\E\big[\X(Y-\X^\top\bbeta^\ast)\big]=\bm0$ diz
 que o resíduo do melhor preditor linear é ortogonal a cada covariável. $r(\X)$ é a
 projeção de $Y$ sobre todas as funções de $\X$; $\bbeta^{\ast\top}\X$, a projeção sobre
 as lineares.
@@ -100,8 +100,14 @@ momentos finitos; o que a linearidade de $r$ acrescentaria seria só a coincidê
 $\bbeta^{\ast\top}\x=r(\x)$ --- agradável, mas dispensável para a convergência.
 
 \smallskip
-\textbf{(c)} Duas identidades do curso dizem tudo. Aplique a do
-Exercício~\ref{ex:01-ropt}(a) com $g(\x)=\bbeta^{\ast\top}\x$, e depois $(\dagger)$ com
+\textbf{(c)} Duas identidades dizem tudo. A primeira vale para qualquer função $g$ com
+$\E[g(\X)^2]<\infty$:
+\[
+  \E\big[(Y-g(\X))^2\big]=\E\big[\Var(Y\mid\X)\big]+\E\big[(r(\X)-g(\X))^2\big],
+\]
+e sai de somar e subtrair $r(\X)$ dentro do quadrado: o termo cruzado se anula pela
+esperança total, porque $\E[Y-r(\X)\mid\X]=0$, e $\E[(Y-r(\X))^2]=\E[\Var(Y\mid\X)]$.
+Aplique-a com $g(\x)=\bbeta^{\ast\top}\x$, e depois a segunda, $(\dagger)$, com
 $\bbeta=\widehat\bbeta$ (fixado o treino, o risco do ajuste é
 $\risco(\widehat g)=Q(\widehat\bbeta)$):
 \[
@@ -124,7 +130,7 @@ convergir para uma aproximação ruim continua sendo ruim. Então não: o result
 risco do oráculo. Tampouco diz \emph{com que rapidez}: é um resultado de convergência,
 sem taxa.
 
-Na linguagem da Aula~01, o teorema cuida do erro de estimação --- a variância, e a
+Na linguagem do balanço entre viés e variância, o teorema cuida do erro de estimação --- a variância, e a
 parte do viés que vem de $n$ ser finito --- e deixa intacto o viés de aproximação, que
 é o preço fixo de ter escolhido uma classe rígida.
 
