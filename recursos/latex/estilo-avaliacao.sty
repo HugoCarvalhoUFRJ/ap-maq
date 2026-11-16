@@ -62,19 +62,24 @@
 % O argumento opcional é o texto do item "Notação" da caixa de instruções. Sem
 % ele, sai a notação de regressão, \notacaoregressao, que é a da Avaliação
 % Teórica 01; a 02, de classificação, passa a sua.
+% O nome da prova, no título e no cabeçalho das páginas, é \tituloprova{número}.
+% O padrão, "Avaliação Teórica #1", é o da 01 e da 02; a Verificação de Reposição
+% e a Verificação Suplementar o redefinem antes de chamar \cabecalhoprova, com
+% \renewcommand{\tituloprova}[1]{Verificação de Reposição (#1)}, por exemplo.
 \newcommand{\notacaoregressao}{$(\X,Y)$ é um vetor aleatório com distribuição $P$;
             $r(\x)=\E[Y\mid\X=\x]$ é a função de regressão;
             $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d.;
             $p$ é o número de covariáveis; a perda é a quadrática, salvo
             indicação em contrário.}
+\newcommand{\tituloprova}[1]{Avaliação Teórica #1}
 \newcommand{\cabecalhoprova}[6][\notacaoregressao]{%
   \ifgabarito
-    \fancyhead[R]{\small\itshape Avaliação Teórica #2 --- gabarito}%
+    \fancyhead[R]{\small\itshape \tituloprova{#2} --- gabarito}%
   \else
-    \fancyhead[R]{\small\itshape Avaliação Teórica #2}%
+    \fancyhead[R]{\small\itshape \tituloprova{#2}}%
   \fi
   \begin{center}
-    {\Large\bfseries Avaliação Teórica #2\ifgabarito\ --- Gabarito\fi}\\[0.3em]
+    {\Large\bfseries \tituloprova{#2}\ifgabarito\ --- Gabarito\fi}\\[0.3em]
     {\large Curso de Aprendizado de Máquina --- UFF}\\[0.2em]
     {\small\itshape Prof. Gabriel Sanfins}\\[0.2em]
   \end{center}
@@ -150,8 +155,45 @@
 % O que difere entre os dois usos é só a pontuação por item, que a prova mostra e
 % a lista não. O arquivo do exercício escreve \pts{1,0} antes do texto do item; o
 % comando some na lista e vira "(1,0)" em negrito na prova.
+%
+% Os valores escritos nos arquivos somam 4,0 por exercício, o peso de uma questão
+% nas provas de três questões. Numa prova de quatro questões, de 3,0 cada, a prova
+% declara os valores de cada questão antes do \input dela, na ordem dos itens e
+% separados por ponto e vírgula (a vírgula é a decimal):
+%     \pontositens{0,9;0,7;0,6;0,8}
+% e os \pts seguintes imprimem esses valores no lugar dos do arquivo. Faltar valor
+% (mais itens que valores) ou sobrar valor (ao chegar à \questao seguinte ou ao fim
+% do documento) é erro de compilação. Sem \pontositens, nada muda.
 \newif\ifprova\provafalse
-\newcommand{\pts}[1]{\ifprova\textbf{(#1)}\ \fi}
+\newif\ifpts@lista\pts@listafalse
+\def\pts@lista{}
+\def\pts@pop#1;#2\@nil{\gdef\pts@valor{#1}\gdef\pts@lista{#2}}
+\newcommand{\pts@confere}{%
+  \ifpts@lista
+    \ifx\pts@lista\@empty\else
+      \PackageError{estilo-avaliacao}%
+        {Sobram valores no \string\pontositens\space desta questao}%
+        {Ha mais valores declarados que itens com \string\pts.}%
+    \fi
+    \global\pts@listafalse
+  \fi}
+\newcommand{\pontositens}[1]{\pts@confere\global\pts@listatrue\gdef\pts@lista{#1;}}
+\newcommand{\pts}[1]{%
+  \ifprova
+    \ifpts@lista
+      \ifx\pts@lista\@empty
+        \PackageError{estilo-avaliacao}%
+          {Faltam valores no \string\pontositens\space desta questao}%
+          {Ha mais itens com \string\pts\space que valores declarados.}%
+        \textbf{(#1)}\ %
+      \else
+        \expandafter\pts@pop\pts@lista\@nil\textbf{(\pts@valor)}\ %
+      \fi
+    \else
+      \textbf{(#1)}\ %
+    \fi
+  \fi}
+\AtEndDocument{\pts@confere}
 
 % Ambiente dos itens (a), (b), ... --- idêntico nos dois documentos.
 \newenvironment{itens}
@@ -180,6 +222,7 @@
 % Não há marcador da aula de origem, de propósito: a prova não revela de que aula
 % vem cada questão.
 \newcommand{\questao}[2]{%
+  \pts@confere
   \bigskip\par\refstepcounter{exercicio}\noindent
   \def\questao@titulo{#1}%
   {\large\bfseries\color{azulufrj}Questão~\theexercicio
