@@ -31,10 +31,12 @@ aulas/
 avaliacoes/                       Avaliações do curso, com gabarito
 ├── Lista de revisao 01-06.tex    lista de revisão do Bloco I (11 exercícios)
 ├── Avaliacao teorica 01.tex      a primeira prova, com 3 questões sorteadas dessa lista
-├── exercicios/                   o corpo de cada exercício, incluído pelos dois
+├── exercicios/                   o corpo de cada exercício, incluído pela lista e pelas provas
 ├── Lista de revisao 07-10.tex    lista de revisão do Bloco II (9 exercícios)
 ├── Avaliacao teorica 02.tex      a segunda prova, com 3 questões sorteadas dessa lista
-├── exercicios-07-10/             o corpo de cada exercício, incluído pelos dois
+├── exercicios-07-10/             o corpo de cada exercício, incluído pela lista e pelas provas
+├── Verificacao de reposicao.tex  a VR (segunda chamada), com 2 questões sorteadas de cada lista
+├── Verificacao suplementar.tex   a VS (prova final), com 2 questões sorteadas de cada lista
 └── Trabalho pratico 01.tex       o trabalho prático (aulas 01 a 10), com dois notebooks
 
 recursos/
@@ -148,6 +150,10 @@ Presenciais de 2025-02, que são herdadas e continuam em `recursos/avaliacoes/`.
 | `Lista de revisao 07-10 - gabarito.pdf` | a mesma lista com as soluções |
 | `Avaliacao teorica 02.tex` / `.pdf` | a segunda prova: 3 questões **sorteadas** da lista de revisão 07-10, 12,0 pontos, 2 horas |
 | `Avaliacao teorica 02 - gabarito.pdf` | as soluções, com critério de correção por questão |
+| `Verificacao de reposicao.tex` / `.pdf` | a Verificação de Reposição (VR), a prova de segunda chamada: 4 questões **sorteadas**, 2 de cada lista de revisão, 12,0 pontos, 2 horas |
+| `Verificacao de reposicao - gabarito.pdf` | as soluções, com critério de correção por questão |
+| `Verificacao suplementar.tex` / `.pdf` | a Verificação Suplementar (VS), a prova final, nos mesmos moldes e sem questão em comum com a VR |
+| `Verificacao suplementar - gabarito.pdf` | as soluções, com critério de correção por questão |
 | `Trabalho pratico 01.tex` / `.pdf` | o trabalho prático: 15 tarefas sobre as aulas 01 a 10, em dois conjuntos de dados reais, um de regressão e um de classificação, com entrega em notebook |
 | `Trabalho pratico 01 - gabarito.pdf` | o roteiro de correção: o esperado em cada tarefa e a distribuição dos pontos |
 | `Trabalho pratico 01 - modelo.ipynb` | o ponto de partida do aluno: carrega os dados e tem uma seção por tarefa |
@@ -160,18 +166,23 @@ ortonormal e as duas formas da fórmula de $k$ dobras; na segunda, que a margem
 máxima depende só dos vetores de suporte, que o *kernel* radial é um *kernel* em
 qualquer dimensão e o preço do Bayes ingênuo com covariáveis redundantes.
 
-As questões das duas provas foram sorteadas com semente registrada no cabeçalho do
-`.tex`, com a restrição de que cada uma venha de uma aula diferente. Como nas
-listas, o gabarito sai do mesmo arquivo-fonte do enunciado.
+As questões das quatro provas foram sorteadas com semente registrada no cabeçalho do
+`.tex`, com a restrição de que, dentro de cada lista, cada uma venha de uma aula
+diferente. A VR e a VS foram sorteadas juntas, sem os exercícios que já tinham caído
+na primeira e na segunda prova, e não têm exercício em comum. Como nas listas, o
+gabarito sai do mesmo arquivo-fonte do enunciado.
 
 **A prova e a lista compartilham os exercícios, literalmente.** O corpo de cada
 um — enunciado, itens e solução — mora em `avaliacoes/exercicios/` (lista 01-06)
 ou em `avaliacoes/exercicios-07-10/` (lista 07-10), e os documentos o incluem por
 `\input`: a lista 01-06 inclui os onze e a primeira prova, os três sorteados dela; a
-lista 07-10, os seus nove, e a segunda prova, os três sorteados dela. Não há duas cópias, então não há como divergirem; corrigir um
-exercício é mexer num arquivo só. A única diferença entre os dois usos é a
+lista 07-10, os seus nove, e a segunda prova, os três sorteados dela; a VR e a VS,
+dois de cada pasta. Não há duas cópias, então não há como divergirem; corrigir um
+exercício é mexer num arquivo só. A única diferença entre os usos é a
 pontuação por item, que a prova mostra e a lista não — ela vem de um comando do
-estilo, que some quando o documento não é uma prova.
+estilo, que some quando o documento não é uma prova. Na VR e na VS, cujas questões
+valem 3,0 e não 4,0, a prova declara os valores de cada item, que substituem os
+escritos no arquivo do exercício.
 
 Para compilar, de dentro de `avaliacoes/`:
 

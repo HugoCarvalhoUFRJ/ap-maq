@@ -356,7 +356,12 @@ não a dois); se mexer num, o outro acompanha.
   prova; nenhum `.tex` de topo tem prosa de exercício. A pontuação por item vem de `\pts{}`,
   que só aparece com `\provatrue`. O `NN` do arquivo é o número do exercício na lista,
   mantido à mão: ao tirar ou pôr um, renomeie os seguintes e atualize os `\input` da lista
-  **e** da prova.
+  **e** das provas que o incluem.
+- **Os `\pts` dos arquivos somam 4,0 por exercício**, o peso de uma questão nas provas de três
+  questões. A VR e a VS, de quatro questões de 3,0, declaram antes de cada `\input` os
+  valores daquela questão, `\pontositens{0,9;0,7;0,6;0,8}` (separados por ponto e vírgula, por
+  causa da vírgula decimal), que substituem os do arquivo; faltar ou sobrar valor é erro de
+  compilação. Os valores são os da lista vezes 0,75, arredondados a 0,1.
 - **O sorteio da P1** (semente `20260914`, uma aula por questão, registrado no topo do `.tex`)
   deu os Ex. 5, 7 e 11 da lista 01-06. Rodou uma vez e vale. São 4,0 pontos por questão, 12,0
   no total, 2 horas.
@@ -364,10 +369,19 @@ não a dois); se mexer num, o outro acompanha.
   `.tex`) deu as aulas 08, 09 e 10 e os Ex. 3, 6 e 9 da lista 07-10. Rodou uma vez e vale.
   Também 4,0 pontos por questão, 12,0 no total, 2 horas, e os títulos ficam vazios, como os
   dos exercícios da lista.
+- **O sorteio da VR e da VS** (semente `20261116`, em 16/11/2026, o código inteiro no topo dos
+  dois `.tex`) tirou duas questões de cada lista para cada prova, uma aula por questão dentro
+  de cada lista, sem os exercícios da P1 e da P2; a VR foi sorteada primeiro, e a VS, sem os
+  exercícios dela. Deu, para a VR, os Ex. 1 e 4 da 01-06 e os Ex. 2 e 5 da 07-10 (aulas 01, 02,
+  07 e 09); para a VS, os Ex. 2 e 3 da 01-06 e os Ex. 1 e 7 da 07-10 (aulas 01, 02, 07 e 10).
+  Rodou uma vez e vale. Quatro questões de 3,0, 12,0 no total, 2 horas, como o Gabriel pediu.
+  Os nomes são "Verificação de Reposição (VR)" e "Verificação Suplementar (VS)", sem as
+  palavras "Avaliação Teórica", e vêm de `\tituloprova`, cujo padrão é o da P1 e da P2.
 - **A prova não revela a aula de cada questão:** sem marcador no título, sem "Aula NN" no
   enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
-  prova, confira o texto dos sorteados. E as soluções dos Ex. 1, 4 e 8 da lista 01-06 usam
-  `\ref` com rótulos que só existem na lista: sorteados, imprimiriam `??` no gabarito da prova.
+  prova, confira o texto dos sorteados. Na lista 01-06, os Ex. 1 e 4 ficaram autocontidos
+  quando foram para a VR; as soluções dos Ex. 8, 9 e 10 ainda citam aula ou lista, e a do 8
+  usa `\ref` com rótulos que só existem na lista (numa prova, imprimiria `??`).
 - **A lista 07-10** tem nove exercícios, dois de cada uma das aulas 07, 08 e 09 e três da aula
   10. Seguem o deck (mais a caixa "o preço do ingênuo", que as notas da 07 mantêm de
   propósito) e nada do que saiu da 08: os custos saem de contagens,
@@ -375,8 +389,8 @@ não a dois); se mexer num, o outro acompanha.
   prevalências. Todo enunciado é autocontido (sem aula pelo número, sem citar outro
   exercício) e nenhuma solução usa `\ref`.
 - **A notação da caixa de instruções** é o argumento opcional do `\cabecalhoprova`. A P2
-  passa a de classificação; sem o argumento sai a de regressão (`\notacaoregressao`), e a
-  P1, que não o passa, sai idêntica ao que era.
+  passa a de classificação, e a VR e a VS, as duas juntas; sem o argumento sai a de regressão
+  (`\notacaoregressao`), e a P1, que não o passa, sai idêntica ao que era.
 - **Gini contra entropia, medido em 05/11/2026**: em todos os pares de
   divisões possíveis de nós com 10 a 40 observações, as duas medidas discordam em cerca de 2%
   dos pares, e exigir filhos com 5 ou mais observações quase não muda isso. Não afirme que as
