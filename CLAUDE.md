@@ -472,7 +472,9 @@ vigilância.
 - O atalho do LOOCV **não vale para o KNN**: com $h_{ii}=1/k$ ele devolve o LOOCV do
   $(k-1)$-NN. Notas da 04, Lista teorica 04 e Lista prática 04 dizem isso.
 - O grau 49 da aula 03 não tem um número, tem uma faixa: depende do corte de posto da
-  instalação. O texto sustenta só as três leituras.
+  instalação. O texto sustenta só as três leituras. Os números citados no laboratório, nas
+  notas do aluno e na Lista teorica 03 são os da 1.9 desta máquina (treino $0{,}3049$,
+  posto 21, mínimo da curva $-109$, teste $25{,}5$), e o título da figura é calculado.
 - O QDA recusa o `breast_cancer` mesmo padronizado (colinearidade). Na implementação do
   scikit-learn só o LDA é invariante à escala: `reg_param` e `var_smoothing` quebram a do
   QDA e a do Bayes ingênuo.
