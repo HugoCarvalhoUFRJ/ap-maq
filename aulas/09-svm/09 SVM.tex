@@ -19,8 +19,7 @@ Ao final desta aula o aluno deve ser capaz de:
   \item entender que a solução depende dos dados apenas por meio de produtos
         internos, e como isso leva aos \emph{kernels};
   \item decidir se uma função é um \emph{kernel}, usar os \emph{kernels} linear,
-        polinomial e radial e entender o papel de $\gamma$;
-  \item tratar problemas com mais de duas classes.
+        polinomial e radial e entender o papel de $\gamma$.
 \end{itemize}
 
 \begin{emsala}
@@ -223,19 +222,6 @@ $[-\norm{\x_1}^2]$ é negativa para $\x_1\ne\bm 0$.) A figura do truque do
 \end{emsala}
 
 %==============================================================================
-\section{Mais de duas classes}
-%==============================================================================
-Com $K=\abs{\mathcal{C}}\ge3$ classes, combinam-se SVMs binárias.
-\begin{description}[leftmargin=2.8cm,style=nextline]
-  \item[Um contra um] Uma SVM para cada par de classes, ajustada só com as
-        observações das duas; são $\binom{K}{2}$ ao todo, e classifica-se por
-        votação. É o que faz o \texttt{SVC} do \texttt{scikit-learn}.
-  \item[Um contra todos] $K$ SVMs, a da classe $c$ contra as demais, com função de
-        decisão $f_c$; classifica-se pela maior $f_c(\x)$. Cada problema é
-        desbalanceado (Aula~08).
-\end{description}
-
-%==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
@@ -249,11 +235,10 @@ Com $K=\abs{\mathcal{C}}\ge3$ classes, combinam-se SVMs binárias.
         por validação cruzada.
   \item A solução só depende de produtos internos \eqref{eq:repr}; trocá-los por um
         \emph{kernel}, simétrico e positivo semidefinido, dá a SVM \eqref{eq:svm}.
-  \item Mais de duas classes: um contra um ou um contra todos.
 \end{itemize}
 
 \paragraph{Leitura recomendada.} [AME] §8.2 (SVM) e §4.6 (\emph{kernels} de Mercer);
-[ISLP] §9.1 a §9.4 (§9.1 margem máxima, §9.2 classificador de vetor de suporte, §9.3
-SVM com kernels, §9.4 mais de duas classes).
+[ISLP] §9.1 a §9.3 (§9.1 margem máxima, §9.2 classificador de vetor de suporte, §9.3
+SVM com kernels).
 
 \end{document}

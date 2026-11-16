@@ -91,21 +91,21 @@ respeita a unidade?}
 
 %------------------------------------------------------------------------------
 \begin{exercicio}[a receita inteira, num objeto só]
-Você chega a um banco e recebe a tarefa de sempre: prever inadimplência. O arquivo
-tem seis colunas. Três são numéricas --- \texttt{idade}, \texttt{renda} e
-\texttt{saldo} ---, e a \texttt{renda} vem com buracos, porque nem todo cliente
-informa. Duas são texto, \texttt{estado} e \texttt{profissao}, e essas vieram
-completas. A sexta é a resposta, \texttt{inadimplente}, que vale $0$ ou $1$.
+Você chega a uma operadora de cartões e recebe a tarefa de prever o gasto mensal de
+cada cliente. O arquivo tem seis colunas. Três são numéricas --- \texttt{idade},
+\texttt{renda} e \texttt{saldo} ---, e a \texttt{renda} vem com buracos, porque nem
+todo cliente informa. Duas são texto, \texttt{estado} e \texttt{profissao}, e essas
+vieram completas. A sexta é a resposta, \texttt{gasto}, em reais.
 
 O que você quer fazer com elas é o que a aula descreveu: preencher os faltantes
 das numéricas pela mediana, padronizá-las, transformar as duas categóricas em
-indicadoras, e ajustar uma regressão logística com penalização $\ell_2$,
-escolhendo o $C$ por validação cruzada de cinco dobras. E quer tudo isso sem que o
+indicadoras, e ajustar uma regressão Ridge, escolhendo o $\alpha$ por validação
+cruzada de cinco dobras. E quer tudo isso sem que o
 número que você vai apresentar no fim saia otimista.
 \begin{enumerate}[label=(\alph*),leftmargin=1.1cm]
   \item Escreva o código, com \texttt{ColumnTransformer}, \texttt{Pipeline} e
         \texttt{GridSearchCV}.
-  \item Se a grade de $C$ tem seis valores, quantas vezes a mediana da
+  \item Se a grade de $\alpha$ tem seis valores, quantas vezes a mediana da
         \texttt{renda} acaba sendo calculada ao longo de toda a busca? Justifique,
         e compare com o que aconteceria se você a imputasse uma vez só, no começo.
   \item Se você trocar de lugar as duas etapas do ramo numérico --- padronizar
@@ -123,7 +123,7 @@ import numpy as np
 import sklearn.model_selection as skm
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -136,32 +136,29 @@ prep = ColumnTransformer([
     ("cat", OneHotEncoder(handle_unknown="ignore"), categoricas),
 ])
 
-tubo = Pipeline([("prep", prep),
-                 ("modelo", LogisticRegression(max_iter=2000))])
+tubo = Pipeline([("prep", prep), ("modelo", Ridge())])
 
 busca = skm.GridSearchCV(
     tubo,
-    {"modelo__C": np.logspace(-3, 2, 6)},
-    cv=skm.StratifiedKFold(5, shuffle=True, random_state=0),
-    scoring="roc_auc",
+    {"modelo__alpha": np.logspace(-2, 3, 6)},
+    cv=skm.KFold(5, shuffle=True, random_state=0),
+    scoring="neg_mean_squared_error",
 ).fit(X, y)
 \end{lstlisting}
 
 Três escolhas do código merecem uma palavra. O \texttt{handle\_unknown="ignore"}
 evita que o ajuste quebre quando uma profissão rara aparece só na validação e o
 codificador a vê pela primeira vez --- é o tipo de erro que não acontece no seu
-notebook e acontece em produção, seis meses depois. O \texttt{StratifiedKFold}
-mantém a proporção de inadimplentes em cada dobra: em classificação ele já é o
-padrão do \texttt{GridSearchCV}, mas escrevê-lo deixa o \texttt{shuffle} sob o seu
-controle, e não sob o de quem ordenou o arquivo (Exercício~3 da Lista
-prática~03). E a penalização $\ell_2$ que o enunciado pede \textbf{não precisa ser
-escrita}: é o padrão da \texttt{LogisticRegression}. Escrever
-\texttt{penalty="l2"} não está errado, mas o argumento foi depreciado na versão
-1.8 do \texttt{scikit-learn} e desaparece na 1.10 --- omiti-lo funciona em
-qualquer versão.
+notebook e acontece em produção, seis meses depois. O \texttt{KFold} escrito por
+extenso deixa o \texttt{shuffle} sob o seu controle: com \texttt{cv=5}, o
+\texttt{GridSearchCV} usaria um \texttt{KFold} sem embaralhar, e as dobras sairiam
+na ordem do arquivo, que é a de quem o montou (Exercício~3 da Lista prática~03). E o
+\texttt{scoring} vem com o sinal trocado porque a busca \emph{maximiza} a pontuação:
+o melhor $\alpha$ é o de menor erro quadrático médio, isto é, o de maior
+\texttt{neg\_mean\_squared\_error}.
 
 \smallskip
-\textbf{(b)} \textbf{Trinta vezes}: seis valores de $C$ vezes cinco dobras. Para
+\textbf{(b)} \textbf{Trinta vezes}: seis valores de $\alpha$ vezes cinco dobras. Para
 cada combinação, o \texttt{GridSearchCV} chama o \texttt{fit} do \emph{pipeline
 inteiro} usando só os $4/5$ de treino daquela dobra, e ali dentro o
 \texttt{SimpleImputer} recalcula a mediana do zero. (Com \texttt{refit=True}, que
@@ -189,7 +186,7 @@ Primeiro, por que nada quebra. O \texttt{StandardScaler} calcula a média e o de
 \emph{ignorando} os \texttt{NaN}, e os devolve intactos no \texttt{transform}; o
 \texttt{SimpleImputer}, posto depois dele, preenche esses buracos com a mediana da
 coluna já padronizada. (O que quebraria é não imputar de jeito nenhum: a
-\texttt{LogisticRegression} recusa uma matriz com \texttt{NaN}.)
+\texttt{Ridge} recusa uma matriz com \texttt{NaN}.)
 
 A diferença está na coluna que o modelo recebe. Sejam $m$ e $s$ a média e o desvio
 dos valores \emph{observados} da renda, e $m_A$ e $s_A$ os da coluna já imputada.
@@ -208,11 +205,12 @@ coluna $z_B$ não tem mais média $0$ nem desvio $1$.
 
 Quanto isso pesa? Pouco, e por um único canal. Uma transformação afim de uma
 covariável não muda o que um modelo linear consegue representar --- o coeficiente e
-o intercepto compensam ---, e só a penalização $\ell_2$, que enxerga o tamanho dos
-coeficientes, percebe a diferença de escala. Numa simulação com a renda lognormal e
-$30\%$ dela faltando, a coluna padronizada antes de imputar sai com média $-0{,}08$
-e desvio $0{,}85$, o coeficiente da renda passa de $0{,}60$ para $0{,}71$ (o fator
-$1/0{,}85$), e a AUC de validação cruzada muda na quinta casa decimal. Pelo critério
+o intercepto compensam ---, e só a penalização do Ridge, que enxerga o tamanho dos
+coeficientes, percebe a diferença de escala. Numa simulação com $2\,000$ clientes, a
+renda lognormal e $30\%$ dela faltando, a coluna padronizada antes de imputar sai com
+média $-0{,}07$ e desvio $0{,}84$, o coeficiente da renda passa de $455$ para $539$
+(o fator $1/0{,}84$), e o erro quadrático médio de validação cruzada, de cerca de
+$222\,728$, muda na primeira casa decimal. Pelo critério
 do Exercício~1, é um deslize leve --- mas a ordem certa sai de graça, e com ela a
 média e o desvio que o \texttt{StandardScaler} calcula são os dos números que o
 modelo vai de fato ver.

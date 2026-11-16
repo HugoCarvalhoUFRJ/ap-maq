@@ -16,6 +16,8 @@ Ao final desta aula o aluno deve ser capaz de:
         para flexibilizar a regressão linear;
   \item definir o estimador de \textbf{$k$ vizinhos mais próximos} (KNN) e o papel
         de $k$ no balanço viés--variância;
+  \item explicar por que, em dimensão alta, as distâncias se concentram e os vizinhos
+        deixam de ser próximos (a \emph{maldição da dimensionalidade});
   \item enxergar todos esses métodos como \emph{médias locais} / \emph{suavizadores
         lineares}.
 \end{itemize}
@@ -121,9 +123,32 @@ Escolhe-se $k$ por validação cruzada.
 \begin{atencao}
 KNN exige uma noção de distância e, portanto, \textbf{depende fortemente da escala}
 das covariáveis: uma variável em unidade grande domina a distância. \emph{Padronize}
-antes (Aula~06). Além disso, sofre da \emph{maldição da dimensionalidade}: em $p$
-alto, ``vizinhos'' deixam de ser próximos.
+antes (Aula~06). Além disso, em $p$ alto os vizinhos deixam de ser próximos: é a
+\emph{maldição da dimensionalidade}, assunto da próxima seção.
 \end{atencao}
+
+%==============================================================================
+\section{A maldição da dimensionalidade}
+%==============================================================================
+Com $\X,\X'$ independentes e uniformes em $[0,1]^p$, as diferenças $D_j=X_j-X'_j$ são
+independentes, com $\E[D_j^2]=1/6$ e $\Var(D_j^2)=7/180$. Logo
+\[
+  \E\norm{\X-\X'}^2=\frac p6,
+  \qquad
+  \frac{\sqrt{\Var\norm{\X-\X'}^2}}{\E\norm{\X-\X'}^2}=\sqrt{\frac{7}{5p}}
+  \;\xrightarrow[p\to\infty]{}\;0 ,
+\]
+e, por Chebyshev, quase todo par de pontos fica a uma distância próxima de
+$\sqrt{p/6}$. O vizinho mais próximo fica quase tão longe quanto um ponto qualquer, e
+a média dos $k$ vizinhos deixa de ser local.
+
+\begin{emsala}
+É a sequência dos slides: os histogramas das distâncias se deslocam para a direita sem
+se alargar, o coeficiente de variação vai a zero, e a razão entre a menor distância e
+a distância média vai a $1$. Pergunta à turma: com $n$ fixo, algum $k$ resolve? (Não:
+as vizinhanças só encolhem se $n$ crescer exponencialmente com $p$.) Fechar com a
+ressalva: dados reais têm estrutura, e o que pesa é a dimensão efetiva (Aula~E2).
+\end{emsala}
 
 %==============================================================================
 \section{Uma visão unificadora: suavizadores lineares}
@@ -159,6 +184,8 @@ $k-1$ vizinhos. A \texttt{Lista prática 04} mede o erro: $27\%$ em $k=2$.
         via número de termos/nós.
   \item \textbf{KNN} \eqref{eq:knn}: média dos $k$ vizinhos; $k$ controla
         viés--variância.
+  \item Em dimensão alta as distâncias se concentram: o vizinho mais próximo deixa de
+        ser próximo.
   \item Todos são \emph{suavizadores lineares}; \emph{padronize} as covariáveis e
         cuidado com a dimensão.
 \end{itemize}

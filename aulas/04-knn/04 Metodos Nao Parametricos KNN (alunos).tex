@@ -24,6 +24,8 @@ Ao final desta aula você deve ser capaz de:
         para flexibilizar a regressão linear;
   \item definir o estimador de \textbf{$k$ vizinhos mais próximos} (KNN) e o papel
         de $k$ no balanço viés--variância;
+  \item explicar por que, em dimensão alta, as distâncias se concentram e os vizinhos
+        deixam de ser próximos (a \emph{maldição da dimensionalidade});
   \item enxergar todos esses métodos como \emph{médias locais} / \emph{suavizadores
         lineares}.
 \end{itemize}
@@ -185,8 +187,60 @@ Escolhe-se $k$ por validação cruzada.
 KNN exige uma noção de distância e, portanto, \textbf{depende fortemente da escala}
 das covariáveis. Se uma variável está em reais e outra em milhares de reais, a
 segunda domina completamente a distância euclidiana e a primeira poderia nem existir.
-\emph{Padronize} antes (Aula~06). Além disso, o KNN sofre da \emph{maldição da
-dimensionalidade}: em $p$ alto, ``vizinhos'' deixam de ser próximos.
+\emph{Padronize} antes (Aula~06). Além disso, em $p$ alto os vizinhos deixam de ser
+próximos: é a \emph{maldição da dimensionalidade}, assunto da próxima seção.
+\end{atencao}
+
+%==============================================================================
+\section{A maldição da dimensionalidade}\label{sec:maldicao}
+%==============================================================================
+O KNN só funciona se os $k$ vizinhos de $\x$ estiverem, de fato, perto de $\x$: é
+essa proximidade que justifica tomar a média das suas respostas como estimativa de
+$r(\x)$. Em dimensão alta ela deixa de valer, e o motivo se demonstra em poucas
+linhas.
+
+Sejam $\X$ e $\X'$ independentes e uniformes no cubo $[0,1]^p$, e escreva
+$D_j=X_j-X'_j$. As $p$ diferenças são independentes e têm a mesma distribuição, de
+densidade $1-\abs{d}$ em $[-1,1]$. Daí
+\[
+  \E[D_j^2]=2\int_0^1 d^2(1-d)\,\mathrm{d}d=\frac16,
+  \qquad
+  \E[D_j^4]=2\int_0^1 d^4(1-d)\,\mathrm{d}d=\frac1{15},
+\]
+e $\Var(D_j^2)=\frac1{15}-\frac1{36}=\frac7{180}$.
+Como $\norm{\X-\X'}^2=\sum_{j=1}^pD_j^2$ é uma soma de $p$ termos independentes,
+\[
+  \E\norm{\X-\X'}^2=\frac p6,
+  \qquad
+  \Var\norm{\X-\X'}^2=\frac{7p}{180},
+  \qquad
+  \frac{\sqrt{\Var\norm{\X-\X'}^2}}{\E\norm{\X-\X'}^2}=\sqrt{\frac{7}{5p}} .
+\]
+O coeficiente de variação da distância ao quadrado cai como $1/\sqrt p$. Pela
+desigualdade de Chebyshev, para todo $\varepsilon>0$,
+\[
+  \Prob\Big(\Big|\frac{\norm{\X-\X'}^2}{p/6}-1\Big|\ge\varepsilon\Big)
+  \le\frac{7}{5\,p\,\varepsilon^2}
+  \;\xrightarrow[p\to\infty]{}\;0 :
+\]
+em dimensão alta, quase todo par de pontos está a uma distância próxima de
+$\sqrt{p/6}$. A distância típica cresce com $p$, e a dispersão em torno dela não
+acompanha.
+
+Para o KNN, a consequência é direta. Se as distâncias de $\x$ a todas as observações
+de treino são parecidas, o vizinho \emph{mais próximo} está quase tão longe quanto um
+ponto qualquer: a razão entre a menor distância e a distância média vai a $1$ quando
+$p$ cresce, que é o que o experimento dos slides mostra. A média dos $k$ vizinhos
+passa a ser, em boa medida, a média de pontos que não estão perto de $\x$, e o viés
+do estimador cresce. Com $n$ fixo, nenhum $k$ resolve: para manter as vizinhanças
+pequenas, $n$ teria de crescer exponencialmente com $p$.
+
+\begin{atencao}
+A conta usou covariáveis independentes e uniformes, o caso mais desfavorável. Dados
+reais costumam ter estrutura: covariáveis correlacionadas, ou concentradas perto de um
+subespaço de dimensão menor (Aula~E2). Nesses casos o que pesa é essa dimensão
+efetiva, e não o número de colunas, e o KNN pode funcionar bem mesmo com $p$
+nominalmente grande.
 \end{atencao}
 
 %==============================================================================
@@ -240,6 +294,10 @@ jeito --- basta pedir $k+1$ vizinhos a cada ponto de treino e descartar o própr
   \item \textbf{KNN} \eqref{eq:knn}: média dos $k$ vizinhos; $k$ controla
         viés--variância, com $k$ \emph{pequeno} $=$ flexível
         (Fig.~\ref{fig:knnk}).
+  \item Em dimensão alta as distâncias se concentram (no cubo unitário, em torno de
+        $\sqrt{p/6}$, com coeficiente de variação $\sqrt{7/(5p)}$ para o quadrado), e o
+        vizinho mais próximo deixa de ser próximo: a \emph{maldição da
+        dimensionalidade}.
   \item Todos são \emph{suavizadores lineares}; \emph{padronize} as covariáveis e
         cuidado com a dimensão.
 \end{itemize}

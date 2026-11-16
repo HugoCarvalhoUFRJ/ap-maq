@@ -27,8 +27,7 @@ Ao final desta aula você deve ser capaz de:
   \item entender que a solução depende dos dados apenas por meio de produtos
         internos, e como isso leva aos \emph{kernels};
   \item decidir se uma função é um \emph{kernel}, usar os \emph{kernels} linear,
-        polinomial e radial e entender o papel de $\gamma$;
-  \item tratar problemas com mais de duas classes.
+        polinomial e radial e entender o papel de $\gamma$.
 \end{itemize}
 
 \noindent
@@ -510,23 +509,6 @@ validação cruzada sobre uma grade de pares $(C,\gamma)$.
 \end{figure}
 
 %==============================================================================
-\section{Mais de duas classes}
-%==============================================================================
-As formulações desta aula usam a codificação $y\in\{-1,+1\}$ de modo essencial: a
-condição de acerto $y_if(\x_i)>0$ não tem análogo direto com três ou mais classes.
-Com $K=\abs{\mathcal{C}}\ge3$ classes, combinam-se vários classificadores binários.
-\begin{description}[leftmargin=2.8cm,style=nextline]
-  \item[Um contra um] Ajusta-se uma SVM para cada par de classes, usando apenas as
-        observações dessas duas classes; são $\binom{K}{2}=K(K-1)/2$ ajustes. Um
-        ponto novo é atribuído à classe que vence o maior número de comparações. É o
-        que faz o \texttt{SVC} do \texttt{scikit-learn}.
-  \item[Um contra todos] Ajustam-se $K$ SVMs, a da classe $c$ separando-a de todas
-        as outras juntas, com função de decisão $f_c$. Um ponto novo é atribuído à
-        classe com maior $f_c(\x)$. Cada um desses problemas é desbalanceado, com uma
-        classe contra $K-1$, o que pede cuidado na avaliação (Aula~08).
-\end{description}
-
-%==============================================================================
 \section*{Resumo}
 %==============================================================================
 \begin{itemize}[leftmargin=1.4cm]
@@ -549,14 +531,11 @@ Com $K=\abs{\mathcal{C}}\ge3$ classes, combinam-se vários classificadores biná
         \eqref{eq:svm}, com fronteira linear em $\mathcal H$ e, em geral, não linear
         em $\R^p$. No \emph{kernel} radial, $\gamma$ regula a flexibilidade
         (Figura~\ref{fig:kernel}).
-  \item Com mais de duas classes, combinam-se SVMs binárias, um contra um ou um
-        contra todos.
 \end{itemize}
 
 \paragraph{Leitura recomendada.} [AME] §8.2 (SVM) e §4.6 (\emph{kernels} de Mercer e o
 Teorema de Mercer). [ISLP] §9.1 (margem máxima), §9.2 (classificador de vetor de
-suporte; a Figura~9.7 de lá corresponde à nossa Figura~\ref{fig:margem}), §9.3
-(\emph{kernels} e SVM; a Figura~9.9 de lá é análoga à nossa Figura~\ref{fig:kernel}) e
-§9.4 (mais de duas classes).
+suporte; a Figura~9.7 de lá corresponde à nossa Figura~\ref{fig:margem}) e §9.3
+(\emph{kernels} e SVM; a Figura~9.9 de lá é análoga à nossa Figura~\ref{fig:kernel}).
 
 \end{document}

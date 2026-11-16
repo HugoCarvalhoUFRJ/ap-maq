@@ -83,7 +83,8 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
 - `d` continua valendo como distância (`d(\X_i,\x)`), índice (`d_j`, o `d` de
   tf-idf$(t,d)$) e diferencial. O grau do *kernel* polinomial é `q` e o número de
   componentes retidos na E2 é `k`. Colisões toleradas: `p` também é *p*-valor, densidade
-  `p(\bbeta)` e, na aula 04, o número de nós do *spline* (como no [AME]).
+  `p(\bbeta)` e, na aula 04, o número de nós do *spline* (como no [AME]); também na 04, o
+  grau do *spline* é $k$, como o número de vizinhos do KNN.
 - **Só nas notas da aula 02:** matriz em `\mathbb` (`\mathbb{X}`, `\mathbb{I}`), vetor em
   minúscula negrito, escalar sem negrito. Não estenda: nas outras aulas a maiúscula `\X`
   distingue vetor aleatório de realização.
@@ -111,16 +112,20 @@ A numeração é a de hoje: 10 aulas oficiais (01 a 10) e três extras (E1 a E3)
 anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
 
 - **Antiga aula 05** (aspectos teóricos dos não paramétricos: taxas, maldição, esparsidade,
-  redundância): saiu inteira e não volta. As menções ao conceito nas aulas 04, 07, 10, E2 e
-  E3 ficam de propósito, como vocabulário sem aula dedicada. Ao renumerar qualquer coisa,
-  procure `Lista` junto com `Aula`.
+  redundância): saiu inteira e não volta. Da maldição da dimensionalidade, a 04 tem uma
+  seção curta (adiante); nas aulas 07, 10, E2 e E3 o conceito fica de propósito, como
+  vocabulário sem aula dedicada. Ao renumerar qualquer coisa, procure `Lista` junto com
+  `Aula`.
 - **03.** O material segue o argumento clássico do deck sobre a escolha de $k$ (LOOCV:
   pouco viés, variância alta). A medição que o contradizia saiu; a figura `03-escolha-k`
   mostra só viés e custo.
 - **04.** Vai de bases e *splines* a KNN e suavizadores lineares. Não reintroduza
   Nadaraya–Watson, regressão polinomial local nem a citação do elefante de Von Neumann. Não
   desenvolve RKHS: remeta a [AME] §4.6. O título de [AME] §5.2 contém "Regressão Linear
-  Local": glose a parte que interessa em vez de reescrever o título.
+  Local": glose a parte que interessa em vez de reescrever o título. Por decisão dele, em
+  16/11/2026, as duas notas ganharam a seção "A maldição da dimensionalidade", que
+  acompanha os slides 17 a 33 do deck: no cubo $[0,1]^p$, $\E\norm{\X-\X'}^2=p/6$, com
+  coeficiente de variação $\sqrt{7/(5p)}$, e Chebyshev; não traz taxas de convergência.
 - **05.** Árvore, poda, agregação, *bagging* e florestas. Não reintroduza *boosting*, OOB nem
   importância de variáveis. Ficam de propósito a correlação $\rho$ e o piso $\rho v$: nas
   notas, na Lista teorica 05 (Ex. 4) e na Lista prática 05 (Ex. 2); se sair, saem os três.
@@ -137,7 +142,10 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   escala, $\mu$ e $\sigma$ aprendidos, o `Pipeline` e `Pipeline` + `GridSearchCV`. Não
   reintroduza neles vazamento por seleção, agrupamento, `ColumnTransformer` nem busca no
   pré-processamento. Os dois vazamentos graves vivem nas notas (texto e Figura 1, que mede
-  o da seleção) e no Ex. 1 da Lista teorica 06; nenhum notebook de aula os mede.
+  o da seleção) e no Ex. 1 da Lista teorica 06; nenhum notebook de aula os mede. O Ex. 2
+  da Lista teorica 06 é de regressão (Ridge, com o $\alpha$ por validação cruzada e
+  `KFold` com `shuffle`) desde 16/11/2026: logística, `C` e AUC só chegam nas aulas 07 e
+  08.
 - **07.** Notas, laboratório e listas seguem o deck, na ordem dele (Bayes ingênuo, LDA, QDA,
   logística). Fora de propósito: regressão sobre indicadores, a comparação de escala no
   laboratório e o `C` (nenhum material do aluno da 07 o define). Nas notas sem estar no
@@ -162,6 +170,8 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   *hinge* nem a relação com a regressão logística. Nos dois, a forma
   $f(\mathbf{x})=\beta_0+\sum_i\alpha_i\langle\mathbf{x},\mathbf{x}_i\rangle$ é admitida sem
   demonstração: uma prova por projeção ortogonal entrou no deck e saiu a pedido do Gabriel.
+  A seção "Mais de duas classes" (um contra um, um contra todos) saiu das duas notas e do
+  planejamento em 16/11/2026, por decisão dele: o Beamer não a tem.
   A figura `09-margem` é gerada com o `C` do scikit-learn e por isso não o rotula (os
   painéis vão do menor ao maior orçamento); o título mostra $M$, a metade da largura da
   faixa, que é também o que o laboratório mede. A Lista teorica 09
@@ -221,7 +231,8 @@ anteriores a 31/08/2026 usam a antiga, com uma aula 05 a mais.
   `ccp_alpha` poda pela soma ponderada das impurezas das folhas (o `impurities` do
   caminho), não pelo erro de classificação; o erro entra quando a validação cruzada escolhe
   o $\alpha$ pela acurácia, como dizem a Observação 8.2 do [AME] e o §8.3.1 do [ISLP]. Por
-  decisão dele, saíram do laboratório e da Lista prática o `max_features`, o AdaBoost, a
+  decisão dele, saíram do laboratório e da Lista prática o `max_features` como hiperparâmetro
+  (fica, na §5, a menção ao padrão `"sqrt"`, que com $p=2$ dá $m=1$), o AdaBoost, a
   comparação dos classificadores do curso e o caso real (o `breast_cancer` com sete
   modelos e o banco com AUC e corte de custo); não os reintroduza. A Lista prática 10
   acompanha o laboratório, na história de Helena, em três exercícios: o $k$ do KNN em
@@ -271,7 +282,10 @@ pelos números das linhas `[conferência]`: refazem a figura os laboratórios de
   $0{,}8342$ contra $0{,}8341$. São duas amostras do mesmo experimento, e a nota do aluno
   diz isso. Não "conserte". A §5 do laboratório reproduz a saída do slide "Um exemplo".
 - **05:** a `05-numero-arvores` só tem o painel da floresta, e o Ex. 3 da Lista prática 05 a
-  reproduz com a **mesma** semente (12), de propósito.
+  reproduz com a **mesma** semente (12), de propósito. A Figura 1 das notas (a partição em
+  TikZ, cortes $3{,}99$, $6{,}09$ e $2{,}96$, $R^2=0{,}941$) e a árvore da §2 do laboratório
+  (semente 0: $4{,}06$, $5{,}99$ e $2{,}98$, $R^2=0{,}953$) são duas amostras do mesmo
+  problema, e nenhuma diz reproduzir a outra.
 - **07:** a §6 do laboratório reproduz a `07-lda-qda` até a quarta casa; o caso $p=2$, $n=20$
   é citado pela Lista teorica 07 3(d).
 - **08:** o laboratório usa o `bank_train_redux.csv` e não reproduz figura nenhuma.
