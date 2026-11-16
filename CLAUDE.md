@@ -520,7 +520,9 @@ recompilar do fonte.
 `git log --since=2026-08-01 -- 'aulas/*/*.html'`; quem tiver os `.qmd` precisa replicá-las):
 
 - todos: autoria `Gabriel Sanfins` / `gabrielsanfins@id.uff.br`; `[ITSL]` virou `[ISLP]`;
-- 01: regressão e classificação desinvertidas; título sem o "I"; "2 provas e 1 projeto";
+  a capa diz "Aprendizado de Máquina", sem o "I" (nos decks 02, 07, 08 e E1 a capa é um
+  slide comum, e o `id` dele virou `aprendizado-de-máquina`);
+- 01: regressão e classificação desinvertidas; "2 provas e 1 projeto";
   `g: \mathbb{R}^p`; o capítulo 4 do [AME] no conteúdo programático; erros de digitação;
 - 02: slide vazio removido; argmin do MQO; limiar do lasso $\lambda/2$;
 - 03: "Randomizar o conjunto de treinamento"; par regressão/classificação; "$k=1$ é o *data

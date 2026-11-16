@@ -485,10 +485,16 @@ conhecido. Então:
   \item se $\bbeta\sim N(0,\sigma_\beta^2\mathbb{I})$, a \textbf{moda a posteriori} de
         $\bbeta$ é exatamente a solução Ridge \eqref{eq:ridge} com
         $\lambda=\sigma^2/\sigma_\beta^2$;
-  \item se $\beta_1,\dots,\beta_p\stackrel{\text{i.i.d.}}{\sim}
-        \mathrm{Laplace}(0,\tau_\beta)$, a moda a posteriori é exatamente a solução
-        Lasso \eqref{eq:lasso} com $\lambda=\sigma^2\tau_\beta$.
+  \item se $\beta_1,\dots,\beta_p$ são i.i.d.\ com a densidade de Laplace
+        $\tfrac{\tau_\beta}{2}e^{-\tau_\beta\abs{\beta_j}}$, a moda a posteriori é
+        exatamente a solução Lasso \eqref{eq:lasso} com $\lambda=2\sigma^2\tau_\beta$.
 \end{itemize}
+Nos dois casos, a moda a posteriori minimiza
+$\norm{\bm{y}-\mathbb{X}\bbeta}^2/(2\sigma^2)$ mais o negativo do logaritmo da priori;
+multiplicando por $2\sigma^2$, aparece o RSS somado à penalização. A priori normal já
+traz um $\tfrac12$ no expoente, e a de Laplace não, daí o fator~$2$ só no Lasso. (O
+[AME] escreve $\lambda=\sigma^2\tau_\beta$, o que corresponde a outra parametrização da
+Laplace.)
 A priori de Laplace é mais ``pontuda'' em zero e tem caudas mais pesadas: ela
 favorece soluções com muitos coeficientes \emph{nulos} e alguns grandes --- exatamente
 a esparsidade observada.
@@ -579,8 +585,8 @@ diferença: um $\alpha$ que é forte num é desprezível no outro. Ao comparar a
 famílias na mesma grade, converta.
 \end{atencao}
 
-O notebook \texttt{Aula prática 02} percorre tudo isso com dados de verdade
-(\texttt{superconductivity.csv}, $p=81$): mede o número de condição, exibe duas
+O notebook \texttt{Aula prática 02} percorre tudo isso com dados de verdade, as $p=81$
+covariáveis do \texttt{superconductivity.csv}: mede o número de condição, exibe duas
 soluções distintas de MQO com o mesmo RSS quando $p>n$, levanta os caminhos de
 regularização e compara MQO, Ridge e Lasso.
 
@@ -589,7 +595,7 @@ Vale saber de antemão o que você vai encontrar lá: com $n=14\,884$ e $p=81$, 
 vai bem e o Lasso \emph{não} melhora a predição --- as amostras sobram para estimar
 81 parâmetros com precisão. O ganho aparece em outro lugar: o Lasso entrega quase o
 mesmo desempenho (EQM de teste $318{,}8$ contra $307{,}8$) com 66 covariáveis em vez
-de 81. Já num recorte com $n=40$, os papéis se
+de 81. Já no exemplo simulado do mesmo notebook, com $p=20$ e $n=40$, os papéis se
 invertem e a regularização ganha com folga. Regularizar não é sempre melhor; é melhor
 quando $p$ é grande \emph{em relação a} $n$.
 \end{observacao}
@@ -613,7 +619,7 @@ quando $p$ é grande \emph{em relação a} $n$.
         (Fig.~\ref{fig:soft}); a garantia teórica depende de $p$ apenas como
         $\log p$.
   \item Ridge $\equiv$ priori gaussiana ($\lambda=\sigma^2/\sigma_\beta^2$);
-        Lasso $\equiv$ priori de Laplace ($\lambda=\sigma^2\tau_\beta$).
+        Lasso $\equiv$ priori de Laplace ($\lambda=2\sigma^2\tau_\beta$).
   \item $\lambda$ é \emph{tuning parameter} (validação cruzada, Aula~03); sempre
         \emph{padronize} as covariáveis.
 \end{itemize}
