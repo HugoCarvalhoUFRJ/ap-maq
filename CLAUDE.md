@@ -367,8 +367,7 @@ não a dois); se mexer num, o outro acompanha.
   no total, 2 horas.
 - **O sorteio da P2** (semente `20261112`, o mesmo algoritmo, com o código inteiro no topo do
   `.tex`) deu as aulas 08, 09 e 10 e os Ex. 3, 6 e 9 da lista 07-10. Rodou uma vez e vale.
-  Também 4,0 pontos por questão, 12,0 no total, 2 horas, e os títulos ficam vazios, como os
-  dos exercícios da lista.
+  Também 4,0 pontos por questão, 12,0 no total, 2 horas.
 - **O sorteio da VR e da VS** (semente `20261116`, em 16/11/2026, o código inteiro no topo dos
   dois `.tex`) tirou duas questões de cada lista para cada prova, uma aula por questão dentro
   de cada lista, sem os exercícios da P1 e da P2; a VR foi sorteada primeiro, e a VS, sem os
@@ -376,9 +375,9 @@ não a dois); se mexer num, o outro acompanha.
   07 e 09); para a VS, os Ex. 2 e 3 da 01-06 e os Ex. 1 e 7 da 07-10 (aulas 01, 02, 07 e 10).
   Rodou uma vez e vale. Quatro questões de 3,0, 12,0 no total, 2 horas, como o Gabriel pediu.
   Os nomes são "Verificação de Reposição (VR)" e "Verificação Suplementar (VS)", sem as
-  palavras "Avaliação Teórica", e vêm de `\tituloprova`, cujo padrão é o da P1 e da P2. As
-  questões não têm título, também por decisão dele (a P1 manteve os da lista).
-- **A prova não revela a aula de cada questão:** sem marcador no título, sem "Aula NN" no
+  palavras "Avaliação Teórica", e vêm de `\tituloprova`, cujo padrão é o da P1 e da P2.
+- **A prova não revela a aula de cada questão:** sem título nas questões (o primeiro
+  argumento do `\questao` fica vazio nas quatro provas, por decisão dele), sem "Aula NN" no
   enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
   prova, confira o texto dos sorteados. Na lista 01-06, os Ex. 1 e 4 ficaram autocontidos
   quando foram para a VR; as soluções dos Ex. 8, 9 e 10 ainda citam aula ou lista, e a do 8
