@@ -376,7 +376,8 @@ não a dois); se mexer num, o outro acompanha.
   07 e 09); para a VS, os Ex. 2 e 3 da 01-06 e os Ex. 1 e 7 da 07-10 (aulas 01, 02, 07 e 10).
   Rodou uma vez e vale. Quatro questões de 3,0, 12,0 no total, 2 horas, como o Gabriel pediu.
   Os nomes são "Verificação de Reposição (VR)" e "Verificação Suplementar (VS)", sem as
-  palavras "Avaliação Teórica", e vêm de `\tituloprova`, cujo padrão é o da P1 e da P2.
+  palavras "Avaliação Teórica", e vêm de `\tituloprova`, cujo padrão é o da P1 e da P2. As
+  questões não têm título, também por decisão dele (a P1 manteve os da lista).
 - **A prova não revela a aula de cada questão:** sem marcador no título, sem "Aula NN" no
   enunciado, cabeçalho sem conteúdo. O enunciado entra como está na lista: ao sortear outra
   prova, confira o texto dos sorteados. Na lista 01-06, os Ex. 1 e 4 ficaram autocontidos
