@@ -33,7 +33,7 @@ classificar?''}
 %==============================================================================
 \section{O problema: filtrar spam}
 %==============================================================================
-Usaremos a base \texttt{spam.csv} (SMS Spam Collection): $\sim$5\,574 mensagens de
+Usaremos a base \texttt{spam.csv} (SMS Spam Collection): $5\,572$ mensagens de
 SMS rotuladas como \emph{ham} (legítima, $Y=0$) ou \emph{spam} ($Y=1$). É um problema
 de \textbf{classificação binária} (Aula~07) cujas covariáveis são \emph{texto bruto}
 --- e o desafio central é a \emph{representação}: máquinas só processam números.
@@ -176,8 +176,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix
 
-sms = pd.read_csv("spam.csv", encoding="ISO-8859-1")
-X, y = sms["text"], (sms["class"] == "spam").astype(int)
+sms = pd.read_csv("spam.csv", encoding="ISO-8859-1").iloc[:, :2]  # colunas v1 e v2
+sms.columns = ["rotulo", "texto"]
+X, y = sms["texto"], (sms["rotulo"] == "spam").astype(int)
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3,
                                           stratify=y, random_state=0)
 

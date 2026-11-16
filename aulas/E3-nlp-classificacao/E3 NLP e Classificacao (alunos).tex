@@ -274,8 +274,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix
 
-sms = pd.read_csv("spam.csv", encoding="ISO-8859-1")
-X, y = sms["text"], (sms["class"] == "spam").astype(int)
+sms = pd.read_csv("spam.csv", encoding="ISO-8859-1").iloc[:, :2]  # colunas v1 e v2
+sms.columns = ["rotulo", "texto"]
+X, y = sms["texto"], (sms["rotulo"] == "spam").astype(int)
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3,
                                           stratify=y, random_state=0)
 

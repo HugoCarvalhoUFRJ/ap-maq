@@ -289,9 +289,11 @@ $K$ grupos de tamanhos $n_k$ e médias $\bm\mu_k$, defina
 \begin{solucao}
 \textbf{(a)} Some e subtraia $\bm\mu_{c(i)}$ dentro da norma:
 \[
-  \norm{\x_i-\bar\x}^2 = \norm{(\x_i-\bm\mu_{c(i)}) + (\bm\mu_{c(i)}-\bar\x)}^2
-  = \norm{\x_i-\bm\mu_{c(i)}}^2 + 2\,(\x_i-\bm\mu_{c(i)})^\top(\bm\mu_{c(i)}-\bar\x)
+\begin{aligned}
+  \norm{\x_i-\bar\x}^2 &= \norm{(\x_i-\bm\mu_{c(i)}) + (\bm\mu_{c(i)}-\bar\x)}^2\\
+  &= \norm{\x_i-\bm\mu_{c(i)}}^2 + 2\,(\x_i-\bm\mu_{c(i)})^\top(\bm\mu_{c(i)}-\bar\x)
     + \norm{\bm\mu_{c(i)}-\bar\x}^2 .
+\end{aligned}
 \]
 Somando sobre $i$ e agrupando por grupo, o termo cruzado do grupo $k$ é
 \[
@@ -313,10 +315,11 @@ as \emph{médias} dos grupos. Com centroides arbitrários a identidade é falsa.
 \]
 Com $\bm\mu_1=(1;1{,}5)$, $\bm\mu_2=(5;4{,}5)$ e $n_1=n_2=2$:
 \[
-  \mathrm{SQ}_{\text{dentro}} = 4\times 0{,}25 = 1,
-  \qquad
-  \mathrm{SQ}_{\text{entre}} = 2\big[(1-3)^2+(1{,}5-3)^2\big] + 2\big[(5-3)^2+(4{,}5-3)^2\big]
+\begin{aligned}
+  \mathrm{SQ}_{\text{dentro}} &= 4\times 0{,}25 = 1,\\
+  \mathrm{SQ}_{\text{entre}} &= 2\big[(1-3)^2+(1{,}5-3)^2\big] + 2\big[(5-3)^2+(4{,}5-3)^2\big]
    = 2(6{,}25)+2(6{,}25) = 25 .
+\end{aligned}
 \]
 E $1 + 25 = 26$. \checkmark
 
