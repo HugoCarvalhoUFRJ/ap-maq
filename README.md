@@ -85,8 +85,10 @@ versionados sem saída.
 
 ### Como rodar
 
-No **Google Colab** não é preciso instalar nenhum pacote: todos já vêm no ambiente
-padrão. Os dados, sim, precisam ser enviados — ver a seção seguinte.
+O material foi conferido localmente, na `scikit-learn` 1.9 (as versões estão no fim
+do `requirements.txt`). No **Google Colab** os pacotes já vêm instalados, mas em
+versões que não foram testadas com este material, e o Trabalho Prático 01 exige a 1.6
+ou mais. Os dados, além disso, precisam ser enviados — ver a seção seguinte.
 
 **Localmente**, as dependências estão em [`requirements.txt`](requirements.txt):
 

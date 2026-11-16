@@ -3,9 +3,10 @@
 #
 #     pip install -r requirements.txt
 #
-# No Google Colab não é preciso instalar nenhum PACOTE: todos os abaixo já vêm
-# no ambiente padrão. Os dados são outra história — ver "Dados", no fim do
-# arquivo. Localmente, o recomendado é um ambiente isolado:
+# No Google Colab os pacotes abaixo já vêm instalados, mas em versões que não
+# foram testadas com este material, conferido na 1.9 (ver o fim do arquivo). Os
+# dados precisam ser enviados — ver "Dados", no fim do arquivo. Localmente, o
+# recomendado é um ambiente isolado:
 #
 #     python3 -m venv .venv && source .venv/bin/activate
 #     pip install -r requirements.txt

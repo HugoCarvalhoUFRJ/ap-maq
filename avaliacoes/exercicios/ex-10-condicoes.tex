@@ -64,6 +64,13 @@ $B$ --- e, com $B$ grande, a média já a elimina sem custo nenhum. Seria pagar 
 um benefício que se tem de graça. Daí a regra: deixe cada árvore ser instável, e deixe a
 média estabilizar.
 
+Fora das hipóteses da proposição, a conta muda. Com $\rho>0$, a variância da média tem
+o piso $\rho v$, que nenhum $B$ remove, e a poda, ao reduzir $v$, baixa também esse piso;
+o ganho pode superar o viés que ela acrescenta. As notas da Aula~05 medem um caso
+assim: com $B=100$, o \emph{bagging} de árvores podadas teve erro quadrático médio de
+estimação $1{,}328$, contra $1{,}373$ com árvores profundas. Por isso não podar é a
+escolha usual, e não uma exigência.
+
 \smallskip
 \textbf{(c)} As árvores do \emph{bagging} são ajustadas em amostras bootstrap do
 \textbf{mesmo} conjunto de dados, e todas enxergam \textbf{todas} as $p$ covariáveis em

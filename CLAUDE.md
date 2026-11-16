@@ -471,6 +471,12 @@ vigilância.
 
 - O atalho do LOOCV **não vale para o KNN**: com $h_{ii}=1/k$ ele devolve o LOOCV do
   $(k-1)$-NN. Notas da 04, Lista teorica 04 e Lista prática 04 dizem isso.
+- O risco $14{,}63$ do MQO no Exemplo 3.1 do [AME] (Tabela 3.2) não se reproduz: com
+  $n=500$, $20$ covariáveis e $\sigma=0{,}5$, a simulação dá $0{,}261$ (200 repetições;
+  $2{,}23$ com $n=25$). As notas do aluno da 02 citam a tabela e dizem isso (16/11/2026).
+- Na priori de Laplace de taxa $\tau_\beta$, a moda a posteriori é o Lasso com
+  $\lambda=2\sigma^2\tau_\beta$ (RSS sem $\frac12$); o [AME] escreve $\sigma^2\tau_\beta$, com
+  outra parametrização. As notas do aluno da 02 dizem isso.
 - O grau 49 da aula 03 não tem um número, tem uma faixa: depende do corte de posto da
   instalação. O texto sustenta só as três leituras. Os números citados no laboratório, nas
   notas do aluno e na Lista teorica 03 são os da 1.9 desta máquina (treino $0{,}3049$,

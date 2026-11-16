@@ -7,7 +7,8 @@ o seu método consegue produzir --- a melhor, ponto.
 
 Uma afirmação dessas pede demonstração, e ela é mais curta do que parece. Todo o
 trabalho está num truque que você vai reencontrar várias vezes no curso: somar e
-subtrair a quantidade certa dentro de um quadrado.
+subtrair a quantidade certa dentro de um quadrado. Ao longo do exercício, suponha
+$\E[Y^2]<\infty$.
 \begin{itens}
   \item \pts{1,2} Seja $g:\R^p\to\R$ uma função qualquer com
         $\E[g(\X)^2]<\infty$. Some e subtraia $r(\X)$ dentro do quadrado e mostre
@@ -32,8 +33,8 @@ subtrair a quantidade certa dentro de um quadrado.
 \end{itens}
 
 \begin{solucao}
-Suponha, ao longo de todo o exercício, que $\E[Y^2]<\infty$: é o que garante que
-todas as esperanças abaixo existam. Em particular $r(\X)$ também tem segundo momento
+Como supõe o enunciado, $\E[Y^2]<\infty$: é o que garante que todas as esperanças
+abaixo existam. Em particular $r(\X)$ também tem segundo momento
 finito, porque $\E[r(\X)^2]=\E\big[(\E[Y\mid\X])^2\big]\le\E\big[\E[Y^2\mid\X]\big]=\E[Y^2]$
 (desigualdade de Jensen, aplicada condicionalmente a $\X$).
 

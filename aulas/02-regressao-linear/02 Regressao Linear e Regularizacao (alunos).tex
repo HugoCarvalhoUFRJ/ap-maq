@@ -219,8 +219,12 @@ Lasso                & $x_1,\dots,x_5$          & 0,08 s & \textbf{0,25} \\
 \bottomrule
 \end{tabular}
 \end{center}
-Três leituras. Primeira: o MQO com todas as variáveis tem risco \emph{cinquenta
-vezes} maior que o Lasso --- as 15 covariáveis nulas destroem o modelo. Segunda: o
+Três leituras, a primeira com uma ressalva. O risco do MQO na tabela, $14{,}63$,
+cinquenta vezes o do Lasso, não se reproduz: com $500$ observações e $20$
+covariáveis, as $15$ nulas custam pouco ao MQO. Refazendo a simulação, com $200$
+repetições e o risco medido em $5\,000$ observações novas, obtivemos $0{,}261$, perto
+do erro irredutível $0{,}25$. A vantagem dos métodos penalizados aparece com amostras
+bem menores: com $25$ observações de treino, o MQO vai a $2{,}23$. Segunda: o
 \emph{forward stepwise} encontrou exatamente o mesmo modelo do melhor subconjunto
 em $0{,}46$ segundos em vez de $1$h$20$; a heurística gananciosa saiu de graça aqui.
 Terceira: o Lasso foi o mais rápido \emph{e} o único a recuperar precisamente
