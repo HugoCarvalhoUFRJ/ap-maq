@@ -33,77 +33,118 @@ suporte. Este exercício pretende elucidar esse resultado.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Sejam $(\beta_0,\bbeta,M^*)$ e $(\beta_0',\bbeta',M^*)$ duas soluções, e
-$(\bar b,\bar{\bm w})$ o ponto médio de $(\beta_0,\bbeta)$ e $(\beta_0',\bbeta')$. Para cada
-$i$,
+Para $(b,\bm w)\in\R\times\R^p$, escreva $f_{b,\bm w}(\x)=b+\bm w^\top\x$. Fixados $(b,\bm w)$,
+as restrições permitem qualquer $M\le\min_iy_if_{b,\bm w}(\x_i)$, e o problema maximiza, entre
+os $(b,\bm w)$ com $\norm{\bm w}=1$, a margem
 \[
-  y_i\big(\bar b+\bar{\bm w}^\top\x_i\big)
-  =\tfrac12\big[y_i(\beta_0+\bbeta^\top\x_i)+y_i(\beta_0'+\bbeta'^\top\x_i)\big]\ \ge\ M^* .
+  m(b,\bm w)=\min_{1\le i\le n}\,y_i\,f_{b,\bm w}(\x_i);
 \]
-Suponha $\bbeta\ne\bbeta'$. Como $\norm{\bbeta}=\norm{\bbeta'}=1$, a desigualdade de
-Cauchy--Schwarz dá $\bbeta^\top\bbeta'<1$, com desigualdade estrita porque a igualdade
-exigiria $\bbeta'=\bbeta$, e
-$\norm{\bar{\bm w}}^2=\tfrac14\big(2+2\,\bbeta^\top\bbeta'\big)<1$. Também
-$\bar{\bm w}\ne\bm0$: do contrário, $y_i\bar b\ge M^*>0$ para todo $i$, o que exigiria
-$\bar b>0$ nas observações da classe $+1$ e $\bar b<0$ nas da classe $-1$. Dividindo
-$(\bar b,\bar{\bm w})$ por $\norm{\bar{\bm w}}\in(0,1)$, obtém-se um vetor de norma $1$ com
-$y_i(\cdot)\ge M^*/\norm{\bar{\bm w}}>M^*$ para todo $i$, o que contradiz a otimalidade de
-$M^*$. Logo $\bbeta=\bbeta'$.
-
-Com $\bbeta$ fixado, sejam
-$m_+(b)=\min_{i:\,y_i=+1}(b+\bbeta^\top\x_i)$ e $m_-(b)=\min_{i:\,y_i=-1}(-b-\bbeta^\top\x_i)$,
-de modo que a margem do hiperplano $(b,\bbeta)$ é $\min\{m_+(b),m_-(b)\}$. A função $m_+$ é
-estritamente crescente, e $m_-$, estritamente decrescente. Suponha $\beta_0<\beta_0'$. Então
-$m_-(\beta_0)>m_-(\beta_0')\ge M^*$, e, como o mínimo em $\beta_0$ vale $M^*$, é
-$m_+(\beta_0)=M^*$; do mesmo modo, $m_+(\beta_0')>m_+(\beta_0)=M^*$ e $m_-(\beta_0')=M^*$. No
-ponto médio $b=(\beta_0+\beta_0')/2$, $m_+(b)>m_+(\beta_0)=M^*$ e $m_-(b)>m_-(\beta_0')=M^*$:
-o hiperplano $(b,\bbeta)$ teria margem maior que $M^*$, um absurdo. Logo $\beta_0=\beta_0'$, e
-a solução é única.
+$(\beta_0,\bbeta,M)$ é solução se e somente se $\norm{\bbeta}=1$ e
+$M=m(\beta_0,\bbeta)=M^*$. Dois fatos simples serão usados várias vezes.
+\begin{itemize}[leftmargin=1.2cm]
+  \item[(F1)] Se $y_if_{b,\bm w}(\x_i)>0$ para todo $i$ e as duas classes estão presentes,
+        então $\bm w\ne\bm0$. De fato, se $\bm w=\bm0$, então $y_ib>0$ para todo $i$, e $b$
+        teria de ser positivo, por uma observação com $y_i=+1$, e negativo, por uma com
+        $y_i=-1$.
+  \item[(F2)] Se $0<\norm{\bm w}\le1$ e $y_if_{b,\bm w}(\x_i)\ge\mu>0$ para todo $i$, então
+        o par $(b,\bm w)/\norm{\bm w}$ satisfaz a restrição de norma e tem margem pelo menos
+        $\mu/\norm{\bm w}\ge\mu$, porque dividir números positivos por $\norm{\bm w}\le1$ não
+        os diminui; se $\norm{\bm w}<1$, a margem é estritamente maior que $\mu$.
+\end{itemize}
 
 \smallskip
-\textbf{(b)} Seja $(\beta_0^*,\bbeta^*,M^*)$ a solução com as $n$ observações e $f^*$ a função
-correspondente; como $i_0\notin\mathcal S$, vale $\delta=y_{i_0}f^*(\x_{i_0})-M^*>0$. Sem
-$i_0$, as observações continuam separáveis e com as duas classes, porque cada classe tinha
-pelo menos duas; o problema tem solução, com valor ótimo $M'$. O ponto
-$(\beta_0^*,\bbeta^*,M^*)$ satisfaz todas as restrições sem $i_0$, e portanto $M'\ge M^*$.
-
-Suponha $M'>M^*$, atingido por $(\beta_0',\bbeta')$, com função $f'$. Para $t\in(0,1]$, seja
-$(b_t,\bm w_t)=(1-t)(\beta_0^*,\bbeta^*)+t(\beta_0',\bbeta')$. Para $i\ne i_0$,
+\textbf{(a)} \emph{Unicidade de $\bbeta$.} Sejam $(\beta_0,\bbeta,M^*)$ e $(\beta_0',\bbeta',M^*)$
+duas soluções, e suponha $\bbeta\ne\bbeta'$. Seja $(\bar b,\bar{\bm w})$ o ponto médio de
+$(\beta_0,\bbeta)$ e $(\beta_0',\bbeta')$. Como $f_{\bar b,\bar{\bm w}}$ é a média de
+$f_{\beta_0,\bbeta}$ e $f_{\beta_0',\bbeta'}$, para todo $i$
 \[
-  y_i\big(b_t+\bm w_t^\top\x_i\big)=(1-t)\,y_if^*(\x_i)+t\,y_if'(\x_i)\ \ge\ (1-t)M^*+tM'\ >\ M^* ,
+  y_i\,f_{\bar b,\bar{\bm w}}(\x_i)
+  =\tfrac12\big[y_i\,f_{\beta_0,\bbeta}(\x_i)+y_i\,f_{\beta_0',\bbeta'}(\x_i)\big]\ \ge\ M^*,
 \]
-e, para $i_0$, com $c=\abs{y_{i_0}f'(\x_{i_0})-y_{i_0}f^*(\x_{i_0})}$,
-\[
-  y_{i_0}\big(b_t+\bm w_t^\top\x_{i_0}\big)\ \ge\ M^*+\delta-t\,c\ >\ M^*
-  \qquad\text{para }0<t<\delta/c
-\]
-(para todo $t$, se $c=0$). Pela desigualdade triangular,
-$\norm{\bm w_t}\le(1-t)\norm{\bbeta^*}+t\norm{\bbeta'}=1$, e $\bm w_t\ne\bm0$ pelo mesmo
-argumento do item (a). Fixe um tal $t$ e divida $(b_t,\bm w_t)$ por $\norm{\bm w_t}\le1$: os
-números $y_i(\cdot)$, todos maiores que $M^*>0$, não diminuem, e o resultado é um hiperplano
-de norma $1$ com $y_if(\x_i)>M^*$ para \emph{todas} as $n$ observações. Isso contradiz a
-otimalidade de $M^*$. Logo $M'=M^*$, e $(\beta_0^*,\bbeta^*,M^*)$, que é viável sem $i_0$ e
-atinge esse valor, é uma solução sem $i_0$; pelo item (a), aplicado às $n-1$ observações, é a
-única.
+porque as duas parcelas são pelo menos $M^*$. Além disso,
+$\norm{\bar{\bm w}}^2=\tfrac14\big(\norm{\bbeta}^2+2\,\bbeta^\top\bbeta'+\norm{\bbeta'}^2\big)
+=\tfrac12\big(1+\bbeta^\top\bbeta'\big)$. Pela desigualdade de Cauchy--Schwarz,
+$\bbeta^\top\bbeta'\le\norm{\bbeta}\,\norm{\bbeta'}=1$, com igualdade somente se
+$\bbeta'=c\,\bbeta$ para algum $c\ge0$, o que, com as duas normas iguais a $1$, daria
+$\bbeta'=\bbeta$. Logo $\bbeta^\top\bbeta'<1$ e $\norm{\bar{\bm w}}<1$. Por (F1),
+$\bar{\bm w}\ne\bm0$, e, por (F2), $(\bar b,\bar{\bm w})/\norm{\bar{\bm w}}$ é viável com margem
+maior que $M^*$, o que contradiz a otimalidade de $M^*$. Portanto $\bbeta'=\bbeta$.
 
-Para o deslocamento, considere as $n-1$ observações sem $i_0$ mais a observação
-$(\x',y_{i_0})$. Todo ponto viável desse problema é viável sem $i_0$, e por isso o valor ótimo
-é no máximo $M^*$. A solução $(\beta_0^*,\bbeta^*,M^*)$ satisfaz as restrições sem $i_0$ e a
-nova, $y_{i_0}f^*(\x')>M^*$: é viável e atinge $M^*$, logo é ótima e, pelo item (a), a única. A
-solução não vê as observações que estão do lado certo e fora da faixa: elas podem sair ou
-mudar de lugar, desde que continuem fora dela.
+\emph{Unicidade de $\beta_0$.} Com $\bbeta$ fixado, separando as observações pela classe,
+\begin{align*}
+  m(b,\bbeta)
+  &=\min\Big\{\min_{i:\,y_i=+1}\big(b+\bbeta^\top\x_i\big),\
+              \min_{i:\,y_i=-1}\big(-b-\bbeta^\top\x_i\big)\Big\}\\
+  &=\min\{\,b+a_+,\ a_--b\,\},
+  \qquad
+  a_+=\min_{i:\,y_i=+1}\bbeta^\top\x_i,\quad a_-=-\max_{i:\,y_i=-1}\bbeta^\top\x_i .
+\end{align*}
+A função $b\mapsto b+a_+$ é estritamente crescente, e $b\mapsto a_--b$, estritamente
+decrescente; elas se igualam em $b^*=(a_--a_+)/2$. Para $b<b^*$, o mínimo das duas é
+$b+a_+$, que cresce, e para $b>b^*$ é $a_--b$, que decresce: o único ponto de máximo de
+$b\mapsto m(b,\bbeta)$ é $b^*$. Logo $\beta_0=\beta_0'=b^*$, e a solução é única.
+
+A fórmula de $b^*$ tem uma leitura geométrica. Na direção $\bbeta$, o hiperplano
+$\{\x:\bbeta^\top\x=-b^*\}$ fica exatamente a meio caminho entre a maior projeção de uma
+observação da classe $-1$ e a menor projeção de uma da classe $+1$, e a margem é a metade da
+distância entre essas duas projeções, $M^*=(a_++a_-)/2$.
 
 \smallskip
-\textbf{(c)} Para cada $i$, as observações sem $i$ são separáveis e têm as duas classes, e o
-classificador de margem máxima delas, $g_{-i}$, está bem definido. Se $i\notin\mathcal S$,
-pelo item (b) $g_{-i}$ é o classificador $g$ das $n$ observações, que classifica $\x_i$
-corretamente, porque $y_if^*(\x_i)>M^*>0$. Assim, $g_{-i}(\x_i)\ne y_i$ só pode acontecer para
-$i\in\mathcal S$, e
+\textbf{(b)} Seja $(\beta_0^*,\bbeta^*,M^*)$ a solução com as $n$ observações e
+$f^*=f_{\beta_0^*,\bbeta^*}$. Como $i_0\notin\mathcal S$ e as restrições valem,
+$\delta=y_{i_0}f^*(\x_{i_0})-M^*>0$. Sem $i_0$, as observações continuam separáveis, por $f^*$,
+e com as duas classes, porque cada classe tinha pelo menos duas; pela hipótese do enunciado,
+esse problema tem solução, com valor ótimo $M'$. O ponto $(\beta_0^*,\bbeta^*,M^*)$ satisfaz
+todas as restrições sem $i_0$, e por isso $M'\ge M^*$.
+
+Suponha $M'>M^*$, atingido por $(\beta_0',\bbeta')$, com $f'=f_{\beta_0',\bbeta'}$. Para
+$t\in(0,1]$, seja $(b_t,\bm w_t)=(1-t)(\beta_0^*,\bbeta^*)+t\,(\beta_0',\bbeta')$, de modo que
+$f_{b_t,\bm w_t}=(1-t)f^*+t\,f'$. Para $i\ne i_0$,
+\[
+  y_if_{b_t,\bm w_t}(\x_i)=(1-t)\,y_if^*(\x_i)+t\,y_if'(\x_i)\ \ge\ (1-t)M^*+tM'\ >\ M^* .
+\]
+Para $i_0$, com $c=\abs{y_{i_0}f'(\x_{i_0})-y_{i_0}f^*(\x_{i_0})}$,
+\[
+  y_{i_0}f_{b_t,\bm w_t}(\x_{i_0})
+  =y_{i_0}f^*(\x_{i_0})+t\big[y_{i_0}f'(\x_{i_0})-y_{i_0}f^*(\x_{i_0})\big]
+  \ \ge\ M^*+\delta-t\,c ,
+\]
+que é maior que $M^*$ sempre que $t\,c<\delta$. Fixe $t\in(0,1]$ com $t\,c<\delta$ (se $c=0$,
+qualquer $t$ serve). Então os $n$ números $y_if_{b_t,\bm w_t}(\x_i)$ são todos maiores que
+$M^*$, e o menor deles, $\mu$, também é. Pela desigualdade triangular,
+$\norm{\bm w_t}\le(1-t)\norm{\bbeta^*}+t\norm{\bbeta'}=1$, e $\bm w_t\ne\bm0$ por (F1). Por
+(F2), $(b_t,\bm w_t)/\norm{\bm w_t}$ é viável no problema com as $n$ observações, com margem pelo
+menos $\mu>M^*$, o que contradiz a otimalidade de $M^*$. Logo $M'=M^*$: a solução antiga é
+viável sem $i_0$ e atinge o valor ótimo, e, pelo item (a), aplicado às $n-1$ observações, é a
+única solução sem $i_0$. O classificador não muda.
+
+Para o deslocamento, considere o problema com as $n-1$ observações sem $i_0$ e mais a
+observação $(\x',y_{i_0})$, em que $y_{i_0}f^*(\x')>M^*$. Todo ponto viável desse problema
+satisfaz as restrições do problema sem $i_0$, e por isso o seu valor ótimo é no máximo
+$M'=M^*$. A solução antiga satisfaz as restrições das $n-1$ observações e a da nova, porque
+$y_{i_0}f^*(\x')>M^*$, e atinge $M^*$; é, portanto, uma solução. As observações desse problema
+são separáveis, por $f^*$, e têm as duas classes, e, pelo item (a), a solução é única: o
+classificador também não muda.
+
+As observações do lado certo e fora da faixa fechada $\{\x:\abs{f^*(\x)}\le M^*\}$, isto é,
+com $y_if^*(\x_i)>M^*$, não influenciam a solução: podem ser retiradas ou deslocadas, desde que
+continuem do lado certo e fora dessa faixa. Só os vetores de suporte determinam o classificador
+de margem máxima.
+
+\smallskip
+\textbf{(c)} Para cada $i$, as $n-1$ observações sem $i$ são separáveis e têm as duas classes,
+porque cada classe tinha pelo menos duas, e o classificador de margem máxima delas, $g_{-i}$,
+está bem definido. Se $i\notin\mathcal S$, pelo item (b), $g_{-i}$ é o classificador $g$ das $n$
+observações, que classifica $\x_i$ corretamente, porque $y_if^*(\x_i)>M^*>0$. Assim,
+$g_{-i}(\x_i)\ne y_i$ só pode acontecer para $i\in\mathcal S$, e
 \[
   \frac1n\sum_{i=1}^n\1{g_{-i}(\x_i)\ne y_i}
-  =\frac1n\sum_{i\in\mathcal S}\1{g_{-i}(\x_i)\ne y_i}\ \le\ \frac{\abs{\mathcal S}}{n} .
+  =\frac1n\sum_{i\in\mathcal S}\1{g_{-i}(\x_i)\ne y_i}\ \le\ \frac{\abs{\mathcal S}}{n},
 \]
-A cota sai de um único ajuste, o das $n$ observações: das $n$ retiradas que a validação
-cruzada faria, só as dos vetores de suporte podem alterar o classificador e, com isso,
-produzir um erro.
+porque cada indicadora vale no máximo $1$.
+
+A cota sai de um único ajuste, o das $n$ observações: das $n$ retiradas que a validação cruzada
+faria, só as dos vetores de suporte podem alterar o classificador e, com isso, produzir um erro.
+Ela é útil quando há poucos vetores de suporte diante de $n$, e pode ser folgada, porque retirar
+um vetor de suporte não obriga o novo classificador a errar nele.
 \end{solucao}

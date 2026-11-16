@@ -29,50 +29,76 @@ folhas; o valor de $\alpha>0$ é escolhido por validação cruzada.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} As regiões $R_l$ particionam $R$, e por isso $n_{R,c}=\sum_ln_{R_l,c}$ para
-cada classe $c$. O máximo de uma soma não passa da soma dos máximos:
+Em todo o exercício, uma folha prediz uma classe majoritária, isto é, uma classe $c$ com
+$n_{R,c}=\max_{c'}n_{R,c'}$. Se houver empate, qualquer regra de desempate serve, porque o número
+de erros de treino da folha, $n_R-\max_cn_{R,c}$, não depende dela.
+
+\smallskip
+\textbf{(a)} Cada observação de $R$ está em exatamente uma das regiões $R_l$, e por isso
+$n_R=\sum_ln_{R_l}$ e $n_{R,c}=\sum_ln_{R_l,c}$ para cada classe $c$. Para cada $c$,
+$n_{R,c}=\sum_ln_{R_l,c}\le\sum_l\max_{c'}n_{R_l,c'}$, e, tomando o máximo em $c$,
 \[
-  \max_cn_{R,c}=\max_c\sum_ln_{R_l,c}\ \le\ \sum_l\max_cn_{R_l,c} .
+  \max_cn_{R,c}\ \le\ \sum_l\max_cn_{R_l,c} :
 \]
-Logo
+o máximo de uma soma não passa da soma dos máximos. Logo
 \[
   \sum_ln_{R_l}E(R_l)=\sum_l\Big(n_{R_l}-\max_cn_{R_l,c}\Big)=n_R-\sum_l\max_cn_{R_l,c}
   \ \le\ n_R-\max_cn_{R,c}=n_RE(R).
 \]
-Se $c^*$ é majoritária em todas as $R_l$, então
-$\sum_l\max_cn_{R_l,c}=\sum_ln_{R_l,c^*}=n_{R,c^*}\le\max_cn_{R,c}$; com a desigualdade
-anterior, os três números são iguais. A igualdade vale, e $n_{R,c^*}=\max_cn_{R,c}$: $c^*$ é
-majoritária em $R$. Dividir uma região nunca aumenta o número de erros de treino, e só o
-diminui quando alguma das partes muda a classe predita.
+Se uma mesma classe $c^*$ é majoritária em todas as $R_l$, então
+\[
+  \sum_l\max_cn_{R_l,c}=\sum_ln_{R_l,c^*}=n_{R,c^*}\ \le\ \max_cn_{R,c}\ \le\ \sum_l\max_cn_{R_l,c},
+\]
+em que a última desigualdade é a de cima. Os extremos da cadeia são iguais, e todas as
+desigualdades são igualdades: vale $\sum_ln_{R_l}E(R_l)=n_RE(R)$, e
+$n_{R,c^*}=\max_cn_{R,c}$, isto é, $c^*$ é majoritária também em $R$. Nenhuma hipótese sobre o
+número de classes foi usada.
+
+Dividir uma região, portanto, nunca aumenta o número de erros de treino, e, se todas as partes
+predizem a mesma classe, a divisão não corrige nenhum.
 
 \smallskip
-\textbf{(b)} Suponha que $T$ minimize $C_\alpha$ e tenha um nó interno $t$ cujas
-$L\ge2$ folhas descendentes predizem todas a classe $c^*$. Seja $T'$ a subárvore obtida
-trocando o ramo que sai de $t$ por uma única folha, a região de $t$. Pelo item (a), essa folha
-tem $c^*$ como classe majoritária e o mesmo número de erros de treino que as $L$ folhas
-juntas; as outras folhas não mudam. As duas subárvores cometem, então, os mesmos erros, e
-$\abs{T'}=\abs{T}-(L-1)$, de modo que
+\textbf{(b)} Suponha que $T$ minimize $C_\alpha$ e tenha um nó interno $t$ cujas $L\ge2$ folhas
+descendentes, $R_1,\dots,R_L$, predizem todas a mesma classe $c^*$. Essas folhas particionam a
+região do nó $t$. Seja $T'$ a subárvore obtida podando $T$ em $t$, isto é, trocando o ramo que
+sai de $t$ por uma única folha, a região de $t$; $T'$ também é uma subárvore da árvore
+crescida. Pelo item (a), com $c^*$ majoritária em todas as $R_l$, a nova folha tem $c^*$ como
+classe majoritária e os mesmos erros de treino que as $L$ folhas juntas. As outras folhas de $T$
+são folhas de $T'$, com as mesmas regiões e os mesmos erros. Então $T$ e $T'$ cometem o mesmo
+número de erros de treino, e $\abs{T'}=\abs{T}-(L-1)$, de modo que
 \[
-  C_\alpha(T')=C_\alpha(T)-\alpha(L-1)<C_\alpha(T),
+  C_\alpha(T')=C_\alpha(T)-\alpha\,(L-1)<C_\alpha(T),
 \]
-porque $\alpha>0$ e $L\ge2$. Isso contradiz a escolha de $T$. Qualquer que seja $\alpha>0$, a
-poda pelo erro de classificação remove todos os ramos que não mudam nenhuma decisão.
+porque $\alpha>0$ e $L\ge2$. Isso contradiz a escolha de $T$. Portanto, para todo $\alpha>0$,
+todo nó interno de uma subárvore que minimiza $C_\alpha$ tem folhas descendentes que predizem
+pelo menos duas classes diferentes: a poda pelo erro de classificação remove todos os ramos que
+não mudam nenhuma decisão, por menor que seja $\alpha>0$.
 
 \smallskip
-\textbf{(c)} As proporções de internados são $0{,}25$ no nó e $0{,}1$ e $0{,}4$ nos filhos. Com
-duas classes, as duas parcelas de $G$ são iguais, e $G=2\widehat p(1-\widehat p)$, com
-$\widehat p$ a proporção de internados:
+\textbf{(c)} As proporções de internados são $100/400=0{,}25$ no nó, $20/200=0{,}1$ em $R_1$ e
+$80/200=0{,}4$ em $R_2$. Com duas classes, as duas parcelas de $G$ são iguais,
+$\widehat p(1-\widehat p)$ e $(1-\widehat p)\,\widehat p$, e $G=2\widehat p(1-\widehat p)$, com
+$\widehat p$ a proporção de internados. Assim, $G(R)=2\cdot0{,}25\cdot0{,}75=0{,}375$,
+$G(R_1)=2\cdot0{,}1\cdot0{,}9=0{,}18$ e $G(R_2)=2\cdot0{,}4\cdot0{,}6=0{,}48$, e
 \[
-  G(R)=2\cdot0{,}25\cdot0{,}75=0{,}375,
-  \qquad
-  \tfrac12\,G(R_1)+\tfrac12\,G(R_2)=\tfrac12\cdot0{,}18+\tfrac12\cdot0{,}48=0{,}33 ,
+  G(R)-\frac{n_1G(R_1)+n_2G(R_2)}{n_R}
+  =0{,}375-\big(\tfrac12\cdot0{,}18+\tfrac12\cdot0{,}48\big)=0{,}375-0{,}33=0{,}045 .
 \]
-uma redução de $0{,}045$. A classe majoritária é ``não internado'' no nó ($300$ contra $100$) e
-nos dois filhos ($180$ contra $20$ e $120$ contra $80$). Os erros são $100$ no nó e
-$20+80=100$ nos filhos: a redução do erro é zero, como o item (a) previa. O Gini é
-estritamente côncavo e registra o ganho de pureza de separar um grupo de risco baixo
-($10\%$ de internações) de um de risco alto ($40\%$); por isso o crescimento fez a divisão.
-Como os filhos são folhas da árvore crescida, numa subárvore que mantenha a divisão eles são
-as únicas folhas descendentes de $R$, e os dois predizem a mesma classe. Pelo item (b), a poda
-pelo erro remove a divisão, qualquer que seja $\alpha>0$.
+A classe majoritária é ``não internado'' no nó ($300$ contra $100$) e nos dois filhos ($180$
+contra $20$ e $120$ contra $80$). Os erros de treino são $100$ no nó e $20+80=100$ nos filhos, e a
+redução do erro de classificação ponderado,
+$E(R)-[n_1E(R_1)+n_2E(R_2)]/n_R=0{,}25-\tfrac12(0{,}1+0{,}4)$, é zero, como o item (a) prevê.
+
+O crescimento, que usa o Gini, fez a divisão porque ela reduz o Gini ponderado. O Gini é uma
+função estritamente côncava de $\widehat p$, e a proporção do nó é a média das proporções dos
+filhos ponderada pelos tamanhos; por isso a média ponderada dos Gini dos filhos é estritamente
+menor que o Gini do nó sempre que as proporções dos filhos diferem. Aqui ele registra o ganho de
+pureza de separar um grupo de risco baixo ($10\%$ de internações) de um de risco alto ($40\%$),
+embora a decisão continue a mesma nos dois. O erro de classificação não registra esse ganho,
+porque nenhuma decisão mudou.
+
+Como $R_1$ e $R_2$ são folhas da árvore crescida, numa subárvore que mantenha a divisão de $R$
+as folhas descendentes de $R$ são exatamente $R_1$ e $R_2$, e as duas predizem ``não
+internado''. Pelo item (b), nenhuma subárvore que minimiza $C_\alpha$ mantém essa divisão, e a
+poda pelo erro a remove, qualquer que seja $\alpha>0$.
 \end{solucao}

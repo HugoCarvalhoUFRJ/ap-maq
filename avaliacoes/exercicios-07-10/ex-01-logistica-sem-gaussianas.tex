@@ -30,55 +30,111 @@ $\pi_c=\Prob(Y=c)$.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Pelo Teorema de Bayes, com $f_c$ a densidade de $\X$ dado $Y=c$,
+Em todo o exercício, $0<\pi_1<1$, $\pi_0=1-\pi_1$, e as densidades $f_0$ e $f_1$ de $\X$
+dado $Y=0$ e dado $Y=1$ são positivas em todo o domínio considerado: $\R^p$ no item (a), em
+que são normais, e $(0,\infty)$ no item (b), em que são exponenciais. Essas hipóteses garantem
+que as divisões e os logaritmos abaixo estão bem definidos.
+
+Os dois itens dependem de uma mesma identidade, que convém isolar. Pelo Teorema de Bayes,
 \[
-  \Prob(Y=1\mid\X=\x)
-  =\frac{\pi_1f_1(\x)}{\pi_0f_0(\x)+\pi_1f_1(\x)}
-  =\frac{1}{1+e^{-u(\x)}}=\sigma\big(u(\x)\big),
+  \Prob(Y=1\mid\X=\x)=\frac{\pi_1f_1(\x)}{\pi_0f_0(\x)+\pi_1f_1(\x)} .
+\]
+Dividindo o numerador e o denominador por $\pi_1f_1(\x)>0$,
+\[
+  \Prob(Y=1\mid\X=\x)=\frac{1}{1+e^{-u(\x)}}=\sigma\big(u(\x)\big),
+  \qquad
+  u(\x)=\log\frac{\pi_1f_1(\x)}{\pi_0f_0(\x)},
+\]
+em que a última igualdade vem de $\sigma(u)=e^u/(1+e^u)=1/(1+e^{-u})$, multiplicando o
+numerador e o denominador por $e^{-u}$. A função $\sigma$ é uma bijeção estritamente crescente
+de $\R$ em $(0,1)$; por isso $u(\x)$ fica determinado por $\Prob(Y=1\mid\X=\x)$, e é o
+\emph{log-odds}, $\log\big[\Prob(Y=1\mid\X=\x)/\Prob(Y=0\mid\X=\x)\big]$. Segue que o modelo
+da regressão logística vale, isto é, existem $\beta_0$ e $\bbeta$ com
+$\Prob(Y=1\mid\X=\x)=\sigma(\beta_0+\bbeta^\top\x)$ para todo $\x$, se e somente se
+$u(\x)=\beta_0+\bbeta^\top\x$ para todo $\x$. Em cada item, basta então decidir se o
+\emph{log-odds} é uma função afim de $\x$.
+
+\smallskip
+\textbf{(a)} A densidade de $N(\bm\mu_c,\bm\Sigma)$ é
+\[
+  f_c(\x)=(2\pi)^{-p/2}(\det\bm\Sigma)^{-1/2}
+          \exp\Big(-\tfrac12(\x-\bm\mu_c)^\top\bm\Sigma^{-1}(\x-\bm\mu_c)\Big),
+\]
+positiva em todo $\R^p$. Como a covariância é a mesma nas duas classes, a constante
+$(2\pi)^{-p/2}(\det\bm\Sigma)^{-1/2}$ é a mesma em $f_0$ e em $f_1$, e se cancela no
+quociente:
+\[
+  u(\x)=\log\frac{\pi_1}{\pi_0}-\tfrac12\,Q_1(\x)+\tfrac12\,Q_0(\x),
+  \qquad
+  Q_c(\x)=(\x-\bm\mu_c)^\top\bm\Sigma^{-1}(\x-\bm\mu_c).
+\]
+A matriz $\bm\Sigma^{-1}$ é simétrica, por ser a inversa de uma matriz simétrica, e por isso
+$\x^\top\bm\Sigma^{-1}\bm\mu=\bm\mu^\top\bm\Sigma^{-1}\x$ para todo $\bm\mu$. Expandindo,
+\[
+  Q_c(\x)=\x^\top\bm\Sigma^{-1}\x-2\,\bm\mu_c^\top\bm\Sigma^{-1}\x
+          +\bm\mu_c^\top\bm\Sigma^{-1}\bm\mu_c .
+\]
+O termo quadrático $\x^\top\bm\Sigma^{-1}\x$ é o mesmo em $Q_0$ e em $Q_1$ e desaparece da
+diferença $Q_0-Q_1$. Sobra
+\[
+  u(\x)=\log\frac{\pi_1}{\pi_0}+(\bm\mu_1-\bm\mu_0)^\top\bm\Sigma^{-1}\x
+        -\tfrac12\big(\bm\mu_1^\top\bm\Sigma^{-1}\bm\mu_1-\bm\mu_0^\top\bm\Sigma^{-1}\bm\mu_0\big)
+  =\beta_0+\bbeta^\top\x,
 \]
 com
 \[
-  u(\x)=\log\frac{\pi_1f_1(\x)}{\pi_0f_0(\x)} ,
-\]
-em que a segunda igualdade sai de dividir numerador e denominador por $\pi_1f_1(\x)>0$.
-Basta, portanto, mostrar que o \emph{log-odds} $u(\x)$ é afim em $\x$. As duas densidades
-normais têm a mesma constante de normalização, $(2\pi)^{-p/2}(\det\bm\Sigma)^{-1/2}$,
-porque a covariância é comum, e ela se cancela no quociente:
-\[
-  u(\x)=\log\frac{\pi_1}{\pi_0}
-        -\tfrac12(\x-\bm\mu_1)^\top\bm\Sigma^{-1}(\x-\bm\mu_1)
-        +\tfrac12(\x-\bm\mu_0)^\top\bm\Sigma^{-1}(\x-\bm\mu_0).
-\]
-Como $\bm\Sigma^{-1}$ é simétrica,
-$(\x-\bm\mu)^\top\bm\Sigma^{-1}(\x-\bm\mu)
-=\x^\top\bm\Sigma^{-1}\x-2\bm\mu^\top\bm\Sigma^{-1}\x+\bm\mu^\top\bm\Sigma^{-1}\bm\mu$. O
-termo quadrático $\x^\top\bm\Sigma^{-1}\x$ aparece nas duas formas e se cancela, e sobra
-\[
-  u(\x)=\beta_0+\bbeta^\top\x,\qquad
-  \bbeta=\bm\Sigma^{-1}(\bm\mu_1-\bm\mu_0),\qquad
+  \bbeta=\bm\Sigma^{-1}(\bm\mu_1-\bm\mu_0),
+  \qquad
   \beta_0=\log\frac{\pi_1}{\pi_0}
-     -\tfrac12\big(\bm\mu_1^\top\bm\Sigma^{-1}\bm\mu_1-\bm\mu_0^\top\bm\Sigma^{-1}\bm\mu_0\big).
+     -\tfrac12\big(\bm\mu_1^\top\bm\Sigma^{-1}\bm\mu_1-\bm\mu_0^\top\bm\Sigma^{-1}\bm\mu_0\big),
 \]
-Logo $\Prob(Y=1\mid\X=\x)=\sigma(\beta_0+\bbeta^\top\x)$, que é exatamente o modelo da
-regressão logística. A covariância comum foi usada duas vezes, para cancelar as constantes de
-normalização e para cancelar o termo quadrático, e só o segundo uso é indispensável para que
-o \emph{log-odds} seja afim. Com covariâncias $\bm\Sigma_0\ne\bm\Sigma_1$, as constantes
-deixariam em $u(\x)$ a parcela $\tfrac12\log(\det\bm\Sigma_0/\det\bm\Sigma_1)$, que não
-depende de $\x$ e iria para $\beta_0$; já o termo
-$-\tfrac12\,\x^\top\big(\bm\Sigma_1^{-1}-\bm\Sigma_0^{-1}\big)\x$ não seria identicamente nulo,
-e o \emph{log-odds} seria quadrático em $\x$, como no QDA.
+em que se usou de novo a simetria de $\bm\Sigma^{-1}$, para escrever
+$(\bm\mu_1-\bm\mu_0)^\top\bm\Sigma^{-1}\x=\big(\bm\Sigma^{-1}(\bm\mu_1-\bm\mu_0)\big)^\top\x$.
+Pela identidade do início, $\Prob(Y=1\mid\X=\x)=\sigma(\beta_0+\bbeta^\top\x)$ para todo
+$\x\in\R^p$: sob as hipóteses do LDA, o modelo da regressão logística vale exatamente, com
+esses coeficientes.
+
+A conta mostra onde entrou a hipótese de covariância comum. Ela foi usada duas vezes, para
+cancelar as constantes de normalização e para cancelar o termo quadrático, e só o segundo uso
+é indispensável. Com covariâncias $\bm\Sigma_0\ne\bm\Sigma_1$, as constantes deixariam em
+$u(\x)$ a parcela $\tfrac12\log(\det\bm\Sigma_0/\det\bm\Sigma_1)$, que não depende de $\x$ e
+iria para o intercepto. Já o termo $-\tfrac12\,\x^\top A\,\x$, com
+$A=\bm\Sigma_1^{-1}-\bm\Sigma_0^{-1}$, sobreviveria. A matriz $A$ é simétrica e não nula,
+porque inversas iguais viriam de matrizes iguais, e uma matriz simétrica com $\x^\top A\x=0$
+para todo $\x$ é nula: com $\x=\bm e_i$ obtém-se $A_{ii}=0$, e com $\x=\bm e_i+\bm e_j$,
+$2A_{ij}=0$. O \emph{log-odds} seria quadrático em $\x$, como no QDA.
+
+Quando as hipóteses do LDA valem, as duas abordagens que Renata compara descrevem, portanto, a
+mesma família de funções. O LDA estima $\pi_c$, $\bm\mu_c$ e $\bm\Sigma$ e substitui esses
+valores nas fórmulas de $\beta_0$ e $\bbeta$; a regressão logística estima $\beta_0$ e $\bbeta$
+diretamente.
 
 \smallskip
-\textbf{(b)} Pela mesma fórmula de Bayes, para $x>0$,
+\textbf{(b)} Para $x>0$, com $f_c(x)=\lambda_ce^{-\lambda_cx}>0$,
 \[
   u(x)=\log\frac{\pi_1\lambda_1e^{-\lambda_1x}}{\pi_0\lambda_0e^{-\lambda_0x}}
       =\log\frac{\pi_1}{\pi_0}+\log\frac{\lambda_1}{\lambda_0}-(\lambda_1-\lambda_0)\,x
       =0+\log3-2x ,
 \]
-e portanto $\Prob(Y=1\mid X=x)=\sigma(\log3-2x)$. O modelo logístico vale exatamente,
-com $\beta_0=\log3\approx1{,}0986$ e $\beta_1=-2$. As hipóteses do LDA falham duas vezes:
-$X\mid Y=c$ não é normal (vive em $(0,\infty)$ e é assimétrica), e as variâncias das duas
-classes, $1$ e $1/9$, são diferentes. O item (a) mostra que as hipóteses do LDA bastam
-para o modelo logístico, e este item mostra que não são necessárias: a logística supõe
-apenas que o \emph{log-odds} seja afim, e isso acontece aqui sem nada de normal.
+e, pela identidade do início, $\Prob(Y=1\mid X=x)=\sigma(\log3-2x)$ para todo $x>0$.
+
+O modelo da regressão logística vale nesta população: o \emph{log-odds} é afim em $x$, com
+$\beta_0=\log3\approx1{,}0986$ e $\beta_1=-2$. O sinal de $\beta_1$ diz que, quanto mais tarde
+vem o primeiro sinistro, menos provável é o perfil de risco alto.
+
+As hipóteses do LDA, por outro lado, não valem, por dois motivos independentes. Primeiro, $X$
+não é normal em nenhuma das classes: $\Prob(X\le0\mid Y=c)=0$, enquanto uma normal dá
+probabilidade positiva a $(-\infty,0]$. Segundo, as variâncias diferem: a exponencial de taxa
+$\lambda$ tem variância $1/\lambda^2$, e $\Var(X\mid Y=0)=1$, enquanto $\Var(X\mid Y=1)=1/9$.
+
+Os dois itens juntos mostram que as hipóteses do LDA são suficientes para o modelo logístico,
+mas não necessárias. A regressão logística supõe apenas que o \emph{log-odds} seja afim, e
+aqui ele é porque $\log f_c(x)=\log\lambda_c-\lambda_cx$ é afim em $x$ nas duas classes, sem
+nada de normal. Para Renata, a diferença é concreta. Com uma amostra grande, o LDA estimaria
+$\mu_0=1$, $\mu_1=1/3$ e a variância comum $\tfrac12\big(1+\tfrac19\big)=\tfrac59$, chegaria ao
+\emph{log-odds} $0{,}8-1{,}2\,x$ e classificaria como risco alto quem tem $x<2/3$; a fronteira de
+Bayes, que a regressão logística estima corretamente, é $x<(\log3)/2\approx0{,}549$. Nesta
+população a diferença custa pouco, $0{,}311$ de probabilidade de erro contra $0{,}308$, mas não
+diminui com o tamanho da amostra, porque vem da hipótese errada, e não da variabilidade da
+estimação.
 \end{solucao}

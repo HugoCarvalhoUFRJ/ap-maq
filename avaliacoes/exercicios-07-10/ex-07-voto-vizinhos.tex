@@ -26,55 +26,95 @@ se todos os vizinhos estivessem no próprio $\x$.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} O conjunto $\mathcal{N}_{\x}^{(k)}$ tem $k$ elementos, e cada $Y_i$, com
-$i\in\mathcal{N}_{\x}^{(k)}$, é uma Bernoulli$(0{,}6)$, com média $0{,}6$ e variância
-$0{,}6\cdot0{,}4=0{,}24$. A esperança sai da linearidade, e a variância, da independência dos
-rótulos, que permite somar as variâncias:
+Na idealização do enunciado, os rótulos $Y_i$, $i\in\mathcal{N}_{\x}^{(k)}$, são independentes e
+têm distribuição de Bernoulli de parâmetro $0{,}6$, e são independentes do rótulo $Y$ do talhão
+novo, que também é Bernoulli$(0{,}6)$, porque $\eta(\x)=0{,}6$. O KNN declara praga quando
+$\widehat P>1/2$, isto é, quando mais da metade dos $k$ vizinhos tem praga; como $k$ é ímpar,
+$k\widehat P$ é um inteiro diferente de $k/2$, e nunca há empate.
+
+\smallskip
+\textbf{(a)} O conjunto $\mathcal{N}_{\x}^{(k)}$ tem $k$ elementos, e cada $Y_i$ tem média
+$0{,}6$ e variância $0{,}6\cdot0{,}4=0{,}24$. Pela linearidade da esperança,
+$\E[\widehat P]=\frac1k\cdot k\cdot0{,}6=0{,}6$. Pela independência, a variância da soma é a
+soma das variâncias, e
 \[
-  \E[\widehat P]=\frac1k\sum_{i\in\mathcal{N}_{\x}^{(k)}}\E[Y_i]=\frac{k\cdot0{,}6}{k}=0{,}6,
-  \qquad
   \Var(\widehat P)=\frac1{k^2}\sum_{i\in\mathcal{N}_{\x}^{(k)}}\Var(Y_i)
   =\frac{k\cdot0{,}24}{k^2}=\frac{0{,}24}{k} .
 \]
-Nesta idealização, a proporção de vizinhos é um estimador não viesado de $\eta(\x)$, e a sua
-variância cai como $1/k$.
+Nesta idealização, a proporção de vizinhos com praga é um estimador não viesado de $\eta(\x)$,
+e o seu desvio-padrão, $\sqrt{0{,}24/k}$, cai de $0{,}49$ com $k=1$ para $0{,}22$ com $k=5$ e
+$0{,}07$ com $k=51$.
 
 \smallskip
-\textbf{(b)} O KNN erra se declara praga num talhão sem praga ou deixa de declarar num talhão
-com praga. Como a decisão depende só dos rótulos dos vizinhos, que são independentes de $Y$,
-\[
-  \Prob(\ghat(\x)\ne Y)=q_k\,\Prob(Y=0)+(1-q_k)\,\Prob(Y=1)=0{,}4\,q_k+0{,}6\,(1-q_k)=0{,}6-0{,}2\,q_k .
-\]
-Com $k=5$, o KNN declara praga quando pelo menos $3$ dos $5$ vizinhos têm praga, e o número
-deles é uma binomial$(5;\,0{,}6)$:
+\textbf{(b)} O KNN erra se declara praga num talhão sem praga ou se deixa de declarar num
+talhão com praga. A decisão $\ghat(\x)=\1{\widehat P>1/2}$ é função só dos rótulos dos
+vizinhos, que são independentes de $Y$; por isso
+\begin{align*}
+  \Prob\big(\ghat(\x)\ne Y\big)
+  &=\Prob\big(\ghat(\x)=1\big)\,\Prob(Y=0)+\Prob\big(\ghat(\x)=0\big)\,\Prob(Y=1)\\
+  &=0{,}4\,q_k+0{,}6\,(1-q_k)=0{,}6-0{,}2\,q_k .
+\end{align*}
+Com $k=5$, o número de vizinhos com praga, $5\widehat P$, tem distribuição binomial de
+parâmetros $5$ e $0{,}6$, e o KNN declara praga quando ele é pelo menos $3$:
 \[
   q_5=\binom53(0{,}6)^3(0{,}4)^2+\binom54(0{,}6)^4(0{,}4)+(0{,}6)^5
-     =0{,}3456+0{,}2592+0{,}0778\approx0{,}683 .
+     =0{,}3456+0{,}2592+0{,}07776\approx0{,}683 .
 \]
-As probabilidades de erro são $0{,}480$, $0{,}463$, $0{,}443$ e $0{,}415$ para $k=1$, $5$, $15$ e
-$51$. Como $k$ é ímpar, $\widehat P\ne1/2$, e o KNN deixa de declarar praga exatamente
-quando $\widehat P<1/2$. Esse evento está contido em
-$\{\abs{\widehat P-0{,}6}\ge0{,}1\}$, e, pela desigualdade de Chebyshev,
+Com os valores dados para $q_1$, $q_{15}$ e $q_{51}$, as probabilidades de erro são:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+$k$ & $1$ & $5$ & $15$ & $51$ \\
+\midrule
+$q_k$ & $0{,}600$ & $0{,}683$ & $0{,}787$ & $0{,}926$ \\
+$\Prob\big(\ghat(\x)\ne Y\big)=0{,}6-0{,}2\,q_k$ & $0{,}480$ & $0{,}463$ & $0{,}443$ & $0{,}415$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Para o limite, como $k$ é ímpar, o KNN deixa de declarar praga exatamente quando
+$\widehat P<1/2$. Se $\widehat P<1/2$, então $0{,}6-\widehat P>0{,}1$; o evento
+$\{\widehat P<1/2\}$ está contido em $\{\abs{\widehat P-0{,}6}\ge0{,}1\}$, e, pela desigualdade
+de Chebyshev,
 \[
-  1-q_k=\Prob\big(\widehat P<1/2\big)\le\Prob\big(\abs{\widehat P-0{,}6}\ge0{,}1\big)
-  \le\frac{\Var(\widehat P)}{0{,}1^2}=\frac{24}{k}\ \longrightarrow\ 0 .
+  0\ \le\ 1-q_k=\Prob\big(\widehat P<1/2\big)
+  \ \le\ \Prob\big(\abs{\widehat P-0{,}6}\ge0{,}1\big)
+  \ \le\ \frac{\Var(\widehat P)}{0{,}1^2}=\frac{24}{k}\ \xrightarrow[k\to\infty]{}\ 0 .
 \]
-Logo $q_k\to1$ e a probabilidade de erro tende a $0{,}6-0{,}2=0{,}4$. É a probabilidade de
-erro do classificador de Bayes nesse talhão: como $\eta(\x)>1/2$, ele declara praga, e erra
-com probabilidade $1-\eta(\x)=0{,}4$, que nenhum classificador pode melhorar.
+Logo $q_k\to1$, e a probabilidade de erro tende a $0{,}6-0{,}2=0{,}4$. A cota de Chebyshev é
+grosseira: só diz algo para $k>24$ e, com $k=51$, garante $1-q_{51}\le0{,}47$, quando o valor é
+$0{,}074$. Mas basta para o limite.
+
+O limite $0{,}4$ é a probabilidade de erro do classificador de Bayes nesse talhão: como
+$\eta(\x)=0{,}6>1/2$, ele declara praga e erra com probabilidade $1-\eta(\x)=0{,}4$. Nenhuma
+decisão em $\x$ faz melhor, porque declarar praga erra com probabilidade $0{,}4$, e não
+declarar, com $0{,}6$. Nesta idealização não há viés, aumentar $k$ só reduz a variância de
+$\widehat P$, e a probabilidade de erro do KNN se aproxima da de Bayes.
 
 \smallskip
-\textbf{(c)} Com $k=1$, o KNN repete o rótulo do vizinho mais próximo, que é $1$ com
-probabilidade $\eta$ e independente de $Y$. Ele erra se os dois rótulos diferem:
+\textbf{(c)} Com $k=1$, o KNN repete o rótulo do vizinho mais próximo, que vale $1$ com
+probabilidade $\eta$ e é independente de $Y$. Ele erra se os dois rótulos diferem:
 \[
-  \Prob(\ghat(\x)\ne Y)=\eta(1-\eta)+(1-\eta)\eta=2\eta(1-\eta) .
+  \Prob\big(\ghat(\x)\ne Y\big)=\eta\,(1-\eta)+(1-\eta)\,\eta=2\eta(1-\eta) .
 \]
-Sejam $m=\min(\eta,1-\eta)$ e $1-m=\max(\eta,1-\eta)$, com $1/2\le1-m\le1$. Então
-$2\eta(1-\eta)=2m(1-m)$, e multiplicar as desigualdades $1/2\le1-m\le1$ por $2m\ge0$ dá
-$m\le2m(1-m)\le2m$. Como $m$ é a probabilidade de erro do classificador de Bayes em $\x$, o
-$1$-NN, nesta idealização, erra pelo menos tanto quanto ele e no máximo o dobro; com
-$\eta=0{,}6$, são $0{,}48$ contra $0{,}40$. No outro extremo, com $k=n$, todos os pontos de treino
-votam, $\widehat P$ é a proporção de talhões com praga no treino inteiro, e o KNN atribui a
-mesma classe, a majoritária, a qualquer talhão: é o classificador constante, com o maior viés
-possível.
+Seja $m=\min(\eta,1-\eta)$, a probabilidade de erro do classificador de Bayes em $\x$. Então
+$1-m=\max(\eta,1-\eta)$, $2\eta(1-\eta)=2m(1-m)$ e $1/2\le1-m\le1$; multiplicando essas duas
+desigualdades por $2m\ge0$, obtém-se
+\[
+  m\ \le\ 2m(1-m)\ \le\ 2m .
+\]
+Nesta idealização, o $1$-NN erra pelo menos tanto quanto o classificador de Bayes, o que
+nenhum classificador evita, e no máximo o dobro; com $\eta=0{,}6$, são $0{,}48$ contra $0{,}40$.
+O excesso vem da variância: o $1$-NN copia um único rótulo, sujeito ao mesmo ruído que o rótulo
+a prever.
+
+No outro extremo, com $k=n$, o conjunto $\mathcal{N}_{\x}^{(n)}$ é o treino inteiro, qualquer que
+seja $\x$. Então $\widehat P=\frac1n\sum_{i=1}^nY_i$ é a proporção de talhões com praga no
+treino, que não depende de $\x$, e o KNN atribui a todo talhão a mesma classe, a majoritária no
+treino (com $n$ ímpar, sem empate): é um classificador constante, que ignora as covariáveis. A
+idealização deixa de valer aqui, porque os vizinhos distantes não estão no próprio $\x$:
+$\widehat P$ estima a proporção de praga na população, $\Prob(Y=1)$, e não $\eta(\x)$, e, como
+estimador de $\eta(\x)$, tem viés $\Prob(Y=1)-\eta(\x)$, que não diminui com $n$. Entre os dois
+extremos, escolher $k$ é equilibrar a variância, que domina com $k$ pequeno, e o viés, que
+cresce à medida que os vizinhos se afastam de $\x$.
 \end{solucao}

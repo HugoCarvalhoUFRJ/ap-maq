@@ -20,59 +20,96 @@ $\eta(x)=\Prob(Y=1\mid X=x)$.
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Pelo Teorema de Bayes,
-\[
-  \eta(1)=\frac{0{,}9\cdot0{,}01}{0{,}9\cdot0{,}01+0{,}1\cdot0{,}99}
-        =\frac{0{,}009}{0{,}108}=\frac1{12}\approx0{,}083,
-\]
-\[
-  \eta(0)=\frac{0{,}1\cdot0{,}01}{0{,}1\cdot0{,}01+0{,}9\cdot0{,}99}
-        =\frac{0{,}001}{0{,}892}=\frac1{892}\approx0{,}0011 .
-\]
-Um resultado positivo multiplica a probabilidade de doença por cerca de $8$, de $1\%$ para
-$8{,}3\%$, e um negativo a divide por cerca de $9$; ainda assim, mesmo com o exame positivo,
-a doença continua improvável, porque ela é rara: entre os positivos, os $9$ doentes em cada
-mil pessoas são superados pelos $99$ saudáveis com alarme falso.
+Os dados são $\Prob(Y=1)=0{,}01$, $\Prob(X=1\mid Y=1)=0{,}9$ e $\Prob(X=1\mid Y=0)=0{,}1$. Como
+$X$ só assume os valores $0$ e $1$, um classificador que usa o exame é uma regra que decide em
+$x=0$ e em $x=1$, e há só quatro deles: declarar todos saudáveis, seguir o exame, fazer o
+contrário do exame e declarar todos doentes.
 
 \smallskip
-\textbf{(b)} O classificador de Bayes declara doente quando $\eta(x)>1/2$. Como
-$\eta(0)$ e $\eta(1)$ estão abaixo de $1/2$, ele é $g\equiv0$: declara todos saudáveis,
-qualquer que seja o resultado do exame. A probabilidade de erro dele é
-$\Prob(Y=1)=0{,}01$. Seguir o exame erra nos doentes com $X=0$ e nos saudáveis com $X=1$:
-\[
-  \Prob(X\ne Y)=0{,}01\cdot0{,}1+0{,}99\cdot0{,}1=0{,}001+0{,}099=0{,}1 ,
-\]
-dez vezes mais. A conclusão do colega confunde a probabilidade de erro com a utilidade. O
-classificador de Bayes minimiza a probabilidade de erro, que dá o mesmo peso a um doente não
-detectado e a um alarme falso; com uma doença rara, a maneira mais barata de errar pouco é
-nunca acusar ninguém, ao preço de não detectar doente nenhum. O exame detecta $90\%$ dos
-doentes: o que falta saber é quanto vale cada um deles comparado a um alarme falso.
+\textbf{(a)} Pela lei da probabilidade total,
+$\Prob(X=1)=0{,}9\cdot0{,}01+0{,}1\cdot0{,}99=0{,}108$ e $\Prob(X=0)=1-0{,}108=0{,}892$. Pelo
+Teorema de Bayes,
+\begin{align*}
+  \eta(1)&=\frac{\Prob(X=1\mid Y=1)\,\Prob(Y=1)}{\Prob(X=1)}=\frac{0{,}009}{0{,}108}
+          =\frac1{12}\approx0{,}083,\\
+  \eta(0)&=\frac{\Prob(X=0\mid Y=1)\,\Prob(Y=1)}{\Prob(X=0)}=\frac{0{,}001}{0{,}892}
+          =\frac1{892}\approx0{,}0011 .
+\end{align*}
+Um resultado positivo eleva a probabilidade de doença de $1\%$ para cerca de $8{,}3\%$, e um
+negativo a reduz a cerca de $0{,}11\%$. Ainda assim, com o exame positivo a doença continua
+improvável, e a razão é a raridade. Em cada mil pessoas há, em média, $10$ doentes, dos quais
+$9$ têm exame positivo, e $990$ saudáveis, dos quais $99$ têm alarme falso: dos $108$ positivos,
+só $9$ estão doentes, e $9/108=1/12$.
 
 \smallskip
-\textbf{(c)} O corte é $\ell_1/(\ell_0+\ell_1)=1/(1+r)$, e o classificador compara $\eta(x)$
-com ele em cada valor de $x$ separadamente. Ele segue o exame, isto é, declara doente em
-$x=1$ e saudável em $x=0$, quando
-\[
-  \eta(1)>\frac1{1+r}\iff1+r>12\iff r>11
-  \qquad\text{e}\qquad
-  \eta(0)\le\frac1{1+r}\iff r\le891 .
-\]
-Com $r\le11$, ele declara todos saudáveis; com $r>891$, declara todos doentes, porque,
-quando um doente não detectado custa mais que $891$ alarmes falsos, até a chance de $1/892$
-que resta depois de um exame negativo justifica declarar doente. Nos extremos da faixa há
-empate: com $r=11$, declarar doente ou saudável custa o mesmo em $x=1$, e, com $r=891$, em
-$x=0$. Nos dois empates o classificador declara saudável, porque só declara doente quando
-$\eta(x)$ passa do corte; por isso a faixa exclui $r=11$ e inclui $r=891$. Em termos de
-custo, seguir o exame é uma decisão ótima para $11\le r\le891$, e a única para
-$11<r<891$: vale a pena exatamente quando deixar passar um doente custa entre $11$ e $891$
-alarmes falsos.
+\textbf{(b)} Sob a perda $0$--$1$, o classificador de Bayes declara doente quando
+$\eta(x)>1/2$. Como $\eta(1)=1/12$ e $\eta(0)=1/892$ estão abaixo de $1/2$, ele é $g\equiv0$:
+declara todos saudáveis, qualquer que seja o resultado do exame, e erra exatamente nos doentes,
+com probabilidade $\Prob(Y=1)=0{,}01$. Seguir o exame, isto é, usar $g(X)=X$, erra nos doentes
+com exame negativo e nos saudáveis com exame positivo:
+\begin{align*}
+  \Prob(X\ne Y)&=\Prob(X=0,\,Y=1)+\Prob(X=1,\,Y=0)\\
+  &=0{,}1\cdot0{,}01+0{,}1\cdot0{,}99=0{,}001+0{,}099=0{,}1 ,
+\end{align*}
+dez vezes mais.
 
-Com $\ell_0=20$ e $\ell_1=1$, $r=20$ está na faixa, e seguir o exame é o ótimo. Numa
-população de $10\,000$ pessoas há, em média, $P=100$ doentes e $N=9\,900$ saudáveis, e as
-contagens esperadas saem das taxas: $\mathrm{FN}=(1-\mathrm{TPR})\,P$ e
-$\mathrm{FP}=\mathrm{FPR}\cdot N$. Declarar todos saudáveis dá $\mathrm{FN}=100$ e custo
-$20\cdot100=2\,000$. Seguir o exame dá $\mathrm{FN}=0{,}1\cdot100=10$ e
-$\mathrm{FP}=0{,}1\cdot9\,900=990$, com custo $20\cdot10+990=1\,190$. Declarar todos doentes dá
-$\mathrm{FP}=9\,900$ e custo $9\,900$. O exame economiza $810$ unidades de custo a cada dez mil
-pessoas em relação ao classificador de Bayes, embora erre dez vezes mais que ele.
+A conclusão do colega está errada, porque toma a probabilidade de erro como medida de
+utilidade. A probabilidade de erro dá o mesmo peso a um doente não detectado e a um alarme
+falso, e, com uma doença que atinge $1\%$ da população, o modo mais barato de errar pouco é
+nunca acusar ninguém, ao preço de não detectar doente nenhum: a taxa de verdadeiros positivos
+de $g\equiv0$ é zero, e a do exame é $0{,}9$. O exame é informativo, já que um resultado
+positivo torna a doença $\eta(1)/\eta(0)=892/12\approx74$ vezes mais provável que um negativo.
+O que falta para decidir se vale a pena usá-lo é saber quanto custa um doente não detectado em
+comparação com um alarme falso, que é o assunto do item (c).
+
+\smallskip
+\textbf{(c)} Com $r=\ell_0/\ell_1$, o corte é $\ell_1/(\ell_0+\ell_1)=1/(1+r)$, e o
+classificador de menor custo esperado é $g^*(x)=\1{\eta(x)>1/(1+r)}$. Ele compara $\eta(x)$
+com o corte separadamente em $x=0$ e em $x=1$, e segue o exame quando declara doente em $x=1$
+e saudável em $x=0$:
+\begin{align*}
+  g^*(1)=1&\iff\frac1{12}>\frac1{1+r}\iff 1+r>12\iff r>11,\\
+  g^*(0)=0&\iff\frac1{892}\le\frac1{1+r}\iff 1+r\le892\iff r\le891 .
+\end{align*}
+Logo $g^*$ segue o exame se e somente se $11<r\le891$. Fora dessa faixa:
+\begin{itemize}[leftmargin=1.2cm]
+  \item se $r\le11$, então $g^*(1)=0$ e, como $\eta(0)<\eta(1)\le1/(1+r)$, também $g^*(0)=0$:
+        $g^*$ declara todos saudáveis;
+  \item se $r>891$, então $g^*(0)=1$ e, como $\eta(1)>\eta(0)>1/(1+r)$, também $g^*(1)=1$:
+        $g^*$ declara todos doentes. Um doente não detectado custa, então, mais que $891$
+        alarmes falsos, e até a chance de $1/892$ que resta depois de um exame negativo
+        justifica declarar doente.
+\end{itemize}
+A quarta regra, fazer o contrário do exame, exigiria $\eta(0)>1/(1+r)\ge\eta(1)$, o que nunca
+acontece, porque $\eta(0)<\eta(1)$.
+
+Os dois números da faixa têm uma leitura direta. A condição $\eta(x)>1/(1+r)$ equivale a
+$r>\big(1-\eta(x)\big)/\eta(x)$, e $\big(1-\eta(1)\big)/\eta(1)=11$ e
+$\big(1-\eta(0)\big)/\eta(0)=891$ são as chances contra a doença depois de um exame positivo e
+de um negativo. Nos extremos há empate: com $r=11$, em $x=1$, e com $r=891$, em $x=0$, declarar
+doente ou saudável custa o mesmo. A regra $g^*$, que só declara doente quando $\eta(x)$ passa
+estritamente do corte, declara saudável nos dois empates, e é por isso que a faixa exclui
+$r=11$ e inclui $r=891$. Em termos de custo, seguir o exame é uma decisão ótima para
+$11\le r\le891$, e a única ótima para $11<r<891$: vale a pena exatamente quando deixar passar
+um doente custa entre $11$ e $891$ alarmes falsos.
+
+Com $\ell_0=20$ e $\ell_1=1$, $r=20$ está na faixa, e seguir o exame é o ótimo. Numa população
+de $10\,000$ pessoas há, em média, $P=100$ doentes e $N=9\,900$ saudáveis. As contagens
+esperadas saem das taxas, $\mathrm{FN}=(1-\mathrm{TPR})\,P$ e $\mathrm{FP}=\mathrm{FPR}\cdot N$,
+e o custo é $\ell_0\,\mathrm{FN}+\ell_1\,\mathrm{FP}$:
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lccccr@{}}
+\toprule
+classificador & TPR & FPR & FN & FP & custo \\
+\midrule
+declarar todos saudáveis & $0$ & $0$ & $100$ & $0$ & $20\cdot100=2\,000$ \\
+seguir o exame & $0{,}9$ & $0{,}1$ & $10$ & $990$ & $20\cdot10+990=1\,190$ \\
+declarar todos doentes & $1$ & $1$ & $0$ & $9\,900$ & $9\,900$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Seguir o exame tem o menor custo, como a faixa previa, e economiza $810$ unidades de custo a
+cada dez mil pessoas em relação ao classificador de Bayes, embora erre dez vezes mais que ele:
+são $1\,000$ erros esperados, contra $100$.
 \end{solucao}

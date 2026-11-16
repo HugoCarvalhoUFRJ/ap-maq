@@ -23,48 +23,75 @@ iguais a $c\ge0$ são \emph{kernels}, e que a soma de dois \emph{kernels} e o pr
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Sejam $\x_1,\dots,\x_n\in\R^p$, $A=\big[k_1(\x_i,\x_j)\big]$ e
-$B=\big[k_2(\x_i,\x_j)\big]$, simétricas e positivas semidefinidas pelo teorema. A matriz de
-$k$ nesses pontos é o produto entrada a entrada, $(A\circ B)_{ij}=A_{ij}B_{ij}$, que é
-simétrica. Pelo teorema espectral, $B=\sum_{m=1}^n\lambda_m\bm v_m\bm v_m^\top$, com
-autovalores $\lambda_m\ge0$, porque $B$ é positiva semidefinida, e autovetores ortonormais
-$\bm v_m\in\R^n$; em coordenadas, $B_{ij}=\sum_m\lambda_m v_{mi}v_{mj}$. Para $\bm a\in\R^n$,
+O teorema do enunciado reduz cada afirmação a uma verificação sobre matrizes. Para mostrar que
+uma função $k$ é um \emph{kernel}, basta mostrar que ela é simétrica e que, fixados $n\ge1$ e
+pontos $\x_1,\dots,\x_n\in\R^p$, a matriz $K=\big[k(\x_i,\x_j)\big]_{i,j=1}^n$ satisfaz
+$\bm a^\top K\bm a\ge0$ para todo $\bm a\in\R^n$. Reciprocamente, se $k$ é um \emph{kernel},
+todas essas matrizes são simétricas e positivas semidefinidas. As duas direções do teorema são
+usadas abaixo.
+
+\smallskip
+\textbf{(a)} Fixe $n\ge1$ e $\x_1,\dots,\x_n\in\R^p$, e sejam $A=\big[k_1(\x_i,\x_j)\big]$ e
+$B=\big[k_2(\x_i,\x_j)\big]$, simétricas e positivas semidefinidas pelo teorema, porque $k_1$ e
+$k_2$ são \emph{kernels}. A matriz de $k=k_1k_2$ nesses pontos é o produto entrada a entrada,
+$(A\circ B)_{ij}=A_{ij}B_{ij}$, simétrica porque $A$ e $B$ são. Pelo teorema espectral, a
+matriz simétrica $B$ se escreve como $B=\sum_{m=1}^n\lambda_m\bm v_m\bm v_m^\top$, com
+$\bm v_1,\dots,\bm v_n$ uma base ortonormal de autovetores e autovalores
+$\lambda_m=\bm v_m^\top B\bm v_m\ge0$, porque $B$ é positiva semidefinida; em coordenadas,
+$B_{ij}=\sum_m\lambda_mv_{mi}v_{mj}$. Para $\bm a\in\R^n$, trocando a ordem de somas finitas,
 \begin{align*}
   \bm a^\top(A\circ B)\,\bm a
   &=\sum_{i,j}a_ia_jA_{ij}\sum_m\lambda_mv_{mi}v_{mj}
    =\sum_m\lambda_m\sum_{i,j}(a_iv_{mi})\,A_{ij}\,(a_jv_{mj})\\
   &=\sum_m\lambda_m\,\bm u_m^\top A\,\bm u_m\ \ge\ 0,
 \end{align*}
-em que $\bm u_m=(a_1v_{m1},\dots,a_nv_{mn})$, e cada parcela é não negativa porque
-$\lambda_m\ge0$ e $A$ é positiva semidefinida. Como isso vale para todo $n$ e quaisquer
-pontos, o teorema dá que $k_1k_2$ é um \emph{kernel}.
+em que $\bm u_m=(a_1v_{m1},\dots,a_nv_{mn})$. Cada parcela é não negativa, porque $\lambda_m\ge0$
+e $A$ é positiva semidefinida. Como $n$ e os pontos são arbitrários, o teorema dá que $k_1k_2$ é
+um \emph{kernel}, sem que seja preciso construir o espaço de Hilbert do produto.
 
 \smallskip
-\textbf{(b)} A função $h(\x)h(\x')k(\x,\x')$ é simétrica, e a sua matriz nos pontos
-$\x_1,\dots,\x_n$ é $DKD$, com $K=\big[k(\x_i,\x_j)\big]$ e
-$D=\operatorname{diag}\big(h(\x_1),\dots,h(\x_n)\big)$. Para $\bm a\in\R^n$,
-$\bm a^\top DKD\,\bm a=(D\bm a)^\top K(D\bm a)\ge0$. (Pela definição, é o mesmo que tomar a
-função $h\varphi$ no lugar de $\varphi$.)
+\textbf{(b)} \emph{O fator $h(\x)h(\x')$.} A função $\tilde k(\x,\x')=h(\x)h(\x')k(\x,\x')$ é
+simétrica, porque $k$ é. Nos pontos $\x_1,\dots,\x_n$, a sua matriz é $DKD$, com
+$K=\big[k(\x_i,\x_j)\big]$ e $D=\operatorname{diag}\big(h(\x_1),\dots,h(\x_n)\big)$, porque
+$(DKD)_{ij}=h(\x_i)\,k(\x_i,\x_j)\,h(\x_j)$. Para $\bm a\in\R^n$, como $D$ é simétrica,
+$\bm a^\top DKD\,\bm a=(D\bm a)^\top K\,(D\bm a)\ge0$, porque $K$ é positiva semidefinida. Pelo
+teorema, $\tilde k$ é um \emph{kernel}. Pela definição, chega-se ao mesmo resultado tomando
+$h\varphi$ no lugar de $\varphi$:
+$\tilde k(\x,\x')=\inner{h(\x)\varphi(\x)}{h(\x')\varphi(\x')}_{\mathcal H}$.
 
-Para a exponencial, $e^{k(\x,\x')}=\sum_{m\ge0}k(\x,\x')^m/m!$. A potência $k^0$ é a
-constante $1$, que é um \emph{kernel}, e, se $k^m$ é um \emph{kernel}, $k^{m+1}=k^m\cdot k$
-também é, pelo item (a); por indução, todas as potências são \emph{kernels}. As somas
-parciais $S_M=\sum_{m=0}^Mk^m/m!$ são, então, \emph{kernels}, como somas de \emph{kernels}
-multiplicados por constantes positivas. Fixados os pontos e $\bm a\in\R^n$, cada número
-$\bm a^\top\big[S_M(\x_i,\x_j)\big]\bm a$ é não negativo, e, quando $M\to\infty$, converge para
-$\bm a^\top\big[e^{k(\x_i,\x_j)}\big]\bm a$, porque é uma soma finita de termos que convergem.
-Um limite de números não negativos é não negativo. A matriz de $e^k$ é, portanto, positiva
-semidefinida, e $e^k$, que é simétrica, é um \emph{kernel}.
+\emph{A exponencial.} Para cada par $(\x,\x')$, a série $\sum_{m\ge0}k(\x,\x')^m/m!$ converge
+para $e^{k(\x,\x')}$, como a série da exponencial em qualquer número real. As potências de $k$
+são \emph{kernels}, por indução: $k^0$ é a constante $1$, que é um \emph{kernel}, e, se $k^m$ é
+um \emph{kernel}, então $k^{m+1}=k^m\cdot k$ também é, pelo item (a). As somas parciais
+\[
+  S_N(\x,\x')=\sum_{m=0}^N\frac{k(\x,\x')^m}{m!}
+\]
+são, então, \emph{kernels}, porque cada parcela é um \emph{kernel} multiplicado pela constante
+positiva $1/m!$ e a soma de um número finito de \emph{kernels} é um \emph{kernel}. Fixe $n$, os
+pontos e $\bm a\in\R^n$. Para cada $N$, o número $s_N=\sum_{i,j}a_ia_jS_N(\x_i,\x_j)$ é não
+negativo, e, quando $N\to\infty$, converge para $\sum_{i,j}a_ia_j\,e^{k(\x_i,\x_j)}$, porque é
+uma soma de $n^2$ sequências convergentes. Um limite de números não negativos é não negativo:
+a matriz $\big[e^{k(\x_i,\x_j)}\big]$ é positiva semidefinida. Como $e^{k}$ é simétrica, o
+teorema dá que é um \emph{kernel}.
 
 \smallskip
-\textbf{(c)} Como $\norm{\x-\x'}^2=\norm{\x}^2-2\inner{\x}{\x'}+\norm{\x'}^2$,
+\textbf{(c)} Pela bilinearidade e pela simetria do produto interno,
+$\norm{\x-\x'}^2=\norm{\x}^2-2\inner{\x}{\x'}+\norm{\x'}^2$, e
 \[
   e^{-\gamma\norm{\x-\x'}^2}
   =e^{-\gamma\norm{\x}^2}\,e^{-\gamma\norm{\x'}^2}\,e^{2\gamma\inner{\x}{\x'}} .
 \]
-O produto interno é um \emph{kernel}, e $2\gamma\inner{\x}{\x'}$ também, porque $2\gamma>0$.
-Pelo item (b), $e^{2\gamma\inner{\x}{\x'}}$ é um \emph{kernel}, e, ainda pelo item (b), com
-$h(\x)=e^{-\gamma\norm{\x}^2}$, o produto acima é um \emph{kernel}. O argumento vale para todo
-$p$ e todo $\gamma>0$, e não precisa exibir $\varphi$; com $p=1$, expandir
-$e^{2\gamma xx'}$ em série reproduz a função $\varphi$ do exemplo das notas.
+Três passos levam à conclusão. O produto interno é um \emph{kernel}, e $2\gamma\inner{\x}{\x'}$
+também, por ser o produto de um \emph{kernel} pela constante $2\gamma>0$. Pela segunda parte do
+item (b), $e^{2\gamma\inner{\x}{\x'}}$ é um \emph{kernel}. Pela primeira parte do item (b), com
+$h(\x)=e^{-\gamma\norm{\x}^2}$, o produto acima é um \emph{kernel}. Em nenhum passo se usou o
+valor de $p$ nem o de $\gamma>0$: o \emph{kernel} radial é um \emph{kernel} em $\R^p$ para todo
+$p$ e todo $\gamma>0$.
+
+A demonstração não exibe $\varphi$, e é o teorema que permite isso: ele troca a construção de um
+espaço de Hilbert pela verificação de uma desigualdade sobre matrizes. Com $p=1$, expandir
+$e^{2\gamma xx'}$ em série reproduz a função $\varphi$ do exemplo das notas, de coordenadas
+$\varphi_m(x)=\sqrt{(2\gamma)^m/m!}\;x^me^{-\gamma x^2}$; com $p>1$, a mesma expansão daria uma
+$\varphi$ com infinitas coordenadas, uma para cada monômio, que a demonstração dispensa
+construir.
 \end{solucao}

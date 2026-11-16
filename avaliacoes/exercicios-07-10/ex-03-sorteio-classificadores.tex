@@ -30,59 +30,123 @@ decisão será a de $A$ (cara) ou a de $B$ (coroa). Seja $g_\lambda$ esse classi
 \end{itens}
 
 \begin{solucao}
-\textbf{(a)} Seja $Z$ a moeda, com $\Prob(Z=1)=\lambda$, independente de $(\X,Y)$. Pela lei
-da probabilidade total, condicionando em $Z$,
+Formalize o sorteio. Sejam $g_A$ e $g_B$ as regras de decisão de $A$ e de $B$, fixadas, e $Z$
+a moeda, com $\Prob(Z=1)=\lambda$ e $Z$ independente de $(\X,Y)$. O classificador sorteado é
+\[
+  g_\lambda(\X)=Z\,g_A(\X)+(1-Z)\,g_B(\X):
+\]
+decide como $A$ quando $Z=1$ e como $B$ quando $Z=0$. A independência diz que, para todo
+evento $E$ definido por $(\X,Y)$ e $z\in\{0,1\}$, vale $\Prob(E,\,Z=z)=\Prob(E)\,\Prob(Z=z)$.
+Suponha $0<\lambda<1$; nos casos $\lambda=0$ e $\lambda=1$, $g_\lambda$ é $B$ ou $A$, e não há
+o que mostrar.
+
+\smallskip
+\textbf{(a)} Pela lei da probabilidade total, condicionando em $Z$ dentro da probabilidade
+condicional a $Y=0$,
 \begin{align*}
   \Prob\big(g_\lambda(\X)=1\mid Y=0\big)
-  &=\lambda\,\Prob\big(g_A(\X)=1\mid Y=0,\,Z=1\big)\\
-  &\quad+(1-\lambda)\,\Prob\big(g_B(\X)=1\mid Y=0,\,Z=0\big),
+  &=\Prob\big(g_\lambda(\X)=1\mid Y=0,\,Z=1\big)\,\Prob(Z=1\mid Y=0)\\
+  &\quad+\Prob\big(g_\lambda(\X)=1\mid Y=0,\,Z=0\big)\,\Prob(Z=0\mid Y=0).
 \end{align*}
-em que se usou $\Prob(Z=1\mid Y=0)=\Prob(Z=1)=\lambda$, pela independência. Também pela
-independência, condicionar em $Z$ não altera a distribuição de $\X$ dado $Y$, e as duas
-probabilidades condicionais são as taxas de falsos positivos de $A$ e de $B$. Assim,
-$\mathrm{FPR}(g_\lambda)=\lambda\,\mathrm{FPR}(A)+(1-\lambda)\,\mathrm{FPR}(B)$, e a mesma
-conta, condicionando em $Y=1$, dá a TPR. O ponto de $g_\lambda$ é a combinação convexa dos
-pontos de $A$ e de $B$ com pesos $\lambda$ e $1-\lambda$, e percorre o segmento entre eles
-quando $\lambda$ vai de $0$ a $1$.
-
-Para a taxa de falsos positivos valer $0{,}05$,
+Pela independência, $\Prob(Z=1\mid Y=0)=\Prob(Z=1)=\lambda$ e $\Prob(Z=0\mid Y=0)=1-\lambda$. No
+evento $\{Z=1\}$, $g_\lambda(\X)=g_A(\X)$, e, de novo pela independência,
+\begin{align*}
+  &\Prob\big(g_\lambda(\X)=1\mid Y=0,\,Z=1\big)
+   =\frac{\Prob\big(g_A(\X)=1,\,Y=0,\,Z=1\big)}{\Prob(Y=0,\,Z=1)}\\
+  &\qquad=\frac{\Prob\big(g_A(\X)=1,\,Y=0\big)\,\Prob(Z=1)}{\Prob(Y=0)\,\Prob(Z=1)}
+   =\Prob\big(g_A(\X)=1\mid Y=0\big)=\mathrm{FPR}(A):
+\end{align*}
+a moeda não altera a distribuição de $\X$ dado $Y$, e, condicionalmente a cada face, a
+probabilidade de acusar uma transação legítima é a taxa de falsos positivos do sistema
+escolhido. Do mesmo modo, a segunda probabilidade condicional é $\mathrm{FPR}(B)$, e
 \[
-  0{,}02\,\lambda+0{,}08\,(1-\lambda)=0{,}05\iff 0{,}06\,\lambda=0{,}03\iff\lambda=\tfrac12 ,
+  \mathrm{FPR}(g_\lambda)=\lambda\,\mathrm{FPR}(A)+(1-\lambda)\,\mathrm{FPR}(B).
 \]
-e a taxa de verdadeiros positivos é $\tfrac12\cdot0{,}50+\tfrac12\cdot0{,}80=0{,}65$: Diego usa
-o limite do banco inteiro e detecta $65\%$ das fraudes, contra $50\%$ de $A$. A diagonal
-vem do sorteio entre os dois classificadores triviais, $g\equiv0$, no ponto $(0,0)$, e
-$g\equiv1$, no ponto $(1,1)$: sortear $g=1$ com probabilidade $q$ dá o ponto $(q,q)$.
+A mesma conta, com $Y=1$ no lugar de $Y=0$, dá
+$\mathrm{TPR}(g_\lambda)=\lambda\,\mathrm{TPR}(A)+(1-\lambda)\,\mathrm{TPR}(B)$. O ponto de
+$g_\lambda$ no plano $(\mathrm{FPR},\mathrm{TPR})$ é a combinação convexa dos pontos de $A$ e de
+$B$ com pesos $\lambda$ e $1-\lambda$, e percorre o segmento entre eles quando $\lambda$ vai de
+$0$ (o ponto de $B$) a $1$ (o de $A$).
+
+A taxa de falsos positivos vale $0{,}05$ quando
+\[
+  0{,}02\,\lambda+0{,}08\,(1-\lambda)=0{,}05\iff 0{,}08-0{,}06\,\lambda=0{,}05
+  \iff\lambda=\tfrac12 ,
+\]
+e então $\mathrm{TPR}(g_{1/2})=\tfrac12\cdot0{,}50+\tfrac12\cdot0{,}80=0{,}65$. Diego usa o
+limite do banco inteiro e detecta $65\%$ das fraudes, contra $50\%$ de $A$, o único dos dois
+sistemas que respeita o limite. Entre os sorteios, é o melhor que o respeita: a restrição
+$0{,}08-0{,}06\,\lambda\le0{,}05$ equivale a $\lambda\ge1/2$, e a taxa de verdadeiros
+positivos, $0{,}80-0{,}30\,\lambda$, diminui com $\lambda$.
+
+Os pontos da diagonal vêm do sorteio entre os dois classificadores triviais: $g\equiv0$, que
+não acusa ninguém e tem o ponto $(0,0)$, e $g\equiv1$, que acusa todos e tem o ponto $(1,1)$.
+Pela conta acima, sortear $g\equiv1$ com probabilidade $q$ dá o ponto
+$q\,(1,1)+(1-q)\,(0,0)=(q,q)$; é declarar fraude com probabilidade $q$ sem olhar a transação.
 
 \smallskip
 \textbf{(b)} Se $g'=1-g$, então $g'(\X)=1$ exatamente quando $g(\X)=0$, e
+\begin{align*}
+  \mathrm{TPR}(g')&=\Prob\big(g(\X)=0\mid Y=1\big)=1-\mathrm{TPR}(g),\\
+  \mathrm{FPR}(g')&=\Prob\big(g(\X)=0\mid Y=0\big)=1-\mathrm{FPR}(g).
+\end{align*}
+Para $C$, o classificador invertido tem o ponto $(1-0{,}70;\ 1-0{,}40)=(0{,}30;\ 0{,}60)$,
+acima da diagonal. O sistema $C$ acusa $70\%$ das transações legítimas e só $40\%$ das
+fraudes: separa as duas classes, mas ao contrário, e fazer o oposto do que ele diz dá um
+classificador útil. A aplicação $\rho(a,b)=(1-a,1-b)$ é a simetria em relação ao ponto
+$(\tfrac12,\tfrac12)$, o centro do quadrado unitário, e leva a região abaixo da diagonal na
+região acima dela.
+
+Para o escore, seja $s$ a função que o define, e $g_t(\x)=\1{s(\x)\ge t}$ o classificador com
+corte $t\in\R$; a curva ROC de $s$ é formada pelos pontos
+$\big(\mathrm{FPR}_s(t),\mathrm{TPR}_s(t)\big)$, com $t\in\R$. Suponha que $s(\X)$ não tenha
+átomos em nenhuma das classes, isto é, $\Prob\big(s(\X)=t\mid Y=c\big)=0$ para todo $t$ e para
+$c\in\{0,1\}$, como acontece quando $s(\X)$ tem distribuição contínua. O escore com o sinal
+trocado, $-s$, com corte $-t$, declara positivo quando $-s(\x)\ge-t$, isto é, quando
+$s(\x)\le t$. Essa regra coincide com $1-g_t$, que declara positivo quando $s(\x)<t$, exceto no
+evento $\{s(\X)=t\}$, de probabilidade nula em cada classe. Pela primeira parte do item,
 \[
-  \mathrm{TPR}(g')=\Prob\big(g(\X)=0\mid Y=1\big)=1-\mathrm{TPR}(g),
+  \mathrm{TPR}_{-s}(-t)=1-\mathrm{TPR}_s(t),
   \qquad
-  \mathrm{FPR}(g')=1-\mathrm{FPR}(g).
+  \mathrm{FPR}_{-s}(-t)=1-\mathrm{FPR}_s(t),
 \]
-Para $C$, o ponto invertido é $(1-0{,}70;\ 1-0{,}40)=(0{,}30;\ 0{,}60)$, acima da diagonal: um
-sistema que erra sistematicamente carrega informação, desde que se faça o contrário do que
-ele diz. A aplicação $(a,b)\mapsto(1-a,1-b)$ é a simetria em relação ao ponto
-$(\tfrac12,\tfrac12)$. Trocar o sinal do escore troca ``escore acima do corte'' por
-``escore abaixo do corte'', o que inverte as decisões em cada corte; a curva do escore com o
-sinal trocado é, portanto, a simétrica da original em relação a $(\tfrac12,\tfrac12)$. Essa
-simetria leva a região do quadrado unitário abaixo de uma curva na região acima da curva
-simétrica e preserva áreas. A área sob a curva nova é, então, a área acima da curva antiga,
-$1-\mathrm{AUC}>1/2$.
+e, como $-t$ percorre $\R$ quando $t$ percorre $\R$, a curva de $-s$ é a imagem da curva de $s$
+pela simetria $\rho$. Essa simetria é a rotação de $180^\circ$ em torno de $(\tfrac12,\tfrac12)$:
+leva o quadrado unitário nele mesmo, preserva áreas e leva a região abaixo da curva de $s$, de
+área $\mathrm{AUC}$, na região acima da curva de $-s$. A área acima da curva de $-s$ é, portanto,
+$\mathrm{AUC}$, e a área sob ela é $1-\mathrm{AUC}>1/2$.
+
+A curva ROC só depende da ordem em que o escore põe as observações: se $\phi$ é estritamente
+crescente, $\{\phi(s(\x))\ge\phi(t)\}=\{s(\x)\ge t\}$, e trocar $s$ por $\phi\circ s$ não muda os
+classificadores. Para uma probabilidade estimada $\widehat\eta$, como nas notas, a curva de
+$-\widehat\eta$ é, por isso, a mesma de $1-\widehat\eta$. Um escore com $\mathrm{AUC}<1/2$ não é
+inútil: ordena as classes ao contrário, e o escore com o sinal trocado tem
+$\mathrm{AUC}>1/2$.
 
 \smallskip
-\textbf{(c)} Condicionando de novo na moeda, e usando a independência,
-\[
+\textbf{(c)} A conta do item (a) também vale com as probabilidades conjuntas, que são as que
+entram no custo. Pela lei da probabilidade total e pela independência,
+\begin{align*}
   \Prob\big(g_\lambda(\X)=1,\,Y=0\big)
-  =\lambda\,\Prob\big(g_A(\X)=1,\,Y=0\big)+(1-\lambda)\,\Prob\big(g_B(\X)=1,\,Y=0\big),
+  &=\Prob\big(g_A(\X)=1,\,Y=0,\,Z=1\big)+\Prob\big(g_B(\X)=1,\,Y=0,\,Z=0\big)\\
+  &=\lambda\,\Prob\big(g_A(\X)=1,\,Y=0\big)+(1-\lambda)\,\Prob\big(g_B(\X)=1,\,Y=0\big),
+\end{align*}
+e, do mesmo modo,
+\[
+  \Prob\big(g_\lambda(\X)=0,\,Y=1\big)
+  =\lambda\,\Prob\big(g_A(\X)=0,\,Y=1\big)+(1-\lambda)\,\Prob\big(g_B(\X)=0,\,Y=1\big).
 \]
-e o mesmo para $\Prob(g_\lambda(\X)=0,\,Y=1)$. Multiplicando a primeira igualdade por
-$\ell_1$, a segunda por $\ell_0$ e somando,
-$\risco_\ell(g_\lambda)=\lambda\risco_\ell(A)+(1-\lambda)\risco_\ell(B)$. Uma média ponderada
-de dois números nunca é menor que o menor deles, e o sorteio nunca custa menos que o melhor
-dos dois sistemas: sem restrição, basta escolher um deles. O sorteio serve para atingir um
-ponto que nenhum dos dois atinge, como a taxa de falsos positivos de exatamente $0{,}05$
-permitida pelo banco: respeitando esse limite, $g_{1/2}$ detecta $65\%$ das fraudes, e $A$,
-só $50\%$.
+Multiplicando a primeira igualdade por $\ell_1$, a segunda por $\ell_0$ e somando, os custos
+entram como constantes, e
+\[
+  \risco_\ell(g_\lambda)=\lambda\,\risco_\ell(A)+(1-\lambda)\,\risco_\ell(B).
+\]
+Como $\lambda\in[0,1]$, o lado direito é uma média ponderada de $\risco_\ell(A)$ e
+$\risco_\ell(B)$, e uma média ponderada de dois números nunca é menor que o menor deles:
+$\risco_\ell(g_\lambda)\ge\min\{\risco_\ell(A),\risco_\ell(B)\}$. Sem a restrição do banco,
+basta usar o melhor dos dois sistemas, e nenhum sorteio custa menos que ele.
+
+O sorteio serve quando há uma restrição que nenhum dos dois sistemas aproveita, como o limite de
+$5\%$ de falsos positivos: ele atinge pontos do segmento entre $A$ e $B$ que nenhum dos dois
+atinge. Respeitando o limite, $g_{1/2}$ detecta $65\%$ das fraudes, e $A$, só $50\%$.
 \end{solucao}
