@@ -529,7 +529,8 @@ recompilar do fonte.
   splitting*"; as três molduras "Implementando: ..." com o código explicado e
   `random_state=0`; erros de digitação;
 - 04: slide novo "KNN - os pesos dos vizinhos"; grade só com `weights`; agradecimento
-  datado ("edição de 2022/02 desta disciplina, então na UFRJ");
+  datado ("edição de 2022/02 desta disciplina, então na UFRJ"); "$k=n\Rightarrow g$
+  constante: a média de todos os $y_i$" no lugar de $k\to\infty$;
 - 05: floresta como "menos opções: em cada nó, só $m<p$ covariáveis sorteadas"; saíram os
   três slides e o tópico de importância de covariáveis; em "*Bagging* - atenção!", "A conta
   supõe $g_b$ não viesadas $\Rightarrow$ em geral, árvores profundas, sem poda";
