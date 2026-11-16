@@ -1,0 +1,211 @@
+% !TeX program = pdflatex
+%==============================================================================
+%  Verificação de Reposição (VR) --- prova de segunda chamada, aulas 01 a 10
+%
+%  O gabarito sai de "Verificacao de reposicao - gabarito.tex", que apenas liga
+%  a opção [gabarito] e inclui este arquivo --- fonte única, dois PDFs.
+%
+%  QUATRO QUESTÕES, DE 3,0 PONTOS: duas sorteadas da "Lista de revisao 01-06" e
+%  duas da "Lista de revisao 07-10", uma aula por questão dentro de cada lista.
+%  Ficaram fora do sorteio os exercícios que já tinham caído na Avaliação Teórica
+%  01 (Ex. 5, 7 e 11 da 01-06) e na 02 (Ex. 3, 6 e 9 da 07-10). A VR e a
+%  Verificação Suplementar (VS) foram sorteadas juntas, a VR primeiro, e não têm
+%  exercício em comum. O sorteio é reproduzível:
+%
+%      import numpy as np
+%      rng = np.random.default_rng(20261116)                 # a data, aaaammdd
+%      # exercícios que ainda não caíram em prova, por aula
+%      lista_01_06 = {1: [1, 2], 2: [3, 4], 3: [6], 4: [8], 5: [9, 10]}
+%      lista_07_10 = {7: [1, 2], 8: [4], 9: [5], 10: [7, 8]}
+%
+%      def sorteia(lista):
+%          aulas = sorted(rng.choice(sorted(lista), size=2, replace=False).tolist())
+%          escolhidos = []
+%          for a in aulas:
+%              e = int(rng.choice(lista[a]))
+%              escolhidos.append(e)
+%              lista[a].remove(e)
+%              if not lista[a]:
+%                  del lista[a]
+%          return escolhidos
+%
+%      vr = sorteia(lista_01_06) + sorteia(lista_07_10)
+%      vs = sorteia(lista_01_06) + sorteia(lista_07_10)
+%      # -> vr = [1, 4, 2, 5] (aulas 01, 02, 07 e 09)
+%      #    vs = [2, 3, 1, 7] (aulas 01, 02, 07 e 10)
+%
+%  Resultado, para a VR:
+%      Aula 01 -> Ex. 1 da 01-06  ex-01-preditor-otimo (o melhor preditor)
+%      Aula 02 -> Ex. 4 da 01-06  ex-04-oraculo (o que o MQO estima)
+%      Aula 07 -> Ex. 2 da 07-10  ex-02-preco-ingenuo (o preço do ingênuo)
+%      Aula 09 -> Ex. 5 da 07-10  ex-05-vetores-suporte (a margem máxima e os
+%                                 vetores de suporte)
+%
+%  O sorteio rodou uma vez, em 16/11/2026, e vale. O algoritmo é o das
+%  Avaliações Teóricas 01 e 02, com duas aulas por lista e a retirada de cada
+%  exercício sorteado.
+%
+%  NÃO HÁ TEXTO DE EXERCÍCIO NESTE ARQUIVO. Os enunciados e as soluções vêm por
+%  \input dos MESMOS arquivos que as listas de revisão usam, em exercicios/ e em
+%  exercicios-07-10/. Os pontos por item escritos neles somam 4,0, o peso de uma
+%  questão nas provas de três questões; aqui, o \pontositens antes de cada
+%  \input dá os valores desta prova, que somam 3,0.
+%
+%  A PROVA NÃO REVELA DE QUE AULA VEM CADA QUESTÃO: o \questao não leva marcador
+%  de aula, os títulos são os da lista (vazios onde a lista não tem título), e a
+%  caixa de instruções traz a notação de regressão e a de classificação juntas.
+%==============================================================================
+\providecommand{\gabaritoopt}{}
+\documentclass[11pt,a4paper]{article}
+\usepackage[\gabaritoopt]{../recursos/latex/estilo-avaliacao}
+
+\provatrue
+\renewcommand{\tituloprova}[1]{Verificação de Reposição (#1)}
+
+\begin{document}
+\cabecalhoprova[{salvo indicação em contrário, $(\X,Y)$ é um vetor aleatório com
+            $\X\in\R^p$, e $p$ é o número de covariáveis;
+            $\Dados=\{(\X_i,Y_i)\}_{i=1}^n$ é a amostra de treino, i.i.d. Em
+            regressão, $r(\x)=\E[Y\mid\X=\x]$ é a função de regressão, e a perda é a
+            quadrática. Em classificação, $Y$ assume valores num conjunto finito
+            $\mathcal{C}$ de classes; no caso binário, $\mathcal{C}=\{0,1\}$, a
+            classe $Y=1$ é a positiva e $\eta(\x)=\Prob(Y=1\mid\X=\x)$, e a perda é
+            a 0--1, com risco $\risco(g)=\Prob\big(Y\ne g(\X)\big)$.}]{VR}{01 a 10}{Regressão e Classificação}{2 horas}{12,0 pontos}
+
+%==============================================================================
+\questao{O melhor preditor}{3,0 pontos}
+%==============================================================================
+\pontositens{0,9;0,7;0,6;0,8}
+\input{exercicios/ex-01-preditor-otimo}
+
+\begin{criterio}
+\textbf{(a)} 0,2 por somar e subtrair $r(\X)$ e expandir o quadrado; 0,5 pelo termo
+cruzado: 0,2 por condicionar em $\X$ (esperança total), 0,2 por tirar
+$r(\X)-g(\X)$ da esperança condicional e 0,1 por $\E[Y-r(\X)\mid\X]=0$, pela definição
+de $r$; 0,2 pela identidade final. Afirmar que o termo cruzado se anula sem
+condicionar em $\X$ vale 0,1 desses 0,5. A integrabilidade das parcelas não é exigida.
+
+\textbf{(b)} 0,3 por ler na identidade que $\risco(g)=\risco(r)+\E[(r(\X)-g(\X))^2]$,
+com a primeira parcela independente de $g$ e a segunda não negativa, e concluir
+$\risco(g)\ge\risco(r)$; 0,4 pelo valor mínimo: 0,2 por condicionar em $\X$ e 0,2 por
+reconhecer a variância condicional. A unicidade, a menos de probabilidade zero, não é
+exigida.
+
+\textbf{(c)} 0,3 pela origem da impossibilidade: o mínimo vale para qualquer função de
+$\X$, mesmo para $r$ conhecida exatamente, e é uma propriedade da distribuição de
+$(\X,Y)$, a variação de $Y$ entre indivíduos com o mesmo $\x$. 0,3 pelo que teria de
+mudar no problema: medir covariáveis novas, que reduzem o erro irredutível quando mudam
+a média condicional. Responder ``mais dados'', isto é, aumentar $n$, não pontua nesses
+0,3, porque $n$ não aparece no erro irredutível.
+
+\textbf{(d)} 0,3 por aplicar a identidade de (a) com $g\equiv\E[Y]$, com o lado esquerdo
+igual a $\Var(Y)$; 0,2 por usar $\E[r(\X)]=\E[Y]$ e chegar a
+$\Var(Y)-\risco(r)=\Var\big(r(\X)\big)$; 0,3 pela interpretação: é o máximo que se
+ganha trocando o preditor constante pelo melhor preditor possível, quanto a resposta
+esperada varia de um perfil de covariáveis para outro. Escrever a lei da variância total
+sem passar pela identidade de (a) vale 0,3 dos 0,5 da conta; a leitura como $R^2$
+populacional não é exigida.
+\end{criterio}
+
+%==============================================================================
+\questao{O que o MQO estima quando a linearidade é falsa}{3,0 pontos}
+%==============================================================================
+\pontositens{0,7;0,8;0,7;0,8}
+\input{exercicios/ex-04-oraculo}
+
+\begin{criterio}
+\textbf{(a)} 0,3 pela expansão
+$Q(\bbeta)=\E[Y^2]-2\,\bbeta^\top\bm\alpha+\bbeta^\top\Sigma\bbeta$; 0,2 pelo gradiente
+igualado a zero, $\Sigma\bbeta=\bm\alpha$; 0,2 por justificar que o ponto crítico é o
+mínimo, pela Hessiana $2\Sigma$ definida positiva ou pela identidade $(\dagger)$ da
+solução. Aceitar integralmente a demonstração que só usa $(\dagger)$.
+
+\textbf{(b)} 0,3 por reconhecer $\widehat\Sigma$ e $\widehat{\bm\alpha}$ como médias
+amostrais de variáveis i.i.d., com esperanças $\Sigma$ e $\bm\alpha$; 0,2 pela lei dos
+grandes números; 0,2 pela passagem a $\widehat\Sigma^{-1}\widehat{\bm\alpha}$, pela
+continuidade da inversão no conjunto das matrizes invertíveis; 0,1 por observar que a
+forma de $r$ não aparece em nenhum passo. Não é exigido o nome do teorema da aplicação
+contínua.
+
+\textbf{(c)} 0,3 pelo que o teorema garante: o erro de estimação vai a zero, e o risco do
+ajuste se aproxima do risco do melhor preditor linear; 0,3 pelo que ele não garante:
+que esse risco seja pequeno, porque o erro de aproximação
+$\E[(r(\X)-\bbeta^{\ast\top}\X)^2]$ não depende de $n$; 0,1 pela resposta à pergunta
+final, que é não. A decomposição em três parcelas é a forma mais clara de responder, mas
+não é exigida, e a ausência de taxa também não.
+
+\textbf{(d)} 0,3 pela leitura legítima: $2{,}3$ é o coeficiente de $x_1$ no hiperplano que
+melhor aproxima $r$ em erro quadrático médio, sob a distribuição de $\X$ em que os dados
+foram colhidos. 0,5 pelo que não se pode ler, em pelo menos dois dos três sentidos da
+solução, 0,25 cada: não é a inclinação de $r$; depende da região em que os dados
+caíram; ``aumentar $x_1$ aumenta $Y$'' é uma afirmação causal. Os exemplos numéricos da
+solução não são exigidos.
+\end{criterio}
+
+%==============================================================================
+\questao{}{3,0 pontos}
+%==============================================================================
+\pontositens{0,7;0,8;0,9;0,6}
+\input{exercicios-07-10/ex-02-preco-ingenuo}
+
+\begin{criterio}
+\textbf{(a)} 0,2 por $L(x_1)=8-2x_1$; 0,2 pelo \emph{log-odds} verdadeiro, com a
+justificativa de que observar o par é observar $X_1$; 0,3 pelo do ingênuo: 0,1 pelo
+produto das densidades marginais e 0,2 pela densidade de $X_2=1000\,X_1$, pela mudança de
+variável, cujo fator $1/1000$ se cancela. Afirmar que a segunda coluna repete a
+evidência, sem a conta, vale 0,1 desses 0,3.
+
+\textbf{(b)} 0,2 pela fórmula de $\widehat P$, a partir de $e^u=\eta/(1-\eta)$; 0,2 pela
+ordenação ($\widehat P$ é função estritamente crescente de $\eta$) e pela decisão
+($\widehat P>1/2\iff\eta>1/2$); 0,3 por $\abs{\widehat P-1/2}>\abs{\eta-1/2}$, pela
+identidade $\widehat P-\eta=\eta(1-\eta)(2\eta-1)/\big(\eta^2+(1-\eta)^2\big)$ ou pelo
+caso $\eta>1/2$ com a simetria; 0,1 pelos dois valores, $0{,}692$ e $0{,}941$.
+
+\textbf{(c)} 0,3 pelos dois cortes, $x_1<4-\log2\approx3{,}3069$ e
+$x_1<4-\tfrac12\log2\approx3{,}6534$, e pelo intervalo $I$ em que as decisões diferem;
+0,3 por $\Prob(X_1\in I)\approx0{,}060$, com as duas probabilidades condicionais e a lei
+da probabilidade total; 0,3 por quem erra mais em $I$: o ingênuo, com
+$\Prob(Y=0,\,X_1\in I)\approx0{,}035$, contra $\Prob(Y=1,\,X_1\in I)\approx0{,}025$ do
+classificador de Bayes. Explicar que, com prioris diferentes, o termo $\log(\pi_1/\pi_0)$
+não é dobrado é bem-vindo, mas não é exigido.
+
+\textbf{(d)} 0,2 pelo \emph{log-odds} $\log(\pi_1/\pi_0)+m\,L(x_1)$; 0,2 pelo limite:
+probabilidades indo a $0$ ou a $1$ e decisão $x_1<4$, a de prioris iguais; 0,2 pelo
+resumo: o ingênuo preserva a ordenação, estraga as probabilidades e, com classes de
+tamanhos diferentes, algumas decisões. A discussão de covariáveis apenas correlacionadas,
+que a solução traz, não é exigida.
+\end{criterio}
+
+%==============================================================================
+\questao{}{3,0 pontos}
+%==============================================================================
+\pontositens{0,9;1,2;0,9}
+\input{exercicios-07-10/ex-05-vetores-suporte}
+
+\begin{criterio}
+\textbf{(a)} 0,5 pela unicidade de $\bbeta$: 0,2 pelo ponto médio, viável com margem pelo
+menos $M^*$; 0,2 por $\norm{\bar{\bm w}}<1$, pela desigualdade de Cauchy--Schwarz, com
+igualdade só se $\bbeta'=\bbeta$; 0,1 pela normalização, que daria margem maior que
+$M^*$, com $\bar{\bm w}\ne\bm0$ porque as duas classes estão presentes. 0,4 pela
+unicidade de $\beta_0$ com $\bbeta$ fixado, pelo argumento das duas funções monótonas da
+solução ou pelo do ponto médio.
+
+\textbf{(b)} 0,2 por $M'\ge M^*$, porque a solução antiga é viável sem $i_0$; 0,6 pelo
+absurdo de $M'>M^*$: 0,2 pela combinação convexa e pela desigualdade nas observações
+$i\ne i_0$, 0,2 pela escolha de $t$ pequeno, que mantém $i_0$ acima de $M^*$ porque
+$\delta>0$, e 0,2 pela normalização ($\norm{\bm w_t}\le1$, pela desigualdade
+triangular) e pela contradição; 0,2 pela conclusão, com a unicidade do item (a); 0,2 pelo
+deslocamento de $\x_{i_0}$. Seguir a dica sem justificar por que $t$ pequeno funciona
+vale 0,1 dos 0,2 correspondentes.
+
+\textbf{(c)} 0,2 por notar que, sem cada observação, os dados continuam separáveis e
+com as duas classes; 0,4 pelo uso do item (b): para $i\notin\mathcal S$, o
+classificador sem $i$ é o mesmo e acerta $\x_i$, porque $y_if^*(\x_i)>M^*>0$; 0,3 pela
+cota, com a soma das indicadoras restrita a $\mathcal S$. A observação de que a cota sai
+de um único ajuste é bem-vinda, mas não é exigida.
+\end{criterio}
+
+\vfill
+\begin{center}\small\itshape Boa prova!\end{center}
+
+\end{document}
