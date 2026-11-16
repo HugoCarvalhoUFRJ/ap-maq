@@ -52,8 +52,11 @@ estilo com `[aluno]`). Ao mexer em conteúdo, pergunte-se qual das duas o pedido
 dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teoremas e as caixas
 `emsala`, `ideia`, `atencao`; o `00 Planejamento.tex` tem preâmbulo próprio.
 
-- **Compile de dentro da pasta** (o caminho do estilo é relativo): `pdflatex "NN ....tex"`.
-  O planejamento e o Beamer da 09 pedem duas passadas. Pacotes: `texlive-latex-base`,
+- **Compile de dentro da pasta** (o caminho do estilo é relativo): `pdflatex "NN ....tex"`,
+  **duas vezes**: como os `.aux` são apagados, uma passada só deixa "??" no lugar das
+  referências (17 nas notas do aluno da 03, medido em 16/11/2026). Pedem as duas as notas,
+  o planejamento (pela `longtable`), o Beamer da 09, a Lista teorica 09 e o gabarito da
+  lista de revisão 01-06. Pacotes: `texlive-latex-base`,
   `-latex-recommended`, `-latex-extra`, `texlive-fonts-recommended`, `texlive-pictures`,
   `lmodern`. Sem `babel` de propósito (rótulos em português à mão) e `pgfplots` em
   `compat=1.16`: não "modernize" nenhum dos dois.
@@ -62,9 +65,13 @@ dúvida, as duas. `recursos/latex/estilo-notas.sty` define a notação, os teore
   (desfaça com `git checkout --`). Para comparar, use `pdftotext` de duas compilações
   **locais**. `pdftotext -layout` acusa diferenças de espaçamento que não existem; para
   conferir texto, compare por multiconjunto de caracteres ou use `-bbox`.
+- **O `estilo-notas.sty` tem um remendo para o tcolorbox 4.22** (TeX Live 2019, commit
+  777e507), que imprimia o texto seguinte por cima de uma caixa quebrada. Ele só age quando
+  a macro é idêntica à da 4.22; no tcolorbox 5.x a correção já vem de fábrica. Um PDF
+  gerado no TeX Live 2019 sai com ≠ como "6=" e ⋆ como "?" no `pdftotext`: não é defeito.
 - **Numeração citada de fora:** a Prop. 3.2 das notas do aluno da 03 (atalho do LOOCV) é
   citada pelas da 04; a Prop. 3.1 da 08 (corte ótimo) é citada pelo laboratório e pela
-  Lista teorica da 08 e pela E3. Fórmula nova
+  Lista teorica da 08, pela E3 e pelo roteiro do TP01. Fórmula nova
   nessas notas entra sem número. Ao procurar remissão num `.tex`, procure também com
   quebra de linha no meio (`Aula` / `prática 11`).
 
@@ -250,9 +257,14 @@ uma simulação, releia a legenda no `.tex`. Nos rótulos do matplotlib não use
 `.replace(".", ",")` só no número. Os números dos eixos saem com vírgula sozinhos: o
 `salvar()` troca os formatadores numéricos do matplotlib (os de `set_xticklabels` não).
 
-**Cada laboratório reproduz as simulações da figura da sua aula, com os mesmos parâmetros e
+**Quando um notebook refaz a simulação de uma figura das notas, usa os mesmos parâmetros e
 a mesma semente** (população comum: $r(x)=\operatorname{sen}(1{,}5x)+0{,}3x$ em $[-3,3]$,
-$\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Casos que enganam:
+$\sigma=0{,}7$, $n=50$). Ao mexer num dos dois, confira o outro. Conferido em 16/11/2026,
+pelos números das linhas `[conferência]`: refazem a figura os laboratórios de 01
+(`01-vies-variancia`), 03 (`03-cv-vs-risco`), 07 (`07-lda-qda`), 09 (`09-kernel`), 10
+(`10-fronteiras-knn`) e E3 (`E3-texto`). Não têm contrapartida em laboratório a
+`03-escolha-k`, a `05-numero-arvores` (que a Lista prática 05 refaz), a da 08, a
+`09-margem` e as de E1 e E2, cujos laboratórios usam dados próprios. Casos que enganam:
 
 - **06:** a figura e as notas dizem $0{,}8466$ e $R^2=+0{,}40$ (este, citado também na
   Lista teorica 06 e nos notebooks da E2); o laboratório roda com semente própria e mede
@@ -361,10 +373,18 @@ não a dois); se mexer num, o outro acompanha.
   questões. A VR e a VS, de quatro questões de 3,0, declaram antes de cada `\input` os
   valores daquela questão, `\pontositens{0,9;0,7;0,6;0,8}` (separados por ponto e vírgula, por
   causa da vírgula decimal), que substituem os do arquivo; faltar ou sobrar valor é erro de
-  compilação. Os valores são os da lista vezes 0,75, arredondados a 0,1.
+  compilação. Os valores são os da lista vezes 0,75, arredondados a 0,1, com um item baixado
+  0,1 onde a soma passaria de 3,0: o (c) do Ex. 4 da 01-06 e o (a) do Ex. 2 da 07-10, na VR, e
+  o (b) do Ex. 1 da 07-10, na VS.
+- **P1, P2 e TP01 já foram aplicados e estão congelados** (decisão de 16/11/2026): achado
+  neles se relata, não se corrige, e o PDF não se recompila. Isso congela também os
+  exercícios que as duas provas incluem, os Ex. 5, 7 e 11 da 01-06 e os Ex. 3, 6 e 9 da
+  07-10: antes de editar um `ex-NN`, veja quem o inclui (`grep -l "ex-NN" avaliacoes/*.tex`).
+  A VR e a VS, ainda por aplicar, entram no mesmo regime depois de aplicadas.
 - **O sorteio da P1** (semente `20260914`, uma aula por questão, registrado no topo do `.tex`)
   deu os Ex. 5, 7 e 11 da lista 01-06. Rodou uma vez e vale. São 4,0 pontos por questão, 12,0
-  no total, 2 horas.
+  no total, 2 horas. O código do cabeçalho só sorteia as aulas; a escolha do exercício dentro
+  de cada aula não está escrita.
 - **O sorteio da P2** (semente `20261112`, o mesmo algoritmo, com o código inteiro no topo do
   `.tex`) deu as aulas 08, 09 e 10 e os Ex. 3, 6 e 9 da lista 07-10. Rodou uma vez e vale.
   Também 4,0 pontos por questão, 12,0 no total, 2 horas.
@@ -429,7 +449,7 @@ Quem carrega o quê:
 
 | arquivo | notebooks |
 | --- | --- |
-| `superconductivity.csv` (23 MB) | aulas 01 a 05 |
+| `superconductivity.csv` (23 MB) | aulas 01 a 05 e E2 |
 | `bank_train_redux.csv` (96 MB) | aula 08 (laboratório e lista) |
 | `spam.csv` | aula E3 |
 

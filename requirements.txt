@@ -20,7 +20,7 @@
 # ----- o núcleo, usado nas 13 aulas ------------------------------------------
 numpy>=1.23
 pandas>=1.5
-matplotlib>=3.4          # pcolormesh(shading="auto"), aula 09
+matplotlib>=3.4          # pcolormesh(shading="auto"), aulas 05 e 09
 scikit-learn>=1.2        # ver a lista de APIs no fim do arquivo
 scipy>=1.7               # aulas 07, 10, E1 e E2
 
@@ -43,9 +43,8 @@ ipykernel>=6.0
 # exigiria testar o material numa versão mais antiga.
 #
 #   SplineTransformer                    aula 04  -> >= 1.0
-#   get_feature_names_out                aulas 06 e E3 -> >= 1.0
-#   permutation_importance               aula 05  -> >= 0.22
-#   cost_complexity_pruning_path         aula 05  -> >= 0.22
+#   get_feature_names_out                aula E3  -> >= 1.0
+#   cost_complexity_pruning_path         aulas 05 e 10 -> >= 0.22
 #
 # O Trabalho Prático 01 (avaliacoes/) pede mais do que as aulas:
 #
@@ -111,25 +110,23 @@ ipykernel>=6.0
 # resultado divergir do que o texto afirma, suspeite disso antes de tudo.
 #
 # =============================================================================
-# Versões em que tudo foi executado de ponta a ponta (05/08/2026)
+# Versões em que tudo foi executado de ponta a ponta (16/11/2026)
 # =============================================================================
 # Se algum notebook der resultado diferente do que o texto afirma, este é o
-# conjunto exato em que as 13 aulas rodaram sem erro:
+# conjunto exato em que os 13 laboratórios, os 13 gabaritos das listas práticas
+# e os dois notebooks do Trabalho Prático 01 rodaram sem erro, com
+# jupyter nbconvert --execute:
 #
-#   numpy         1.26.4
-#   pandas        2.2.2
-#   matplotlib    3.9.2
-#   scikit-learn  1.5.1
-#   scipy         1.13.1
-#   statsmodels   0.14.2
-#   pillow        10.4.0
-#   jupyterlab    4.2.5
-#   ipykernel     6.28.0
-#   Python        3.12.7
-#
-# A aula prática 02 foi reexecutada inteira em 10/08/2026, com scikit-learn
-# 1.9.0, numpy 1.26.2, pandas 2.x e matplotlib 3.8.3: roda sem erro, e os
-# números que o texto dela afirma são os que as células imprimem.
+#   numpy         1.26.2
+#   pandas        2.1.3
+#   matplotlib    3.8.3
+#   scikit-learn  1.9.0
+#   scipy         1.14.1
+#   statsmodels   0.14.6
+#   pillow        10.2.0
+#   ipykernel     6.26.0
+#   nbconvert     7.17.1
+#   Python        3.11.5
 #
 # =============================================================================
 # Dados
@@ -139,7 +136,7 @@ ipykernel>=6.0
 #
 # Três arquivos .csv ficam em recursos/dados/:
 #
-#   superconductivity.csv    aulas 01 a 05  (23 MB, 9 notebooks)
+#   superconductivity.csv    aulas 01 a 05 e E2  (23 MB, 10 notebooks)
 #   bank_train_redux.csv     aula 08        (96 MB, 3 notebooks)
 #   spam.csv                 aula E3        (0,5 MB, 3 notebooks)
 #

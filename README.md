@@ -58,7 +58,9 @@ Cada pasta de aula contém, conforme disponível:
   acompanhar em sala;
 - a **lista de exercícios** da aula, em duas partes e com gabarito
   (`Lista teorica NN.tex/.pdf` e `Lista prática NN.ipynb`), para depois da aula;
-- eventuais **notebooks de exemplo** (`Exemplo - ...`), demonstrações curtas.
+- eventuais **notebooks de demonstração herdados** (`Exemplo - ...`,
+  `EXTRA K-medias (exemplo)` e `Comparação entre classificadores paramétricos`),
+  que não seguem as convenções dos laboratórios.
 
 ## Aulas práticas
 
@@ -72,9 +74,14 @@ exercício é a lista prática da mesma aula. Onde havia uma pausa `Sua vez` seg
 de célula vazia, hoje há enunciado, código e leitura do resultado — nas treze
 aulas. Todo número que o texto afirma foi medido executando a célula.
 
-Cada notebook **reproduz as simulações das figuras das notas**, com os mesmos
-parâmetros, de modo que o número que aparece na figura é o número que a célula
-imprime. São commitados sem saída.
+Quando um notebook **refaz a simulação de uma figura das notas**, usa os mesmos
+parâmetros e a mesma semente, de modo que o número que aparece na figura é o número
+que a célula imprime. É o caso, por exemplo, da decomposição viés–variância (aula
+01), da validação cruzada contra o risco (03), de LDA contra QDA (07), dos *kernels*
+(09) e das fronteiras do KNN (10). Nem toda figura tem contrapartida no laboratório:
+os das aulas E1 e E2 trabalham com dados próprios, e o da 06 refaz a figura com
+outra semente, que dá outra amostra do mesmo experimento. Os notebooks são
+versionados sem saída.
 
 ### Como rodar
 
@@ -130,6 +137,8 @@ cd aulas/03-validacao-cruzada
 pdflatex "Lista teorica 03.tex"             # enunciado
 pdflatex "Lista teorica 03 - gabarito.tex"  # com as soluções
 ```
+
+A Lista teorica 09 tem referências cruzadas e pede duas passadas, como as notas.
 
 Todo número que aparece nos gabaritos foi **medido**, executando o notebook — e
 em vários casos a medição contrariou o que se esperava. Esses casos estão
@@ -194,6 +203,8 @@ pdflatex "Lista de revisao 07-10.tex"
 pdflatex "Lista de revisao 07-10 - gabarito.tex"
 ```
 
+O gabarito da lista 01-06 tem referências cruzadas e pede duas passadas.
+
 ## Notas de aula (LaTeX)
 
 Cada aula tem **duas versões** das notas, lado a lado na mesma pasta:
@@ -229,8 +240,8 @@ python3 recursos/figuras/gerar-figuras.py 01 02   # só as aulas 01 e 02
 
 O script imprime, ao gerar, conferências dos números que aparecem nas legendas
 (por exemplo, que a decomposição viés–variância fecha na precisão de máquina).
-As simulações usam as mesmas constantes dos notebooks das aulas práticas, de
-modo que o aluno reencontra na prática os números das figuras.
+Quando um notebook refaz uma dessas simulações, usa as mesmas constantes, de modo
+que o aluno reencontra na prática os números da figura.
 
 ## Livros adotados
 
@@ -247,6 +258,10 @@ são usados nas aulas práticas e provêm, respectivamente, de
 [superconductivity](https://archive.ics.uci.edu/dataset/464/superconductivty+data) e
 [bank_train_redux](https://www.kaggle.com/competitions/santander-customer-transaction-prediction/)
 (este último é um excerto da base do Kaggle, por motivos de espaço no GitHub).
+O `spam.csv`, da aula E3, é a
+[SMS Spam Collection](https://doi.org/10.24432/C5CC84) (Almeida & Hidalgo, 2011),
+também do UCI e sob CC BY 4.0, num `.csv` de colunas `v1` (o rótulo) e `v2` (a
+mensagem) com 5 572 das 5 574 mensagens originais.
 Os arquivos `concreto.csv` e `credito.csv`, do Trabalho Prático 01, vêm do
 *UCI Machine Learning Repository*, sob a licença CC BY 4.0:
 [Concrete Compressive Strength](https://doi.org/10.24432/C5PK67) e

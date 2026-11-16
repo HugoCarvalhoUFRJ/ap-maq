@@ -41,9 +41,9 @@
 Ele mapeia as \textbf{aulas oficiais} (acompanhando a sequência consolidada dos
 slides do curso, numerados de 01 a 10) e as \textbf{aulas extras} (tópicos
 complementares de aprendizado não supervisionado e aplicações), associando cada
-aula aos respectivos capítulos dos dois livros-texto adotados. Para cada aula há
-um arquivo \texttt{.tex} próprio nesta pasta, contendo o roteiro detalhado do que
-deve ser dito em sala.
+aula aos respectivos capítulos dos dois livros-texto adotados. Cada aula tem, na
+sua pasta em \texttt{aulas/}, duas notas: o roteiro do docente, com o que deve ser
+dito em sala, e a versão do aluno, para leitura autônoma.
 \end{abstract}
 
 %==============================================================================
@@ -189,8 +189,8 @@ em \texttt{aulas/}, e os materiais transversais em \texttt{recursos/}:
         laboratórios guiados, para acompanhar em sala: texto e código
         alternados, uma ideia por célula, mostrando o resultado em vez de
         deixá-lo em aberto --- quem propõe exercício é a lista da mesma aula.
-        Cada uma reproduz as simulações das figuras da nota correspondente, com
-        os mesmos parâmetros e a mesma semente.
+        Quando um laboratório refaz a simulação de uma figura das notas, usa os
+        mesmos parâmetros e a mesma semente.
   \item \textbf{Listas de exercícios}, também uma por aula e na pasta da própria
         aula, para depois da aula:
         \begin{itemize}
@@ -218,6 +218,10 @@ em \texttt{aulas/}, e os materiais transversais em \texttt{recursos/}:
         \texttt{Verificacao suplementar} (VS, a prova final) têm quatro questões
         cada, duas sorteadas de cada lista, nenhuma em comum com as outras provas.
         Como nas listas, o gabarito sai do mesmo arquivo-fonte do enunciado.
+        O \texttt{Trabalho pratico 01}, na mesma pasta, cobre as aulas~01 a~10
+        em quinze tarefas sobre dois conjuntos de dados reais, um de regressão e
+        um de classificação, com um notebook de partida para o aluno, uma
+        resolução de referência e o roteiro de correção.
   \item As duas \textbf{avaliações presenciais} de 2025-02 (AP1 e AP2) com
         gabarito, herdadas, em \texttt{recursos/avaliacoes}.
 \end{itemize}
@@ -235,14 +239,16 @@ em \texttt{aulas/}, e os materiais transversais em \texttt{recursos/}:
   \item Estrutura padrão de cada nota: \emph{objetivos da aula} $\to$
         \emph{motivação} $\to$ \emph{desenvolvimento teórico} (definições,
         resultados, demonstrações quando cabível) $\to$ \emph{intuições e exemplos}
-        $\to$ \emph{prática em Python} (referência ao notebook) $\to$
-        \emph{resumo} e \emph{leitura recomendada}.
+        $\to$ \emph{resumo} e \emph{leitura recomendada}. As notas das aulas~01
+        a~03, E1 e E2 trazem ainda uma seção de \emph{prática em Python}, que
+        remete ao notebook.
   \item Notação unificada seguindo o [AME]: $(X,Y)$ par aleatório,
         $r(x)=\mathbb{E}[Y\mid X=x]$ função de regressão, $g(x)$ classificador,
         $\mathcal{D}=\{(X_i,Y_i)\}_{i=1}^n$ amostra de treino, $R(\cdot)$ função de
         risco.
-  \item Caixas de \emph{``o que dizer em sala''} destacam o fio condutor do discurso
-        e as perguntas a fazer aos alunos.
+  \item No roteiro do docente, as caixas \emph{Em sala} destacam o fio condutor do
+        discurso e as perguntas a fazer aos alunos. A versão do aluno não as tem;
+        os destaques dela ficam nas caixas \emph{Ideia central} e \emph{Atenção}.
 \end{itemize}
 
 \end{document}
